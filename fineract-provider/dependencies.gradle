@@ -77,6 +77,7 @@ dependencies {
             'org.springdoc:springdoc-openapi-security',
             'org.mapstruct:mapstruct',
             'com.googlecode.libphonenumber:libphonenumber:8.13.6',
+            // 'mysql:mysql-connector-java',
             )
 
     implementation ('org.apache.commons:commons-email') {

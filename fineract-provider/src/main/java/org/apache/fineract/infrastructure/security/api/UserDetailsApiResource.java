@@ -127,6 +127,8 @@ public class UserDetailsApiResource {
                     isTwoFactorRequired);
         }
 
+        authenticatedUserData.setFirstTimeLoginRemaining(principal.isFirstTimeLoginRemaining());
+
         return this.apiJsonSerializerService.serialize(authenticatedUserData);
     }
 }

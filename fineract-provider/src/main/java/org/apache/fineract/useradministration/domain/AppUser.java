@@ -736,6 +736,10 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         this.password = password;
     }
 
+    public boolean isFirstTimeLoginRemaining() {
+        return firstTimeLoginRemaining;
+    }
+
     @Override
     public String toString() {
         return "AppUser [username=" + this.username + ", getId()=" + this.getId() + "]";

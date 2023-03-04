@@ -56,7 +56,7 @@ public class SelfServiceRegistrationApiResource {
     public String createCustomeronRequest(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.selfServiceRegistrationWritePlatformService
                 .createCustomeronRequest(apiRequestBodyAsJson);
-        return toApiJsonSerializer.serializeResult(apiRequestBodyAsJson);
+        return toApiJsonSerializer.serializeResult(apiResponseMessage);
     }
 
     @POST
@@ -65,7 +65,7 @@ public class SelfServiceRegistrationApiResource {
     public String resendCustomeronRequest(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.selfServiceRegistrationWritePlatformService
                 .resendCustomeronRequest(apiRequestBodyAsJson);
-        return toApiJsonSerializer.serializeResult(apiRequestBodyAsJson);
+        return toApiJsonSerializer.serializeResult(apiResponseMessage);
     }
 
     @POST
@@ -74,7 +74,7 @@ public class SelfServiceRegistrationApiResource {
     public String validateCustomer(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.selfServiceRegistrationWritePlatformService
                 .validateCustomer(apiRequestBodyAsJson);
-        return toApiJsonSerializer.serializeResult(apiRequestBodyAsJson);
+        return toApiJsonSerializer.serializeResult(apiResponseMessage);
     }
 
     @POST
@@ -83,7 +83,7 @@ public class SelfServiceRegistrationApiResource {
     public String resetCustomerPassword(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.selfServiceRegistrationWritePlatformService
                 .resetCustomerPassword(apiRequestBodyAsJson);
-        return toApiJsonSerializer.serializeResult(apiRequestBodyAsJson);
+        return toApiJsonSerializer.serializeResult(apiResponseMessage);
     }
 
     @POST

@@ -58,6 +58,9 @@ public class AuthenticatedUserData {
     @SuppressWarnings("unused")
     private final boolean isTwoFactorAuthenticationRequired;
 
+    @SuppressWarnings("unused")
+    private Boolean firstTimeLoginRemaining;
+
     public AuthenticatedUserData(final String username, final Collection<String> permissions) {
         this.username = username;
         this.userId = null;
@@ -112,4 +115,9 @@ public class AuthenticatedUserData {
         this.isTwoFactorAuthenticationRequired = isTwoFactorAuthenticationRequired;
         clients = null;
     }
+
+    public void setFirstTimeLoginRemaining(Boolean firstTimeLoginRemaining) {
+        this.firstTimeLoginRemaining = firstTimeLoginRemaining;
+    }
+
 }

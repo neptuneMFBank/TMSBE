@@ -157,6 +157,7 @@ public class AuthenticationApiResource {
                         new String(base64EncodedAuthenticationKey, StandardCharsets.UTF_8), isTwoFactorRequired,
                         returnClientList ? clientReadPlatformService.retrieveUserClients(userId) : null);
             }
+            authenticatedUserData.setFirstTimeLoginRemaining(principal.isFirstTimeLoginRemaining());
 
         }
 

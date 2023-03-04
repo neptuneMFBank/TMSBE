@@ -54,6 +54,9 @@ public class AuthenticatedOauthUserData {
     private final boolean shouldRenewPassword;
 
     @SuppressWarnings("unused")
+    private Boolean firstTimeLoginRemaining;
+
+    @SuppressWarnings("unused")
     private final boolean isTwoFactorAuthenticationRequired;
 
     public AuthenticatedOauthUserData(final String username, final Collection<String> permissions) {
@@ -107,4 +110,9 @@ public class AuthenticatedOauthUserData {
         this.shouldRenewPassword = true;
         this.isTwoFactorAuthenticationRequired = isTwoFactorAuthenticationRequired;
     }
+
+    public void setFirstTimeLoginRemaining(Boolean firstTimeLoginRemaining) {
+        this.firstTimeLoginRemaining = firstTimeLoginRemaining;
+    }
+
 }

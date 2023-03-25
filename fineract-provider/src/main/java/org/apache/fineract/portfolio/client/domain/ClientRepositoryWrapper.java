@@ -45,6 +45,11 @@ public class ClientRepositoryWrapper {
     }
 
     @Transactional(readOnly = true)
+    public Client findByMobileNoOrEmailAddress(String info) {
+        return this.repository.findByMobileNoOrEmailAddress(info, info);
+    }
+
+    @Transactional(readOnly = true)
     public Client findByMobileNo(String mobileNo) {
         return this.repository.findByMobileNo(mobileNo);
     }

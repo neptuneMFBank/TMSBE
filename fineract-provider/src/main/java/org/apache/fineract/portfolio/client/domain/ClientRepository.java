@@ -30,6 +30,8 @@ interface ClientRepository extends JpaRepository<Client, Long>, JpaSpecification
     @Query(FIND_CLIENT_BY_ACCOUNT_NUMBER)
     Client getClientByAccountNumber(@Param("accountNumber") String accountNumber);
 
+    Client findByMobileNoOrEmailAddress(String mobileNo, String emailAddress);
+
     Client findByMobileNo(String mobileNo);
 
     Client findByEmailAddress(String emailAddress);

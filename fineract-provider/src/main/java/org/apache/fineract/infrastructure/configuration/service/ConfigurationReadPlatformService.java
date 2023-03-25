@@ -27,6 +27,8 @@ public interface ConfigurationReadPlatformService {
 
     GlobalConfigurationPropertyData retrieveGlobalConfiguration(String name);
 
+    GlobalConfigurationPropertyData retrieveGlobalConfigurationX(String name);
+
     GlobalConfigurationData retrieveGlobalConfiguration(boolean survey);
 
 }

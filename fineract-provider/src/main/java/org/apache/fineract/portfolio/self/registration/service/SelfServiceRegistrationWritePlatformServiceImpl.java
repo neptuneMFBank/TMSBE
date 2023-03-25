@@ -27,6 +27,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,10 +36,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.persistence.PersistenceException;
+import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormat;
+import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
+import org.apache.fineract.infrastructure.accountnumberformat.domain.EntityAccountType;
 import org.apache.fineract.infrastructure.campaigns.sms.data.SmsProviderData;
 import org.apache.fineract.infrastructure.campaigns.sms.domain.SmsCampaign;
 import org.apache.fineract.infrastructure.campaigns.sms.service.SmsCampaignDropdownReadPlatformService;
@@ -50,14 +55,18 @@ import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidati
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.GmailBackedPlatformEmailService;
+import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
+import org.apache.fineract.infrastructure.security.service.RandomPasswordGenerator;
 import org.apache.fineract.infrastructure.sms.domain.SmsMessage;
 import org.apache.fineract.infrastructure.sms.domain.SmsMessageRepository;
 import org.apache.fineract.infrastructure.sms.domain.SmsMessageStatusType;
 import org.apache.fineract.infrastructure.sms.scheduler.SmsMessageScheduledJobService;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.portfolio.client.data.ClientData;
+import org.apache.fineract.portfolio.client.domain.AccountNumberGenerator;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
+import org.apache.fineract.portfolio.client.domain.ClientStatus;
 import org.apache.fineract.portfolio.client.domain.LegalForm;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
 import org.apache.fineract.portfolio.group.domain.Group;
@@ -79,8 +88,12 @@ import org.apache.fineract.useradministration.service.AppUserReadPlatformService
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -109,10 +122,14 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
     final AppUserClientMappingRepository appUserClientMappingRepository;
     private final Long savingsProductId;
     private final Long officeId;
+    private final JdbcTemplate jdbcTemplate;
+    private final DataSource dataSource;
+    private final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository;
+    private final AccountNumberGenerator accountNumberGenerator;
 
     @Autowired
-    public SelfServiceRegistrationWritePlatformServiceImpl(final SelfServiceRegistrationRepository selfServiceRegistrationRepository,
-            final FromJsonHelper fromApiJsonHelper,
+    public SelfServiceRegistrationWritePlatformServiceImpl(final RoutingDataSource dataSource,
+            final SelfServiceRegistrationRepository selfServiceRegistrationRepository, final FromJsonHelper fromApiJsonHelper,
             final SelfServiceRegistrationReadPlatformService selfServiceRegistrationReadPlatformService,
             final ClientRepositoryWrapper clientRepository, final PasswordValidationPolicyRepository passwordValidationPolicy,
             final UserDomainService userDomainService, final GmailBackedPlatformEmailService gmailBackedPlatformEmailService,
@@ -120,6 +137,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
             final SmsCampaignDropdownReadPlatformService smsCampaignDropdownReadPlatformService,
             final AppUserReadPlatformService appUserReadPlatformService, final RoleRepository roleRepository,
             final AppUserClientMappingRepository appUserClientMappingRepository, final ApplicationContext context,
+            final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final AccountNumberGenerator accountNumberGenerator,
             final SelfServiceRegistrationCommandFromApiJsonDeserializer selfServiceRegistrationCommandFromApiJsonDeserializer) {
         this.selfServiceRegistrationRepository = selfServiceRegistrationRepository;
         this.fromApiJsonHelper = fromApiJsonHelper;
@@ -138,6 +156,31 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         this.savingsProductId = Long.valueOf(environment.getProperty(SAVINGS_PRODUCT_ID));
         this.officeId = Long.valueOf(environment.getProperty(OFFICE_ID));
         this.appUserClientMappingRepository = appUserClientMappingRepository;
+        this.dataSource = dataSource;
+        this.jdbcTemplate = new JdbcTemplate(this.dataSource);
+        this.accountNumberFormatRepository = accountNumberFormatRepository;
+        this.accountNumberGenerator = accountNumberGenerator;
+    }
+
+    private String deriveDisplayName(String firstname, String lastname, String fullname, Integer legalForm) {
+
+        StringBuilder nameBuilder = new StringBuilder();
+        if (legalForm == null || LegalForm.fromInt(legalForm).isPerson()) {
+            if (StringUtils.isNotBlank(firstname)) {
+                nameBuilder.append(firstname).append(' ');
+            }
+
+            if (StringUtils.isNotBlank(lastname)) {
+                nameBuilder.append(lastname);
+            }
+
+        } else if (LegalForm.fromInt(legalForm).isEntity()) {
+            if (StringUtils.isNotBlank(fullname)) {
+                nameBuilder = new StringBuilder(fullname);
+            }
+        }
+
+        return nameBuilder.toString();
     }
 
     @SuppressWarnings("unchecked")
@@ -161,18 +204,90 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
 
         String authenticationToken = randomAuthorizationTokenGeneration();
         String password = authenticationToken;
-        Client client = Client.createInstance(savingsProductId, LegalForm.PERSON.getValue(), mobileNumber, email, firstName, lastName);
-        this.clientRepository.saveAndFlush(client);
-        SelfServiceRegistration selfServiceRegistration = SelfServiceRegistration.instance(client, client.getAccountNumber(), firstName,
-                lastName, mobileNumber, email, SelfServiceApiConstants.bothModeParamName, email, password);
-        this.selfServiceRegistrationRepository.saveAndFlush(selfServiceRegistration);
+
+        // create client
+        Long clientId;
+        try {
+            final String accountNumber = new RandomPasswordGenerator(19).generate();
+
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+
+            String clientSql = "INSERT INTO m_client  (default_savings_product, legal_form_enum, office_id, mobile_no, email_address, firstname, lastname, created_by, created_on_utc, account_no, status_enum, display_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?)";
+            // clientId = this.jdbcTemplate.update(clientSql, savingsProductId, LegalForm.PERSON.getValue(),
+            // mobileNumber,
+            // email, firstName, lastName);
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(clientSql, PreparedStatement.RETURN_GENERATED_KEYS);
+                ps.setLong(1, savingsProductId);
+                ps.setInt(2, LegalForm.PERSON.getValue());
+                ps.setLong(3, officeId);
+                ps.setString(4, mobileNumber);
+                ps.setString(5, email);
+                ps.setString(6, firstName);
+                ps.setString(7, lastName);
+                ps.setInt(8, 1);
+                ps.setString(9, accountNumber);
+                ps.setInt(10, ClientStatus.PENDING.getValue());
+                ps.setString(11, deriveDisplayName(firstName, lastName, null, LegalForm.PERSON.getValue()));
+                return ps;
+            }, keyHolder);
+
+            clientId = keyHolder.getKey() == null ? null : keyHolder.getKey().longValue();
+
+        } catch (DataAccessException e) {
+            log.warn("Customer already exists: {}", e);
+            throw new PlatformDataIntegrityException("error.msg.customer.validate.mode",
+                    "Customer information already exist, use login or forgt password.");
+        }
+        // Client client = Client.createInstance(savingsProductId, LegalForm.PERSON.getValue(), mobileNumber, email,
+        // firstName, lastName);
+        // this.clientRepository.saveAndFlush(client);
+        Client client = this.clientRepository.findOneWithNotFoundDetection(clientId);
+
+        // generate accountNumber and update client
+        AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.CLIENT);
+        String accountNumber = accountNumberGenerator.generateX(client, accountNumberFormat);
+        String clientUpdateSql = "UPDATE m_client SET account_no=? WHERE id=?";
+        jdbcTemplate.update(clientUpdateSql, accountNumber, clientId);
+
+        client = this.clientRepository.findOneWithNotFoundDetection(clientId);
+        log.info("client email: {}", client.emailAddress());
+        log.info("client getAccountNumber: {}", client.getAccountNumber());
+
+        // SelfServiceRegistration selfServiceRegistration = SelfServiceRegistration.instance(client,
+        // client.getAccountNumber(), firstName,
+        // lastName, mobileNumber, email, SelfServiceApiConstants.bothModeParamName, email, password);
+        // this.selfServiceRegistrationRepository.saveAndFlush(selfServiceRegistration);
+        KeyHolder keyHolderSelf = new GeneratedKeyHolder();
+        String clientSqlSelf = "INSERT INTO request_audit_table  (client_id, account_number, firstname, lastname, mobile_number, email, authentication_token, username, password, created_date) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(clientSqlSelf, PreparedStatement.RETURN_GENERATED_KEYS);
+            ps.setLong(1, clientId);
+            ps.setString(2, accountNumber);
+            ps.setString(3, firstName);
+            ps.setString(4, lastName);
+            ps.setString(5, mobileNumber);
+            ps.setString(6, email);
+            ps.setString(7, SelfServiceApiConstants.bothModeParamName);
+            ps.setString(8, email);
+            ps.setString(9, password);
+            return ps;
+        }, keyHolderSelf);
+        Long selfClientId = keyHolderSelf.getKey().longValue();
+
+        SelfServiceRegistration selfServiceRegistration = this.selfServiceRegistrationRepository.findById(selfClientId)
+                .orElseThrow(() -> new SelfServiceRegistrationNotFoundException("Self service not available."));
+
         final JsonObject createUserObject = new JsonObject();
-        createUserObject.addProperty(SelfServiceApiConstants.requestIdParamName, selfServiceRegistration.getId());
+        // createUserObject.addProperty(SelfServiceApiConstants.requestIdParamName, selfServiceRegistration.getId());
+        createUserObject.addProperty(SelfServiceApiConstants.requestIdParamName, selfClientId);
         createUserObject.addProperty(SelfServiceApiConstants.authenticationTokenParamName,
                 selfServiceRegistration.getAuthenticationToken());
         createCustomer(createUserObject.toString());
         sendAuthorizationToken(selfServiceRegistration.getClient(), selfServiceRegistration.getPassword(),
-                selfServiceRegistration.getEmail(), selfServiceRegistration.getMobileNumber(), selfServiceRegistration.getFirstName());
+                selfServiceRegistration.getEmail(), selfServiceRegistration.getMobileNumber(), selfServiceRegistration.getFirstName(),
+                "Onboarding");
         final ApiResponseMessage apiResponseMessage = new ApiResponseMessage(HttpStatus.CREATED.value(),
                 SelfServiceApiConstants.createRequestSuccessMessage, selfServiceRegistration.getId(), null);
         return apiResponseMessage;
@@ -196,7 +311,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         }
 
         sendAuthorizationToken(selfServiceRegistration.getClient(), selfServiceRegistration.getPassword(),
-                selfServiceRegistration.getEmail(), selfServiceRegistration.getMobileNumber(), selfServiceRegistration.getFirstName());
+                selfServiceRegistration.getEmail(), selfServiceRegistration.getMobileNumber(), selfServiceRegistration.getFirstName(),
+                "Onboarding-Resent");
 
         final ApiResponseMessage apiResponseMessage = new ApiResponseMessage(HttpStatus.OK.value(),
                 SelfServiceApiConstants.resendRequestSuccessMessage, selfServiceRegistration.getId(), null);
@@ -221,20 +337,25 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         if (isEmailAuthenticationMode) {
             // check email
             client = this.clientRepository.findByEmailAddress(value);
-            apiResponseMessage.setStatus(HttpStatus.OK.value());
-            apiResponseMessage.setMessage("Record found");
+            if (ObjectUtils.isNotEmpty(client)) {
+                apiResponseMessage.setStatus(HttpStatus.OK.value());
+                apiResponseMessage.setMessage("Record found");
+
+            }
         } else if (isMobileAuthenticationMode) {
             // check mobile
             client = this.clientRepository.findByMobileNo(value);
-            apiResponseMessage.setStatus(HttpStatus.OK.value());
-            apiResponseMessage.setMessage("Record found");
+            if (ObjectUtils.isNotEmpty(client)) {
+                apiResponseMessage.setStatus(HttpStatus.OK.value());
+                apiResponseMessage.setMessage("Record found");
+            }
         } else {
             throw new PlatformDataIntegrityException("error.msg.customer.validate.mode", "Validation mode not supported");
         }
         if (ObjectUtils.isNotEmpty(client)) {
             clientData = ClientData.lookup(client.getId(), client.getDisplayName(), client.getMiddlename(), client.mobileNo(),
                     client.emailAddress(), client.getLastname());
-            apiResponseMessage.setData(clientData);
+            // apiResponseMessage.setData(clientData);
         }
 
         return apiResponseMessage;
@@ -268,7 +389,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
                 String password = authenticationToken;
                 appUser.setPassword(password);
                 this.userDomainService.createCustomer(appUser, true);
-                sendAuthorizationToken(client, password, client.emailAddress(), client.mobileNo(), client.getFirstname());
+                sendAuthorizationToken(client, password, client.emailAddress(), client.mobileNo(), client.getFirstname(), "Reset Password");
             }
         }
 
@@ -355,9 +476,9 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
     }
 
     public void sendAuthorizationToken(final Client client, final String password, final String email, final String mobile,
-            final String firstname) {
+            final String firstname, final String appendSubject) {
         if (StringUtils.isNotBlank(email)) {
-            final String subject = "Hello " + firstname + ",";
+            final String subject = "Hello " + firstname + "[" + appendSubject + "],";
             final String body = "Kindly use your registered email or phone number to login \n Password: " + password + "\n"
                     + "You will be required to change your password on first login.\n" + "Thanks for choosing.";
 
@@ -366,25 +487,30 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
 
         }
         if (StringUtils.isNotBlank(mobile)) {
-            Collection<SmsProviderData> smsProviders = this.smsCampaignDropdownReadPlatformService.retrieveSmsProviders();
-            if (smsProviders.isEmpty()) {
-                log.warn("Mobile sevice provider is down or not available.");
-                // throw new PlatformDataIntegrityException("error.msg.mobile.service.provider.not.available",
-                // "Mobile service provider not available.");
+            try {
+                log.info("sms check 1");
+                Collection<SmsProviderData> smsProviders = this.smsCampaignDropdownReadPlatformService.retrieveSmsProviders();
+                log.info("sms check 2");
+                if (smsProviders.isEmpty()) {
+                    log.warn("Mobile sevice provider is down or not available.");
+                    // throw new PlatformDataIntegrityException("error.msg.mobile.service.provider.not.available",
+                    // "Mobile service provider not available.");
+                }
+                Long providerId = new ArrayList<>(smsProviders).get(0).getId();
+                final String message = "Hi  " + firstname + "," + "\n" + "Kindly use your registered email or phone number to login \n"
+                        + "\n Password: " + password + "\nYou will be required to change your password on first login.";
+                String externalId = null;
+                Group group = null;
+                Staff staff = null;
+                SmsCampaign smsCampaign = null;
+                boolean isNotification = false;
+                SmsMessage smsMessage = SmsMessage.instance(externalId, group, client, staff, SmsMessageStatusType.PENDING, message, mobile,
+                        smsCampaign, isNotification);
+                this.smsMessageRepository.save(smsMessage);
+                this.smsMessageScheduledJobService.sendTriggeredMessage(new ArrayList<>(Arrays.asList(smsMessage)), providerId);
+            } catch (Exception e) {
+                log.warn("sms gateway not available: {}", e);
             }
-            Long providerId = new ArrayList<>(smsProviders).get(0).getId();
-            final String message = "Hi  " + firstname + "," + "\n" + "Kindly use your registered email or phone number to login \n"
-                    + "\n Password: " + password + "\nYou will be required to change your password on first login.";
-            String externalId = null;
-            Group group = null;
-            Staff staff = null;
-            SmsCampaign smsCampaign = null;
-            boolean isNotification = false;
-            SmsMessage smsMessage = SmsMessage.instance(externalId, group, client, staff, SmsMessageStatusType.PENDING, message, mobile,
-                    smsCampaign, isNotification);
-            this.smsMessageRepository.save(smsMessage);
-            this.smsMessageScheduledJobService.sendTriggeredMessage(new ArrayList<>(Arrays.asList(smsMessage)), providerId);
-
         }
     }
 
@@ -397,24 +523,28 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
     }
 
     private void sendAuthorizationMessage(SelfServiceRegistration selfServiceRegistration) {
-        Collection<SmsProviderData> smsProviders = this.smsCampaignDropdownReadPlatformService.retrieveSmsProviders();
-        if (smsProviders.isEmpty()) {
-            throw new PlatformDataIntegrityException("error.msg.mobile.service.provider.not.available",
-                    "Mobile service provider not available.");
+        try {
+            Collection<SmsProviderData> smsProviders = this.smsCampaignDropdownReadPlatformService.retrieveSmsProviders();
+            if (smsProviders.isEmpty()) {
+                throw new PlatformDataIntegrityException("error.msg.mobile.service.provider.not.available",
+                        "Mobile service provider not available.");
+            }
+            Long providerId = new ArrayList<>(smsProviders).get(0).getId();
+            final String message = "Hi  " + selfServiceRegistration.getFirstName() + "," + "\n"
+                    + "To create user, please use following details \n" + "Request Id : " + selfServiceRegistration.getId()
+                    + "\n Authentication Token : " + selfServiceRegistration.getAuthenticationToken();
+            String externalId = null;
+            Group group = null;
+            Staff staff = null;
+            SmsCampaign smsCampaign = null;
+            boolean isNotification = false;
+            SmsMessage smsMessage = SmsMessage.instance(externalId, group, selfServiceRegistration.getClient(), staff,
+                    SmsMessageStatusType.PENDING, message, selfServiceRegistration.getMobileNumber(), smsCampaign, isNotification);
+            this.smsMessageRepository.save(smsMessage);
+            this.smsMessageScheduledJobService.sendTriggeredMessage(new ArrayList<>(Arrays.asList(smsMessage)), providerId);
+        } catch (PlatformDataIntegrityException e) {
+            log.warn("sendAuthorizationMessage sms gateway not available: {}", e);
         }
-        Long providerId = new ArrayList<>(smsProviders).get(0).getId();
-        final String message = "Hi  " + selfServiceRegistration.getFirstName() + "," + "\n"
-                + "To create user, please use following details \n" + "Request Id : " + selfServiceRegistration.getId()
-                + "\n Authentication Token : " + selfServiceRegistration.getAuthenticationToken();
-        String externalId = null;
-        Group group = null;
-        Staff staff = null;
-        SmsCampaign smsCampaign = null;
-        boolean isNotification = false;
-        SmsMessage smsMessage = SmsMessage.instance(externalId, group, selfServiceRegistration.getClient(), staff,
-                SmsMessageStatusType.PENDING, message, selfServiceRegistration.getMobileNumber(), smsCampaign, isNotification);
-        this.smsMessageRepository.save(smsMessage);
-        this.smsMessageScheduledJobService.sendTriggeredMessage(new ArrayList<>(Arrays.asList(smsMessage)), providerId);
     }
 
     private void sendAuthorizationMail(SelfServiceRegistration selfServiceRegistration) {
@@ -507,6 +637,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
     }
 
     public AppUser createCustomer(String apiRequestBodyAsJson) {
+        log.info("createCustomer: {}", apiRequestBodyAsJson);
         JsonCommand command = null;
         String username = null;
         try {

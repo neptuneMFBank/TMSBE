@@ -40,4 +40,8 @@ public class AppUserRepositoryWrapper {
         }
         return user;
     }
+
+    public AppUser findOneWithNotFoundDetection(final Long id) {
+        return this.appUserRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+    }
 }

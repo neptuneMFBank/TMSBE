@@ -31,4 +31,8 @@ public class SelfServiceRegistrationNotFoundException extends AbstractPlatformRe
         super("error.msg.self.service.registration.not.found", "Self service registration not found with request id : " + requestId);
     }
 
+    public SelfServiceRegistrationNotFoundException(String msg) {
+        super("error.msg.self.service.registration.not.found", msg);
+    }
+
 }

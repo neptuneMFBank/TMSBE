@@ -18,12 +18,19 @@
  */
 package org.apache.fineract.useradministration.domain;
 
+import javax.persistence.PersistenceException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.service.PlatformEmailService;
 import org.apache.fineract.infrastructure.security.service.PlatformPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class JpaUserDomainService implements UserDomainService {
 
@@ -61,19 +68,40 @@ public class JpaUserDomainService implements UserDomainService {
     @Transactional
     @Override
     public void createCustomer(final AppUser appUser, final boolean firstTimeLoginRemaining) {
+        try {
+            generateKeyUsedForPasswordSalting(appUser);
 
-        generateKeyUsedForPasswordSalting(appUser);
+            final String encodePassword = this.applicationPasswordEncoder.encode(appUser);
+            appUser.updatePassword(encodePassword, firstTimeLoginRemaining);
 
-        final String unencodedPassword = appUser.getPassword();
-
-        final String encodePassword = this.applicationPasswordEncoder.encode(appUser);
-        appUser.updatePassword(encodePassword, firstTimeLoginRemaining);
-
-        this.userRepository.saveAndFlush(appUser);
-
+            this.userRepository.saveAndFlush(appUser);
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(dve.getMostSpecificCause(), dve);
+        } catch (final PersistenceException dve) {
+            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+            handleDataIntegrityIssues(throwable, dve);
+        }
     }
 
     private void generateKeyUsedForPasswordSalting(final AppUser appUser) {
         this.userRepository.save(appUser);
+    }
+
+    /*
+     * Guaranteed to throw an exception no matter what the data integrity issue is.
+     */
+    private void handleDataIntegrityIssues(final Throwable realCause, final Exception dve) {
+        logAsErrorUnexpectedDataIntegrityException(dve);
+
+        if (realCause.getMessage().contains("Duplicate")) {
+            throw new PlatformDataIntegrityException("error.msg.client.duplicate", "Client already exists");
+        }
+
+        throw new PlatformDataIntegrityException("error.msg.client.unknown.data.integrity.issue",
+                "Unknown data integrity issue with resource.");
+    }
+
+    private void logAsErrorUnexpectedDataIntegrityException(final Exception dve) {
+        log.error("Error occured.", dve);
     }
 }

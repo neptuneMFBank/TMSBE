@@ -71,10 +71,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/*/echo").permitAll() //
                 .antMatchers(HttpMethod.POST, "/api/*/authentication").permitAll() //
                 .antMatchers(HttpMethod.POST, "/api/*/self/authentication").permitAll() //
+                .antMatchers(HttpMethod.POST, "/api/*/self/authentication/login").permitAll() //
                 .antMatchers(HttpMethod.POST, "/api/*/self/registration").permitAll() //
                 .antMatchers(HttpMethod.POST, "/api/*/self/registration/user").permitAll() //
+                .antMatchers(HttpMethod.POST, "/api/*/self/registration/validate").permitAll() //
                 .antMatchers(HttpMethod.POST, "/api/*/self/registration/getstarted").permitAll() //
                 .antMatchers(HttpMethod.POST, "/api/*/self/registration/getstarted/resend").permitAll() //
+                .antMatchers(HttpMethod.POST, "/api/*/self/registration/reset-password").permitAll() //
                 .antMatchers(HttpMethod.PUT, "/api/*/instance-mode").permitAll() //
                 .antMatchers(HttpMethod.POST, "/api/*/twofactor/validate").fullyAuthenticated() //
                 .antMatchers("/api/*/twofactor").fullyAuthenticated() //

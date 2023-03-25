@@ -72,6 +72,18 @@ public class AccountNumberGenerator {
         this.savingsAccountRepository = savingsAccountRepository;
     }
 
+    public String generateX(Client client, AccountNumberFormat accountNumberFormat) {
+        Map<String, String> propertyMap = new HashMap<>();
+        propertyMap.put(ID, client.getId().toString());
+        propertyMap.put(OFFICE_NAME, client.getOffice().getName());
+        propertyMap.put(ENTITY_TYPE, "client");
+        CodeValue clientType = client.clientType();
+        if (clientType != null) {
+            propertyMap.put(CLIENT_TYPE, clientType.label());
+        }
+        return generateAccountNumberX(propertyMap, accountNumberFormat);
+    }
+
     public String generate(Client client, AccountNumberFormat accountNumberFormat) {
         Map<String, String> propertyMap = new HashMap<>();
         propertyMap.put(ID, client.getId().toString());
@@ -107,6 +119,86 @@ public class AccountNumberGenerator {
         propertyMap.put(ID, shareaccount.getId().toString());
         propertyMap.put(SHARE_PRODUCT_SHORT_NAME, shareaccount.getShareProduct().getShortName());
         return generateAccountNumber(propertyMap, accountNumberFormat);
+    }
+
+    private String generateAccountNumberX(Map<String, String> propertyMap, AccountNumberFormat accountNumberFormat) {
+        int accountMaxLength = AccountNumberGenerator.maxLength;
+        String accountNumber = StringUtils.leftPad(propertyMap.get(ID), accountMaxLength, '0');
+
+        // find if the custom length is defined
+        final GlobalConfigurationPropertyData customLength = this.configurationReadPlatformService
+                .retrieveGlobalConfigurationX("custom-account-number-length");
+
+        if (customLength.isEnabled()) {
+            // if it is enabled, and has the value, get it from the repository.
+            if (customLength.getValue() != null) {
+                accountMaxLength = customLength.getValue().intValue();
+            }
+        }
+
+        final GlobalConfigurationPropertyData randomAccountNumber = this.configurationReadPlatformService
+                .retrieveGlobalConfigurationX("random-account-number");
+
+        if (randomAccountNumber.isEnabled()) {
+            accountNumber = randomNumberGenerator(accountMaxLength, propertyMap);
+        }
+
+        accountNumber = StringUtils.leftPad(accountNumber, accountMaxLength, '0');
+        if (accountNumberFormat != null && accountNumberFormat.getPrefixEnum() != null) {
+            AccountNumberPrefixType accountNumberPrefixType = AccountNumberPrefixType.fromInt(accountNumberFormat.getPrefixEnum());
+            String prefix = null;
+            switch (accountNumberPrefixType) {
+                case CLIENT_TYPE:
+                    prefix = propertyMap.get(CLIENT_TYPE);
+                break;
+
+                case OFFICE_NAME:
+                    prefix = propertyMap.get(OFFICE_NAME);
+                break;
+
+                case LOAN_PRODUCT_SHORT_NAME:
+                    prefix = propertyMap.get(LOAN_PRODUCT_SHORT_NAME);
+                break;
+
+                case SAVINGS_PRODUCT_SHORT_NAME:
+                    prefix = propertyMap.get(SAVINGS_PRODUCT_SHORT_NAME);
+                break;
+
+                case PREFIX_SHORT_NAME:
+                    generatePrefix(propertyMap, propertyMap.get(ID), accountMaxLength, accountNumberFormat);
+                    prefix = propertyMap.get(PREFIX_SHORT_NAME);
+                break;
+            }
+
+            // FINERACT-590
+            // Because account_no is limited to 20 chars, we can only use the
+            // first 10 chars of prefix - trim if necessary
+            if (prefix != null) {
+                prefix = prefix.substring(0, Math.min(prefix.length(), 10));
+            }
+            if (accountNumberPrefixType.getValue().equals(AccountNumberPrefixType.PREFIX_SHORT_NAME.getValue())) {
+                Integer prefixLength = prefix.length();
+
+                if (randomAccountNumber.isEnabled()) {
+                    accountNumber = accountNumber.substring(prefixLength);
+                } else {
+                    Integer numberLength = accountMaxLength - prefixLength;
+                    accountNumber = StringUtils.leftPad(propertyMap.get(ID), numberLength, '0');
+                }
+            } else {
+                accountNumber = StringUtils.leftPad(accountNumber, Integer.valueOf(propertyMap.get(ID).length()), '0');
+            }
+
+            accountNumber = StringUtils.overlay(accountNumber, prefix, 0, 0);
+        }
+
+        if (randomAccountNumber.isEnabled()) { // calling the main function itself until new randomNo.
+            Boolean randomNumberConflict = checkAccountNumberConflict(propertyMap, accountNumberFormat, accountNumber);
+            if (randomNumberConflict) {
+                accountNumber = generateAccountNumber(propertyMap, accountNumberFormat);
+            }
+        }
+        return accountNumber;
     }
 
     private String generateAccountNumber(Map<String, String> propertyMap, AccountNumberFormat accountNumberFormat) {

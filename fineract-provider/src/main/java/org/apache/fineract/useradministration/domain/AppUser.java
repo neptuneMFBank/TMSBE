@@ -726,6 +726,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         if (clients != null && clients.size() > 0) {
             newAppUserClientMappings = new HashSet<>();
             for (Client client : clients) {
+                // log.info("createAppUserClientMappings: {}", client.getId());
                 newAppUserClientMappings.add(new AppUserClientMapping(this, client));
             }
         }

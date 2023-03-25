@@ -50,7 +50,7 @@ public class SelfServiceRegistrationReadPlatformServiceImpl implements SelfServi
 
     @Override
     public boolean isClientExist(String email, String mobileNumber) {
-        String sql = "select count(*) from m_client where email_address = ? and mobile_no = ? ";
+        String sql = "select count(*) from m_client where email_address = ? or mobile_no = ? ";
         Object[] params = new Object[] { email, mobileNumber };
 
         Integer count = this.jdbcTemplate.queryForObject(sql, Integer.class, params);

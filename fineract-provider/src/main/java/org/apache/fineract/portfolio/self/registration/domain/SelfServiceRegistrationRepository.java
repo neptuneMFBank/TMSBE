@@ -33,4 +33,8 @@ public interface SelfServiceRegistrationRepository
     SelfServiceRegistration getRequestByIdAndAuthenticationToken(@Param("id") Long id,
             @Param("authenticationToken") String authenticationToken);
 
+    boolean existsByUsername(@Param("username") String username);
+
+    void deleteByUsername(@Param("username") String username);
+
 }

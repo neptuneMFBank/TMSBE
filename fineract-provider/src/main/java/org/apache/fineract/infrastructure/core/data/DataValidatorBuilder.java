@@ -60,7 +60,6 @@ public class DataValidatorBuilder {
      * @param dataValidationErrors
      *            an existing list of {@link ApiParameterError} to add new validation errors to
      */
-
     public DataValidatorBuilder(final List<ApiParameterError> dataValidationErrors) {
         this.dataValidationErrors = dataValidationErrors;
     }
@@ -175,7 +174,9 @@ public class DataValidatorBuilder {
         return this;
     }
 
-    /*** FIXME: Vishwas, why does this method have a parameter? Seems wrong ***/
+    /**
+     * * FIXME: Vishwas, why does this method have a parameter? Seems wrong **
+     */
     /*
      * This method is not meant for validation, if you have mandatory boolean param and if it has invalid value or value
      * not passed then call this method, this method is always used with input as false
@@ -225,6 +226,36 @@ public class DataValidatorBuilder {
             validationErrorCode.append(".cannot.be.blank");
             final StringBuilder defaultEnglishMessage = new StringBuilder("The parameter `").append(realParameterName)
                     .append("` is mandatory.");
+            final ApiParameterError error = ApiParameterError.parameterError(validationErrorCode.toString(),
+                    defaultEnglishMessage.toString(), realParameterName, this.arrayIndex);
+            this.dataValidationErrors.add(error);
+        }
+        return this;
+    }
+
+    public DataValidatorBuilder isValidEmail() {
+        if (this.value == null && this.ignoreNullValue) {
+            return this;
+        }
+
+        final String EMAIL_REGEX = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
+        final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+
+        // Check the whole email address structure
+        Matcher emailMatcher = EMAIL_PATTERN.matcher(this.value.toString());
+        if (this.value.toString().endsWith(".") || !emailMatcher.matches()) {
+            String realParameterName = this.parameter;
+            final StringBuilder validationErrorCode = new StringBuilder("validation.msg.").append(this.resource).append(".")
+                    .append(this.parameter);
+            if (this.arrayIndex != null && StringUtils.isNotBlank(this.arrayPart)) {
+                validationErrorCode.append(".").append(this.arrayPart);
+                realParameterName = new StringBuilder(this.parameter).append('[').append(this.arrayIndex).append("][")
+                        .append(this.arrayPart).append(']').toString();
+            }
+
+            validationErrorCode.append(".invalid");
+            final StringBuilder defaultEnglishMessage = new StringBuilder("The parameter `").append(realParameterName)
+                    .append("` is invalid.");
             final ApiParameterError error = ApiParameterError.parameterError(validationErrorCode.toString(),
                     defaultEnglishMessage.toString(), realParameterName, this.arrayIndex);
             this.dataValidationErrors.add(error);

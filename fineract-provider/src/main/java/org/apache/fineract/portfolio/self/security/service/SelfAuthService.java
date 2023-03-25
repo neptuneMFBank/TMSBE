@@ -16,27 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.simplifytech.data;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import java.io.Serializable;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+package org.apache.fineract.portfolio.self.security.service;
 
 /**
  *
- * @author Olakunle.Thompson
- * @param <T>
+ * @author Gasper Thompson
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ApiResponseMessage<T extends Serializable> implements Serializable {
+public interface SelfAuthService {
 
-    private int status;
-    private String message;
-    private T data;
-    private String uri;
+    String authenticate(String apiRequestBodyAsJson);
 }

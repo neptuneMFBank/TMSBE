@@ -19,6 +19,8 @@
 package org.apache.fineract.infrastructure.core.domain;
 
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+@Slf4j
 public class AuditorAwareImpl implements AuditorAware<Long> {
 
     @Autowired
@@ -39,7 +42,13 @@ public class AuditorAwareImpl implements AuditorAware<Long> {
         if (securityContext != null) {
             final Authentication authentication = securityContext.getAuthentication();
             if (authentication != null) {
-                currentUserId = Optional.ofNullable(((AppUser) authentication.getPrincipal()).getId());
+                Object object = authentication.getPrincipal();
+                // log.info("object: {}", object.toString());
+                if (StringUtils.equalsIgnoreCase("anonymousUser", object.toString())) {
+                    currentUserId = retrieveSuperUser();
+                } else {
+                    currentUserId = Optional.ofNullable(((AppUser) authentication.getPrincipal()).getId());
+                }
             } else {
                 currentUserId = retrieveSuperUser();
             }

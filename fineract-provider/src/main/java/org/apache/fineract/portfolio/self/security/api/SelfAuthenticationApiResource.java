@@ -30,6 +30,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.fineract.infrastructure.security.api.AuthenticationApiResource;
+import org.apache.fineract.portfolio.self.security.service.SelfAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Scope;
@@ -43,10 +44,12 @@ import org.springframework.stereotype.Component;
 public class SelfAuthenticationApiResource {
 
     private final AuthenticationApiResource authenticationApiResource;
+    private final SelfAuthService selfAuthService;
 
     @Autowired
-    public SelfAuthenticationApiResource(final AuthenticationApiResource authenticationApiResource) {
+    public SelfAuthenticationApiResource(final AuthenticationApiResource authenticationApiResource, final SelfAuthService selfAuthService) {
         this.authenticationApiResource = authenticationApiResource;
+        this.selfAuthService = selfAuthService;
     }
 
     @POST
@@ -58,5 +61,17 @@ public class SelfAuthenticationApiResource {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = SelfAuthenticationApiResourceSwagger.PostSelfAuthenticationResponse.class))) })
     public String authenticate(final String apiRequestBodyAsJson) {
         return this.authenticationApiResource.authenticate(apiRequestBodyAsJson, true);
+    }
+
+    @POST
+    @Path("/login")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Verify authentication", description = "Authenticates the credentials provided and returns the set roles and permissions allowed.\n\n"
+            + "Please visit this link for more info - https://fineract.apache.org/legacy-docs/apiLive.htm#selfbasicauth")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = SelfAuthenticationApiResourceSwagger.PostSelfAuthenticationResponse.class))) })
+    public String authenticateLogin(final String apiRequestBodyAsJson) {
+        return this.selfAuthService.authenticate(apiRequestBodyAsJson);
     }
 }

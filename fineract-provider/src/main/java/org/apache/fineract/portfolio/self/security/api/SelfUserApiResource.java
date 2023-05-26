@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.fineract.portfolio.self.security.api;
 
 import com.google.gson.reflect.TypeToken;
@@ -32,15 +31,25 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.self.client.service.AppuserClientMapperReadService;
 import org.apache.fineract.useradministration.api.UsersApiResource;
 import org.apache.fineract.useradministration.domain.AppUser;
+import org.apache.fineract.useradministration.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,11 +63,12 @@ public class SelfUserApiResource {
     private final PlatformSecurityContext context;
     private final FromJsonHelper fromApiJsonHelper;
     private final Set<String> supportedParameters = new HashSet<>(Arrays.asList("password", "repeatPassword"));
+    private final AppuserClientMapperReadService appUserClientMapperReadService;
 
     @Autowired
     public SelfUserApiResource(final UsersApiResource usersApiResource, final PlatformSecurityContext context,
-            final FromJsonHelper fromApiJsonHelper) {
-
+            final AppuserClientMapperReadService appUserClientMapperReadService, final FromJsonHelper fromApiJsonHelper) {
+        this.appUserClientMapperReadService = appUserClientMapperReadService;
         this.usersApiResource = usersApiResource;
         this.context = context;
         this.fromApiJsonHelper = fromApiJsonHelper;
@@ -81,4 +91,25 @@ public class SelfUserApiResource {
         return this.usersApiResource.update(appUser.getId(), apiRequestBodyAsJson);
     }
 
+    @GET
+    @Path("{userId}")
+    @Operation(summary = "Retrieve a User", description = "This API can be used by Self Service user to retrieve their own user information.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = SelfUserApiResourceSwagger.GetUsersUserIdResponse.class))) })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String retrieveOne(@PathParam("userId") @Parameter(description = "userId") final Long userId, @Context final UriInfo uriInfo) {
+        validateAppuserUserMapping(userId);
+
+        return this.usersApiResource.retrieveOne(userId, uriInfo);
+
+    }
+
+    private void validateAppuserUserMapping(final Long userId) {
+        final AppUser user = this.context.authenticatedUser();
+        final boolean mappedClientId = Objects.equals(user.getId(), userId);
+        if (!mappedClientId) {
+            throw new UserNotFoundException(userId);
+        }
+    }
 }

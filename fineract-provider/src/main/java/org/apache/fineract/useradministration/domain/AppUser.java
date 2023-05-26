@@ -247,7 +247,8 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
             if (command.isChangeInPasswordParameterNamed(passwordParamName, this.password, platformPasswordEncoder, getId())) {
                 final String passwordEncodedValue = command.passwordValueOfParameterNamed(passwordParamName, platformPasswordEncoder,
                         getId());
-                actualChanges.put(passwordEncodedParamName, passwordEncodedValue);
+                // actualChanges.put(passwordEncodedParamName, passwordEncodedValue);
+                actualChanges.put(passwordEncodedParamName, "passwordChanged");
                 updatePassword(passwordEncodedValue);
             }
         }

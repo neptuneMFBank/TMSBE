@@ -174,7 +174,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
                 nameBuilder.append(lastname);
             }
 
-        } else if (LegalForm.fromInt(legalForm).isEntity()) {
+        } else if (LegalForm.fromInt(legalForm).isEntity() || LegalForm.fromInt(legalForm).isVendor()) {
             if (StringUtils.isNotBlank(fullname)) {
                 nameBuilder = new StringBuilder(fullname);
             }

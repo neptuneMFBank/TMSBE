@@ -212,7 +212,7 @@ public final class ClientDataValidator {
         }
 
         final Integer legalFormId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(ClientApiConstants.legalFormIdParamName, element);
-        baseDataValidator.reset().parameter(ClientApiConstants.legalFormIdParamName).value(legalFormId).notNull().inMinMaxRange(1, 2);
+        baseDataValidator.reset().parameter(ClientApiConstants.legalFormIdParamName).value(legalFormId).notNull().inMinMaxRange(1, 37);
 
         if (this.fromApiJsonHelper.parameterExists(ClientApiConstants.datatables, element)) {
             final JsonArray datatables = this.fromApiJsonHelper.extractJsonArrayNamed(ClientApiConstants.datatables, element);
@@ -504,7 +504,7 @@ public final class ClientDataValidator {
             atLeastOneParameterPassedForUpdate = true;
             final Integer legalFormId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(ClientApiConstants.legalFormIdParamName,
                     element);
-            baseDataValidator.reset().parameter(ClientApiConstants.legalFormIdParamName).value(legalFormId).notNull().inMinMaxRange(1, 2);
+            baseDataValidator.reset().parameter(ClientApiConstants.legalFormIdParamName).value(legalFormId).notNull().inMinMaxRange(1, 37);
         }
 
         if (this.fromApiJsonHelper.parameterExists("isStaff", element)) {

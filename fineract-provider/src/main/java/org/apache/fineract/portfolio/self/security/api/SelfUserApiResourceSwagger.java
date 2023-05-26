@@ -27,6 +27,26 @@ final class SelfUserApiResourceSwagger {
 
     private SelfUserApiResourceSwagger() {}
 
+    @Schema(description = "GetUsersUserIdResponse")
+    public static final class GetUsersUserIdResponse {
+
+        @Schema(example = "1")
+        public Long id;
+        @Schema(example = "mifos")
+        public String username;
+        @Schema(example = "1")
+        public Long officeId;
+        @Schema(example = "Head Office")
+        public String officeName;
+        @Schema(example = "App")
+        public String firstname;
+        @Schema(example = "Administrator")
+        public String lastname;
+        @Schema(example = "demomfi@mifos.org")
+        public String email;
+
+    }
+
     @Schema(description = "PutSelfUserRequest")
     public static final class PutSelfUserRequest {
 

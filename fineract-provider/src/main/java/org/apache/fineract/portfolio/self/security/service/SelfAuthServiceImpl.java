@@ -36,8 +36,8 @@ import org.apache.fineract.useradministration.domain.AppUserClientMappingReposit
 import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 /**
  *
@@ -57,7 +57,8 @@ public class SelfAuthServiceImpl implements SelfAuthService {
     public SelfAuthServiceImpl(final AuthenticationApiResource authenticationApiResource, final FromJsonHelper fromJsonHelper,
             final ClientRepositoryWrapper clientRepositoryWrapper,
             final AppUserClientMappingRepositoryWrapper appUserClientMappingRepositoryWrapper,
-            final SelfServiceRegistrationRepository selfServiceRegistrationRepository, final AppUserRepositoryWrapper appUserRepositoryWrapper) {
+            final SelfServiceRegistrationRepository selfServiceRegistrationRepository,
+            final AppUserRepositoryWrapper appUserRepositoryWrapper) {
         this.authenticationApiResource = authenticationApiResource;
         this.fromJsonHelper = fromJsonHelper;
         this.clientRepositoryWrapper = clientRepositoryWrapper;
@@ -97,7 +98,8 @@ public class SelfAuthServiceImpl implements SelfAuthService {
         if (StringUtils.isNotBlank(emailAddress)) {
             final boolean isUsernameStillExistsInRegistrationLog = this.selfServiceRegistrationRepository.existsByUsername(emailAddress);
             if (isUsernameStillExistsInRegistrationLog) {
-                //delete audit registration logs for uniqueness to have dropOff of users who are yet to complete their onboarding
+                // delete audit registration logs for uniqueness to have dropOff of users who are yet to complete their
+                // onboarding
                 this.selfServiceRegistrationRepository.deleteByUsername(emailAddress);
             }
         }

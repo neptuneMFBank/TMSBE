@@ -38,6 +38,7 @@ public final class AppUserData {
     private final String lastname;
     private final String email;
     private final Boolean passwordNeverExpires;
+    private Boolean firstTimeLoginRemaining;
 
     // import fields
     private List<Long> roles;
@@ -170,6 +171,10 @@ public final class AppUserData {
 
     public boolean isSelfServiceUser() {
         return this.isSelfServiceUser == null ? false : this.isSelfServiceUser;
+    }
+
+    public void setFirstTimeLoginRemaining(Boolean firstTimeLoginRemaining) {
+        this.firstTimeLoginRemaining = firstTimeLoginRemaining;
     }
 
 }

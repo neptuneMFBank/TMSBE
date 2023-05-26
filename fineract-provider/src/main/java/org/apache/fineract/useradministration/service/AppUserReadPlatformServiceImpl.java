@@ -150,7 +150,7 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
             }
             retUser.setClients(clients);
         }
-
+        retUser.setFirstTimeLoginRemaining(user.isFirstTimeLoginRemaining());
         return retUser;
     }
 

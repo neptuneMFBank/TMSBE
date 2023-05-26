@@ -40,7 +40,10 @@ public enum GlobalEntityType {
                                                                                                             "recurringdeposits"), RECURRING_DEPOSIT_ACCOUNTS_TRANSACTIONS(
                                                                                                                     35,
                                                                                                                     "recurringdepositstransactions"), CLIENT(
-                                                                                                                            36, "client");
+                                                                                                                            36,
+                                                                                                                            "client"), CLIENTS_VENDOR(
+                                                                                                                                    37,
+                                                                                                                                    "clients.vendor");
 
     private final Integer value;
     private final String code;

@@ -591,7 +591,7 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom {
                     this.setLegalForm(legalForm.getValue());
                     if (legalForm.isPerson()) {
                         this.fullname = null;
-                    } else if (legalForm.isEntity()) {
+                    } else if (legalForm.isEntity() || legalForm.isVendor()) {
                         this.firstname = null;
                         this.lastname = null;
                         this.displayName = null;
@@ -737,7 +737,7 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom {
             if (StringUtils.isNotBlank(this.fullname)) {
                 nameBuilder = new StringBuilder(this.fullname);
             }
-        } else if (LegalForm.fromInt(legalForm).isEntity()) {
+        } else if (LegalForm.fromInt(legalForm).isEntity() || LegalForm.fromInt(legalForm).isVendor()) {
             if (StringUtils.isNotBlank(this.fullname)) {
                 nameBuilder = new StringBuilder(this.fullname);
             }

@@ -23,9 +23,7 @@ package org.apache.fineract.portfolio.client.domain;
  */
 public enum LegalForm {
 
-    PERSON(1, "legalFormType.person"),
-
-    ENTITY(2, "legalFormType.entity");
+    PERSON(1, "legalFormType.person"), ENTITY(2, "legalFormType.entity"), VENDOR(37, "legalFormType.vendor");
 
     private final Integer value;
     private final String code;
@@ -47,12 +45,9 @@ public enum LegalForm {
 
         LegalForm legalForm = null;
         switch (type) {
-            case 1:
-                legalForm = LegalForm.PERSON;
-            break;
-            case 2:
-                legalForm = LegalForm.ENTITY;
-            break;
+            case 1 -> legalForm = LegalForm.PERSON;
+            case 2 -> legalForm = LegalForm.ENTITY;
+            case 37 -> legalForm = LegalForm.VENDOR;
         }
         return legalForm;
     }
@@ -63,5 +58,9 @@ public enum LegalForm {
 
     public boolean isEntity() {
         return this.value.equals(LegalForm.ENTITY.getValue());
+    }
+
+    public boolean isVendor() {
+        return this.value.equals(LegalForm.VENDOR.getValue());
     }
 }

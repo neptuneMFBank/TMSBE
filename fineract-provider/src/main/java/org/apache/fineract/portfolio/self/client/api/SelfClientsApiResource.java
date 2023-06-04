@@ -33,6 +33,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -294,6 +295,19 @@ public class SelfClientsApiResource {
         validateAppuserClientsMapping(clientId);
 
         return this.clientApiResource.retrieveObligeeDetails(clientId, uriInfo);
+    }
+
+    @PUT
+    @Path("{clientId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @RequestBody(required = true, content = @Content(schema = @Schema(implementation = SelfClientsApiResourceSwagger.PutSelfClientsClientIdRequest.class)))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = SelfClientsApiResourceSwagger.PutSelfClientsClientIdResponse.class))) })
+    public String update(@Parameter(description = "clientId") @PathParam("clientId") final Long clientId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+        validateAppuserClientsMapping(clientId);
+        return this.clientApiResource.update(clientId, apiRequestBodyAsJson);
     }
 
 }

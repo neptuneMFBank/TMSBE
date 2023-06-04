@@ -26,7 +26,6 @@ import java.util.Set;
 /**
  * Created by Chirag Gupta on 12/21/17.
  */
-
 final class SelfClientsApiResourceSwagger {
 
     private SelfClientsApiResourceSwagger() {}
@@ -433,5 +432,23 @@ final class SelfClientsApiResourceSwagger {
         public LocalDate submittedOnDate;
         @Schema(example = "true")
         public Boolean reversed;
+    }
+
+    @Schema(description = "PutSelfClientsClientIdRequest")
+    public static final class PutSelfClientsClientIdRequest {
+
+        @Schema(example = "786444UUUYYH7")
+        public String externalId;
+    }
+
+    @Schema(description = "PutSelfClientsClientIdResponse")
+    public static final class PutSelfClientsClientIdResponse {
+
+        @Schema(example = "1")
+        public Integer officeId;
+        @Schema(example = "1")
+        public Integer clientId;
+        @Schema(example = "1")
+        public Integer resourceId;
     }
 }

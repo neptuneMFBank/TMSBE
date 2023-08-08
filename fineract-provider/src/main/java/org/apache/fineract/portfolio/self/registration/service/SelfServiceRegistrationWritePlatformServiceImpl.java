@@ -274,7 +274,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
             ps.setString(9, password);
             return ps;
         }, keyHolderSelf);
-        Long selfClientId = keyHolderSelf.getKey().longValue();
+        Long selfClientId = (Long) keyHolderSelf.getKey();
 
         SelfServiceRegistration selfServiceRegistration = this.selfServiceRegistrationRepository.findById(selfClientId)
                 .orElseThrow(() -> new SelfServiceRegistrationNotFoundException("Self service not available."));
@@ -407,7 +407,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
     @Override
     public SelfServiceRegistration createRegistrationRequest(String apiRequestBodyAsJson) {
         Gson gson = new Gson();
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, apiRequestBodyAsJson,
@@ -581,7 +582,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         String username = null;
         try {
             Gson gson = new Gson();
-            final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+            final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+            }.getType();
             final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
             final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, apiRequestBodyAsJson,
@@ -642,7 +644,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         String username = null;
         try {
             Gson gson = new Gson();
-            final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+            final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+            }.getType();
             final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
             final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, apiRequestBodyAsJson,

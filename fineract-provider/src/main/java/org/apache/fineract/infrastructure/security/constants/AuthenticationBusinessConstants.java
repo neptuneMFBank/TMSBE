@@ -32,7 +32,7 @@ public final class AuthenticationBusinessConstants {
     public static final String valueParamName = "value";
     public static final String authenticationModeParamName = "authenticationMode";
     public static final String bothModeParamName = "both";
-   
+
     public static final Set<String> VALIDATE_REQUEST_DATA_PARAMETERS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(authenticationModeParamName, valueParamName)));
 

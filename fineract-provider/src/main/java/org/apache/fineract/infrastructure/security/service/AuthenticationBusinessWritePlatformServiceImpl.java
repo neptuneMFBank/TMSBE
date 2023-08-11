@@ -18,7 +18,6 @@
  */
 package org.apache.fineract.infrastructure.security.service;
 
-
 import com.google.gson.JsonElement;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -63,9 +62,9 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
     private final AppUserRepositoryWrapper appUserRepositoryWrapper;
 
     @Autowired
-    public AuthenticationBusinessWritePlatformServiceImpl( final FromJsonHelper fromApiJsonHelper,
-            final UserDomainService userDomainService, final GmailBackedPlatformEmailService gmailBackedPlatformEmailService,
-            final SmsMessageRepository smsMessageRepository, SmsMessageScheduledJobService smsMessageScheduledJobService,
+    public AuthenticationBusinessWritePlatformServiceImpl(final FromJsonHelper fromApiJsonHelper, final UserDomainService userDomainService,
+            final GmailBackedPlatformEmailService gmailBackedPlatformEmailService, final SmsMessageRepository smsMessageRepository,
+            SmsMessageScheduledJobService smsMessageScheduledJobService,
             final SmsCampaignDropdownReadPlatformService smsCampaignDropdownReadPlatformService,
             final AuthenticationBusinessCommandFromApiJsonDeserializer authenticationBusinessCommandFromApiJsonDeserializer,
             final AppUserRepositoryWrapper appUserRepositoryWrapper) {
@@ -87,14 +86,15 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
         String authenticationMode = this.fromApiJsonHelper.extractStringNamed(SelfServiceApiConstants.authenticationModeParamName, element);
         String value = this.fromApiJsonHelper.extractStringNamed(SelfServiceApiConstants.valueParamName, element);
         boolean isEmailAuthenticationMode = authenticationMode.equalsIgnoreCase(SelfServiceApiConstants.emailModeParamName);
-        //boolean isMobileAuthenticationMode = authenticationMode.equalsIgnoreCase(SelfServiceApiConstants.mobileModeParamName);
+        // boolean isMobileAuthenticationMode =
+        // authenticationMode.equalsIgnoreCase(SelfServiceApiConstants.mobileModeParamName);
         AppUser appUser;
         if (isEmailAuthenticationMode) {
             // check email
             appUser = this.appUserRepositoryWrapper.findAppUserByName(value);
-        } //else if (isMobileAuthenticationMode) {
-        // check mobile
-        //        } 
+        } // else if (isMobileAuthenticationMode) {
+          // check mobile
+          // }
         else {
             throw new PlatformDataIntegrityException("error.msg.reset.mode", "Password reset mode not supported");
         }
@@ -104,8 +104,8 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
         appUser.setPassword(password);
         this.userDomainService.createCustomer(appUser, true);
         sendAuthorizationToken(appUser, password, value, null, appUser.getDisplayName(), "Reset Password");
-        final ApiResponseMessage apiResponseMessage
-                = new ApiResponseMessage(HttpStatus.OK.value(), "A reset details was sent to your " + authenticationMode, null, null);
+        final ApiResponseMessage apiResponseMessage = new ApiResponseMessage(HttpStatus.OK.value(),
+                "A reset details was sent to your " + authenticationMode, null, null);
         return apiResponseMessage;
     }
 

@@ -58,7 +58,8 @@ import org.apache.fineract.useradministration.domain.AppUser;
 
 @Entity
 @Table(name = "m_client", uniqueConstraints = { @UniqueConstraint(columnNames = { "account_no" }, name = "account_no_UNIQUE"), //
-        @UniqueConstraint(columnNames = { "mobile_no" }, name = "mobile_no_UNIQUE") })
+        @UniqueConstraint(columnNames = { "mobile_no" }, name = "mobile_no_UNIQUE"),
+            @UniqueConstraint(columnNames = {"email_address"}, name = "email_address_UNIQUE") })
 public class Client extends AbstractAuditableWithUTCDateTimeCustom {
 
     @Column(name = "account_no", length = 20, unique = true, nullable = false)

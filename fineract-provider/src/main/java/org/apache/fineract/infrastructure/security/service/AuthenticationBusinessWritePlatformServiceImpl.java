@@ -91,10 +91,11 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
         AppUser appUser;
         if (isEmailAuthenticationMode) {
             // check email
-            appUser = this.appUserRepositoryWrapper.findAppUserByName(value);
+//            appUser = this.appUserRepositoryWrapper.findAppUserByName(value);
+            appUser = this.appUserRepositoryWrapper.findAppUserByEmail(value);
         } // else if (isMobileAuthenticationMode) {
-          // check mobile
-          // }
+        // check mobile
+        // }
         else {
             throw new PlatformDataIntegrityException("error.msg.reset.mode", "Password reset mode not supported");
         }
@@ -103,6 +104,9 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
         String password = authenticationToken;
         appUser.setPassword(password);
         this.userDomainService.createCustomer(appUser, true);
+        //if (StringUtils.isNotBlank(appUser.getEmail())) {
+        //  value = appUser.getEmail();
+        //}
         sendAuthorizationToken(appUser, password, value, null, appUser.getDisplayName(), "Reset Password");
         final ApiResponseMessage apiResponseMessage = new ApiResponseMessage(HttpStatus.OK.value(),
                 "A reset details was sent to your " + authenticationMode, null, null);

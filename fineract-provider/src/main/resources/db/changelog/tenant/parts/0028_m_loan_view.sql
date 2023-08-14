@@ -52,6 +52,9 @@ SELECT
     ml.withdrawnon_userid,
     ml.rejectedon_date,
     ml.closedon_userid,
+    ml.withdrawnon_date,
+    ml.closedon_date,
+    ml.writtenoffon_date,
     la.total_overdue_derived,
     la.overdue_since_date_derived,
     ml.currency_code

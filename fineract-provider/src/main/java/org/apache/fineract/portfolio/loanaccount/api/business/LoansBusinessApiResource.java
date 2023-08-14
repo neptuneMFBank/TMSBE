@@ -32,19 +32,24 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import org.apache.fineract.accounting.journalentry.api.DateParam;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.bulkimport.service.BulkImportWorkbookPopulatorService;
 import org.apache.fineract.infrastructure.bulkimport.service.BulkImportWorkbookService;
 import org.apache.fineract.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
@@ -61,6 +66,7 @@ import org.apache.fineract.portfolio.collateralmanagement.service.LoanCollateral
 import org.apache.fineract.portfolio.fund.service.FundReadPlatformService;
 import org.apache.fineract.portfolio.group.service.GroupReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
+import org.apache.fineract.portfolio.loanaccount.api.LoansApiResource;
 import org.apache.fineract.portfolio.loanaccount.data.GlimRepaymentTemplate;
 import org.apache.fineract.portfolio.loanaccount.data.LoanAccountData;
 import org.apache.fineract.portfolio.loanaccount.data.LoanApprovalData;
@@ -143,6 +149,7 @@ public class LoansBusinessApiResource {
     private final LoanCollateralManagementReadPlatformService loanCollateralManagementReadPlatformService;
 
     private final LoanBusinessReadPlatformService loanBusinessReadPlatformService;
+    private final LoansApiResource loansApiResource;
 
     public LoansBusinessApiResource(final PlatformSecurityContext context,
             final LoanProductReadPlatformService loanProductReadPlatformService,
@@ -169,7 +176,7 @@ public class LoansBusinessApiResource {
             final GLIMAccountInfoReadPlatformService glimAccountInfoReadPlatformService,
             final LoanCollateralManagementReadPlatformService loanCollateralManagementReadPlatformService,
             final LoanBusinessReadPlatformService loanBusinessReadPlatformService,
-            final DefaultToApiJsonSerializer<String> calculateLoanScheduleToApiJsonSerializer) {
+            final DefaultToApiJsonSerializer<String> calculateLoanScheduleToApiJsonSerializer, final LoansApiResource loansApiResource) {
         this.context = context;
         this.loanProductReadPlatformService = loanProductReadPlatformService;
         this.dropdownReadPlatformService = dropdownReadPlatformService;
@@ -202,6 +209,7 @@ public class LoansBusinessApiResource {
         this.loanCollateralManagementReadPlatformService = loanCollateralManagementReadPlatformService;
         this.loanBusinessReadPlatformService = loanBusinessReadPlatformService;
         this.calculateLoanScheduleToApiJsonSerializer = calculateLoanScheduleToApiJsonSerializer;
+        this.loansApiResource = loansApiResource;
     }
 
     /*
@@ -280,4 +288,54 @@ public class LoansBusinessApiResource {
         return this.toApiJsonSerializer.serialize(settings, loanBasicDetails, this.loanDataParameters);
     }
 
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Submit a new Loan Application", description = """
+                                                                                                            Submits a new loan application
+                                                                                                            Mandatory Fields: clientId, productId, principal, loanTermFrequency, loanTermFrequencyType, loanType, numberOfRepayments, repaymentEvery, repaymentFrequencyType, interestRatePerPeriod, amortizationType, interestType, interestCalculationPeriodType, transactionProcessingStrategyId, expectedDisbursementDate, submittedOnDate, loanType
+                                                                                                            Optional Fields: graceOnPrincipalPayment, graceOnInterestPayment, graceOnInterestCharged, linkAccountId, allowPartialPeriodInterestCalcualtion, fixedEmiAmount, maxOutstandingLoanBalance, disbursementData, graceOnArrearsAgeing, createStandingInstructionAtDisbursement (requires linkedAccountId if set to true)
+                                                                                                            Additional Mandatory Fields if interest recalculation is enabled for product and Rest frequency not same as repayment period: recalculationRestFrequencyDate
+                                                                                                            Additional Mandatory Fields if interest recalculation with interest/fee compounding is enabled for product and compounding frequency not same as repayment period: recalculationCompoundingFrequencyDate
+                                                                                                            Additional Mandatory Field if Entity-Datatable Check is enabled for the entity of type loan: datatables""")
+    @RequestBody(required = true
+    //, content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansRequest.class))
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        //, content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansResponse.class))
+        )})
+    public String submitLoanApplication(
+            @Parameter(hidden = true) final String apiRequestBodyAsJson, @Context final UriInfo uriInfo) {
+        final String loanTemplateJson = LoanBusinessApiConstants.loanTemplateConfig(this.loansApiResource, apiRequestBodyAsJson, fromJsonHelper, null, true, uriInfo);
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().createLoanBusinessApplication().withJson(loanTemplateJson).build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @PUT
+    @Path("{loanId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Modify a loan application", description = "Loan application can only be modified when in 'Submitted and pending approval' state. Once the application is approved, the details cannot be changed using this method.")
+    @RequestBody(required = true
+    //, content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PutLoansLoanIdRequest.class))
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        //, content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PutLoansLoanIdResponse.class))
+        )})
+    public String modifyLoanApplication(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateLoanBusinessApplication(loanId).withJson(apiRequestBodyAsJson)
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
 }

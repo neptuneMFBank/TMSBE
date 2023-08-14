@@ -314,7 +314,6 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
                     + " left join m_appuser abu on abu.id = l.approvedon_userid"
                     + " left join m_appuser dbu on dbu.id = l.disbursedon_userid" + " left join m_appuser cbu on cbu.id = l.closedon_userid"
                     + " left join m_code_value cv on cv.id = l.loanpurpose_cv_id"
-                    + " left join m_code_value codev on codev.id = l.writeoff_reason_cv_id"
                     + " join m_currency rc on rc." + sqlGenerator.escape("code") + " = l.currency_code";
         }
 

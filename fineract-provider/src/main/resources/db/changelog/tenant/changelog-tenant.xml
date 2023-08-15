@@ -41,4 +41,15 @@
     <include file="parts/0019_refactor_loan_transaction.xml" relativeToChangelogFile="true"/>
     <include file="parts/0020_add_audit_entries.xml" relativeToChangelogFile="true"/>
     <include file="parts/0026_reversals_for_reversed_transactions.xml" relativeToChangelogFile="true"/>
+    <include file="parts/0027_m_table_views.sql" relativeToChangelogFile="true"/>
+    <include file="parts/0028_m_loan_view.sql" relativeToChangelogFile="true"/>
+    <include file="parts/0029_m_alter_client_email.sql" relativeToChangelogFile="true"/>
+    <include file="parts/0030_m_alter_appuser.sql" relativeToChangelogFile="true"/>
+    <include file="parts/0031_m_update_permission.sql" relativeToChangelogFile="true"/>
+    <include file="parts/0032_m_update_permission.sql" relativeToChangelogFile="true"/>
+    <include file="parts/0033_m_update_m_codes.sql" relativeToChangelogFile="true" />
+    <include file="parts/0034_m_update_m_codes.sql" relativeToChangelogFile="true" />
+    <include file="parts/0035_m_update_m_codes.sql" relativeToChangelogFile="true" />
+    <include file="parts/0036_m_update_m_codes.sql" relativeToChangelogFile="true" />
+    <include file="parts/0037_m_update_m_codes.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

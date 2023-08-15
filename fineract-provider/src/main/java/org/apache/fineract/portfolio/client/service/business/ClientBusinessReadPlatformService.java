@@ -16,20 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.useradministration.exception;
+package org.apache.fineract.portfolio.client.service.business;
 
-import org.apache.fineract.infrastructure.core.exception.AbstractPlatformResourceNotFoundException;
+import org.apache.fineract.infrastructure.core.service.Page;
+import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
+import org.apache.fineract.portfolio.client.data.ClientData;
 
-/**
- * A {@link RuntimeException} thrown when user resources are not found.
- */
-public class UserNotFoundException extends AbstractPlatformResourceNotFoundException {
+public interface ClientBusinessReadPlatformService {
 
-    public UserNotFoundException(final Long id) {
-        super("error.msg.user.id.invalid", "User with ID " + id + " does not exist", id);
-    }
-
-    public UserNotFoundException(final String userName) {
-        super("error.msg.user.name.not.found", "User with '" + userName + "' does not exist");
-    }
+    Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
 }

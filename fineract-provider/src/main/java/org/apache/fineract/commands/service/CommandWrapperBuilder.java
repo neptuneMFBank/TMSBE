@@ -1737,9 +1737,9 @@ public class CommandWrapperBuilder {
     public CommandWrapperBuilder createNote(final CommandWrapper resourceDetails, final String resourceType, final Long resourceId) {
         this.actionName = "CREATE";
         this.entityName = resourceDetails.entityName();// Note supports multiple
-                                                       // resources. Note
-                                                       // Permissions are set
-                                                       // for each resource.
+        // resources. Note
+        // Permissions are set
+        // for each resource.
         this.clientId = resourceDetails.getClientId();
         this.loanId = resourceDetails.getLoanId();
         this.savingsId = resourceDetails.getSavingsId();
@@ -1753,9 +1753,9 @@ public class CommandWrapperBuilder {
             final Long noteId) {
         this.actionName = "UPDATE";
         this.entityName = resourceDetails.entityName();// Note supports multiple
-                                                       // resources. Note
-                                                       // Permissions are set
-                                                       // for each resource.
+        // resources. Note
+        // Permissions are set
+        // for each resource.
         this.entityId = noteId;
         this.clientId = resourceDetails.getClientId();
         this.loanId = resourceDetails.getLoanId();
@@ -1770,9 +1770,9 @@ public class CommandWrapperBuilder {
             final Long noteId) {
         this.actionName = "DELETE";
         this.entityName = resourceDetails.entityName();// Note supports multiple
-                                                       // resources. Note
-                                                       // Permissions are set
-                                                       // for each resource.
+        // resources. Note
+        // Permissions are set
+        // for each resource.
         this.entityId = noteId;
         this.clientId = resourceDetails.getClientId();
         this.loanId = resourceDetails.getLoanId();
@@ -2269,7 +2269,6 @@ public class CommandWrapperBuilder {
     /**
      * Deposit account mappings
      */
-
     public CommandWrapperBuilder createFixedDepositAccount() {
         this.actionName = "CREATE";
         this.entityName = "FIXEDDEPOSITACCOUNT";
@@ -3010,9 +3009,9 @@ public class CommandWrapperBuilder {
 
     public CommandWrapperBuilder createProduct(String productType) {
         this.entityName = productType.toUpperCase() + "PRODUCT"; // To Support
-                                                                 // different
-                                                                 // type of
-                                                                 // products
+        // different
+        // type of
+        // products
         this.actionName = "CREATE";
         this.entityId = null;
         this.href = "/products/" + productType;
@@ -3029,9 +3028,9 @@ public class CommandWrapperBuilder {
 
     public CommandWrapperBuilder createAccount(String accountType) {
         this.entityName = accountType.toUpperCase() + "ACCOUNT"; // To Support
-                                                                 // different
-                                                                 // type of
-                                                                 // Accounts
+        // different
+        // type of
+        // Accounts
         this.actionName = "CREATE";
         this.entityId = null;
         this.href = "/accounts/" + accountType;
@@ -3482,6 +3481,27 @@ public class CommandWrapperBuilder {
         this.actionName = "UPDATE";
         this.entityName = "BUSINESS_DATE";
         this.href = "/businessdate";
+        return this;
+    }
+
+//    Business Application Here
+    public CommandWrapperBuilder createLoanBusinessApplication() {
+        this.actionName = "CREATE_BUSINESS";
+        this.entityName = "LOAN";
+        this.entityId = null;
+        this.loanId = null;
+        this.href = "/loans/business";
+        return this;
+    }
+    
+    
+
+    public CommandWrapperBuilder updateLoanBusinessApplication(final Long loanId) {
+        this.actionName = "UPDATE_BUSINESS";
+        this.entityName = "LOAN";
+        this.entityId = loanId;
+        this.loanId = loanId;
+        this.href = "/loans/business/" + loanId;
         return this;
     }
 

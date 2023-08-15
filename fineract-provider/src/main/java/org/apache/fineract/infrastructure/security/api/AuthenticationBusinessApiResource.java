@@ -43,8 +43,7 @@ public class AuthenticationBusinessApiResource {
     private final ToApiJsonSerializer<ApiResponseMessage> apiJsonSerializerService;
 
     @Autowired
-    public AuthenticationBusinessApiResource(
-            final AuthenticationBusinessWritePlatformService authenticationBusinessWritePlatformService,
+    public AuthenticationBusinessApiResource(final AuthenticationBusinessWritePlatformService authenticationBusinessWritePlatformService,
             final ToApiJsonSerializer<ApiResponseMessage> apiJsonSerializerService) {
         this.apiJsonSerializerService = apiJsonSerializerService;
         this.authenticationBusinessWritePlatformService = authenticationBusinessWritePlatformService;
@@ -52,10 +51,9 @@ public class AuthenticationBusinessApiResource {
 
     @POST
     @Path("reset-password")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
     public String resetCustomerPassword(final String apiRequestBodyAsJson) {
-        final ApiResponseMessage apiResponseMessage = this.authenticationBusinessWritePlatformService
-                .resetPassword(apiRequestBodyAsJson);
+        final ApiResponseMessage apiResponseMessage = this.authenticationBusinessWritePlatformService.resetPassword(apiRequestBodyAsJson);
         return this.apiJsonSerializerService.serialize(apiResponseMessage);
     }
 

@@ -36,6 +36,7 @@ import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumb
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.EntityAccountType;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
+import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.configuration.domain.GlobalConfigurationProperty;
 import org.apache.fineract.infrastructure.configuration.domain.GlobalConfigurationRepositoryWrapper;
@@ -90,6 +91,7 @@ import org.apache.fineract.portfolio.group.domain.GroupRepositoryWrapper;
 import org.apache.fineract.portfolio.group.exception.GroupMemberNotFoundInGSIMException;
 import org.apache.fineract.portfolio.group.exception.GroupNotActiveException;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
+import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
 import org.apache.fineract.portfolio.loanaccount.data.LoanChargeData;
 import org.apache.fineract.portfolio.loanaccount.domain.DefaultLoanLifecycleStateMachine;
 import org.apache.fineract.portfolio.loanaccount.domain.GLIMAccountInfoRepository;
@@ -108,6 +110,8 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanStatus;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanSummaryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanTopupDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanTransactionType;
+import org.apache.fineract.portfolio.loanaccount.domain.business.LoanOther;
+import org.apache.fineract.portfolio.loanaccount.domain.business.LoanOtherRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.exception.LoanApplicationDateException;
 import org.apache.fineract.portfolio.loanaccount.exception.LoanApplicationNotInSubmittedAndPendingApprovalStateCannotBeModified;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.AprCalculator;
@@ -115,8 +119,8 @@ import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanApplica
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleModel;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.service.LoanScheduleAssembler;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.service.LoanScheduleCalculationPlatformService;
-import org.apache.fineract.portfolio.loanaccount.serialization.LoanApplicationCommandFromApiJsonHelper;
 import org.apache.fineract.portfolio.loanaccount.serialization.LoanApplicationTransitionApiJsonValidator;
+import org.apache.fineract.portfolio.loanaccount.serialization.business.LoanBusinessApplicationCommandFromApiJsonHelper;
 import org.apache.fineract.portfolio.loanaccount.service.GLIMAccountInfoWritePlatformService;
 import org.apache.fineract.portfolio.loanaccount.service.LoanAssembler;
 import org.apache.fineract.portfolio.loanaccount.service.LoanChargeAssembler;
@@ -159,7 +163,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
     private final FromJsonHelper fromJsonHelper;
     private final LoanApplicationTransitionApiJsonValidator loanApplicationTransitionApiJsonValidator;
     private final LoanProductDataValidator loanProductCommandFromApiJsonDeserializer;
-    private final LoanApplicationCommandFromApiJsonHelper fromApiJsonDeserializer;
+    private final LoanBusinessApplicationCommandFromApiJsonHelper fromApiJsonDeserializer;
     private final LoanRepositoryWrapper loanRepositoryWrapper;
     private final NoteRepository noteRepository;
     private final LoanScheduleCalculationPlatformService calculationPlatformService;
@@ -199,10 +203,13 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
     private final LoanCollateralManagementRepository loanCollateralManagementRepository;
     private final ClientCollateralManagementRepository clientCollateralManagementRepository;
 
+    private final CodeValueRepositoryWrapper codeValueRepository;
+    private final LoanOtherRepositoryWrapper loanOtherRepositoryWrapper;
+
     @Autowired
     public LoanBusinessApplicationWritePlatformServiceImpl(final PlatformSecurityContext context, final FromJsonHelper fromJsonHelper,
             final LoanApplicationTransitionApiJsonValidator loanApplicationTransitionApiJsonValidator,
-            final LoanApplicationCommandFromApiJsonHelper fromApiJsonDeserializer,
+            final LoanBusinessApplicationCommandFromApiJsonHelper fromApiJsonDeserializer,
             final LoanProductDataValidator loanProductCommandFromApiJsonDeserializer, final AprCalculator aprCalculator,
             final LoanAssembler loanAssembler, final LoanChargeAssembler loanChargeAssembler,
             final LoanCollateralAssembler loanCollateralAssembler, final LoanRepositoryWrapper loanRepositoryWrapper,
@@ -226,7 +233,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             final LoanRepository loanRepository, final GSIMReadPlatformService gsimReadPlatformService, final RateAssembler rateAssembler,
             final LoanProductReadPlatformService loanProductReadPlatformService,
             final LoanCollateralManagementRepository loanCollateralManagementRepository,
-            final ClientCollateralManagementRepository clientCollateralManagementRepository) {
+            final ClientCollateralManagementRepository clientCollateralManagementRepository,
+            final CodeValueRepositoryWrapper codeValueRepository, final LoanOtherRepositoryWrapper loanOtherRepositoryWrapper) {
         this.context = context;
         this.fromJsonHelper = fromJsonHelper;
         this.loanApplicationTransitionApiJsonValidator = loanApplicationTransitionApiJsonValidator;
@@ -269,6 +277,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         this.gsimReadPlatformService = gsimReadPlatformService;
         this.loanCollateralManagementRepository = loanCollateralManagementRepository;
         this.clientCollateralManagementRepository = clientCollateralManagementRepository;
+        this.codeValueRepository = codeValueRepository;
+        this.loanOtherRepositoryWrapper = loanOtherRepositoryWrapper;
     }
 
     private LoanLifecycleStateMachine defaultLoanLifecycleStateMachine() {
@@ -486,7 +496,6 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                         }
 
                         // reset in cases of last child application of glim
-
                         if (isLastChildApplication) {
                             this.glimAccountInfoWritePlatformService
                                     .resetIsAcceptingChild(glimRepository.findOneByIsAcceptingChildAndApplicationId(true, applicationId));
@@ -598,6 +607,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
 
             businessEventNotifierService.notifyPostBusinessEvent(new LoanCreatedBusinessEvent(newLoanApplication));
 
+            loanOtherProcess(command, newLoanApplication, false, null);
+
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(newLoanApplication.getId()) //
@@ -612,6 +623,39 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
             handleDataIntegrityIssues(command, throwable, dve);
             return CommandProcessingResult.empty();
+        }
+    }
+
+    protected void loanOtherProcess(final JsonCommand command, final Loan loanApplication, final boolean isUpdate,
+            final Map<String, Object> changes) {
+        LoanOther loanOther;
+        CodeValue activationChannel = null;
+
+        final Long loanId = loanApplication.getId();
+        final String activationChannelNameParam = LoanBusinessApiConstants.activationChannelNameParam;
+        if (this.fromJsonHelper.parameterExists(activationChannelNameParam, command.parsedJson())) {
+            final Long activationChannelId = this.fromJsonHelper.extractLongNamed(activationChannelNameParam, command.parsedJson());
+            if (isUpdate) {
+                LoanOther exitingLoanOther = this.loanOtherRepositoryWrapper.findOneByLoanId(loanId);
+
+                Long existingLoanActivationChannelId = null;
+                if (exitingLoanOther != null) {
+                    existingLoanActivationChannelId = exitingLoanOther.getActivationChannel().getId();
+                } else {
+                    exitingLoanOther = LoanOther.instance(activationChannel, loanApplication);
+                }
+                if (command.isChangeInLongParameterNamed(activationChannelNameParam, existingLoanActivationChannelId)) {
+                    final Long newValue = command.longValueOfParameterNamed(activationChannelNameParam);
+                    changes.put(activationChannelNameParam, newValue);
+                    activationChannel = this.loanAssembler.findCodeValueByIdIfProvided(activationChannelId);
+                    exitingLoanOther.setActivationChannel(activationChannel);
+                }
+                loanOther = exitingLoanOther;
+            } else {
+                activationChannel = this.loanAssembler.findCodeValueByIdIfProvided(activationChannelId);
+                loanOther = LoanOther.instance(activationChannel, loanApplication);
+            }
+            this.loanOtherRepositoryWrapper.saveAndFlush(loanOther);
         }
     }
 
@@ -797,10 +841,13 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
 
             /**
              * Stores all charges which are passed in during modify loan application
-             **/
+             *
+             */
             final Set<LoanCharge> possiblyModifedLoanCharges = this.loanChargeAssembler.fromParsedJson(command.parsedJson(),
                     disbursementDetails);
-            /** Boolean determines if any charge has been modified **/
+            /**
+             * Boolean determines if any charge has been modified *
+             */
             boolean isChargeModified = false;
 
             Set<Charge> newTrancheChages = this.loanChargeAssembler.getNewLoanTrancheCharges(command.parsedJson());
@@ -811,7 +858,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             /**
              * If there are any charges already present, which are now not passed in as a part of the request, deem the
              * charges as modified
-             **/
+             *
+             */
             if (!possiblyModifedLoanCharges.isEmpty()) {
                 if (!possiblyModifedLoanCharges.containsAll(existingCharges)) {
                     isChargeModified = true;
@@ -820,7 +868,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
 
             /**
              * If any new charges are added or values of existing charges are modified
-             **/
+             *
+             */
             for (LoanCharge loanCharge : possiblyModifedLoanCharges) {
                 if (loanCharge.getId() == null) {
                     isChargeModified = true;
@@ -1244,6 +1293,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
 
             }
 
+            loanOtherProcess(command, existingLoanApplication, true, changes);
+
             return new CommandProcessingResultBuilder() //
                     .withEntityId(loanId) //
                     .withOfficeId(existingLoanApplication.getOfficeId()) //
@@ -1286,7 +1337,6 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
     private void logAsErrorUnexpectedDataIntegrityException(final Exception dve) {
         LOG.error("Error occured.", dve);
     }
-
 
     private Loan retrieveLoanBy(final Long loanId) {
         final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId, true);

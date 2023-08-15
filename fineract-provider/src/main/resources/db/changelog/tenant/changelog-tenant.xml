@@ -52,4 +52,5 @@
     <include file="parts/0035_m_update_m_codes.sql" relativeToChangelogFile="true" />
     <include file="parts/0036_m_update_m_codes.sql" relativeToChangelogFile="true" />
     <include file="parts/0037_m_update_m_codes.sql" relativeToChangelogFile="true" />
+    <include file="parts/0038_m_loan_other.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

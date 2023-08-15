@@ -3484,7 +3484,7 @@ public class CommandWrapperBuilder {
         return this;
     }
 
-//    Business Application Here
+    // Business Application Here
     public CommandWrapperBuilder createLoanBusinessApplication() {
         this.actionName = "CREATE_BUSINESS";
         this.entityName = "LOAN";
@@ -3493,8 +3493,6 @@ public class CommandWrapperBuilder {
         this.href = "/loans/business";
         return this;
     }
-    
-    
 
     public CommandWrapperBuilder updateLoanBusinessApplication(final Long loanId) {
         this.actionName = "UPDATE_BUSINESS";

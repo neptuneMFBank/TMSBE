@@ -18,16 +18,21 @@
  */
 package org.apache.fineract.portfolio.loanaccount.service.business;
 
+import java.util.Collection;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.loanaccount.data.LoanAccountData;
+import org.apache.fineract.portfolio.floatingrates.data.InterestRatePeriodData;
+import org.apache.fineract.portfolio.loanaccount.data.business.LoanBusinessAccountData;
 
 public interface LoanBusinessReadPlatformService {
 
     String calculateLoanScheduleLoanApplication(final String apiRequestBodyAsJson, @Context final UriInfo uriInfo);
 
-    Page<LoanAccountData> retrieveAll(SearchParametersBusiness searchParameters);
+    Page<LoanBusinessAccountData> retrieveAll(SearchParametersBusiness searchParameters);
 
+    LoanBusinessAccountData retrieveOne(Long loanId);
+
+    Collection<InterestRatePeriodData> retrieveLoanInterestRatePeriodData(LoanBusinessAccountData loanData);
 }

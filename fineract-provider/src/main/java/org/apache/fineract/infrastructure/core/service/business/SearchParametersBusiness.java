@@ -59,9 +59,8 @@ public final class SearchParametersBusiness {
     private final String mobile;
 
     public static SearchParametersBusiness forLoansBusiness(final Long officeId, final String externalId, final Integer statusId,
-            final String hierarchy, final Integer offset, final Integer limit,
-            final String orderBy, final String sortOrder, final Long staffId, final String accountNo,
-            final LocalDate fromDate, final LocalDate toDate) {
+            final String hierarchy, final Integer offset, final Integer limit, final String orderBy, final String sortOrder,
+            final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate) {
 
         final boolean isSelfUser = false;
         final Boolean orphansOnly = false;
@@ -79,17 +78,15 @@ public final class SearchParametersBusiness {
         final String mobile = null;
         final String email = null;
 
-        return new SearchParametersBusiness(sqlSearch, officeId, externalId, name, hierarchy, firstname, lastname, offset, limit, orderBy, sortOrder,
-                staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser,
-                fromDate, toDate, status, categoryId, productId, provisioningEntryId, currencyCode, statusId, email, mobile);
+        return new SearchParametersBusiness(sqlSearch, officeId, externalId, name, hierarchy, firstname, lastname, offset, limit, orderBy,
+                sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId, productId,
+                provisioningEntryId, currencyCode, statusId, email, mobile);
     }
 
     public static SearchParametersBusiness forClientsBusiness(final Long officeId, final String externalId, final Integer statusId,
-            final String hierarchy, final Integer offset, final Integer limit,
-            final String orderBy, final String sortOrder, final Long staffId, final String accountNo,
-            final LocalDate fromDate, final LocalDate toDate, final String displayName, final Boolean orphansOnly, final boolean isSelfUser,
-            final String email, final String mobile
-    ) {
+            final String hierarchy, final Integer offset, final Integer limit, final String orderBy, final String sortOrder,
+            final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate, final String displayName,
+            final Boolean orphansOnly, final boolean isSelfUser, final String email, final String mobile) {
         final Long savingsId = null;
         final String status = null;
         final Long categoryId = null;
@@ -101,18 +98,17 @@ public final class SearchParametersBusiness {
         final Long loanId = null;
         final String sqlSearch = null;
 
-        return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit, orderBy, sortOrder,
-                staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser,
-                fromDate, toDate, status, categoryId, productId, provisioningEntryId, currencyCode, statusId,
-                email, mobile);
+        return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
+                orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
+                productId, provisioningEntryId, currencyCode, statusId, email, mobile);
     }
 
     private SearchParametersBusiness(final String sqlSearch, final Long officeId, final String externalId, final String name,
             final String hierarchy, final String firstname, final String lastname, final Integer offset, final Integer limit,
             final String orderBy, final String sortOrder, final Long staffId, final String accountNo, final Long loanId,
-            final Long savingsId, final Boolean orphansOnly, boolean isSelfUser, final LocalDate fromDate,
-            final LocalDate toDate, final String status, final Long categoryId, final Long productId, final Long provisioningEntryId,
-            final String currencyCode, final Integer statusId, final String email, final String mobile) {
+            final Long savingsId, final Boolean orphansOnly, boolean isSelfUser, final LocalDate fromDate, final LocalDate toDate,
+            final String status, final Long categoryId, final Long productId, final Long provisioningEntryId, final String currencyCode,
+            final Integer statusId, final String email, final String mobile) {
         this.sqlSearch = sqlSearch;
         this.officeId = officeId;
         this.externalId = externalId;

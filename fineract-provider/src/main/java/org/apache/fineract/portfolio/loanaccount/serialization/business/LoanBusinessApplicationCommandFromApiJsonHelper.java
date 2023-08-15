@@ -49,7 +49,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCharge;
 import org.apache.fineract.portfolio.loanaccount.exception.InvalidAmountOfCollateralQuantity;
 import org.apache.fineract.portfolio.loanaccount.exception.InvalidAmountOfCollaterals;
-import org.apache.fineract.portfolio.loanaccount.serialization.*;
+import org.apache.fineract.portfolio.loanaccount.serialization.CalculateLoanScheduleQueryFromApiJsonHelper;
 import org.apache.fineract.portfolio.loanproduct.LoanProductConstants;
 import org.apache.fineract.portfolio.loanproduct.domain.AmortizationMethod;
 import org.apache.fineract.portfolio.loanproduct.domain.InterestCalculationPeriodMethod;

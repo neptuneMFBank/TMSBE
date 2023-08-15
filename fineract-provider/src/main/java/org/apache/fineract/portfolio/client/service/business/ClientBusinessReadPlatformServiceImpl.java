@@ -154,9 +154,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         final String mobile = searchParameters.getMobile();
         final String email = searchParameters.getEmail();
 
-//        officeId, externalId, statusId, hierarchy, offset,
-//                limit, orderBy, sortOrder, staffId,
-//                accountNo, fromDate, toDate, displayName, orphansOnly, isSelfUser
+        // officeId, externalId, statusId, hierarchy, offset,
+        // limit, orderBy, sortOrder, staffId,
+        // accountNo, fromDate, toDate, displayName, orphansOnly, isSelfUser
         String extraCriteria = "";
 
         if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
@@ -235,10 +235,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         ClientMapper() {
             final StringBuilder sqlBuilder = new StringBuilder(400);
 
-            sqlBuilder.append(
-                    "c.id as id, c.account_no as accountNo, c.external_id as externalId, c.status_enum as statusEnum, ");
-            sqlBuilder.append(
-                    " c.office_id as officeId, o.name as officeName, ");
+            sqlBuilder.append("c.id as id, c.account_no as accountNo, c.external_id as externalId, c.status_enum as statusEnum, ");
+            sqlBuilder.append(" c.office_id as officeId, o.name as officeName, ");
             sqlBuilder.append("c.fullname as fullname, c.display_name as displayName, ");
             sqlBuilder.append("c.mobile_no as mobileNo, ");
             sqlBuilder.append("c.is_staff as isStaff, ");
@@ -303,14 +301,12 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 legalForm = ClientEnumerations.legalForm(legalFormEnum);
             }
 
-            final ClientTimelineData timeline = new ClientTimelineData(submittedOnDate, submittedByUsername, null,
-                    null, null, null, null, null, null,
-                    null, null, null);
+            final ClientTimelineData timeline = new ClientTimelineData(submittedOnDate, submittedByUsername, null, null, null, null, null,
+                    null, null, null, null, null);
 
-            return ClientData.instance(accountNo, status, null, officeId, officeName, null, null, id,
-                    null, null, null, fullname, displayName, externalId, mobileNo, emailAddress, null, null,
-                    null, null, staffId, staffName, timeline, null, null, savingsAccountId,
-                    null, classification, legalForm, null, isStaff);
+            return ClientData.instance(accountNo, status, null, officeId, officeName, null, null, id, null, null, null, fullname,
+                    displayName, externalId, mobileNo, emailAddress, null, null, null, null, staffId, staffName, timeline, null, null,
+                    savingsAccountId, null, classification, legalForm, null, isStaff);
 
         }
     }

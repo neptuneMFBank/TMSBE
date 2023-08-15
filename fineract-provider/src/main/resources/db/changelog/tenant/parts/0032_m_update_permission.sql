@@ -19,6 +19,6 @@
 
 
 -- INSERT m_permission
-INSERT INTO `m_permission` (`id`, `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) 
-VALUES 
+INSERT INTO `m_permission` (`id`, `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`)
+VALUES
  (NULL, 'portfolio', 'UPDATE_BUSINESS_LOAN', 'LOAN', 'UPDATE_BUSINESS', false)

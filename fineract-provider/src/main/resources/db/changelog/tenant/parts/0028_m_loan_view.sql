@@ -32,7 +32,7 @@ SELECT
     ml.loan_status_id,
     ml.loan_type_enum,
     ml.principal_amount_proposed,
-    ml.principal_amount, 
+    ml.principal_amount,
     ml.approved_principal,
     ml.net_disbursal_amount ,
     ml.nominal_interest_rate_per_period,
@@ -61,4 +61,4 @@ SELECT
 FROM m_loan ml
 join m_product_loan lp on lp.id = ml.product_id
 left join m_loan_arrears_aging la on la.loan_id = ml.id
-ORDER BY ml.id DESC 
+ORDER BY ml.id DESC

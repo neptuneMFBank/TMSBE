@@ -54,6 +54,7 @@ public final class SearchParametersBusiness {
     private final LocalDate fromDate;
     private final LocalDate toDate;
 
+    private final Integer legalFormId;
     private final Integer statusId;
     private final String email;
     private final String mobile;
@@ -77,16 +78,17 @@ public final class SearchParametersBusiness {
         final String name = null;
         final String mobile = null;
         final String email = null;
+        final Integer legalFormId = null;
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, name, hierarchy, firstname, lastname, offset, limit, orderBy,
                 sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId, productId,
-                provisioningEntryId, currencyCode, statusId, email, mobile);
+                provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId);
     }
 
     public static SearchParametersBusiness forClientsBusiness(final Long officeId, final String externalId, final Integer statusId,
             final String hierarchy, final Integer offset, final Integer limit, final String orderBy, final String sortOrder,
             final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate, final String displayName,
-            final Boolean orphansOnly, final boolean isSelfUser, final String email, final String mobile) {
+            final Boolean orphansOnly, final boolean isSelfUser, final String email, final String mobile, final Integer legalFormId) {
         final Long savingsId = null;
         final String status = null;
         final Long categoryId = null;
@@ -100,7 +102,7 @@ public final class SearchParametersBusiness {
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
-                productId, provisioningEntryId, currencyCode, statusId, email, mobile);
+                productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId);
     }
 
     private SearchParametersBusiness(final String sqlSearch, final Long officeId, final String externalId, final String name,
@@ -108,7 +110,7 @@ public final class SearchParametersBusiness {
             final String orderBy, final String sortOrder, final Long staffId, final String accountNo, final Long loanId,
             final Long savingsId, final Boolean orphansOnly, boolean isSelfUser, final LocalDate fromDate, final LocalDate toDate,
             final String status, final Long categoryId, final Long productId, final Long provisioningEntryId, final String currencyCode,
-            final Integer statusId, final String email, final String mobile) {
+            final Integer statusId, final String email, final String mobile, final Integer legalFormId) {
         this.sqlSearch = sqlSearch;
         this.officeId = officeId;
         this.externalId = externalId;
@@ -136,6 +138,7 @@ public final class SearchParametersBusiness {
         this.statusId = statusId;
         this.email = email;
         this.mobile = mobile;
+        this.legalFormId = legalFormId;
 
     }
 
@@ -357,4 +360,13 @@ public final class SearchParametersBusiness {
     public boolean isMobilePassed() {
         return StringUtils.isNotBlank(this.mobile);
     }
+
+    public Integer getLegalFormId() {
+        return legalFormId;
+    }
+
+    public boolean isLegalFormIdPassed() {
+        return this.legalFormId != null && this.legalFormId != 0;
+    }
+
 }

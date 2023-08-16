@@ -78,8 +78,8 @@ public class ClientsBusinessApiResource {
     private final GuarantorReadPlatformService guarantorReadPlatformService;
 
     @GET
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "List Clients", description = """
             The list capability of clients can support pagination and sorting.
 
@@ -92,9 +92,10 @@ public class ClientsBusinessApiResource {
             clients\business?offset=10&limit=50
 
             clients\business?orderBy=displayName&sortOrder=DESC""")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+        )})
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
             @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
@@ -102,6 +103,7 @@ public class ClientsBusinessApiResource {
             @QueryParam("email") @Parameter(description = "email") final String email,
             @QueryParam("mobile") @Parameter(description = "mobile") final String mobile,
             @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
+            @QueryParam("legalFormId") @Parameter(description = "legalFormId") final Integer legalFormId,
             @QueryParam("staffId") @Parameter(description = "staffId") final Long staffId,
             @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
             @QueryParam("underHierarchy") @Parameter(description = "underHierarchy") final String hierarchy,
@@ -116,14 +118,14 @@ public class ClientsBusinessApiResource {
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
 
         return this.retrieveAll(uriInfo, officeId, externalId, displayName, statusId, hierarchy, offset, limit, orderBy, sortOrder,
-                orphansOnly, false, startPeriod, endPeriod, locale, dateFormat, staffId, accountNo, email, mobile);
+                orphansOnly, false, startPeriod, endPeriod, locale, dateFormat, staffId, accountNo, email, mobile, legalFormId);
     }
 
     public String retrieveAll(final UriInfo uriInfo, final Long officeId, final String externalId, final String displayName,
             final Integer statusId, final String hierarchy, final Integer offset, final Integer limit, final String orderBy,
             final String sortOrder, final Boolean orphansOnly, final boolean isSelfUser, final DateParam startPeriod,
             final DateParam endPeriod, final String locale, final String dateFormat, final Long staffId, final String accountNo,
-            final String email, final String mobile) {
+            final String email, final String mobile, final Integer legalFormId) {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
@@ -138,7 +140,7 @@ public class ClientsBusinessApiResource {
 
         final SearchParametersBusiness searchParameters = SearchParametersBusiness.forClientsBusiness(officeId, externalId, statusId,
                 hierarchy, offset, limit, orderBy, sortOrder, staffId, accountNo, fromDate, toDate, displayName, orphansOnly, isSelfUser,
-                email, mobile);
+                email, mobile, legalFormId);
 
         final Page<ClientData> clientData = this.clientBusinessReadPlatformService.retrieveAll(searchParameters);
 

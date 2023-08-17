@@ -146,6 +146,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     private String buildSqlStringFromClientCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
 
         final Integer statusId = searchParameters.getStatusId();
+        final Integer legalFormId = searchParameters.getLegalFormId();
         final Long officeId = searchParameters.getOfficeId();
         final Long staffId = searchParameters.getStaffId();
         final String externalId = searchParameters.getExternalId();
@@ -184,6 +185,11 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         if (externalId != null) {
             paramList.add("%" + externalId + "%");
             extraCriteria += " and c.external_id like ? ";
+        }
+
+        if (searchParameters.isLegalFormIdPassed()) {
+            paramList.add(legalFormId);
+            extraCriteria += " and c.legal_form_enum = ? ";
         }
 
         if (searchParameters.isAccountNoPassed()) {

@@ -248,11 +248,11 @@ public interface LoanBusinessApiConstants {
         final Locale localeFormat = new Locale(locale);
         final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(dateFormat).withLocale(localeFormat);
 
-        JsonElement clientActiveLoanOptions = null;
-        if (fromApiJsonHelper.parameterExists(LoanApiConstants.clientActiveLoanOptions, loanTemplateElement)) {
-            clientActiveLoanOptions = fromApiJsonHelper.extractJsonObjectNamed(LoanApiConstants.clientActiveLoanOptions,
-                    loanTemplateElement);
-        }
+//        JsonElement clientActiveLoanOptions = null;
+//        if (fromApiJsonHelper.parameterExists(LoanApiConstants.clientActiveLoanOptions, loanTemplateElement)) {
+//            clientActiveLoanOptions = fromApiJsonHelper.extractJsonArrayNamed(LoanApiConstants.clientActiveLoanOptions,
+//                    loanTemplateElement);
+//        }
         String expectedDisbursementDate;
         if (fromApiJsonHelper.parameterExists(expectedDisbursementDateParameterName, apiRequestBodyAsJsonElement)) {
             expectedDisbursementDate = fromApiJsonHelper.extractStringNamed(expectedDisbursementDateParameterName,
@@ -273,11 +273,6 @@ public interface LoanBusinessApiConstants {
 
         if (fromApiJsonHelper.parameterExists(LoanApiConstants.loanTypeParameterName, apiRequestBodyAsJsonElement)) {
             loanType = fromApiJsonHelper.extractStringNamed(LoanApiConstants.loanTypeParameterName, apiRequestBodyAsJsonElement);
-        } else {
-            if (clientActiveLoanOptions != null
-                    && fromApiJsonHelper.parameterExists(LoanApiConstants.loanTypeParameterName, clientActiveLoanOptions)) {
-                loanType = fromApiJsonHelper.extractStringNamed(LoanApiConstants.loanTypeParameterName, clientActiveLoanOptions);
-            }
         }
         if (StringUtils.isNotBlank(loanType)) {
             jsonObjectLoan.addProperty(LoanApiConstants.loanTypeParameterName, loanType);

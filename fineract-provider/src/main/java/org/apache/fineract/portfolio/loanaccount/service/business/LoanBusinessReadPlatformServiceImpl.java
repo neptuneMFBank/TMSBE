@@ -451,11 +451,6 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
             final Integer lifeCycleStatusId = JdbcSupport.getInteger(rs, "lifeCycleStatusId");
             final LoanStatusEnumData status = LoanEnumerations.status(lifeCycleStatusId);
 
-            final Integer loanSubStatusId = JdbcSupport.getInteger(rs, "loanSubStatusId");
-            EnumOptionData loanSubStatus = null;
-            if (loanSubStatusId != null) {
-                loanSubStatus = LoanSubStatus.loanSubStatus(loanSubStatusId);
-            }
 
             LoanSummaryData loanSummary = null;
             Boolean inArrears = false;
@@ -492,7 +487,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
                     termFrequency, null, numberOfRepayments, null, null, null, null, null, null, null, interestRatePerPeriod, null,
                     annualInterestRate, null, false, null, null, null, null, null, null, null, null, null, timeline, loanSummary, null,
                     null, null, null, null, null, null, null, inArrears, null, isNPA, null, null, false, null, null, null, null, null,
-                    loanSubStatus, canUseForTopup, isTopup, null, null, null, false, null);
+                    null, canUseForTopup, isTopup, null, null, null, false, null);
         }
     }
 

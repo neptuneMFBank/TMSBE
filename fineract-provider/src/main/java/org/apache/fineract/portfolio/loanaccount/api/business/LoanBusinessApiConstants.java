@@ -248,11 +248,11 @@ public interface LoanBusinessApiConstants {
         final Locale localeFormat = new Locale(locale);
         final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(dateFormat).withLocale(localeFormat);
 
-//        JsonElement clientActiveLoanOptions = null;
-//        if (fromApiJsonHelper.parameterExists(LoanApiConstants.clientActiveLoanOptions, loanTemplateElement)) {
-//            clientActiveLoanOptions = fromApiJsonHelper.extractJsonArrayNamed(LoanApiConstants.clientActiveLoanOptions,
-//                    loanTemplateElement);
-//        }
+        // JsonElement clientActiveLoanOptions = null;
+        // if (fromApiJsonHelper.parameterExists(LoanApiConstants.clientActiveLoanOptions, loanTemplateElement)) {
+        // clientActiveLoanOptions = fromApiJsonHelper.extractJsonArrayNamed(LoanApiConstants.clientActiveLoanOptions,
+        // loanTemplateElement);
+        // }
         String expectedDisbursementDate;
         if (fromApiJsonHelper.parameterExists(expectedDisbursementDateParameterName, apiRequestBodyAsJsonElement)) {
             expectedDisbursementDate = fromApiJsonHelper.extractStringNamed(expectedDisbursementDateParameterName,

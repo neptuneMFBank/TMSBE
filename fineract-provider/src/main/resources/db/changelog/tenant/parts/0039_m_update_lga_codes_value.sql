@@ -17,10 +17,8 @@
 -- under the License.
 --
 
-CREATE TABLE `m_loan_other`(
-      `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-      `loan_id` BIGINT NOT NULL,
-      `activation_channel_id` INT NOT NULL,
-      CONSTRAINT `m_loan_other_FK_loan_id` FOREIGN KEY (`loan_id`) REFERENCES `m_loan` (`id`),
-      CONSTRAINT `m_loan_other_FK_activation_channel_id` FOREIGN KEY (`activation_channel_id`) REFERENCES `m_code_value` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- INSERT m_code and relating to m_code_value
+
+INSERT INTO `m_code` (`id`, `code_name`, `is_system_defined`) VALUES
+    (40, 'LGA', 0)

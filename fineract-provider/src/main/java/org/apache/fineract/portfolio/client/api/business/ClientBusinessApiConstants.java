@@ -94,6 +94,9 @@ public class ClientBusinessApiConstants {
     public static final String reactivationDateParamName = "reactivationDate";
     public static final String staffIdParamName = "staffId";
     public static final String isStaffParamName = "isStaff";
+    public static final String countryValuesParamName = "countryValues";
+    public static final String stateValuesParamName = "stateValues";
+    public static final String lgaValuesParamName = "lgaValues";
     public static final String closureDateParamName = "closureDate";
     public static final String closureReasonIdParamName = "closureReasonId";
     public static final String reopenedDateParamName = "reopenedDate";
@@ -184,6 +187,9 @@ public class ClientBusinessApiConstants {
     public static final String obligeeData = "ObligeeDetails";
 
     public static final String clientEntityName = "clients";
+    public static final String COUNTRYPARAM = "COUNTRY";
+    public static final String STATEPARAM = "STATE";
+    public static final String LGAPARAM = "LGA";
 
     /**
      * These parameters will match the class level parameters of {@link ClientData}. Where possible, we try to get
@@ -195,7 +201,7 @@ public class ClientBusinessApiConstants {
             officeNameParamName, transferToOfficeIdParamName, transferToOfficeNameParamName, hierarchyParamName, imageIdParamName,
             imagePresentParamName, staffIdParamName, staffNameParamName, timelineParamName, groupsParamName, officeOptionsParamName,
             staffOptionsParamName, dateOfBirthParamName, genderParamName, clientTypeParamName, clientClassificationParamName,
-            legalFormParamName, clientNonPersonDetailsParamName, isStaffParamName));
+            legalFormParamName, clientNonPersonDetailsParamName, isStaffParamName, lgaValuesParamName));
 
     protected static final Set<String> CLIENT_CHARGES_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(chargeIdParamName,
             clientIdParamName, chargeNameParamName, penaltyParamName, chargeTimeTypeParamName, dueAsOfDateParamName,

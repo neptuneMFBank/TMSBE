@@ -18,7 +18,6 @@
  */
 package org.apache.fineract.portfolio.client.data.business;
 
-import org.apache.fineract.portfolio.client.data.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -35,6 +34,10 @@ import org.apache.fineract.infrastructure.dataqueries.data.DatatableData;
 import org.apache.fineract.organisation.office.data.OfficeData;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.portfolio.address.data.AddressData;
+import org.apache.fineract.portfolio.client.data.ClientFamilyMembersData;
+import org.apache.fineract.portfolio.client.data.ClientNonPersonData;
+import org.apache.fineract.portfolio.client.data.ClientTimelineData;
+import org.apache.fineract.portfolio.collateralmanagement.data.ClientCollateralManagementData;
 import org.apache.fineract.portfolio.group.data.GroupGeneralData;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountData;
 import org.apache.fineract.portfolio.savings.data.SavingsProductData;
@@ -90,7 +93,9 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
     private final Collection<GroupGeneralData> groups;
 
     // template
-    private final Collection<CodeValueBusinessData> locationValues;
+    // private final Collection<CodeValueBusinessData> countryValues;
+    // private final Collection<CodeValueBusinessData> stateValues;
+    private final Collection<CodeValueBusinessData> lgaValues;
     private final Collection<OfficeData> officeOptions;
     private final Collection<StaffData> staffOptions;
     private final Collection<CodeValueData> narrations;
@@ -122,69 +127,6 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
     private Long legalFormId;
     private LocalDate submittedOnDate;
 
-
-    private ClientBusinessData(final Long clientId, final Long officeId) {
-        this.rowIndex = null;
-        this.dateFormat = null;
-        this.locale = null;
-        this.firstname = null;
-        this.lastname = null;
-        this.middlename = null;
-        this.fullname = null;
-        this.activationDate = null;
-        this.submittedOnDate = null;
-        this.active = null;
-        this.externalId = null;
-        this.officeId = officeId;
-        this.staffId = null;
-        this.legalFormId = null;
-        this.mobileNo = null;
-        this.dateOfBirth = null;
-        this.clientTypeId = null;
-        this.genderId = null;
-        this.clientClassificationId = null;
-        this.isStaff = false;
-        this.address = null;
-        this.accountNo = null;
-        this.status = null;
-        this.subStatus = null;
-        this.displayName = null;
-        this.gender = null;
-        this.clientType = null;
-        this.clientClassification = null;
-        this.officeName = null;
-        this.transferToOfficeId = null;
-        this.transferToOfficeName = null;
-        this.imageId = null;
-        this.imagePresent = null;
-        this.staffName = null;
-        this.timeline = null;
-        this.savingsProductId = null;
-        this.savingsProductName = null;
-        this.savingsAccountId = null;
-        this.legalForm = null;
-        this.groups = null;
-        this.officeOptions = null;
-        this.staffOptions = null;
-        this.narrations = null;
-        this.savingProductOptions = null;
-        this.savingAccountOptions = null;
-        this.genderOptions = null;
-        this.clientTypeOptions = null;
-        this.clientClassificationOptions = null;
-        this.clientNonPersonConstitutionOptions = null;
-        this.clientNonPersonMainBusinessLineOptions = null;
-        this.clientLegalFormOptions = null;
-        this.clientNonPersonDetails = null;
-        this.isAddressEnabled = null;
-        this.datatables = null;
-        this.familyMemberOptions = null;
-        this.emailAddress = null;
-        this.clientCollateralManagements = null;
-        this.locationValues = null;
-        this.id = clientId;
-    }
-
     public Integer getRowIndex() {
         return rowIndex;
     }
@@ -208,7 +150,10 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
             final Collection<CodeValueData> clientNonPersonConstitutionOptions,
             final Collection<CodeValueData> clientNonPersonMainBusinessLineOptions, final List<EnumOptionData> clientLegalFormOptions,
             final ClientFamilyMembersData familyMemberOptions, final Collection<AddressData> address, final Boolean isAddressEnabled,
-            final List<DatatableData> datatables, final Collection<CodeValueBusinessData> locationValues) {
+            final List<DatatableData> datatables,
+            // final Collection<CodeValueBusinessData> countryValues,
+            // final Collection<CodeValueBusinessData> stateValues,
+            final Collection<CodeValueBusinessData> lgaValues) {
         final String accountNo = null;
         final EnumOptionData status = null;
         final CodeValueData subStatus = null;
@@ -241,13 +186,14 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
         final Boolean isStaff = false;
         final ClientNonPersonData clientNonPersonDetails = null;
         final Set<ClientCollateralManagementData> clientCollateralManagements = null;
-        return new ClientBusinessData(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id, firstname,
-                middlename, lastname, fullname, displayName, externalId, mobileNo, emailAddress, dateOfBirth, gender, joinedDate, imageId,
-                staffId, staffName, officeOptions, groups, staffOptions, narrations, genderOptions, timeline, savingProductOptions,
+        return new ClientBusinessData(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id,
+                firstname, middlename, lastname, fullname, displayName, externalId, mobileNo, emailAddress, dateOfBirth, gender, joinedDate,
+                imageId, staffId, staffName, officeOptions, groups, staffOptions, narrations, genderOptions, timeline, savingProductOptions,
                 savingsProductId, savingsProductName, savingsAccountId, savingAccountOptions, clientType, clientClassification,
                 clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions, clientNonPersonMainBusinessLineOptions,
                 clientNonPersonDetails, clientLegalFormOptions, familyMemberOptions, legalForm, address, isAddressEnabled, datatables,
-                isStaff, clientCollateralManagements,locationValues);
+                isStaff, clientCollateralManagements // , countryValues, stateValues
+                , lgaValues);
 
     }
 
@@ -267,7 +213,10 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
             final List<EnumOptionData> clientLegalFormOptions, final ClientFamilyMembersData familyMemberOptions,
             final EnumOptionData legalForm, final Collection<AddressData> address, final Boolean isAddressEnabled,
             final List<DatatableData> datatables, final Boolean isStaff,
-            final Set<ClientCollateralManagementData> clientCollateralManagements, final Collection<CodeValueBusinessData> locationValues) {
+            final Set<ClientCollateralManagementData> clientCollateralManagements,
+            // final Collection<CodeValueBusinessData> countryValues,
+            // final Collection<CodeValueBusinessData> stateValues,
+            final Collection<CodeValueBusinessData> lgaValues) {
         this.accountNo = accountNo;
         this.status = status;
         if (status != null) {
@@ -334,8 +283,9 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
         this.isAddressEnabled = isAddressEnabled;
         this.datatables = datatables;
         this.clientCollateralManagements = clientCollateralManagements;
-        this.locationValues = locationValues;
-        add options
+        // this.countryValues = countryValues;
+        // this.stateValues = stateValues;
+        this.lgaValues = lgaValues;
     }
 
     public Long id() {

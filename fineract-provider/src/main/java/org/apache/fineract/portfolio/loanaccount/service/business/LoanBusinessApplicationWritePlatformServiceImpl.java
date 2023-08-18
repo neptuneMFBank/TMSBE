@@ -383,7 +383,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                         throw new GeneralPlatformDomainRuleException(
                                 "error.msg.loan.submitted.date.should.be.after.topup.loan.disbursal.date",
                                 "Submitted date of this loan application " + newLoanApplication.getSubmittedOnDate()
-                                + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
+                                        + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
                     }
                     if (!loanToClose.getCurrencyCode().equals(newLoanApplication.getCurrencyCode())) {
                         throw new GeneralPlatformDomainRuleException("error.msg.loan.to.be.closed.has.different.currency",
@@ -394,8 +394,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                         throw new GeneralPlatformDomainRuleException(
                                 "error.msg.loan.disbursal.date.should.be.after.last.transaction.date.of.loan.to.be.closed",
                                 "Disbursal date of this loan application " + newLoanApplication.getDisbursementDate()
-                                + " should be after last transaction date of loan to be closed "
-                                + lastUserTransactionOnLoanToClose);
+                                        + " should be after last transaction date of loan to be closed "
+                                        + lastUserTransactionOnLoanToClose);
                     }
                     BigDecimal loanOutstanding = this.loanReadPlatformService.retrieveLoanPrePaymentTemplate(LoanTransactionType.REPAYMENT,
                             loanIdToClose, newLoanApplication.getDisbursementDate()).getAmount();
@@ -647,8 +647,9 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             } else {
                 exitingLoanOther = LoanOther.instance(activationChannel, loanApplication);
             }
-            if (exitingLoanOther.getActivationChannel() == null && command.isChangeInLongParameterNamed(activationChannelIdParam, existingLoanActivationChannelId)) {
-                //only update if ActivationChannel is empty
+            if (exitingLoanOther.getActivationChannel() == null
+                    && command.isChangeInLongParameterNamed(activationChannelIdParam, existingLoanActivationChannelId)) {
+                // only update if ActivationChannel is empty
                 final Long newValue = command.longValueOfParameterNamed(activationChannelIdParam);
                 changes.put(LoanBusinessApiConstants.activationChannelNameParam, newValue);
                 activationChannel = this.loanAssembler.findCodeValueByIdIfProvided(activationChannelId);
@@ -691,7 +692,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                     throw new GeneralPlatformDomainRuleException(
                             "error.msg.loan.applied.or.to.be.disbursed.can.not.co-exist.with.the.loan.already.active.to.this.client",
                             "This loan could not be applied/disbursed as the loan and `" + restrictedProduct
-                            + "` are not allowed to co-exist");
+                                    + "` are not allowed to co-exist");
                 }
             }
         }
@@ -785,10 +786,10 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         switch (recalculationFrequencyType) {
             case DAILY:
                 calendarFrequencyType = CalendarFrequencyType.DAILY;
-                break;
+            break;
             case MONTHLY:
                 calendarFrequencyType = CalendarFrequencyType.MONTHLY;
-                break;
+            break;
             case SAME_AS_REPAYMENT_PERIOD:
                 frequency = loan.repaymentScheduleDetail().getRepayEvery();
                 calendarFrequencyType = CalendarFrequencyType.from(loan.repaymentScheduleDetail().getRepaymentPeriodFrequencyType());
@@ -796,12 +797,12 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                 if (updatedRepeatsOnDay == null) {
                     updatedRepeatsOnDay = calendarStartDate.get(ChronoField.DAY_OF_WEEK);
                 }
-                break;
+            break;
             case WEEKLY:
                 calendarFrequencyType = CalendarFrequencyType.WEEKLY;
-                break;
+            break;
             default:
-                break;
+            break;
         }
 
         final Calendar calendar = Calendar.createRepeatingCalendar(title, calendarStartDate, CalendarType.COLLECTION.getValue(),
@@ -846,8 +847,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                     .fetchDisbursementData(command.parsedJson().getAsJsonObject());
 
             /**
-             * Stores all charges which are passed in during modify loan
-             * application
+             * Stores all charges which are passed in during modify loan application
              *
              */
             final Set<LoanCharge> possiblyModifedLoanCharges = this.loanChargeAssembler.fromParsedJson(command.parsedJson(),
@@ -863,8 +863,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             }
 
             /**
-             * If there are any charges already present, which are now not
-             * passed in as a part of the request, deem the charges as modified
+             * If there are any charges already present, which are now not passed in as a part of the request, deem the
+             * charges as modified
              *
              */
             if (!possiblyModifedLoanCharges.isEmpty()) {
@@ -874,8 +874,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             }
 
             /**
-             * If any new charges are added or values of existing charges are
-             * modified
+             * If any new charges are added or values of existing charges are modified
              *
              */
             for (LoanCharge loanCharge : possiblyModifedLoanCharges) {
@@ -1007,7 +1006,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                             throw new GeneralPlatformDomainRuleException(
                                     "error.msg.loan.submitted.date.should.be.after.topup.loan.disbursal.date",
                                     "Submitted date of this loan application " + existingLoanApplication.getSubmittedOnDate()
-                                    + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
+                                            + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
                         }
                         if (!loanToClose.getCurrencyCode().equals(existingLoanApplication.getCurrencyCode())) {
                             throw new GeneralPlatformDomainRuleException("error.msg.loan.to.be.closed.has.different.currency",
@@ -1018,8 +1017,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                             throw new GeneralPlatformDomainRuleException(
                                     "error.msg.loan.disbursal.date.should.be.after.last.transaction.date.of.loan.to.be.closed",
                                     "Disbursal date of this loan application " + existingLoanApplication.getDisbursementDate()
-                                    + " should be after last transaction date of loan to be closed "
-                                    + lastUserTransactionOnLoanToClose);
+                                            + " should be after last transaction date of loan to be closed "
+                                            + lastUserTransactionOnLoanToClose);
                         }
                         BigDecimal loanOutstanding = this.loanReadPlatformService.retrieveLoanPrePaymentTemplate(
                                 LoanTransactionType.REPAYMENT, loanIdToClose, existingLoanApplication.getDisbursementDate()).getAmount();

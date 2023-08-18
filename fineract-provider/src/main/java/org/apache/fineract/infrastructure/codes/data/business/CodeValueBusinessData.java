@@ -18,7 +18,6 @@
  */
 package org.apache.fineract.infrastructure.codes.data.business;
 
-import org.apache.fineract.infrastructure.codes.data.*;
 import java.io.Serializable;
 
 /**

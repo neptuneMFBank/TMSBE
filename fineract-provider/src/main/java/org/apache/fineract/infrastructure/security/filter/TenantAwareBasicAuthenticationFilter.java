@@ -20,11 +20,14 @@ package org.apache.fineract.infrastructure.security.filter;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.fineract.infrastructure.businessdate.domain.BusinessDateType;
 import org.apache.fineract.infrastructure.businessdate.service.BusinessDateReadPlatformService;
@@ -62,7 +65,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  *
  * If multi-tenant and basic auth credentials are invalid, a http error response is returned.
  */
-
 @ConditionalOnProperty("fineract.security.basicauth.enabled")
 public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
@@ -168,6 +170,9 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
             throws IOException {
         super.onSuccessfulAuthentication(request, response, authResult);
         AppUser user = (AppUser) authResult.getPrincipal();
+        String pathURL = request.getRequestURI();
+
+        restrictAppAccessWhenPasswordResetNotChanged(pathURL, user);
 
         if (notificationReadPlatformService.hasUnreadNotifications(user.getId())) {
             response.addHeader("X-Notification-Refresh", "true");
@@ -175,13 +180,23 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
             response.addHeader("X-Notification-Refresh", "false");
         }
 
-        String pathURL = request.getRequestURI();
+        // String pathURL = request.getRequestURI();
         boolean isSelfServiceRequest = pathURL != null && pathURL.contains("/self/");
 
         boolean notAllowed = (isSelfServiceRequest && !user.isSelfServiceUser()) || (!isSelfServiceRequest && user.isSelfServiceUser());
 
         if (notAllowed) {
             throw new BadCredentialsException("User not authorised to use the requested resource.");
+        }
+    }
+
+    protected void restrictAppAccessWhenPasswordResetNotChanged(String pathURL, AppUser user) throws BadCredentialsException {
+        List<String> listOfFreeEndPoints = Arrays.asList("/authentication", "/self/authentication", "/self/registration", "/twofactor",
+                "/users");
+        final boolean checkIfUserNeedsToChangePassword = listOfFreeEndPoints.stream()
+                .noneMatch(action -> StringUtils.containsIgnoreCase(action, pathURL));
+        if (checkIfUserNeedsToChangePassword && user.isFirstTimeLoginRemaining()) {
+            throw new BadCredentialsException("Access is restricted until password change process is complete.");
         }
     }
 }

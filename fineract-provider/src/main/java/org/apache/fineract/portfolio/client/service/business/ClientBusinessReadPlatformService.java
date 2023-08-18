@@ -21,10 +21,11 @@ package org.apache.fineract.portfolio.client.service.business;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.client.data.ClientData;
+import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
 
 public interface ClientBusinessReadPlatformService {
 
-    ClientData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly);
+    ClientBusinessData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly);
 
     Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
 }

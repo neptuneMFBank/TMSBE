@@ -61,8 +61,7 @@ public class CodeValueBusinessReadPlatformServiceImpl implements CodeValueBusine
             return CodeValueBusinessData.instance(id, value, position, description, isActive, mandatory, codeScore);
         }
     }
-    
-    
+
     @Override
     public Collection<CodeValueBusinessData> retrieveCodeValuesByCode(final String code) {
 
@@ -73,6 +72,5 @@ public class CodeValueBusinessReadPlatformServiceImpl implements CodeValueBusine
 
         return this.jdbcTemplate.query(sql, rm, new Object[] { code }); // NOSONAR
     }
-
 
 }

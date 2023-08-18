@@ -349,7 +349,8 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
         public String loanSchema() {
             return " l.id," + " l.external_id externalId," + " l.account_no accountNo,"
                     + " l.client_id clientId, c.display_name as clientName," + " l.group_id groupId, g.display_name as groupName,"
-                    + " l.product_id loanProductId, lp.name as loanProductName," + " l.loan_officer_id, s.display_name as loanOfficerName,"
+                    + " l.product_id loanProductId, lp.name as loanProductName,"
+                    + " l.loan_officer_id loanOfficerId, s.display_name as loanOfficerName,"
                     + " l.loanpurpose_cv_id, cv.code_value as loanPurposeName," + " l.loan_status_id lifeCycleStatusId,"
                     + " l.loan_type_enum loanType,"
                     + " l.principal_amount_proposed as proposedPrincipal, l.principal_amount as principal, l.approved_principal as approvedPrincipal,"

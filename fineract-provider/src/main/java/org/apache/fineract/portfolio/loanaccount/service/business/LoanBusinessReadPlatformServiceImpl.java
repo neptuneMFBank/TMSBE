@@ -351,7 +351,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
                     + " l.client_id clientId, c.display_name as clientName," + " l.group_id groupId, g.display_name as groupName,"
                     + " l.product_id loanProductId, lp.name as loanProductName,"
                     + " l.loan_officer_id loanOfficerId, s.display_name as loanOfficerName,"
-                    + " l.loanpurpose_cv_id, cv.code_value as loanPurposeName," + " l.loan_status_id lifeCycleStatusId,"
+                    + " l.loanpurpose_cv_id loanPurposeId, cv.code_value as loanPurposeName," + " l.loan_status_id lifeCycleStatusId,"
                     + " l.loan_type_enum loanType,"
                     + " l.principal_amount_proposed as proposedPrincipal, l.principal_amount as principal, l.approved_principal as approvedPrincipal,"
                     + " l.net_disbursal_amount netDisbursalAmount,"
@@ -366,7 +366,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
                     + " l.withdrawnon_date as withdrawnOnDate, wbu.username as withdrawnByUsername,"
                     + " l.approvedon_date as approvedOnDate, abu.username as approvedByUsername,"
                     + " l.disbursedon_date as actualDisbursementDate, dbu.username as disbursedByUsername,"
-                    + " l.closedon_date as closedOnDate, cbu.username as closedByUsername, cbu.firstname as closedByFirstname, cbu.lastname as closedByLastname, l.writtenoffon_date as writtenOffOnDate "
+                    + " l.closedon_date as closedOnDate, cbu.username as closedByUsername, l.writtenoffon_date as writtenOffOnDate "
                     + " FROM m_loan_view l " + " left join m_loan_arrears_aging la on la.loan_id = l.id" //
                     + " left join m_client c on c.id = l.client_id " + " left join m_group g on g.id = l.group_id"
                     + " join m_product_loan lp on lp.id = l.product_id" + " left join m_staff s on s.id = l.loan_officer_id"
@@ -412,42 +412,30 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
 
             final LocalDate submittedOnDate = JdbcSupport.getLocalDate(rs, "submittedOnDate");
             final String submittedByUsername = rs.getString("submittedByUsername");
-            final String submittedByFirstname = rs.getString("submittedByFirstname");
-            final String submittedByLastname = rs.getString("submittedByLastname");
 
             final LocalDate rejectedOnDate = JdbcSupport.getLocalDate(rs, "rejectedOnDate");
             final String rejectedByUsername = rs.getString("rejectedByUsername");
-            final String rejectedByFirstname = rs.getString("rejectedByFirstname");
-            final String rejectedByLastname = rs.getString("rejectedByLastname");
 
             final LocalDate withdrawnOnDate = JdbcSupport.getLocalDate(rs, "withdrawnOnDate");
             final String withdrawnByUsername = rs.getString("withdrawnByUsername");
-            final String withdrawnByFirstname = rs.getString("withdrawnByFirstname");
-            final String withdrawnByLastname = rs.getString("withdrawnByLastname");
 
             final LocalDate approvedOnDate = JdbcSupport.getLocalDate(rs, "approvedOnDate");
             final String approvedByUsername = rs.getString("approvedByUsername");
-            final String approvedByFirstname = rs.getString("approvedByFirstname");
-            final String approvedByLastname = rs.getString("approvedByLastname");
 
             final LocalDate actualDisbursementDate = JdbcSupport.getLocalDate(rs, "actualDisbursementDate");
             final String disbursedByUsername = rs.getString("disbursedByUsername");
-            final String disbursedByFirstname = rs.getString("disbursedByFirstname");
-            final String disbursedByLastname = rs.getString("disbursedByLastname");
 
             final LocalDate closedOnDate = JdbcSupport.getLocalDate(rs, "closedOnDate");
             final String closedByUsername = rs.getString("closedByUsername");
-            final String closedByFirstname = rs.getString("closedByFirstname");
-            final String closedByLastname = rs.getString("closedByLastname");
 
             final LocalDate writtenOffOnDate = JdbcSupport.getLocalDate(rs, "writtenOffOnDate");
 
             final LoanApplicationTimelineData timeline = new LoanApplicationTimelineData(submittedOnDate, submittedByUsername,
-                    submittedByFirstname, submittedByLastname, rejectedOnDate, rejectedByUsername, rejectedByFirstname, rejectedByLastname,
-                    withdrawnOnDate, withdrawnByUsername, withdrawnByFirstname, withdrawnByLastname, approvedOnDate, approvedByUsername,
-                    approvedByFirstname, approvedByLastname, null, actualDisbursementDate, disbursedByUsername, disbursedByFirstname,
-                    disbursedByLastname, closedOnDate, closedByUsername, closedByFirstname, closedByLastname, null, writtenOffOnDate,
-                    closedByUsername, closedByFirstname, closedByLastname);
+                    null, null, rejectedOnDate, rejectedByUsername, null, null,
+                    withdrawnOnDate, withdrawnByUsername, null, null, approvedOnDate, approvedByUsername,
+                    null, null, null, actualDisbursementDate, disbursedByUsername, null,
+                    null, closedOnDate, closedByUsername, null, null, null, writtenOffOnDate,
+                    closedByUsername, null, null);
 
             final BigDecimal principal = rs.getBigDecimal("principal");
             final BigDecimal approvedPrincipal = rs.getBigDecimal("approvedPrincipal");

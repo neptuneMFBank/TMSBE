@@ -632,35 +632,37 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         CodeValue activationChannel = null;
         LOG.info("command: {}", command.json());
         final Long loanId = loanApplication.getId();
+        Long activationChannelId = null;
         final String activationChannelIdParam = LoanBusinessApiConstants.activationChannelIdParam;
         if (this.fromJsonHelper.parameterExists(activationChannelIdParam, command.parsedJson())) {
-            final Long activationChannelId = this.fromJsonHelper.extractLongNamed(activationChannelIdParam, command.parsedJson());
+            activationChannelId = this.fromJsonHelper.extractLongNamed(activationChannelIdParam, command.parsedJson());
             LOG.info("command: activationChannelId {}:", activationChannelId);
-            if (isUpdate) {
-                LoanOther exitingLoanOther = this.loanOtherRepositoryWrapper.findOneByLoanId(loanId);
-
-                Long existingLoanActivationChannelId = null;
-                if (exitingLoanOther != null) {
-                    existingLoanActivationChannelId = exitingLoanOther.getActivationChannel().getId();
-                } else {
-                    exitingLoanOther = LoanOther.instance(activationChannel, loanApplication);
-                }
-                if (command.isChangeInLongParameterNamed(activationChannelIdParam, existingLoanActivationChannelId)) {
-                    final Long newValue = command.longValueOfParameterNamed(activationChannelIdParam);
-                    changes.put(LoanBusinessApiConstants.activationChannelNameParam, newValue);
-                    activationChannel = this.loanAssembler.findCodeValueByIdIfProvided(activationChannelId);
-                    exitingLoanOther.setActivationChannel(activationChannel);
-                }
-                LOG.info("command: 2");
-                loanOther = exitingLoanOther;
-            } else {
-                LOG.info("command: 1");
-                activationChannel = this.loanAssembler.findCodeValueByIdIfProvided(activationChannelId);
-                loanOther = LoanOther.instance(activationChannel, loanApplication);
-            }
-            LOG.info("command: 3");
-            this.loanOtherRepositoryWrapper.saveAndFlush(loanOther);
         }
+        if (isUpdate) {
+            LoanOther exitingLoanOther = this.loanOtherRepositoryWrapper.findOneByLoanId(loanId);
+
+            Long existingLoanActivationChannelId = null;
+            if (exitingLoanOther != null) {
+                existingLoanActivationChannelId = exitingLoanOther.getActivationChannel().getId();
+            } else {
+                exitingLoanOther = LoanOther.instance(activationChannel, loanApplication);
+            }
+            if (exitingLoanOther.getActivationChannel() == null && command.isChangeInLongParameterNamed(activationChannelIdParam, existingLoanActivationChannelId)) {
+                //only update if ActivationChannel is empty
+                final Long newValue = command.longValueOfParameterNamed(activationChannelIdParam);
+                changes.put(LoanBusinessApiConstants.activationChannelNameParam, newValue);
+                activationChannel = this.loanAssembler.findCodeValueByIdIfProvided(activationChannelId);
+                exitingLoanOther.setActivationChannel(activationChannel);
+            }
+            LOG.info("command: 2");
+            loanOther = exitingLoanOther;
+        } else {
+            LOG.info("command: 1");
+            activationChannel = this.loanAssembler.findCodeValueByIdIfProvided(activationChannelId);
+            loanOther = LoanOther.instance(activationChannel, loanApplication);
+        }
+        LOG.info("command: 3");
+        this.loanOtherRepositoryWrapper.saveAndFlush(loanOther);
     }
 
     public void checkForProductMixRestrictions(final Loan loan) {

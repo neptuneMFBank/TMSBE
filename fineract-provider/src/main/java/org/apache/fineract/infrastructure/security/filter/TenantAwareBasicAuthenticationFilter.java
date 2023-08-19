@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,8 @@ import org.apache.fineract.infrastructure.cache.domain.CacheType;
 import org.apache.fineract.infrastructure.cache.service.CacheWritePlatformService;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.domain.FineractPlatformTenant;
+import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
+import org.apache.fineract.infrastructure.core.exception.PlatformServiceUnavailableException;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.security.data.PlatformRequestLog;
@@ -56,14 +59,17 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 /**
  * A customised version of spring security's {@link BasicAuthenticationFilter}.
  *
- * This filter is responsible for extracting multi-tenant and basic auth credentials from the request and checking that
- * the details provided are valid.
+ * This filter is responsible for extracting multi-tenant and basic auth
+ * credentials from the request and checking that the details provided are
+ * valid.
  *
- * If multi-tenant and basic auth credentials are valid, the details of the tenant are stored in
- * {@link FineractPlatformTenant} and stored in a {@link ThreadLocal} variable for this request using
+ * If multi-tenant and basic auth credentials are valid, the details of the
+ * tenant are stored in {@link FineractPlatformTenant} and stored in a
+ * {@link ThreadLocal} variable for this request using
  * {@link ThreadLocalContextUtil}.
  *
- * If multi-tenant and basic auth credentials are invalid, a http error response is returned.
+ * If multi-tenant and basic auth credentials are invalid, a http error response
+ * is returned.
  */
 @ConditionalOnProperty("fineract.security.basicauth.enabled")
 public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFilter {
@@ -172,7 +178,7 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
         AppUser user = (AppUser) authResult.getPrincipal();
         String pathURL = request.getRequestURI();
 
-        restrictAppAccessWhenPasswordResetNotChanged(pathURL, user);
+        restrictAppAccessWhenPasswordResetNotChanged(pathURL, user, response);
 
         if (notificationReadPlatformService.hasUnreadNotifications(user.getId())) {
             response.addHeader("X-Notification-Refresh", "true");
@@ -190,13 +196,19 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
         }
     }
 
-    protected void restrictAppAccessWhenPasswordResetNotChanged(String pathURL, AppUser user) throws BadCredentialsException {
-        List<String> listOfFreeEndPoints = Arrays.asList("/authentication", "/self/authentication", "/self/registration", "/twofactor",
-                "/users");
+    protected void restrictAppAccessWhenPasswordResetNotChanged(String pathURL, AppUser user, HttpServletResponse response) {
+        LOG.info("pathURL: {}", pathURL);
+        List<String> listOfFreeEndPoints = Arrays.asList("authentication", "self/authentication", "self/registration", "twofactor",
+                "users");
         final boolean checkIfUserNeedsToChangePassword = listOfFreeEndPoints.stream()
                 .noneMatch(action -> StringUtils.containsIgnoreCase(action, pathURL));
         if (checkIfUserNeedsToChangePassword && user.isFirstTimeLoginRemaining()) {
-            throw new BadCredentialsException("Access is restricted until password change process is complete.");
+            try {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access is restricted until password change process is complete.");
+            } catch (IOException ex) {
+                LOG.warn("restrictAppAccessWhenPasswordResetNotChanged Error: {}", ex);
+            }
+            throw new GeneralPlatformDomainRuleException("error.msg.restrict", "Access is restricted until password change process is complete.");
         }
     }
 }

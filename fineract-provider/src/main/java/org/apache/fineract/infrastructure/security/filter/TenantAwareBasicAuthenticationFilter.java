@@ -176,7 +176,15 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
         AppUser user = (AppUser) authResult.getPrincipal();
         String pathURL = request.getRequestURI();
 
-        restrictAppAccessWhenPasswordResetNotChanged(pathURL, user, response);
+        final boolean checkIfUserNeedsToChangePassword = restrictAppAccessWhenPasswordResetNotChanged(pathURL, user, response);
+        if (checkIfUserNeedsToChangePassword && user.isFirstTimeLoginRemaining()) {
+            try {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access is restricted until password change process is complete.");
+                return;
+            } catch (IOException ex) {
+                LOG.warn("restrictAppAccessWhenPasswordResetNotChanged Error: {}", ex);
+            }
+        }
 
         if (notificationReadPlatformService.hasUnreadNotifications(user.getId())) {
             response.addHeader("X-Notification-Refresh", "true");
@@ -194,19 +202,11 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
         }
     }
 
-    protected void restrictAppAccessWhenPasswordResetNotChanged(String pathURL, AppUser user, HttpServletResponse response) {
+    protected boolean restrictAppAccessWhenPasswordResetNotChanged(String pathURL, AppUser user, HttpServletResponse response) {
         LOG.info("pathURL: {}", pathURL);
-        List<String> listOfFreeEndPoints = Arrays.asList("authentication", "self/authentication", "self/registration", "twofactor",
+        List<String> listOfFreeEndPoints = Arrays.asList("/authentication", "/self/authentication", "/self/registration", "/twofactor",
                 "users");
-        final boolean checkIfUserNeedsToChangePassword = listOfFreeEndPoints.stream()
-                .noneMatch(action -> StringUtils.containsIgnoreCase(action, pathURL));
-        if (checkIfUserNeedsToChangePassword && user.isFirstTimeLoginRemaining()) {
-            try {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access is restricted until password change process is complete.");
-            } catch (IOException ex) {
-                LOG.warn("restrictAppAccessWhenPasswordResetNotChanged Error: {}", ex);
-            }
-            throw new GeneralPlatformDomainRuleException("error.msg.restrict", "Access is restricted until password change process is complete.");
-        }
+        return listOfFreeEndPoints.stream()
+                .noneMatch(action -> StringUtils.containsIgnoreCase(pathURL, action));
     }
 }

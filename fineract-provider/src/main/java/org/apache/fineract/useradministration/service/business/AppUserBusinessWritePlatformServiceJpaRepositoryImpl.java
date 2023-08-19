@@ -46,6 +46,7 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
         @CacheEvict(value = "usersBusinessPasswordByUsername", allEntries = true)})
     public CommandProcessingResult updateUserPassword(final JsonCommand command) {
         final AppUser appUser = this.context.authenticatedUser();
+        this.fromApiJsonDeserializer.validateForUpdatePassword(command.json());
         final Long userId = appUser.getId();
         return appUserWritePlatformService.updateUser(userId, command);
     }

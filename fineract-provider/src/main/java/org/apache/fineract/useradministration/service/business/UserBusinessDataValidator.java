@@ -34,6 +34,8 @@ import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
 import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.apache.fineract.useradministration.domain.PasswordValidationPolicy;
+import org.apache.fineract.useradministration.domain.PasswordValidationPolicyRepository;
 import org.apache.fineract.useradministration.service.AppUserConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -45,15 +47,21 @@ public final class UserBusinessDataValidator {
      * The parameters supported for this command.
      */
     private final Set<String> supportedParameters = new HashSet<>(Arrays.asList("username", "firstname", "lastname",
-             "email", "officeId", "notSelectedRoles", "roles", "sendPasswordToEmail", "staffId", "passwordNeverExpires",
+            "email", "officeId", "notSelectedRoles", "roles", "sendPasswordToEmail", "staffId", "passwordNeverExpires",
             AppUserConstants.IS_SELF_SERVICE_USER, AppUserConstants.CLIENTS));
 
+    private final Set<String> supportedParametersPassword = new HashSet<>(Arrays.asList("password",
+            "repeatPassword"));
+
     private final FromJsonHelper fromApiJsonHelper;
+    private final PasswordValidationPolicyRepository passwordValidationPolicy;
 
     @Autowired
-    public UserBusinessDataValidator(final FromJsonHelper fromApiJsonHelper
+    public UserBusinessDataValidator(final FromJsonHelper fromApiJsonHelper,
+            final PasswordValidationPolicyRepository passwordValidationPolicy
     ) {
         this.fromApiJsonHelper = fromApiJsonHelper;
+        this.passwordValidationPolicy = passwordValidationPolicy;
     }
 
     private void throwExceptionIfValidationWarningsExist(final List<ApiParameterError> dataValidationErrors) {
@@ -137,6 +145,35 @@ public final class UserBusinessDataValidator {
                     baseDataValidator.reset().parameter(AppUserConstants.CLIENTS).value(clientId).longGreaterThanZero();
                 }
             }
+        }
+
+        throwExceptionIfValidationWarningsExist(dataValidationErrors);
+    }
+
+    public void validateForUpdatePassword(final String json) {
+        if (StringUtils.isBlank(json)) {
+            throw new InvalidJsonException();
+        }
+
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParametersPassword);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
+
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        final String password = this.fromApiJsonHelper.extractStringNamed("password", element);
+        final String repeatPassword = this.fromApiJsonHelper.extractStringNamed("repeatPassword", element);
+
+        final PasswordValidationPolicy validationPolicy = this.passwordValidationPolicy.findActivePasswordValidationPolicy();
+        final String regex = validationPolicy.getRegex();
+        final String description = validationPolicy.getDescription();
+        baseDataValidator.reset().parameter("password").value(password).matchesRegularExpression(regex, description);
+
+        if (StringUtils.isNotBlank(password)) {
+            baseDataValidator.reset().parameter("password").value(password).equalToParameter("repeatPassword", repeatPassword);
         }
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);

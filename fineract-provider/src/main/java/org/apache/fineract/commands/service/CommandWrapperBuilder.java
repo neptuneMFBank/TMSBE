@@ -3503,4 +3503,19 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder updateUserPassword() {
+        this.actionName = "UPDATE_PASSWORD";
+        this.entityName = "USER";
+        this.entityId = null;
+        this.href = "/users/business/change-password";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateUserInfo(final Long userId) {
+        this.actionName = "UPDATE_INFO";
+        this.entityName = "USER";
+        this.entityId = userId;
+        this.href = "/users/business/" + userId;
+        return this;
+    }
 }

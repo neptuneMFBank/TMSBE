@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +36,6 @@ import org.apache.fineract.infrastructure.cache.service.CacheWritePlatformServic
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.domain.FineractPlatformTenant;
 import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
-import org.apache.fineract.infrastructure.core.exception.PlatformServiceUnavailableException;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.security.data.PlatformRequestLog;

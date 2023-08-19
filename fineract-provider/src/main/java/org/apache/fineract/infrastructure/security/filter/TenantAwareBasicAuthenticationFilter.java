@@ -178,6 +178,7 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
         final boolean checkIfUserNeedsToChangePassword = restrictAppAccessWhenPasswordResetNotChanged(pathURL, user, response);
         if (checkIfUserNeedsToChangePassword && user.isFirstTimeLoginRemaining()) {
             try {
+                response.addHeader("FORBIDDEN_ACCESS", "Access is restricted until password change process is complete.");
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access is restricted until password change process is complete.");
                 return;
             } catch (IOException ex) {

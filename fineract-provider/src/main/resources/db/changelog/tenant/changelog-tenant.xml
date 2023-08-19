@@ -54,4 +54,6 @@
     <include file="parts/0037_m_update_m_codes.sql" relativeToChangelogFile="true" />
     <include file="parts/0038_m_loan_other.sql" relativeToChangelogFile="true" />
     <include file="parts/0039_m_update_lga_codes_value.sql" relativeToChangelogFile="true" />
+    <include file="parts/0040_m_change_password_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0041_m_change_user_info_permission.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

@@ -95,7 +95,8 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
     // template
     // private final Collection<CodeValueBusinessData> countryValues;
     // private final Collection<CodeValueBusinessData> stateValues;
-    private final Collection<CodeValueBusinessData> lgaValues;
+    //private final Collection<CodeValueBusinessData> lgaValues;
+    private final Collection<CodeValueBusinessData> activationChannelOptions;
     private final Collection<OfficeData> officeOptions;
     private final Collection<StaffData> staffOptions;
     private final Collection<CodeValueData> narrations;
@@ -151,9 +152,11 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
             final Collection<CodeValueData> clientNonPersonMainBusinessLineOptions, final List<EnumOptionData> clientLegalFormOptions,
             final ClientFamilyMembersData familyMemberOptions, final Collection<AddressData> address, final Boolean isAddressEnabled,
             final List<DatatableData> datatables,
-            // final Collection<CodeValueBusinessData> countryValues,
-            // final Collection<CodeValueBusinessData> stateValues,
-            final Collection<CodeValueBusinessData> lgaValues) {
+             final Collection<CodeValueBusinessData> activationChannelOptions
+    // ,final Collection<CodeValueBusinessData> countryValues,
+    // final Collection<CodeValueBusinessData> stateValues,
+    //final Collection<CodeValueBusinessData> lgaValues
+    ) {
         final String accountNo = null;
         final EnumOptionData status = null;
         final CodeValueData subStatus = null;
@@ -193,7 +196,10 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions, clientNonPersonMainBusinessLineOptions,
                 clientNonPersonDetails, clientLegalFormOptions, familyMemberOptions, legalForm, address, isAddressEnabled, datatables,
                 isStaff, clientCollateralManagements // , countryValues, stateValues
-                , lgaValues);
+                //                , lgaValues
+                ,
+                 activationChannelOptions
+        );
 
     }
 
@@ -214,9 +220,11 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
             final EnumOptionData legalForm, final Collection<AddressData> address, final Boolean isAddressEnabled,
             final List<DatatableData> datatables, final Boolean isStaff,
             final Set<ClientCollateralManagementData> clientCollateralManagements,
-            // final Collection<CodeValueBusinessData> countryValues,
-            // final Collection<CodeValueBusinessData> stateValues,
-            final Collection<CodeValueBusinessData> lgaValues) {
+             final Collection<CodeValueBusinessData> activationChannelOptions
+    //, final Collection<CodeValueBusinessData> countryValues,
+    // final Collection<CodeValueBusinessData> stateValues,
+    //            final Collection<CodeValueBusinessData> lgaValues
+    ) {
         this.accountNo = accountNo;
         this.status = status;
         if (status != null) {
@@ -285,7 +293,8 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
         this.clientCollateralManagements = clientCollateralManagements;
         // this.countryValues = countryValues;
         // this.stateValues = stateValues;
-        this.lgaValues = lgaValues;
+//        this.lgaValues = lgaValues;
+        this.activationChannelOptions = activationChannelOptions;
     }
 
     public Long id() {

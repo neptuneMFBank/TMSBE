@@ -56,4 +56,10 @@
     <include file="parts/0039_m_update_lga_codes_value.sql" relativeToChangelogFile="true" />
     <include file="parts/0040_m_change_password_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0041_m_change_user_info_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0042_m_resisdent_codes.sql" relativeToChangelogFile="true" />
+    <include file="parts/0043_m_address_other.sql" relativeToChangelogFile="true" />
+    <include file="parts/0044_m_change_address_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0045_m_insert_address_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0046_m_create_client_business_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0047_m_update_client_business_permission.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

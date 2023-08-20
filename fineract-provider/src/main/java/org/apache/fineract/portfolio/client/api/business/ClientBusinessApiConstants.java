@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.fineract.portfolio.client.data.ClientData;
 
-@SuppressWarnings({ "HideUtilityClassConstructor" })
+@SuppressWarnings({"HideUtilityClassConstructor"})
 public class ClientBusinessApiConstants {
 
     public static final String CLIENT_RESOURCE_NAME = "client";
@@ -190,10 +190,14 @@ public class ClientBusinessApiConstants {
     public static final String COUNTRYPARAM = "COUNTRY";
     public static final String STATEPARAM = "STATE";
     public static final String LGAPARAM = "LGA";
+    public static final String ResidentPARAM = "Resident";
+    public static final String ActivationChannelPARAM = "ActivationChannel";
+    public static final String activationChannelOptionsPARAM = "activationChannelOptions";
 
     /**
-     * These parameters will match the class level parameters of {@link ClientData}. Where possible, we try to get
-     * response parameters to match those of request parameters.
+     * These parameters will match the class level parameters of
+     * {@link ClientData}. Where possible, we try to get response parameters to
+     * match those of request parameters.
      */
     protected static final Set<String> CLIENT_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idParamName, accountNoParamName,
             externalIdParamName, statusParamName, activeParamName, activationDateParamName, firstnameParamName, middlenameParamName,
@@ -201,7 +205,7 @@ public class ClientBusinessApiConstants {
             officeNameParamName, transferToOfficeIdParamName, transferToOfficeNameParamName, hierarchyParamName, imageIdParamName,
             imagePresentParamName, staffIdParamName, staffNameParamName, timelineParamName, groupsParamName, officeOptionsParamName,
             staffOptionsParamName, dateOfBirthParamName, genderParamName, clientTypeParamName, clientClassificationParamName,
-            legalFormParamName, clientNonPersonDetailsParamName, isStaffParamName, lgaValuesParamName));
+            legalFormParamName, clientNonPersonDetailsParamName, isStaffParamName, lgaValuesParamName, activationChannelOptionsPARAM));
 
     protected static final Set<String> CLIENT_CHARGES_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(chargeIdParamName,
             clientIdParamName, chargeNameParamName, penaltyParamName, chargeTimeTypeParamName, dueAsOfDateParamName,

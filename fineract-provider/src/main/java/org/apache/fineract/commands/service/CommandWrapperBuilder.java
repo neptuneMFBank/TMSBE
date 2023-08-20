@@ -3518,4 +3518,37 @@ public class CommandWrapperBuilder {
         this.href = "/users/business/" + userId;
         return this;
     }
+
+    public CommandWrapperBuilder addClientAddressBusiness(final long clientId, final long addressTypeId) {
+        this.actionName = "CREATE_BUSINESS";
+        this.entityName = "ADDRESS";
+        this.entityId = addressTypeId;
+        this.href = "/clients/business" + clientId + "/addresses";
+        this.clientId = clientId;
+        return this;
+    }
+
+    public CommandWrapperBuilder updateClientAddressBusiness(final long clientId) {
+        this.actionName = "UPDATE_BUSINESS";
+        this.entityName = "ADDRESS";
+        this.href = "/clients/business" + clientId + "/addresses";
+        this.clientId = clientId;
+        return this;
+    }
+
+    public CommandWrapperBuilder createClientBusiness() {
+        this.actionName = "CREATE_BUSINESS";
+        this.entityName = "CLIENT";
+        this.href = "/clients/business";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateClientBusiness(final Long clientId) {
+        this.actionName = "UPDATE_BUSINESS";
+        this.entityName = "CLIENT";
+        this.entityId = clientId;
+        this.clientId = clientId;
+        this.href = "/clients/business/" + clientId;
+        return this;
+    }
 }

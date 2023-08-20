@@ -16,33 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.useradministration.handler.business;
+package org.apache.fineract.portfolio.client.handler.business;
 
 import org.apache.fineract.commands.annotation.CommandType;
 import org.apache.fineract.commands.handler.NewCommandSourceHandler;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.useradministration.service.business.AppUserBusinessWritePlatformService;
+import org.apache.fineract.portfolio.client.service.business.ClientBusinessWritePlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@CommandType(entity = "USER", action = "UPDATE_INFO")
-public class UpdateUserInfoCommandHandler implements NewCommandSourceHandler {
+@CommandType(entity = "CLIENT", action = "CREATE_BUSINESS")
+public class CreateClientBusinessCommandHandler implements NewCommandSourceHandler {
 
-    private final AppUserBusinessWritePlatformService writePlatformService;
+    private final ClientBusinessWritePlatformService clientWritePlatformService;
 
     @Autowired
-    public UpdateUserInfoCommandHandler(final AppUserBusinessWritePlatformService writePlatformService) {
-        this.writePlatformService = writePlatformService;
+    public CreateClientBusinessCommandHandler(final ClientBusinessWritePlatformService clientWritePlatformService) {
+        this.clientWritePlatformService = clientWritePlatformService;
     }
 
     @Transactional
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
 
-        final Long userId = command.entityId();
-        return this.writePlatformService.updateUserInfo(userId, command);
+        return this.clientWritePlatformService.createClient(command);
     }
 }

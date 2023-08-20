@@ -154,13 +154,14 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         final List<CodeValueData> clientNonPersonMainBusinessLineOptions = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_NON_PERSON_MAIN_BUSINESS_LINE));
 
+        final List<CodeValueBusinessData> activationChannelOptions = new ArrayList<>(this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.ActivationChannelPARAM));
+
         // final List<CodeValueBusinessData> countryValuesOptions = new ArrayList<>(
         // this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.COUNTRYPARAM));
         // final List<CodeValueBusinessData> stateValuesOptions = new ArrayList<>(
         // this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.STATEPARAM));
-        final List<CodeValueBusinessData> lgaValuesOptions = new ArrayList<>(
-                this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.LGAPARAM));
-
+        //final List<CodeValueBusinessData> lgaValuesOptions = new ArrayList<>(
+        //      this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.LGAPARAM));
         final List<EnumOptionData> clientLegalFormOptions = ClientEnumerations.legalForm(LegalForm.values());
 
         final List<DatatableData> datatableTemplates = this.entityDatatableChecksReadService
@@ -170,8 +171,11 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 genderOptions, savingsProductDatas, clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions,
                 clientNonPersonMainBusinessLineOptions, clientLegalFormOptions, familyMemberOptions,
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
-                                                                                              // stateValuesOptions
-                , lgaValuesOptions);
+                // stateValuesOptions
+                //                , lgaValuesOptions
+                ,
+                 activationChannelOptions
+        );
     }
 
     @Override

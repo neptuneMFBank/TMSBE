@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 public class AddressOther extends AbstractPersistableCustom {
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "resisdence_status_id")
+    @JoinColumn(name = "residence_status_id")
     private CodeValue resisdenceStatus;
 
     @Column(name = "date_moved_in")

@@ -190,6 +190,18 @@ public class ClientBusinessApiConstants {
     public static final String COUNTRYPARAM = "COUNTRY";
     public static final String STATEPARAM = "STATE";
     public static final String LGAPARAM = "LGA";
+    public static final String ResidentPARAM = "Resident";
+    public static final String ActivationChannelPARAM = "ActivationChannel";
+    public static final String activationChannelOptionsPARAM = "activationChannelOptions";
+    public static final String bankPARAM = "Bank";
+    public static final String bankOptionsPARAM = "bankOptions";
+    public static final String bankAccountTypePARAM = "Bank Account Type";
+    public static final String bankAccountTypeOptionsPARAM = "bankAccountTypeOptions";
+
+    public static final String salaryRangePARAM = "Salary Range";
+    public static final String salaryRangeOptionsPARAM = "salaryRangeOptions";
+    public static final String employmentTypePARAM = "Employment Type";
+    public static final String employmentTypeOptionsPARAM = "employmentTypeOptions";
 
     /**
      * These parameters will match the class level parameters of {@link ClientData}. Where possible, we try to get
@@ -201,7 +213,9 @@ public class ClientBusinessApiConstants {
             officeNameParamName, transferToOfficeIdParamName, transferToOfficeNameParamName, hierarchyParamName, imageIdParamName,
             imagePresentParamName, staffIdParamName, staffNameParamName, timelineParamName, groupsParamName, officeOptionsParamName,
             staffOptionsParamName, dateOfBirthParamName, genderParamName, clientTypeParamName, clientClassificationParamName,
-            legalFormParamName, clientNonPersonDetailsParamName, isStaffParamName, lgaValuesParamName));
+            legalFormParamName, clientNonPersonDetailsParamName, isStaffParamName, lgaValuesParamName, activationChannelOptionsPARAM,
+            bankPARAM, bankOptionsPARAM, bankAccountTypePARAM, bankAccountTypeOptionsPARAM, salaryRangeOptionsPARAM,
+            employmentTypeOptionsPARAM));
 
     protected static final Set<String> CLIENT_CHARGES_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(chargeIdParamName,
             clientIdParamName, chargeNameParamName, penaltyParamName, chargeTimeTypeParamName, dueAsOfDateParamName,

@@ -16,16 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.service.business;
+package org.apache.fineract.portfolio.address.domain.business;
 
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.client.data.ClientData;
-import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface ClientBusinessReadPlatformService {
+public interface AddressOtherRepository extends JpaRepository<AddressOther, Long>, JpaSpecificationExecutor<AddressOther> {
 
-    ClientBusinessData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly, final Integer legalFormId);
+    Optional<AddressOther> findOneByAddressId(final Long addressId);
 
-    Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
 }

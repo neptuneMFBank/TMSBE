@@ -16,16 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.service.business;
+package org.apache.fineract.portfolio.address.service.business;
 
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.client.data.ClientData;
-import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
+import java.util.Collection;
+import org.apache.fineract.portfolio.address.data.business.AddressBusinessData;
 
-public interface ClientBusinessReadPlatformService {
+public interface AddressBusinessReadPlatformService {
 
-    ClientBusinessData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly, final Integer legalFormId);
+    Collection<AddressBusinessData> retrieveAllClientAddress(long clientid);
 
-    Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
+    Collection<AddressBusinessData> retrieveAddressbyType(long clientid, long typeid);
+
+    Collection<AddressBusinessData> retrieveAddressbyTypeAndStatus(long clientid, long typeid, String status);
+
+    Collection<AddressBusinessData> retrieveAddressbyStatus(long clientid, String status);
+
+    AddressBusinessData retrieveTemplate();
 }

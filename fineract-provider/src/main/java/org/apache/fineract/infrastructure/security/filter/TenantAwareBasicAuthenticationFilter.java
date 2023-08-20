@@ -56,17 +56,14 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 /**
  * A customised version of spring security's {@link BasicAuthenticationFilter}.
  *
- * This filter is responsible for extracting multi-tenant and basic auth
- * credentials from the request and checking that the details provided are
- * valid.
+ * This filter is responsible for extracting multi-tenant and basic auth credentials from the request and checking that
+ * the details provided are valid.
  *
- * If multi-tenant and basic auth credentials are valid, the details of the
- * tenant are stored in {@link FineractPlatformTenant} and stored in a
- * {@link ThreadLocal} variable for this request using
+ * If multi-tenant and basic auth credentials are valid, the details of the tenant are stored in
+ * {@link FineractPlatformTenant} and stored in a {@link ThreadLocal} variable for this request using
  * {@link ThreadLocalContextUtil}.
  *
- * If multi-tenant and basic auth credentials are invalid, a http error response
- * is returned.
+ * If multi-tenant and basic auth credentials are invalid, a http error response is returned.
  */
 @ConditionalOnProperty("fineract.security.basicauth.enabled")
 public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFilter {
@@ -206,7 +203,6 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
         LOG.info("pathURL: {}", pathURL);
         List<String> listOfFreeEndPoints = Arrays.asList("/authentication", "/self/authentication", "/self/registration", "/twofactor",
                 "users");
-        return listOfFreeEndPoints.stream()
-                .noneMatch(action -> StringUtils.containsIgnoreCase(pathURL, action));
+        return listOfFreeEndPoints.stream().noneMatch(action -> StringUtils.containsIgnoreCase(pathURL, action));
     }
 }

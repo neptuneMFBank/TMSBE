@@ -46,20 +46,18 @@ public final class UserBusinessDataValidator {
     /**
      * The parameters supported for this command.
      */
-    private final Set<String> supportedParameters = new HashSet<>(Arrays.asList("username", "firstname", "lastname",
-            "email", "officeId", "notSelectedRoles", "roles", "sendPasswordToEmail", "staffId", "passwordNeverExpires",
-            AppUserConstants.IS_SELF_SERVICE_USER, AppUserConstants.CLIENTS));
+    private final Set<String> supportedParameters = new HashSet<>(
+            Arrays.asList("username", "firstname", "lastname", "email", "officeId", "notSelectedRoles", "roles", "sendPasswordToEmail",
+                    "staffId", "passwordNeverExpires", AppUserConstants.IS_SELF_SERVICE_USER, AppUserConstants.CLIENTS));
 
-    private final Set<String> supportedParametersPassword = new HashSet<>(Arrays.asList("password",
-            "repeatPassword"));
+    private final Set<String> supportedParametersPassword = new HashSet<>(Arrays.asList("password", "repeatPassword"));
 
     private final FromJsonHelper fromApiJsonHelper;
     private final PasswordValidationPolicyRepository passwordValidationPolicy;
 
     @Autowired
     public UserBusinessDataValidator(final FromJsonHelper fromApiJsonHelper,
-            final PasswordValidationPolicyRepository passwordValidationPolicy
-    ) {
+            final PasswordValidationPolicyRepository passwordValidationPolicy) {
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.passwordValidationPolicy = passwordValidationPolicy;
     }
@@ -75,8 +73,7 @@ public final class UserBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -155,8 +152,7 @@ public final class UserBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParametersPassword);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();

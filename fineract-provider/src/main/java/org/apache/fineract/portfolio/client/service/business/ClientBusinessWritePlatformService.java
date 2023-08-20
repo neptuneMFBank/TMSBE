@@ -18,14 +18,12 @@
  */
 package org.apache.fineract.portfolio.client.service.business;
 
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.client.data.ClientData;
-import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
-public interface ClientBusinessReadPlatformService {
+public interface ClientBusinessWritePlatformService {
 
-    ClientBusinessData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly, final Integer legalFormId);
+    CommandProcessingResult createClient(JsonCommand command);
 
-    Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
+    CommandProcessingResult updateClient(Long clientId, JsonCommand command);
 }

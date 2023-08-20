@@ -16,16 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.service.business;
+package org.apache.fineract.portfolio.address.service.business;
 
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.client.data.ClientData;
-import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.portfolio.client.domain.Client;
 
-public interface ClientBusinessReadPlatformService {
+public interface AddressBusinessWritePlatformService {
 
-    ClientBusinessData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly, final Integer legalFormId);
+    CommandProcessingResult addClientAddress(Long clientId, Long addressTypeId, JsonCommand command);
 
-    Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
+    CommandProcessingResult addNewClientAddress(Client client, JsonCommand command);
+
+    CommandProcessingResult updateClientAddress(Long clientId, JsonCommand command);
 }

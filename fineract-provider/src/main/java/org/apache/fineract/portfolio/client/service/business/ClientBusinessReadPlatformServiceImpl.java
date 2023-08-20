@@ -107,7 +107,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     }
 
     @Override
-    public ClientBusinessData retrieveTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly) {
+    public ClientBusinessData retrieveTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly, final Integer legalFormId) {
         this.context.authenticatedUser();
 
         final Long defaultOfficeId = defaultToUsersOfficeIfNull(officeId);
@@ -154,28 +154,36 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         final List<CodeValueData> clientNonPersonMainBusinessLineOptions = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_NON_PERSON_MAIN_BUSINESS_LINE));
 
-        final List<CodeValueBusinessData> activationChannelOptions = new ArrayList<>(this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.ActivationChannelPARAM));
+        final List<CodeValueBusinessData> activationChannelOptions = new ArrayList<>(
+                this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.ActivationChannelPARAM));
+        final List<CodeValueBusinessData> bankAccountTypeOptions = new ArrayList<>(
+                this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.bankAccountTypePARAM));
+        final List<CodeValueBusinessData> bankOptions = new ArrayList<>(
+                this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.bankPARAM));
+        final List<CodeValueBusinessData> salaryRangeOptions = new ArrayList<>(
+                this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.salaryRangePARAM));
+        final List<CodeValueBusinessData> employmentTypeOptions = new ArrayList<>(
+                this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.employmentTypePARAM));
 
         // final List<CodeValueBusinessData> countryValuesOptions = new ArrayList<>(
         // this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.COUNTRYPARAM));
         // final List<CodeValueBusinessData> stateValuesOptions = new ArrayList<>(
         // this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.STATEPARAM));
-        //final List<CodeValueBusinessData> lgaValuesOptions = new ArrayList<>(
-        //      this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.LGAPARAM));
+        // final List<CodeValueBusinessData> lgaValuesOptions = new ArrayList<>(
+        // this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.LGAPARAM));
         final List<EnumOptionData> clientLegalFormOptions = ClientEnumerations.legalForm(LegalForm.values());
 
         final List<DatatableData> datatableTemplates = this.entityDatatableChecksReadService
                 .retrieveTemplates(StatusEnum.CREATE.getCode().longValue(), EntityTables.CLIENT.getName(), null);
 
+        // legalFormId => (to pick the documentType to be used)
         return ClientBusinessData.template(defaultOfficeId, LocalDate.now(DateUtils.getDateTimeZoneOfTenant()), offices, staffOptions, null,
                 genderOptions, savingsProductDatas, clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions,
                 clientNonPersonMainBusinessLineOptions, clientLegalFormOptions, familyMemberOptions,
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
-                //                , lgaValuesOptions
-                ,
-                 activationChannelOptions
-        );
+                // , lgaValuesOptions
+                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions);
     }
 
     @Override

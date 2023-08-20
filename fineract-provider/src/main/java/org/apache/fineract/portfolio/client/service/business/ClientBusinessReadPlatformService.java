@@ -25,7 +25,7 @@ import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
 
 public interface ClientBusinessReadPlatformService {
 
-    ClientBusinessData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly);
+    ClientBusinessData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly, final Integer legalFormId);
 
     Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
 }

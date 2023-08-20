@@ -23,4 +23,4 @@ CREATE TABLE `m_address_other`(
       `resisdence_status_id` INT NOT NULL,
       CONSTRAINT `m_address_other_FK_loan_id` FOREIGN KEY (`address_id`) REFERENCES `m_address` (`id`),
       CONSTRAINT `m_loan_other_FK_resisdence_status_id` FOREIGN KEY (`resisdence_status_id`) REFERENCES `m_code_value` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci

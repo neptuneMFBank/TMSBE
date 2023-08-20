@@ -47,8 +47,7 @@ public class AddressOther extends AbstractPersistableCustom {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
-    protected AddressOther() {
-    }
+    protected AddressOther() {}
 
     public static AddressOther instance(CodeValue resisdenceStatus, LocalDate dateMovedIn, Address address) {
         return new AddressOther(resisdenceStatus, dateMovedIn, address);
@@ -72,5 +71,12 @@ public class AddressOther extends AbstractPersistableCustom {
         return address;
     }
 
+    public void setResisdenceStatus(CodeValue resisdenceStatus) {
+        this.resisdenceStatus = resisdenceStatus;
+    }
+
+    public void setDateMovedIn(LocalDate dateMovedIn) {
+        this.dateMovedIn = dateMovedIn;
+    }
 
 }

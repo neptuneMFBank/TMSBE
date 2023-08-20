@@ -73,7 +73,7 @@ public class AddressBusinessWritePlatformServiceImpl implements AddressBusinessW
 
         final Address address = createAddress(jsonObject);
         addressRepository.save(address);
-        
+
         otherAddressProcess(jsonObject, address);
 
         final ClientAddress clientAddress = createClientAddress(client, jsonObject, addressTypeIdCodeValue, address);
@@ -113,7 +113,7 @@ public class AddressBusinessWritePlatformServiceImpl implements AddressBusinessW
     }
 
     protected void otherAddressProcess(final JsonObject jsonObject, final Address address) {
-        //creat m_address_other
+        // creat m_address_other
         final JsonElement jsonObjectOthers = this.fromJsonHelper.parse(jsonObject.toString());
         CodeValue resisdenceStatus = null;
         if (this.fromJsonHelper.parameterExists(residenceStatusIdParam, jsonObjectOthers)) {
@@ -124,7 +124,18 @@ public class AddressBusinessWritePlatformServiceImpl implements AddressBusinessW
         if (this.fromJsonHelper.parameterExists(dateMovedInParam, jsonObjectOthers)) {
             dateMovedIn = this.fromJsonHelper.extractLocalDateNamed(dateMovedInParam, jsonObjectOthers);
         }
-        final AddressOther addressOther = AddressOther.instance(resisdenceStatus, dateMovedIn, address);
+        AddressOther addressOther = this.addressOtherRepositoryWrapper.findOneByAddressId(address.getId());
+        if (addressOther == null) {
+            addressOther = AddressOther.instance(resisdenceStatus, dateMovedIn, address);
+        } else {
+            if (resisdenceStatus != null) {
+                addressOther.setResisdenceStatus(resisdenceStatus);
+            }
+            if (dateMovedIn != null) {
+                addressOther.setDateMovedIn(dateMovedIn);
+            }
+        }
+
         this.addressOtherRepositoryWrapper.saveAndFlush(addressOther);
     }
 

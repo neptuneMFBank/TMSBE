@@ -430,12 +430,10 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
 
             final LocalDate writtenOffOnDate = JdbcSupport.getLocalDate(rs, "writtenOffOnDate");
 
-            final LoanApplicationTimelineData timeline = new LoanApplicationTimelineData(submittedOnDate, submittedByUsername,
-                    null, null, rejectedOnDate, rejectedByUsername, null, null,
-                    withdrawnOnDate, withdrawnByUsername, null, null, approvedOnDate, approvedByUsername,
-                    null, null, null, actualDisbursementDate, disbursedByUsername, null,
-                    null, closedOnDate, closedByUsername, null, null, null, writtenOffOnDate,
-                    closedByUsername, null, null);
+            final LoanApplicationTimelineData timeline = new LoanApplicationTimelineData(submittedOnDate, submittedByUsername, null, null,
+                    rejectedOnDate, rejectedByUsername, null, null, withdrawnOnDate, withdrawnByUsername, null, null, approvedOnDate,
+                    approvedByUsername, null, null, null, actualDisbursementDate, disbursedByUsername, null, null, closedOnDate,
+                    closedByUsername, null, null, null, writtenOffOnDate, closedByUsername, null, null);
 
             final BigDecimal principal = rs.getBigDecimal("principal");
             final BigDecimal approvedPrincipal = rs.getBigDecimal("approvedPrincipal");
@@ -450,7 +448,6 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
 
             final Integer lifeCycleStatusId = JdbcSupport.getInteger(rs, "lifeCycleStatusId");
             final LoanStatusEnumData status = LoanEnumerations.status(lifeCycleStatusId);
-
 
             LoanSummaryData loanSummary = null;
             Boolean inArrears = false;
@@ -486,8 +483,8 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
                     loanOfficerName, currencyData, proposedPrincipal, principal, approvedPrincipal, netDisbursalAmount, null, null,
                     termFrequency, null, numberOfRepayments, null, null, null, null, null, null, null, interestRatePerPeriod, null,
                     annualInterestRate, null, false, null, null, null, null, null, null, null, null, null, timeline, loanSummary, null,
-                    null, null, null, null, null, null, null, inArrears, null, isNPA, null, null, false, null, null, null, null, null,
-                    null, canUseForTopup, isTopup, null, null, null, false, null);
+                    null, null, null, null, null, null, null, inArrears, null, isNPA, null, null, false, null, null, null, null, null, null,
+                    canUseForTopup, isTopup, null, null, null, false, null);
         }
     }
 

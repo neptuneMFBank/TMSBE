@@ -59,10 +59,11 @@ import org.springframework.stereotype.Component;
 @Tag(name = "Clients Address", description = "Address module is an optional module and can be configured into the system by using GlobalConfiguration setting: enable-address. In order to activate Address module, we need to enable the configuration, enable-address by setting its value to true.")
 public class ClientAddressBusinessApiResources {
 
-    private final Set<String> responseDataParameters = new HashSet<>(Arrays.asList("addressId", "street", "addressLine1", "addressLine2",
-            "addressLine3", "townVillage", "city", "countyDistrict", "stateProvinceId", "countryId", "postalCode", "latitude", "longitude",
-            "createdBy", "createdOn", "updatedBy", "updatedOn", "clientAddressId", "client_id", "address_id", "address_type_id", "isActive",
-            "fieldConfigurationId", "entity", "table", "field", "is_enabled", "is_mandatory", "validation_regex", "dateMovedIn", "residenceStatusId"));
+    private final Set<String> responseDataParameters = new HashSet<>(
+            Arrays.asList("addressId", "street", "addressLine1", "addressLine2", "addressLine3", "townVillage", "city", "countyDistrict",
+                    "stateProvinceId", "countryId", "postalCode", "latitude", "longitude", "createdBy", "createdOn", "updatedBy",
+                    "updatedOn", "clientAddressId", "client_id", "address_id", "address_type_id", "isActive", "fieldConfigurationId",
+                    "entity", "table", "field", "is_enabled", "is_mandatory", "validation_regex", "dateMovedIn", "residenceStatusId"));
     private final String resourceNameForPermissions = "Address";
     private final PlatformSecurityContext context;
     private final AddressBusinessReadPlatformServiceImpl readPlatformService;
@@ -71,8 +72,10 @@ public class ClientAddressBusinessApiResources {
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
 
     @Autowired
-    public ClientAddressBusinessApiResources(final PlatformSecurityContext context, final AddressBusinessReadPlatformServiceImpl readPlatformService,
-            final DefaultToApiJsonSerializer<AddressBusinessData> toApiJsonSerializer, final ApiRequestParameterHelper apiRequestParameterHelper,
+    public ClientAddressBusinessApiResources(final PlatformSecurityContext context,
+            final AddressBusinessReadPlatformServiceImpl readPlatformService,
+            final DefaultToApiJsonSerializer<AddressBusinessData> toApiJsonSerializer,
+            final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
         this.readPlatformService = readPlatformService;
@@ -83,8 +86,8 @@ public class ClientAddressBusinessApiResources {
 
     @GET
     @Path("addresses/template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String getAddressesTemplate(@Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
@@ -97,16 +100,17 @@ public class ClientAddressBusinessApiResources {
 
     @POST
     @Path("/{clientid}/addresses")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create an address for a Client", description = "Mandatory Fields : \n" + "type and clientId")
     @RequestBody(required = true
-    //        , content = @Content(schema = @Schema(implementation = ClientAddressApiResourcesSwagger.PostClientClientIdAddressesRequest.class))
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientAddressApiResourcesSwagger.PostClientClientIdAddressesRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-//                , content = @Content(schema = @Schema(implementation = ClientAddressApiResourcesSwagger.PostClientClientIdAddressesResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientAddressApiResourcesSwagger.PostClientClientIdAddressesResponse.class))
+    ) })
     public String addClientAddress(@QueryParam("type") @Parameter(description = "type") final long addressTypeId,
             @PathParam("clientid") @Parameter(description = "clientId") final long clientid,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
@@ -121,14 +125,14 @@ public class ClientAddressBusinessApiResources {
 
     @GET
     @Path("/{clientid}/addresses")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List all addresses for a Client", description = "Example Requests:\n" + "\n" + "client/1/addresses\n" + "\n"
             + "\n" + "clients/1/addresses?status=false,true&&type=1,2,3")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-//                , content = @Content(array = @ArraySchema(schema = @Schema(implementation = ClientAddressApiResourcesSwagger.GetClientClientIdAddressesResponse.class)))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+    // ClientAddressApiResourcesSwagger.GetClientClientIdAddressesResponse.class)))
+    ) })
     public String getAddresses(@QueryParam("status") @Parameter(description = "status") final String status,
             @QueryParam("type") @Parameter(description = "type") final long addressTypeId,
             @PathParam("clientid") @Parameter(description = "clientId") final long clientid, @Context final UriInfo uriInfo) {
@@ -155,23 +159,23 @@ public class ClientAddressBusinessApiResources {
 
     @PUT
     @Path("/{clientid}/addresses")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update an address for a Client", description = "All the address fields can be updated by using update client address API\n"
             + "\n" + "Mandatory Fields\n" + "type and addressId")
     @RequestBody(required = true
-//            , content = @Content(schema = @Schema(implementation = ClientAddressApiResourcesSwagger.PutClientClientIdAddressesRequest.class))
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientAddressApiResourcesSwagger.PutClientClientIdAddressesRequest.class))
     )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "OK"
-//                , content = @Content(schema = @Schema(implementation = ClientAddressApiResourcesSwagger.PutClientClientIdAddressesResponse.class))
-        )
-    })
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientAddressApiResourcesSwagger.PutClientClientIdAddressesResponse.class))
+    ) })
     public String updateClientAddress(@PathParam("clientid") @Parameter(description = "clientId") final long clientid,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateClientAddressBusiness(clientid).withJson(apiRequestBodyAsJson)
-                .build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateClientAddressBusiness(clientid)
+                .withJson(apiRequestBodyAsJson).build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 

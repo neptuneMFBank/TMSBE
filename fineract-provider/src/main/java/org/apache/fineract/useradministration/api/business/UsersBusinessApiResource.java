@@ -54,8 +54,7 @@ import org.springframework.stereotype.Component;
 public class UsersBusinessApiResource {
 
     /**
-     * The set of parameters that are supported in response for
-     * {@link AppUserData}.
+     * The set of parameters that are supported in response for {@link AppUserData}.
      */
     private final PlatformSecurityContext context;
     private final AppUserReadPlatformService readPlatformService;
@@ -87,14 +86,13 @@ public class UsersBusinessApiResource {
     @Path("{userId}")
     @Operation(summary = "Update a User", description = "Update User Details.")
     @RequestBody(required = true
-    //, content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdRequest.class))
+    // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
-        )})
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
+    ) })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String update(@PathParam("userId") @Parameter(description = "userId") final Long userId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -112,16 +110,14 @@ public class UsersBusinessApiResource {
     @Path("change-password")
     @Operation(summary = "Update a User", description = "When updating a password you must provide the repeatPassword parameter also.")
     @RequestBody(required = true
-    //, content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdRequest.class))
+    // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        //, content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
-        )})
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    public String update(
-            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
+    ) })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String update(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .updateUserPassword() //

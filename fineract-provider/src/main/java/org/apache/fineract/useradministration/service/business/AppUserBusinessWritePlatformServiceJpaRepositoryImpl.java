@@ -41,9 +41,8 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
 
     @Override
     @Transactional
-    @Caching(evict = {
-        @CacheEvict(value = "usersBusiness", allEntries = true),
-        @CacheEvict(value = "usersBusinessPasswordByUsername", allEntries = true)})
+    @Caching(evict = { @CacheEvict(value = "usersBusiness", allEntries = true),
+            @CacheEvict(value = "usersBusinessPasswordByUsername", allEntries = true) })
     public CommandProcessingResult updateUserPassword(final JsonCommand command) {
         final AppUser appUser = this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForUpdatePassword(command.json());
@@ -53,9 +52,8 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
 
     @Override
     @Transactional
-    @Caching(evict = {
-        @CacheEvict(value = "usersBusiness", allEntries = true),
-        @CacheEvict(value = "usersBusinessInfoByUsername", allEntries = true)})
+    @Caching(evict = { @CacheEvict(value = "usersBusiness", allEntries = true),
+            @CacheEvict(value = "usersBusinessInfoByUsername", allEntries = true) })
     public CommandProcessingResult updateUserInfo(final Long userId, final JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForUpdate(command.json());

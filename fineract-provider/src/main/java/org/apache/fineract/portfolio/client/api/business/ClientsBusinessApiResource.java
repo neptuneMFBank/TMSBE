@@ -89,8 +89,8 @@ public class ClientsBusinessApiResource {
     private final ClientReadPlatformService clientReadPlatformService;
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Clients", description = """
             The list capability of clients can support pagination and sorting.
 
@@ -103,10 +103,9 @@ public class ClientsBusinessApiResource {
             clients\business?offset=10&limit=50
 
             clients\business?orderBy=displayName&sortOrder=DESC""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+    ) })
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
             @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
@@ -161,8 +160,8 @@ public class ClientsBusinessApiResource {
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Client Details Template", description = """
             This is a convenience resource. It can be useful when building maintenance user interface screens for client applications. The template data returned consists of any or all of:
 
@@ -172,15 +171,15 @@ public class ClientsBusinessApiResource {
             Example Request:
 
             clients/template""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
+    ) })
     public String retrieveTemplate(@Context final UriInfo uriInfo,
             @Parameter(description = "officeId") @QueryParam("officeId") final Long officeId,
             // @QueryParam("commandParam") @Parameter(description = "commandParam") final String commandParam,
-            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly) {
+            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
+            @QueryParam("legalFormId") final Integer legalFormId) {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
@@ -194,38 +193,35 @@ public class ClientsBusinessApiResource {
         // } else if (is(commandParam, "withdraw")) {
         // clientData = this.clientReadPlatformService.retrieveAllNarrations(ClientApiConstants.CLIENT_WITHDRAW_REASON);
         // } else {
-        clientData = this.clientBusinessReadPlatformService.retrieveTemplate(officeId, staffInSelectedOfficeOnly);
+        clientData = this.clientBusinessReadPlatformService.retrieveTemplate(officeId, staffInSelectedOfficeOnly, legalFormId);
         // }
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toBusinessApiJsonSerializer.serialize(settings, clientData, ClientBusinessApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
     }
 
-//    private boolean is(final String commandParam, final String commandValue) {
-//        return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
-//    }
-    
-    
+    // private boolean is(final String commandParam, final String commandValue) {
+    // return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
+    // }
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create a Client", description = """
-                                                          Note:
-                                                          
-                                                          1. You can enter either:firstname/middlename/lastname - for a person (middlename is optional) OR fullname - for a business or organisation (or person known by one name).
-                                                          
-                                                          2.If address is enable(enable-address=true), then additional field called address has to be passed.
-                                                          
-                                                          Mandatory Fields: firstname and lastname OR fullname, officeId, active=true and activationDate OR active=false, if(address enabled) address
-                                                          
-                                                          Optional Fields: groupId, externalId, accountNo, staffId, mobileNo, savingsProductId, genderId, clientTypeId, clientClassificationId""")
+            Note:
+
+            1. You can enter either:firstname/middlename/lastname - for a person (middlename is optional) OR fullname - for a business or organisation (or person known by one name).
+
+            2.If address is enable(enable-address=true), then additional field called address has to be passed.
+
+            Mandatory Fields: firstname and lastname OR fullname, officeId, active=true and activationDate OR active=false, if(address enabled) address
+
+            Optional Fields: groupId, externalId, accountNo, staffId, mobileNo, savingsProductId, genderId, clientTypeId, clientClassificationId""")
     @RequestBody(required = true
-            //, content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsRequest.class))
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsRequest.class))
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"
-//                    , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
-            ) })
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
+    ) })
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
@@ -243,18 +239,19 @@ public class ClientsBusinessApiResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update a Client", description = """
-                                                          Note: You can update any of the basic attributes of a client (but not its associations) using this API.
-                                                          
-                                                          Changing the relationship between a client and its office is not supported through this API. An API specific to handling transfers of clients between offices is available for the same.
-                                                          
-                                                          The relationship between a client and a group must be removed through the Groups API.""")
+            Note: You can update any of the basic attributes of a client (but not its associations) using this API.
+
+            Changing the relationship between a client and its office is not supported through this API. An API specific to handling transfers of clients between offices is available for the same.
+
+            The relationship between a client and a group must be removed through the Groups API.""")
     @RequestBody(required = true
-//            , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PutClientsClientIdRequest.class))
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.PutClientsClientIdRequest.class))
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"
-//                    , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PutClientsClientIdResponse.class))
-            ) })
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.PutClientsClientIdResponse.class))
+    ) })
     public String update(@Parameter(description = "clientId") @PathParam("clientId") final Long clientId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 

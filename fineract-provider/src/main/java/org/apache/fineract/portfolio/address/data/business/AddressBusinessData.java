@@ -83,8 +83,8 @@ public class AddressBusinessData implements Serializable {
     private final Collection<CodeValueData> lgaIdOptions;
     private final Collection<CodeValueData> residentStatusOption;
 
-    public AddressBusinessData(Long addressTypeId, String street, String addressLine1, String addressLine2, String addressLine3, String city,
-            String postalCode, Boolean isActive, Long stateProvinceId, Long countryId) {
+    public AddressBusinessData(Long addressTypeId, String street, String addressLine1, String addressLine2, String addressLine3,
+            String city, String postalCode, Boolean isActive, Long stateProvinceId, Long countryId) {
 
         this.addressTypeId = addressTypeId;
         this.isActive = isActive;
@@ -125,11 +125,8 @@ public class AddressBusinessData implements Serializable {
             final BigDecimal longitude, final String createdBy, final LocalDate createdOn, final String updatedBy,
             final LocalDate updatedOn, final Collection<CodeValueData> countryIdOptions,
             final Collection<CodeValueData> stateProvinceIdOptions, final Collection<CodeValueData> addressTypeIdOptions,
-            final Collection<CodeValueData> lgaIdOptions,
-            final Collection<CodeValueData> residentStatusOption,
-            final CodeValueData residentStatus,
-            final LocalDate dateMovedIn
-    ) {
+            final Collection<CodeValueData> lgaIdOptions, final Collection<CodeValueData> residentStatusOption,
+            final CodeValueData residentStatus, final LocalDate dateMovedIn) {
         this.addressType = addressType;
         this.clientID = clientID;
         this.addressId = addressId;
@@ -162,32 +159,31 @@ public class AddressBusinessData implements Serializable {
         this.dateMovedIn = dateMovedIn;
     }
 
-    public static AddressBusinessData instance(final String addressType, final Long clientID, final Long addressId, final Long addressTypeId,
-            final Boolean is_active, final String street, final String addressLine1, final String addressLine2, final String addressLine3,
-            final String townVillage, final String city, final String countyDistrict, final Long stateProvinceId, final Long countryId,
-            final String stateName, final String countryName, final String postalCode, final BigDecimal latitude,
+    public static AddressBusinessData instance(final String addressType, final Long clientID, final Long addressId,
+            final Long addressTypeId, final Boolean is_active, final String street, final String addressLine1, final String addressLine2,
+            final String addressLine3, final String townVillage, final String city, final String countyDistrict, final Long stateProvinceId,
+            final Long countryId, final String stateName, final String countryName, final String postalCode, final BigDecimal latitude,
             final BigDecimal longitude, final String createdBy, final LocalDate createdOn, final String updatedBy,
             final LocalDate updatedOn, final CodeValueData residentStatus, final LocalDate dateMovedIn) {
 
-        return new AddressBusinessData(addressType, clientID, addressId, addressTypeId, is_active, street, addressLine1, addressLine2, addressLine3,
-                townVillage, city, countyDistrict, stateProvinceId, countryId, stateName, countryName, postalCode, latitude, longitude,
-                createdBy, createdOn, updatedBy, updatedOn, null, null, null, null, null, residentStatus, dateMovedIn);
+        return new AddressBusinessData(addressType, clientID, addressId, addressTypeId, is_active, street, addressLine1, addressLine2,
+                addressLine3, townVillage, city, countyDistrict, stateProvinceId, countryId, stateName, countryName, postalCode, latitude,
+                longitude, createdBy, createdOn, updatedBy, updatedOn, null, null, null, null, null, residentStatus, dateMovedIn);
     }
 
-    public static AddressBusinessData instance1(final Long addressId, final String street, final String addressLine1, final String addressLine2,
-            final String addressLine3, final String townVillage, final String city, final String countyDistrict, final Long stateProvinceId,
-            final Long countryId, final String postalCode, final BigDecimal latitude, final BigDecimal longitude, final String createdBy,
-            final LocalDate createdOn, final String updatedBy, final LocalDate updatedOn, final CodeValueData residentStatus) {
-        return new AddressBusinessData(null, null, addressId, null, false, street, addressLine1, addressLine2, addressLine3, townVillage, city,
-                countyDistrict, stateProvinceId, countryId, null, null, postalCode, latitude, longitude, createdBy, createdOn, updatedBy,
-                updatedOn, null, null, null, null, null, null, null);
+    public static AddressBusinessData instance1(final Long addressId, final String street, final String addressLine1,
+            final String addressLine2, final String addressLine3, final String townVillage, final String city, final String countyDistrict,
+            final Long stateProvinceId, final Long countryId, final String postalCode, final BigDecimal latitude,
+            final BigDecimal longitude, final String createdBy, final LocalDate createdOn, final String updatedBy,
+            final LocalDate updatedOn, final CodeValueData residentStatus) {
+        return new AddressBusinessData(null, null, addressId, null, false, street, addressLine1, addressLine2, addressLine3, townVillage,
+                city, countyDistrict, stateProvinceId, countryId, null, null, postalCode, latitude, longitude, createdBy, createdOn,
+                updatedBy, updatedOn, null, null, null, null, null, null, null);
     }
 
     public static AddressBusinessData template(final Collection<CodeValueData> countryIdOptions,
             final Collection<CodeValueData> stateProvinceIdOptions, final Collection<CodeValueData> addressTypeIdOptions,
-            final Collection<CodeValueData> lgaIdOptions,
-            final Collection<CodeValueData> residentStatusOption
-    ) {
+            final Collection<CodeValueData> lgaIdOptions, final Collection<CodeValueData> residentStatusOption) {
         final Long client_idtemp = null;
 
         final Long addressIdtemp = null;

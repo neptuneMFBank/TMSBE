@@ -3551,4 +3551,19 @@ public class CommandWrapperBuilder {
         this.href = "/clients/business/" + clientId;
         return this;
     }
+
+    public CommandWrapperBuilder createDocumentConfig() {
+        this.actionName = "CREATE_CONFIG";
+        this.entityName = "DOCUMENT";
+        this.href = "/documents/config";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateDocumentConfig(final Long entityId) {
+        this.actionName = "UPDATE_CONFIG";
+        this.entityName = "DOCUMENT";
+        this.entityId = entityId;
+        this.href = "/documents/config/" + entityId;
+        return this;
+    }
 }

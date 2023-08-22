@@ -17,11 +17,9 @@
 -- under the License.
 --
 
-CREATE TABLE `m_address_other`(
-      `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-      `address_id` BIGINT NOT NULL,
-      `residence_status_id` INT NULL,
-      `date_moved_in` DATE NULL,
-      CONSTRAINT `m_address_other_FK_address_id` FOREIGN KEY (`address_id`) REFERENCES `m_address` (`id`),
-      CONSTRAINT `m_address_other_FK_residence_status_id` FOREIGN KEY (`residence_status_id`) REFERENCES `m_code_value` (`id`)
+CREATE TABLE `m_document_client_config_code`(
+      `m_document_client_config_id` BIGINT NOT NULL,
+      `code_id` INT NULL,
+      CONSTRAINT `m_document_client_config_code_FK_created_by` FOREIGN KEY (`m_document_client_config_id`) REFERENCES m_document_client_config(`id`),
+      CONSTRAINT `m_document_client_config_code_FK_code_id` FOREIGN KEY (`code_id`) REFERENCES m_code(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

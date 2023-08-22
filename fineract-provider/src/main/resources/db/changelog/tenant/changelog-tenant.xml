@@ -66,4 +66,7 @@
     <include file="parts/0049_m_bank_account_type_codes.sql" relativeToChangelogFile="true" />
     <include file="parts/0050_m_salary_range_codes.sql" relativeToChangelogFile="true" />
     <include file="parts/0051_m_employment_type_codes.sql" relativeToChangelogFile="true" />
+    <include file="parts/0052_m_create_document_config_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0053_m_document_client_config.sql" relativeToChangelogFile="true" />
+    <include file="parts/0054_m_document_client_config_code.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

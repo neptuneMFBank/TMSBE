@@ -48,14 +48,17 @@ import org.apache.fineract.infrastructure.dataqueries.data.DatatableData;
 import org.apache.fineract.infrastructure.dataqueries.data.EntityTables;
 import org.apache.fineract.infrastructure.dataqueries.data.StatusEnum;
 import org.apache.fineract.infrastructure.dataqueries.service.EntityDatatableChecksReadService;
+import org.apache.fineract.infrastructure.dataqueries.service.ReadWriteNonCoreDataService;
+import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
+import org.apache.fineract.infrastructure.documentmanagement.service.business.DocumentConfigReadPlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.organisation.office.data.OfficeData;
 import org.apache.fineract.organisation.office.service.OfficeReadPlatformService;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.organisation.staff.service.StaffReadPlatformService;
-import org.apache.fineract.portfolio.address.data.AddressData;
-import org.apache.fineract.portfolio.address.service.AddressReadPlatformService;
+import org.apache.fineract.portfolio.address.data.business.AddressBusinessData;
+import org.apache.fineract.portfolio.address.service.business.AddressBusinessReadPlatformService;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConstants;
 import org.apache.fineract.portfolio.client.data.ClientData;
@@ -91,12 +94,15 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     private final DatabaseSpecificSQLGenerator sqlGenerator;
     private final ClientMapper clientMapper = new ClientMapper();
 
-    private final AddressReadPlatformService addressReadPlatformService;
+    private final AddressBusinessReadPlatformService addressReadPlatformService;
     private final ClientFamilyMembersReadPlatformService clientFamilyMembersReadPlatformService;
     private final ConfigurationReadPlatformService configurationReadPlatformService;
     private final EntityDatatableChecksReadService entityDatatableChecksReadService;
     private final ColumnValidator columnValidator;
     private final ClientCollateralManagementRepositoryWrapper clientCollateralManagementRepositoryWrapper;
+    private final ReadWriteNonCoreDataService readWriteNonCoreDataService;
+
+    private final DocumentConfigReadPlatformService documentConfigReadPlatformService;
 
     private Long defaultToUsersOfficeIfNull(final Long officeId) {
         Long defaultOfficeId = officeId;
@@ -111,7 +117,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         this.context.authenticatedUser();
 
         final Long defaultOfficeId = defaultToUsersOfficeIfNull(officeId);
-        AddressData address = null;
+        AddressBusinessData address = null;
 
         final Collection<OfficeData> offices = this.officeReadPlatformService.retrieveAllOfficesForDropdown();
 
@@ -165,6 +171,12 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         final List<CodeValueBusinessData> employmentTypeOptions = new ArrayList<>(
                 this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.employmentTypePARAM));
 
+        DocumentConfigData documentConfigData = null;
+        if (legalFormId != null) {
+            documentConfigData
+                    = this.documentConfigReadPlatformService.retrieveDocumentConfigViaClientLegalForm(legalFormId);
+        }
+
         // final List<CodeValueBusinessData> countryValuesOptions = new ArrayList<>(
         // this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.COUNTRYPARAM));
         // final List<CodeValueBusinessData> stateValuesOptions = new ArrayList<>(
@@ -173,9 +185,11 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         // this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.LGAPARAM));
         final List<EnumOptionData> clientLegalFormOptions = ClientEnumerations.legalForm(LegalForm.values());
 
-        final List<DatatableData> datatableTemplates = this.entityDatatableChecksReadService
+        List<DatatableData> datatableTemplates = this.entityDatatableChecksReadService
                 .retrieveTemplates(StatusEnum.CREATE.getCode().longValue(), EntityTables.CLIENT.getName(), null);
-
+        if (datatableTemplates == null) {
+            datatableTemplates = this.readWriteNonCoreDataService.retrieveDatatableNames(EntityTables.CLIENT.getName());
+        }
         // legalFormId => (to pick the documentType to be used)
         return ClientBusinessData.template(defaultOfficeId, LocalDate.now(DateUtils.getDateTimeZoneOfTenant()), offices, staffOptions, null,
                 genderOptions, savingsProductDatas, clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions,
@@ -183,7 +197,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
                 // , lgaValuesOptions
-                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions);
+                ,
+                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions, documentConfigData);
     }
 
     @Override

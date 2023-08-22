@@ -17,11 +17,8 @@
 -- under the License.
 --
 
-CREATE TABLE `m_address_other`(
-      `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-      `address_id` BIGINT NOT NULL,
-      `residence_status_id` INT NULL,
-      `date_moved_in` DATE NULL,
-      CONSTRAINT `m_address_other_FK_address_id` FOREIGN KEY (`address_id`) REFERENCES `m_address` (`id`),
-      CONSTRAINT `m_address_other_FK_residence_status_id` FOREIGN KEY (`residence_status_id`) REFERENCES `m_code_value` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- INSERT m_permission
+INSERT INTO `m_permission` (`id`, `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`)
+VALUES
+     (NULL, 'portfolio', 'UPDATE_CONFIG_DOCUMENT', 'DOCUMENT', 'UPDATE_CONFIG', false)

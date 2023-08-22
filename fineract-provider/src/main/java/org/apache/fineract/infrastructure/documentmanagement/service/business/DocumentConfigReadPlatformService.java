@@ -16,15 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.domain.business;
+package org.apache.fineract.infrastructure.documentmanagement.service.business;
 
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.apache.fineract.infrastructure.core.service.Page;
+import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
+import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
 
-public interface ClientDocumentConfigRepository
-        extends JpaRepository<ClientDocumentConfig, Long>, JpaSpecificationExecutor<ClientDocumentConfig> {
+public interface DocumentConfigReadPlatformService {
 
-    Optional<ClientDocumentConfig> findOneByLegalFormId(final Integer legalFormId);
+    DocumentConfigData retrieveOne(final Long documentId, final String type);
+
+    Page<DocumentConfigData> retrieveAll(final SearchParametersBusiness searchParameters);
+
+    DocumentConfigData retrieveTemplate();
 
 }

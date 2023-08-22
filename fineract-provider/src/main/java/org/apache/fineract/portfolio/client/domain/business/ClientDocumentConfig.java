@@ -35,9 +35,8 @@ import org.springframework.stereotype.Component;
 @Entity
 @Component
 @Table(name = "m_document_client_config", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"legal_form_id"}, name = "legal_form_id_UNIQUE"),
-    @UniqueConstraint(columnNames = {"name"}, name = "name_UNIQUE")
-})
+        @UniqueConstraint(columnNames = { "legal_form_id" }, name = "legal_form_id_UNIQUE"),
+        @UniqueConstraint(columnNames = { "name" }, name = "name_UNIQUE") })
 public class ClientDocumentConfig extends AbstractAuditableWithUTCDateTimeCustom {
 
     @Column(name = "active", nullable = false)
@@ -56,10 +55,10 @@ public class ClientDocumentConfig extends AbstractAuditableWithUTCDateTimeCustom
     @JoinTable(name = "m_document_client_config_code", joinColumns = @JoinColumn(name = "m_document_client_config_id"), inverseJoinColumns = @JoinColumn(name = "code_id"))
     private Set<Code> codes = new HashSet<>();
 
-    protected ClientDocumentConfig() {
-    }
+    protected ClientDocumentConfig() {}
 
-    public static ClientDocumentConfig instance(final String name, final Integer legalFormId, final String description, final boolean active) {
+    public static ClientDocumentConfig instance(final String name, final Integer legalFormId, final String description,
+            final boolean active) {
         return new ClientDocumentConfig(name, legalFormId, description, active);
     }
 

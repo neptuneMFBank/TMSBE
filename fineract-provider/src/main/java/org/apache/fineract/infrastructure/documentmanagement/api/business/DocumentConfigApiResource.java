@@ -43,26 +43,17 @@ import org.apache.fineract.accounting.journalentry.api.DateParam;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
-import org.apache.fineract.infrastructure.bulkimport.service.BulkImportWorkbookPopulatorService;
-import org.apache.fineract.infrastructure.bulkimport.service.BulkImportWorkbookService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.infrastructure.core.exception.UnrecognizedQueryParamException;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
+import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
+import org.apache.fineract.infrastructure.documentmanagement.service.business.DocumentConfigReadPlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.portfolio.accountdetails.data.AccountSummaryCollectionData;
-import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
-import org.apache.fineract.portfolio.client.api.ClientApiConstants;
-import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConstants;
-import org.apache.fineract.portfolio.client.data.ClientData;
-import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
-import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
-import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
-import org.apache.fineract.portfolio.loanaccount.guarantor.service.GuarantorReadPlatformService;
-import org.apache.fineract.portfolio.savings.service.SavingsAccountReadPlatformService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -75,40 +66,30 @@ import org.springframework.stereotype.Component;
 public class DocumentConfigApiResource {
 
     private final PlatformSecurityContext context;
-    private final ClientBusinessReadPlatformService clientBusinessReadPlatformService;
-    private final ToApiJsonSerializer<ClientData> toApiJsonSerializer;
-    private final ToApiJsonSerializer<ClientBusinessData> toBusinessApiJsonSerializer;
-    private final ToApiJsonSerializer<AccountSummaryCollectionData> clientAccountSummaryToApiJsonSerializer;
+    private final ToApiJsonSerializer<DocumentConfigData> toBusinessApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
-    private final AccountDetailsReadPlatformService accountDetailsReadPlatformService;
-    private final SavingsAccountReadPlatformService savingsAccountReadPlatformService;
-    private final BulkImportWorkbookService bulkImportWorkbookService;
-    private final BulkImportWorkbookPopulatorService bulkImportWorkbookPopulatorService;
-    private final GuarantorReadPlatformService guarantorReadPlatformService;
-    private final ClientReadPlatformService clientReadPlatformService;
+    private final DocumentConfigReadPlatformService documentConfigReadPlatformService;
 
     private boolean is(final String commandParam, final String commandValue) {
         return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create a Document Config", description = """
-            Note:
-        """)
+                Note:
+            """)
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
-        )})
-    public String create(
-            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
-        //client
-        //loans
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
+    ) })
+    public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+        // client
+        // loans
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .createDocumentConfig()//
                 .withJson(apiRequestBodyAsJson) //
@@ -116,25 +97,24 @@ public class DocumentConfigApiResource {
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
-        return this.toApiJsonSerializer.serialize(result);
+        return this.toBusinessApiJsonSerializer.serialize(result);
     }
 
     @PUT
     @Path("{entityId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update a Document Config", description = """
-            Note: 
+            Note:
                                                                    """)
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation =
     // ClientsApiResourceSwagger.PutClientsClientIdRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.PutClientsClientIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.PutClientsClientIdResponse.class))
+    ) })
     public String update(@Parameter(description = "entityId") @PathParam("entityId") final Long entityId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -145,60 +125,30 @@ public class DocumentConfigApiResource {
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
-        return this.toApiJsonSerializer.serialize(result);
+        return this.toBusinessApiJsonSerializer.serialize(result);
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Clients", description = """
-            The list capability of clients can support pagination and sorting.
-
-            Example Requests:
-
-            clients\business
-
-            clients\business?fields=displayName,officeName,timeline
-
-            clients\business?offset=10&limit=50
-
-            clients\business?orderBy=displayName&sortOrder=DESC""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-        )})
-    public String retrieveAll(@Context final UriInfo uriInfo,
-            @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
-            @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
+            Note:
+            """)
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+    ) })
+    public String retrieveAll(@Context final UriInfo uriInfo, @QueryParam("type") @Parameter(description = "type") final String type,
             @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
-            @QueryParam("email") @Parameter(description = "email") final String email,
-            @QueryParam("mobile") @Parameter(description = "mobile") final String mobile,
-            @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
-            @QueryParam("legalFormId") @Parameter(description = "legalFormId") final Integer legalFormId,
-            @QueryParam("staffId") @Parameter(description = "staffId") final Long staffId,
-            @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
-            @QueryParam("underHierarchy") @Parameter(description = "underHierarchy") final String hierarchy,
+            @QueryParam("active") @Parameter(description = "active") final Boolean active,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
             @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
             @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
             @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
-            @QueryParam("orphansOnly") @Parameter(description = "orphansOnly") final Boolean orphansOnly,
             @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
             @DefaultValue("en") @QueryParam("locale") final String locale,
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
-
-        return this.retrieveAll(uriInfo, officeId, externalId, displayName, statusId, hierarchy, offset, limit, orderBy, sortOrder,
-                orphansOnly, false, startPeriod, endPeriod, locale, dateFormat, staffId, accountNo, email, mobile, legalFormId);
-    }
-
-    public String retrieveAll(final UriInfo uriInfo, final Long officeId, final String externalId, final String displayName,
-            final Integer statusId, final String hierarchy, final Integer offset, final Integer limit, final String orderBy,
-            final String sortOrder, final Boolean orphansOnly, final boolean isSelfUser, final DateParam startPeriod,
-            final DateParam endPeriod, final String locale, final String dateFormat, final Long staffId, final String accountNo,
-            final String email, final String mobile, final Integer legalFormId) {
-
-        this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
+        this.context.authenticatedUser().validateHasReadPermission(DocumentConfigApiConstants.resourceName);
 
         LocalDate fromDate = null;
         if (startPeriod != null) {
@@ -209,58 +159,44 @@ public class DocumentConfigApiResource {
             toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
         }
 
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forClientsBusiness(officeId, externalId, statusId,
-                hierarchy, offset, limit, orderBy, sortOrder, staffId, accountNo, fromDate, toDate, displayName, orphansOnly, isSelfUser,
-                email, mobile, legalFormId);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forDocumentConfig(type, offset, limit, orderBy,
+                sortOrder, fromDate, toDate, displayName, active);
 
-        final Page<ClientData> clientData = this.clientBusinessReadPlatformService.retrieveAll(searchParameters);
+        final Page<DocumentConfigData> documentConfigData;
+        // client
+        // loans
+        if (is(type, "client")) {
+            documentConfigData = this.documentConfigReadPlatformService.retrieveAll(searchParameters);
+        } // else if (is(typeParam, "loans")) {
+          // }
+        else {
+            throw new UnrecognizedQueryParamException("typeRetrieveAll", type);
+        }
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.toApiJsonSerializer.serialize(settings, clientData, ClientBusinessApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
+        return this.toBusinessApiJsonSerializer.serialize(settings, documentConfigData,
+                DocumentConfigApiConstants.DOCUMENT_CONFIG_RESPONSE_DATA_PARAMETERS);
     }
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Retrieve Client Details Template", description = """
-            This is a convenience resource. It can be useful when building maintenance user interface screens for client applications. The template data returned consists of any or all of:
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Document Config Template", description = """
+            """)
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
+    ) })
+    public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
-            Field Defaults
-            Allowed Value Lists
+        this.context.authenticatedUser().validateHasReadPermission(DocumentConfigApiConstants.resourceName);
 
-            Example Request:
-
-            clients/template""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
-        )})
-    public String retrieveTemplate(@Context final UriInfo uriInfo,
-            @Parameter(description = "officeId") @QueryParam("officeId") final Long officeId,
-            // @QueryParam("commandParam") @Parameter(description = "commandParam") final String commandParam,
-            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
-            @QueryParam("legalFormId") final Integer legalFormId) {
-
-        this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
-
-        ClientBusinessData clientData;
-        // if (is(commandParam, "close")) {
-        // clientData = this.clientReadPlatformService.retrieveAllNarrations(ClientApiConstants.CLIENT_CLOSURE_REASON);
-        // } else if (is(commandParam, "acceptTransfer")) {
-        // clientData = this.clientReadPlatformService.retrieveAllNarrations(ClientApiConstants.CLIENT_CLOSURE_REASON);
-        // } else if (is(commandParam, "reject")) {
-        // clientData = this.clientReadPlatformService.retrieveAllNarrations(ClientApiConstants.CLIENT_REJECT_REASON);
-        // } else if (is(commandParam, "withdraw")) {
-        // clientData = this.clientReadPlatformService.retrieveAllNarrations(ClientApiConstants.CLIENT_WITHDRAW_REASON);
-        // } else {
-        clientData = this.clientBusinessReadPlatformService.retrieveTemplate(officeId, staffInSelectedOfficeOnly, legalFormId);
-        // }
+        final DocumentConfigData documentConfigData = this.documentConfigReadPlatformService.retrieveTemplate();
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.toBusinessApiJsonSerializer.serialize(settings, clientData, ClientBusinessApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
+        return this.toBusinessApiJsonSerializer.serialize(settings, documentConfigData,
+                DocumentConfigApiConstants.DOCUMENT_CONFIG_TEMPLATE_DATA_PARAMETERS);
     }
-
 
 }

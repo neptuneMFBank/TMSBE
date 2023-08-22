@@ -57,10 +57,8 @@ public class DocumentConfigWriteServiceImpl implements DocumentConfigWriteServic
     private final ClientDocumentRepositoryWrapper clientDocumentRepositoryWrapper;
 
     @Autowired
-    public DocumentConfigWriteServiceImpl(final PlatformSecurityContext context,
-            final DocumentConfigDataValidator fromApiJsonDeserializer,
-            final FromJsonHelper fromApiJsonHelper,
-            final ClientDocumentRepositoryWrapper clientDocumentRepositoryWrapper,
+    public DocumentConfigWriteServiceImpl(final PlatformSecurityContext context, final DocumentConfigDataValidator fromApiJsonDeserializer,
+            final FromJsonHelper fromApiJsonHelper, final ClientDocumentRepositoryWrapper clientDocumentRepositoryWrapper,
             final CodeRepositoryWrapper codeRepository) {
         this.context = context;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
@@ -87,21 +85,21 @@ public class DocumentConfigWriteServiceImpl implements DocumentConfigWriteServic
             final JsonArray settings = this.fromApiJsonHelper.extractJsonArrayNamed(DocumentConfigApiConstants.settingsParam, jsonElement);
             Set<Code> codes = saveDocumentSet(settings);
 
-            //client
-            //loans
+            // client
+            // loans
             if (is(typeParam, "client")) {
 
-                final Integer formId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(DocumentConfigApiConstants.formIdParam, jsonElement);
-                final ClientDocumentConfig clientDocumentConfig
-                        = ClientDocumentConfig.instance(name, formId, description, true);
+                final Integer formId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(DocumentConfigApiConstants.formIdParam,
+                        jsonElement);
+                final ClientDocumentConfig clientDocumentConfig = ClientDocumentConfig.instance(name, formId, description, true);
                 if (!codes.isEmpty()) {
                     clientDocumentConfig.setCodes(codes);
                 }
                 this.clientDocumentRepositoryWrapper.saveAndFlush(clientDocumentConfig);
                 entityId = clientDocumentConfig.getId();
 
-            } //else  if (is(typeParam, "loans")) {
-            //}
+            } // else if (is(typeParam, "loans")) {
+              // }
             else {
                 throw new UnrecognizedQueryParamException("type", typeParam);
             }
@@ -146,11 +144,11 @@ public class DocumentConfigWriteServiceImpl implements DocumentConfigWriteServic
 
             final Map<String, Object> changes = new LinkedHashMap<>(9);
 
-            //client
-            //loans
+            // client
+            // loans
             if (is(typeParam, "client")) {
-                final ClientDocumentConfig clientDocumentConfig
-                        = this.clientDocumentRepositoryWrapper.findOneWithNotFoundDetection(entityId, typeParam);
+                final ClientDocumentConfig clientDocumentConfig = this.clientDocumentRepositoryWrapper
+                        .findOneWithNotFoundDetection(entityId, typeParam);
 
                 if (command.isChangeInStringParameterNamed(DocumentConfigApiConstants.nameParam, clientDocumentConfig.getName())) {
                     final String newValue = command.stringValueOfParameterNamed(DocumentConfigApiConstants.nameParam);
@@ -164,7 +162,8 @@ public class DocumentConfigWriteServiceImpl implements DocumentConfigWriteServic
                     clientDocumentConfig.setDescription(newValue);
                 }
 
-                if (command.isChangeInIntegerParameterNamed(DocumentConfigApiConstants.formIdParam, clientDocumentConfig.getLegalFormId())) {
+                if (command.isChangeInIntegerParameterNamed(DocumentConfigApiConstants.formIdParam,
+                        clientDocumentConfig.getLegalFormId())) {
                     final Integer newValue = command.integerValueOfParameterNamed(DocumentConfigApiConstants.formIdParam);
                     changes.put(DocumentConfigApiConstants.formIdParam, newValue);
                     clientDocumentConfig.setLegalFormId(newValue);
@@ -172,7 +171,7 @@ public class DocumentConfigWriteServiceImpl implements DocumentConfigWriteServic
 
                 Set<Code> codesCheck = clientDocumentConfig.getCodes();
                 if (!codesCheck.equals(codes)) {
-                    //only update if not equal
+                    // only update if not equal
                     clientDocumentConfig.setCodes(codes);
                 }
 
@@ -181,8 +180,8 @@ public class DocumentConfigWriteServiceImpl implements DocumentConfigWriteServic
                 }
                 entityId = clientDocumentConfig.getId();
 
-            } //else  if (is(typeParam, "loans")) {
-            //}
+            } // else if (is(typeParam, "loans")) {
+              // }
             else {
                 throw new UnrecognizedQueryParamException("type", typeParam);
             }
@@ -190,8 +189,7 @@ public class DocumentConfigWriteServiceImpl implements DocumentConfigWriteServic
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(entityId) //
-                    .with(changes)
-                    .build();
+                    .with(changes).build();
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
             return CommandProcessingResult.empty();
@@ -210,8 +208,8 @@ public class DocumentConfigWriteServiceImpl implements DocumentConfigWriteServic
         if (realCause.getMessage().contains("name_UNIQUE")) {
 
             final String name = command.stringValueOfParameterNamed(DocumentConfigApiConstants.nameParam);
-            throw new PlatformDataIntegrityException("error.msg.client.duplicate.externalId",
-                    "Name `" + name + "` already exists", DocumentConfigApiConstants.nameParam, name);
+            throw new PlatformDataIntegrityException("error.msg.client.duplicate.externalId", "Name `" + name + "` already exists",
+                    DocumentConfigApiConstants.nameParam, name);
         } else if (realCause.getMessage().contains("legal_form_id_UNIQUE")) {
             final String legalFormId = command.stringValueOfParameterNamed(DocumentConfigApiConstants.formIdParam);
             throw new PlatformDataIntegrityException("error.msg.client.duplicate.accountNo",

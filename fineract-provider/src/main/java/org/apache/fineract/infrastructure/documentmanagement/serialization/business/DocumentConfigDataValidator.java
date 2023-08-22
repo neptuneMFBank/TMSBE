@@ -52,8 +52,7 @@ public final class DocumentConfigDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DocumentConfigApiConstants.DOCUMENT_CONFIG_CREATE_RESPONSE_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -75,8 +74,7 @@ public final class DocumentConfigDataValidator {
         }
         if (this.fromApiJsonHelper.parameterExists(DocumentConfigApiConstants.formIdParam, element)) {
             final Integer formId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(DocumentConfigApiConstants.formIdParam, element);
-            baseDataValidator.reset().parameter(DocumentConfigApiConstants.formIdParam).value(formId)
-                    .notNull()
+            baseDataValidator.reset().parameter(DocumentConfigApiConstants.formIdParam).value(formId).notNull()
                     .isOneOfTheseValues(LegalForm.ENTITY.getValue(), LegalForm.PERSON.getValue(), LegalForm.VENDOR.getValue());
         }
         if (this.fromApiJsonHelper.parameterExists(DocumentConfigApiConstants.settingsParam, element)) {

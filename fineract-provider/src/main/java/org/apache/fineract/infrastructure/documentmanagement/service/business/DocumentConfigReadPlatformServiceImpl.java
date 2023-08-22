@@ -26,7 +26,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.infrastructure.codes.data.CodeData;
 import org.apache.fineract.infrastructure.codes.data.business.CodeBusinessData;
+import org.apache.fineract.infrastructure.codes.service.CodeReadPlatformService;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.exception.UnrecognizedQueryParamException;
@@ -58,6 +60,7 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
     private final SavingsProductReadPlatformService savingsProductReadPlatformService;
+    private final CodeReadPlatformService codeReadPlatformService;
     private final LoanProductReadPlatformService loanProductReadPlatformService;
     // data mappers
     private final PaginationHelper paginationHelper;
@@ -117,6 +120,24 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
     }
 
     @Override
+    public DocumentConfigData retrieveDocumentConfigViaClientLegalForm(Integer formId) {
+        this.context.authenticatedUser();
+        try {
+            final String sql = "select " + this.clientDocumentMapper.schema() + " where mdc.legal_form_id = ?";
+            final DocumentConfigData documentConfigData = this.jdbcTemplate.queryForObject(sql, this.clientDocumentMapper, // NOSONAR
+                    formId);
+            if (documentConfigData != null) {
+                Collection<CodeBusinessData> codeBusinessDatas = retrieveAllCodesForClientDocument(documentConfigData.getId());
+                documentConfigData.setSettings(codeBusinessDatas);
+            }
+            return documentConfigData;
+        } catch (final EmptyResultDataAccessException e) {
+            log.warn("retrieveDocumentConfigViaClientLegalForm: {}", e);
+            return null;
+        }
+    }
+
+    @Override
     public DocumentConfigData retrieveOne(Long documentId, String type) {
         this.context.authenticatedUser();
         try {
@@ -146,7 +167,7 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
         this.context.authenticatedUser();
         try {
             final CodeMapper rm = new CodeMapper();
-            final String sql = "select " + codeMapper.codeClientDocumentSchema(true);
+            final String sql = "select " + codeMapper.codeClientDocumentSchema();
 
             return this.jdbcTemplate.query(sql, rm, new Object[]{clientDocumentId});
 
@@ -188,19 +209,17 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
 
     private static final class CodeMapper implements RowMapper<CodeBusinessData> {
 
-        private Boolean concatCodeValues = false;
 
-        public String codeClientDocumentSchema(Boolean concatCodeValues) {
-            this.concatCodeValues = concatCodeValues;
+        public String codeClientDocumentSchema() {
             // for this isActive is use to check if value was selected for the configuration or not
-            return " GROUP_CONCAT(cv.code_value) as concatCodeValues,   c.id as id, c.code_name as code_name, if(isnull(rp.m_document_client_config_code), false, true) as systemDefined from m_code as c "
+            return " GROUP_CONCAT(cv.code_value) as concatCodeValues,   c.id as id, c.code_name as code_name, if(isnull(rp.m_document_client_config_id), false, true) as systemDefined from m_code as c "
                     + " left join m_code_value cv on cv.code_id=c.id "
                     + " left join m_document_client_config_code rp on rp.code_id = c.id and rp.m_document_client_config_id=? "
                     + " group by c.id order by c.code_name";
         }
 
-        //public String schema() {
-        //     return " c.id as id, c.code_name as code_name, c.is_system_defined as systemDefined from m_code c ";
+        // public String schema() {
+        // return " c.id as id, c.code_name as code_name, c.is_system_defined as systemDefined from m_code c ";
         // }
         @Override
         public CodeBusinessData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
@@ -211,9 +230,8 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
 
             CodeBusinessData codeData = CodeBusinessData.instance(id, code_name, systemDefined);
 
-            if (concatCodeValues) {
                 codeData.setValues(rs.getString("concatCodeValues"));
-            }
+                System.out.println("info: {}"+rs.getString("concatCodeValues"));
 
             return codeData;
         }
@@ -222,11 +240,13 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
     @Override
     public DocumentConfigData retrieveTemplate() {
         this.context.authenticatedUser();
+        final Collection<CodeData> codeDatas
+                = this.codeReadPlatformService.retrieveAllCodes();
 
         final Collection<SavingsProductData> savingsProductDatas = this.savingsProductReadPlatformService.retrieveAllForLookup();
         final Collection<LoanProductData> loanProductDatas = this.loanProductReadPlatformService.retrieveAllLoanProductsForLookup(true);
         final List<EnumOptionData> clientLegalFormOptions = ClientEnumerations.legalForm(LegalForm.values());
-        return DocumentConfigData.template(clientLegalFormOptions, loanProductDatas, savingsProductDatas);
+        return DocumentConfigData.template(codeDatas, clientLegalFormOptions, loanProductDatas, savingsProductDatas);
     }
 
     private String buildSqlStringFromClientCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {

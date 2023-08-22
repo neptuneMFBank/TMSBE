@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.fineract.portfolio.client.data.ClientData;
 
-@SuppressWarnings({ "HideUtilityClassConstructor" })
+@SuppressWarnings({"HideUtilityClassConstructor"})
 public class DocumentConfigApiConstants {
 
     public static final String idParam = "id";
@@ -32,6 +32,7 @@ public class DocumentConfigApiConstants {
     public static final String nameParam = "name";
     public static final String descriptionParam = "description";
     public static final String settingsParam = "settings";
+    public static final String settingsCodeParam = "settingsCode";
     public static final String productIdsParam = "productIds";
     public static final String resourceName = "DOCUMENT";
 
@@ -40,11 +41,12 @@ public class DocumentConfigApiConstants {
     public static final String clientLegalFormOptionsParam = "clientLegalFormOptions";
 
     /**
-     * These parameters will match the class level parameters of {@link ClientData}. Where possible, we try to get
-     * response parameters to match those of request parameters.
+     * These parameters will match the class level parameters of
+     * {@link ClientData}. Where possible, we try to get response parameters to
+     * match those of request parameters.
      */
     public static final Set<String> DOCUMENT_CONFIG_TEMPLATE_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(loanProductDatasParam, clientLegalFormOptionsParam, savingProductOptionsParam));
+            Arrays.asList(loanProductDatasParam, clientLegalFormOptionsParam, savingProductOptionsParam, settingsCodeParam));
     public static final Set<String> DOCUMENT_CONFIG_CREATE_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(formIdParam, typeParam, nameParam, descriptionParam, settingsParam));
     public static final Set<String> DOCUMENT_CONFIG_RESPONSE_DATA_PARAMETERS = new HashSet<>(

@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.fineract.portfolio.client.data.ClientData;
 
-@SuppressWarnings({"HideUtilityClassConstructor"})
+@SuppressWarnings({ "HideUtilityClassConstructor" })
 public class ClientBusinessApiConstants {
 
     public static final String CLIENT_RESOURCE_NAME = "client";
@@ -204,9 +204,8 @@ public class ClientBusinessApiConstants {
     public static final String employmentTypeOptionsPARAM = "employmentTypeOptions";
 
     /**
-     * These parameters will match the class level parameters of
-     * {@link ClientData}. Where possible, we try to get response parameters to
-     * match those of request parameters.
+     * These parameters will match the class level parameters of {@link ClientData}. Where possible, we try to get
+     * response parameters to match those of request parameters.
      */
     protected static final Set<String> CLIENT_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idParamName, accountNoParamName,
             externalIdParamName, statusParamName, activeParamName, activationDateParamName, firstnameParamName, middlenameParamName,

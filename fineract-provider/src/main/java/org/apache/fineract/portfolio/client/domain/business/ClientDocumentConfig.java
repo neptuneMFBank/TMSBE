@@ -35,8 +35,8 @@ import org.springframework.stereotype.Component;
 @Entity
 @Component
 @Table(name = "m_document_client_config", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "legal_form_id" }, name = "legal_form_id_UNIQUE"),
-        @UniqueConstraint(columnNames = { "name" }, name = "name_UNIQUE") })
+        @UniqueConstraint(columnNames = { "legal_form_id" }, name = "legal_form_id_UNIQUE_m_document_client_config"),
+        @UniqueConstraint(columnNames = { "name" }, name = "name_UNIQUE_m_document_client_config") })
 public class ClientDocumentConfig extends AbstractAuditableWithUTCDateTimeCustom {
 
     @Column(name = "active", nullable = false)

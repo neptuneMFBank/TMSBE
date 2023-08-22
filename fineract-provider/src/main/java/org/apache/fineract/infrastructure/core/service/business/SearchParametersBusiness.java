@@ -82,8 +82,8 @@ public final class SearchParametersBusiness {
         final String hierarchy = null;
         final Long staffId = null;
         final String accountNo = null;
-        final Boolean orphansOnly = null;
-        final Boolean isSelfUser = null;
+        final Boolean orphansOnly = false;
+        final Boolean isSelfUser = false;
         final String email = null;
         final String mobile = null;
         final Integer legalFormId = null;

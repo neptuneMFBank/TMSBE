@@ -76,17 +76,18 @@ public class DocumentConfigApiResource {
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create a Document Config", description = """
                 Note:
             """)
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
+        )})
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
         // client
         // loans
@@ -102,8 +103,8 @@ public class DocumentConfigApiResource {
 
     @PUT
     @Path("{entityId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Update a Document Config", description = """
             Note:
                                                                    """)
@@ -111,10 +112,11 @@ public class DocumentConfigApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // ClientsApiResourceSwagger.PutClientsClientIdRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // ClientsApiResourceSwagger.PutClientsClientIdResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.PutClientsClientIdResponse.class))
+        )})
     public String update(@Parameter(description = "entityId") @PathParam("entityId") final Long entityId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -129,15 +131,17 @@ public class DocumentConfigApiResource {
     }
 
     @GET
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "List Clients", description = """
             Note:
             """)
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-    ) })
-    public String retrieveAll(@Context final UriInfo uriInfo, @QueryParam("type") @Parameter(description = "type") final String type,
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+        )})
+    public String retrieveAll(@Context final UriInfo uriInfo,
+            @QueryParam("type") @Parameter(description = "type") final String type,
             @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
             @QueryParam("active") @Parameter(description = "active") final Boolean active,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
@@ -168,7 +172,7 @@ public class DocumentConfigApiResource {
         if (is(type, "client")) {
             documentConfigData = this.documentConfigReadPlatformService.retrieveAll(searchParameters);
         } // else if (is(typeParam, "loans")) {
-          // }
+        // }
         else {
             throw new UnrecognizedQueryParamException("typeRetrieveAll", type);
         }
@@ -180,14 +184,15 @@ public class DocumentConfigApiResource {
 
     @GET
     @Path("template")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Document Config Template", description = """
             """)
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
+        )})
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(DocumentConfigApiConstants.resourceName);
@@ -197,6 +202,29 @@ public class DocumentConfigApiResource {
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toBusinessApiJsonSerializer.serialize(settings, documentConfigData,
                 DocumentConfigApiConstants.DOCUMENT_CONFIG_TEMPLATE_DATA_PARAMETERS);
+    }
+
+    @GET
+    @Path("{documentId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve a Document Config", description = """
+                                                            """)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        //, content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+        )})
+    public String retrieveOne(@PathParam("documentId") @Parameter(description = "documentId") final Long documentId,
+            @Context final UriInfo uriInfo,
+            @QueryParam("type") @Parameter(description = "type") final String type) {
+
+        this.context.authenticatedUser().validateHasReadPermission(DocumentConfigApiConstants.resourceName);
+
+        final DocumentConfigData documentConfigData = this.documentConfigReadPlatformService.retrieveOne(documentId, type);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+
+        return this.toBusinessApiJsonSerializer.serialize(settings, documentConfigData, DocumentConfigApiConstants.DOCUMENT_CONFIG_RESPONSE_DATA_PARAMETERS);
     }
 
 }

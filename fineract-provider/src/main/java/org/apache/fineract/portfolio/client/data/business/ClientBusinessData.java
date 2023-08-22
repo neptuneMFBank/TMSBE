@@ -31,9 +31,10 @@ import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.codes.data.business.CodeValueBusinessData;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.dataqueries.data.DatatableData;
+import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
 import org.apache.fineract.organisation.office.data.OfficeData;
 import org.apache.fineract.organisation.staff.data.StaffData;
-import org.apache.fineract.portfolio.address.data.AddressData;
+import org.apache.fineract.portfolio.address.data.business.AddressBusinessData;
 import org.apache.fineract.portfolio.client.data.ClientFamilyMembersData;
 import org.apache.fineract.portfolio.client.data.ClientNonPersonData;
 import org.apache.fineract.portfolio.client.data.ClientTimelineData;
@@ -70,6 +71,8 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
     private final CodeValueData clientType;
     private final CodeValueData clientClassification;
     private final Boolean isStaff;
+
+    private final DocumentConfigData documentConfigData;
 
     private final Long officeId;
     private final String officeName;
@@ -116,7 +119,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
 
     private final ClientNonPersonData clientNonPersonDetails;
 
-    private final Collection<AddressData> address;
+    private final Collection<AddressBusinessData> address;
 
     private final Boolean isAddressEnabled;
 
@@ -154,10 +157,11 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
             final Collection<CodeValueData> clientTypeOptions, final Collection<CodeValueData> clientClassificationOptions,
             final Collection<CodeValueData> clientNonPersonConstitutionOptions,
             final Collection<CodeValueData> clientNonPersonMainBusinessLineOptions, final List<EnumOptionData> clientLegalFormOptions,
-            final ClientFamilyMembersData familyMemberOptions, final Collection<AddressData> address, final Boolean isAddressEnabled,
+            final ClientFamilyMembersData familyMemberOptions, final Collection<AddressBusinessData> address, final Boolean isAddressEnabled,
             final List<DatatableData> datatables, final Collection<CodeValueBusinessData> activationChannelOptions,
             final Collection<CodeValueBusinessData> bankAccountTypeOptions, final Collection<CodeValueBusinessData> bankOptions,
-            final Collection<CodeValueBusinessData> salaryRangeOptions, final Collection<CodeValueBusinessData> employmentTypeOptions
+            final Collection<CodeValueBusinessData> salaryRangeOptions, final Collection<CodeValueBusinessData> employmentTypeOptions,
+            final DocumentConfigData documentConfigData
     // ,final Collection<CodeValueBusinessData> countryValues,
     // final Collection<CodeValueBusinessData> stateValues,
     // final Collection<CodeValueBusinessData> lgaValues
@@ -202,7 +206,8 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 clientNonPersonDetails, clientLegalFormOptions, familyMemberOptions, legalForm, address, isAddressEnabled, datatables,
                 isStaff, clientCollateralManagements // , countryValues, stateValues
                 // , lgaValues
-                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions);
+                ,
+                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions, documentConfigData);
 
     }
 
@@ -220,12 +225,13 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
             final Collection<CodeValueData> clientClassificationOptions, final Collection<CodeValueData> clientNonPersonConstitutionOptions,
             final Collection<CodeValueData> clientNonPersonMainBusinessLineOptions, final ClientNonPersonData clientNonPerson,
             final List<EnumOptionData> clientLegalFormOptions, final ClientFamilyMembersData familyMemberOptions,
-            final EnumOptionData legalForm, final Collection<AddressData> address, final Boolean isAddressEnabled,
+            final EnumOptionData legalForm, final Collection<AddressBusinessData> address, final Boolean isAddressEnabled,
             final List<DatatableData> datatables, final Boolean isStaff,
             final Set<ClientCollateralManagementData> clientCollateralManagements,
             final Collection<CodeValueBusinessData> activationChannelOptions,
             final Collection<CodeValueBusinessData> bankAccountTypeOptions, final Collection<CodeValueBusinessData> bankOptions,
-            final Collection<CodeValueBusinessData> salaryRangeOptions, final Collection<CodeValueBusinessData> employmentTypeOptions
+            final Collection<CodeValueBusinessData> salaryRangeOptions, final Collection<CodeValueBusinessData> employmentTypeOptions,
+            final DocumentConfigData documentConfigData
     // , final Collection<CodeValueBusinessData> countryValues,
     // final Collection<CodeValueBusinessData> stateValues,
     // final Collection<CodeValueBusinessData> lgaValues
@@ -304,6 +310,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
         this.bankOptions = bankOptions;
         this.salaryRangeOptions = salaryRangeOptions;
         this.employmentTypeOptions = employmentTypeOptions;
+        this.documentConfigData = documentConfigData;
     }
 
     public Long id() {

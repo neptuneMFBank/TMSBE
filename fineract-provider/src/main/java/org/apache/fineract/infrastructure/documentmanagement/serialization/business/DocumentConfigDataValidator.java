@@ -79,7 +79,7 @@ public final class DocumentConfigDataValidator {
         }
         if (this.fromApiJsonHelper.parameterExists(DocumentConfigApiConstants.settingsParam, element)) {
             final JsonArray settings = this.fromApiJsonHelper.extractJsonArrayNamed(DocumentConfigApiConstants.settingsParam, element);
-            baseDataValidator.reset().parameter(DocumentConfigApiConstants.settingsParam).value(settings).arrayNotEmpty();
+            baseDataValidator.reset().parameter(DocumentConfigApiConstants.settingsParam).value(settings).jsonArrayNotEmpty();
         }
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);

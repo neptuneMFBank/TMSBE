@@ -27,11 +27,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
-import org.apache.fineract.infrastructure.codes.service.CodeValueReadPlatformService;
+import org.apache.fineract.infrastructure.codes.data.business.CodeValueBusinessData;
+import org.apache.fineract.infrastructure.codes.service.business.CodeValueBusinessReadPlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.address.data.business.AddressBusinessData;
+import org.apache.fineract.portfolio.address.exception.AddressNotFoundException;
 import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -41,14 +44,30 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
 
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
-    private final CodeValueReadPlatformService readService;
+    private final CodeValueBusinessReadPlatformService readService;
 
     @Autowired
     public AddressBusinessReadPlatformServiceImpl(final PlatformSecurityContext context, final JdbcTemplate jdbcTemplate,
-            final CodeValueReadPlatformService readService) {
+            final CodeValueBusinessReadPlatformService readService) {
         this.context = context;
         this.jdbcTemplate = jdbcTemplate;
         this.readService = readService;
+    }
+
+    @Override
+    public AddressBusinessData retrieveOneAddress(long clientId, long id) {
+        try {
+            this.context.authenticatedUser();
+
+            final AddMapper rm = new AddMapper();
+            final String sql = "select " + rm.schema() + " and ca.client_id=? and addr.id=? ";
+
+            return this.jdbcTemplate.queryForObject(sql, rm,
+                    clientId, id);
+
+        } catch (final EmptyResultDataAccessException e) {
+            throw new AddressNotFoundException(clientId, id);
+        }
     }
 
     private static final class AddMapper implements RowMapper<AddressBusinessData> {
@@ -58,16 +77,21 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
                     + "addr.address_line_3 as address_line_3,addr.town_village as town_village, addr.city as city,addr.county_district as county_district,"
                     + "addr.state_province_id as state_province_id,cv.code_value as state_name, addr.country_id as country_id,c.code_value as country_name,addr.postal_code as postal_code,addr.latitude as latitude,"
                     + "addr.longitude as longitude,addr.created_by as created_by,addr.created_on as created_on,addr.updated_by as updated_by,"
-                    + "addr.updated_on as updated_on, mao.date_moved_in dateMovedIn, mao.resisdence_status_id as residentStatusId, cvv.code_value as residentStatus,"
+                    + "addr.updated_on as updated_on, mao.date_moved_in dateMovedIn, mao.resisdence_status_id as residentStatusId, cvv.code_value as residentStatus, mao.lga_id as lgaId, cvvv.code_value as lgaName,"
                     + " from m_address addr left join m_code_value cv on addr.state_province_id=cv.id"
                     + " left join  m_code_value c on addr.country_id=c.id" + " join m_client_address ca on addr.id= ca.address_id"
                     + " join m_code_value cv2 on ca.address_type_id=cv2.id" + " join m_address_other mao on mao.address_id=addr.id"
-                    + " join m_code_value cvv on mao.resisdence_status_id=cvv.id";
+                    + " join m_code_value cvv on mao.resisdence_status_id=cvv.id"
+                    + " join m_code_value cvvv on mao.lga_id=cvvv.id";
 
         }
 
         @Override
         public AddressBusinessData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long lgaId = rs.getLong(" lgaId");
+            final String lgaName = rs.getString("lgaName");
+            final CodeValueData lga = CodeValueData.instance(lgaId, lgaName);
 
             final Long residentStatusId = rs.getLong(" residentStatusId");
             final String residentStatusName = rs.getString("residentStatus");
@@ -128,7 +152,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
             return AddressBusinessData.instance(addressType, client_id, addressId, address_type_id, is_active, street, address_line_1,
                     address_line_2, address_line_3, town_village, city, county_district, state_province_id, country_id, state_name,
                     country_name, postal_code, latitude, longitude, created_by, created_on_local_date, updated_by, update_on_local_date,
-                    residentStatus, localDateMovedIn);
+                    residentStatus, localDateMovedIn, lga);
         }
     }
 
@@ -137,7 +161,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         this.context.authenticatedUser();
         final AddMapper rm = new AddMapper();
         final String sql = "select " + rm.schema() + " and ca.client_id=?";
-        return this.jdbcTemplate.query(sql, rm, new Object[] { clientid }); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, new Object[]{clientid}); // NOSONAR
     }
 
     @Override
@@ -147,7 +171,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         final AddMapper rm = new AddMapper();
         final String sql = "select " + rm.schema() + " and ca.client_id=? and ca.address_type_id=?";
 
-        return this.jdbcTemplate.query(sql, rm, new Object[] { clientid, typeid }); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, new Object[]{clientid, typeid}); // NOSONAR
     }
 
     @Override
@@ -158,7 +182,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         final AddMapper rm = new AddMapper();
         final String sql = "select " + rm.schema() + " and ca.client_id=? and ca.address_type_id=? and ca.is_active=?";
 
-        return this.jdbcTemplate.query(sql, rm, new Object[] { clientid, typeid, temp }); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, new Object[]{clientid, typeid, temp}); // NOSONAR
     }
 
     @Override
@@ -169,19 +193,19 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         final AddMapper rm = new AddMapper();
         final String sql = "select " + rm.schema() + " and ca.client_id=? and ca.is_active=?";
 
-        return this.jdbcTemplate.query(sql, rm, new Object[] { clientid, temp }); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, new Object[]{clientid, temp}); // NOSONAR
     }
 
     @Override
     public AddressBusinessData retrieveTemplate() {
-        final List<CodeValueData> countryoptions = new ArrayList<>(this.readService.retrieveCodeValuesByCode("COUNTRY"));
+        final List<CodeValueBusinessData> countryoptions = new ArrayList<>(this.readService.retrieveCodeValuesByCode("COUNTRY"));
 
-        final List<CodeValueData> StateOptions = new ArrayList<>(this.readService.retrieveCodeValuesByCode("STATE"));
+        final List<CodeValueBusinessData> StateOptions = new ArrayList<>(this.readService.retrieveCodeValuesByCode("STATE"));
 
-        final List<CodeValueData> addressTypeOptions = new ArrayList<>(this.readService.retrieveCodeValuesByCode("ADDRESS_TYPE"));
-        final List<CodeValueData> lgaOptions = new ArrayList<>(
+        final List<CodeValueBusinessData> addressTypeOptions = new ArrayList<>(this.readService.retrieveCodeValuesByCode("ADDRESS_TYPE"));
+        final List<CodeValueBusinessData> lgaOptions = new ArrayList<>(
                 this.readService.retrieveCodeValuesByCode(ClientBusinessApiConstants.LGAPARAM));
-        final List<CodeValueData> residentOptions = new ArrayList<>(
+        final List<CodeValueBusinessData> residentOptions = new ArrayList<>(
                 this.readService.retrieveCodeValuesByCode(ClientBusinessApiConstants.ResidentPARAM));
 
         return AddressBusinessData.template(countryoptions, StateOptions, addressTypeOptions, lgaOptions, residentOptions);

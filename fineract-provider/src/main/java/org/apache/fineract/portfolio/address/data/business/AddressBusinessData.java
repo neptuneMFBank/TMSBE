@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
+import org.apache.fineract.infrastructure.codes.data.business.CodeValueBusinessData;
 
 @SuppressWarnings("unused")
 public class AddressBusinessData implements Serializable {
@@ -74,14 +75,15 @@ public class AddressBusinessData implements Serializable {
     private final LocalDate updatedOn;
 
     // template holder
-    private final Collection<CodeValueData> countryIdOptions;
-    private final Collection<CodeValueData> stateProvinceIdOptions;
-    private final Collection<CodeValueData> addressTypeIdOptions;
+    private final Collection<CodeValueBusinessData> countryIdOptions;
+    private final Collection<CodeValueBusinessData> stateProvinceIdOptions;
+    private final Collection<CodeValueBusinessData> addressTypeIdOptions;
 
     private final LocalDate dateMovedIn;
     private final CodeValueData resisdenceStatus;
-    private final Collection<CodeValueData> lgaIdOptions;
-    private final Collection<CodeValueData> residentStatusOption;
+    private final CodeValueData lga;
+    private final Collection<CodeValueBusinessData> lgaIdOptions;
+    private final Collection<CodeValueBusinessData> residentStatusOption;
 
     public AddressBusinessData(Long addressTypeId, String street, String addressLine1, String addressLine2, String addressLine3,
             String city, String postalCode, Boolean isActive, Long stateProvinceId, Long countryId) {
@@ -113,6 +115,7 @@ public class AddressBusinessData implements Serializable {
         this.stateProvinceIdOptions = null;
         this.addressTypeIdOptions = null;
         this.resisdenceStatus = null;
+        this.lga = null;
         this.residentStatusOption = null;
         this.lgaIdOptions = null;
         this.dateMovedIn = null;
@@ -123,10 +126,10 @@ public class AddressBusinessData implements Serializable {
             final String townVillage, final String city, final String countyDistrict, final Long stateProvinceId, final Long countryId,
             final String stateName, final String countryName, final String postalCode, final BigDecimal latitude,
             final BigDecimal longitude, final String createdBy, final LocalDate createdOn, final String updatedBy,
-            final LocalDate updatedOn, final Collection<CodeValueData> countryIdOptions,
-            final Collection<CodeValueData> stateProvinceIdOptions, final Collection<CodeValueData> addressTypeIdOptions,
-            final Collection<CodeValueData> lgaIdOptions, final Collection<CodeValueData> residentStatusOption,
-            final CodeValueData residentStatus, final LocalDate dateMovedIn) {
+            final LocalDate updatedOn, final Collection<CodeValueBusinessData> countryIdOptions,
+            final Collection<CodeValueBusinessData> stateProvinceIdOptions, final Collection<CodeValueBusinessData> addressTypeIdOptions,
+            final Collection<CodeValueBusinessData> lgaIdOptions, final Collection<CodeValueBusinessData> residentStatusOption,
+            final CodeValueData residentStatus, final LocalDate dateMovedIn, final CodeValueData lga) {
         this.addressType = addressType;
         this.clientID = clientID;
         this.addressId = addressId;
@@ -156,6 +159,7 @@ public class AddressBusinessData implements Serializable {
         this.lgaIdOptions = lgaIdOptions;
         this.residentStatusOption = residentStatusOption;
         this.resisdenceStatus = residentStatus;
+        this.lga = lga;
         this.dateMovedIn = dateMovedIn;
     }
 
@@ -164,26 +168,26 @@ public class AddressBusinessData implements Serializable {
             final String addressLine3, final String townVillage, final String city, final String countyDistrict, final Long stateProvinceId,
             final Long countryId, final String stateName, final String countryName, final String postalCode, final BigDecimal latitude,
             final BigDecimal longitude, final String createdBy, final LocalDate createdOn, final String updatedBy,
-            final LocalDate updatedOn, final CodeValueData residentStatus, final LocalDate dateMovedIn) {
+            final LocalDate updatedOn, final CodeValueData residentStatus, final LocalDate dateMovedIn, final CodeValueData lga) {
 
         return new AddressBusinessData(addressType, clientID, addressId, addressTypeId, is_active, street, addressLine1, addressLine2,
                 addressLine3, townVillage, city, countyDistrict, stateProvinceId, countryId, stateName, countryName, postalCode, latitude,
-                longitude, createdBy, createdOn, updatedBy, updatedOn, null, null, null, null, null, residentStatus, dateMovedIn);
+                longitude, createdBy, createdOn, updatedBy, updatedOn, null, null, null, null, null, residentStatus, dateMovedIn, lga);
     }
 
     public static AddressBusinessData instance1(final Long addressId, final String street, final String addressLine1,
             final String addressLine2, final String addressLine3, final String townVillage, final String city, final String countyDistrict,
             final Long stateProvinceId, final Long countryId, final String postalCode, final BigDecimal latitude,
             final BigDecimal longitude, final String createdBy, final LocalDate createdOn, final String updatedBy,
-            final LocalDate updatedOn, final CodeValueData residentStatus) {
+            final LocalDate updatedOn, final CodeValueData residentStatus, final CodeValueData lga) {
         return new AddressBusinessData(null, null, addressId, null, false, street, addressLine1, addressLine2, addressLine3, townVillage,
                 city, countyDistrict, stateProvinceId, countryId, null, null, postalCode, latitude, longitude, createdBy, createdOn,
-                updatedBy, updatedOn, null, null, null, null, null, null, null);
+                updatedBy, updatedOn, null, null, null, null, null, null, null, lga);
     }
 
-    public static AddressBusinessData template(final Collection<CodeValueData> countryIdOptions,
-            final Collection<CodeValueData> stateProvinceIdOptions, final Collection<CodeValueData> addressTypeIdOptions,
-            final Collection<CodeValueData> lgaIdOptions, final Collection<CodeValueData> residentStatusOption) {
+    public static AddressBusinessData template(final Collection<CodeValueBusinessData> countryIdOptions,
+            final Collection<CodeValueBusinessData> stateProvinceIdOptions, final Collection<CodeValueBusinessData> addressTypeIdOptions,
+            final Collection<CodeValueBusinessData> lgaIdOptions, final Collection<CodeValueBusinessData> residentStatusOption) {
         final Long client_idtemp = null;
 
         final Long addressIdtemp = null;
@@ -224,11 +228,12 @@ public class AddressBusinessData implements Serializable {
 
         final LocalDate updatedOntemp = null;
         final CodeValueData residentStatus = null;
+        final CodeValueData lga = null;
 
         return new AddressBusinessData(null, client_idtemp, addressIdtemp, addressTypeIdtemp, is_activetemp, streettemp, addressLine1temp,
                 addressLine2temp, addressLine3temp, townVillagetemp, citytemp, countyDistricttemp, stateProvinceIdtemp, countryIdtemp, null,
                 null, postalCodetemp, latitudetemp, longitudetemp, createdBytemp, createdOntemp, updatedBytemp, updatedOntemp,
-                countryIdOptions, stateProvinceIdOptions, addressTypeIdOptions, lgaIdOptions, residentStatusOption, residentStatus, null);
+                countryIdOptions, stateProvinceIdOptions, addressTypeIdOptions, lgaIdOptions, residentStatusOption, residentStatus, null, lga);
     }
 
 }

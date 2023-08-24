@@ -37,6 +37,10 @@ import org.springframework.stereotype.Component;
 public class AddressOther extends AbstractPersistableCustom {
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "lga_id")
+    private CodeValue lga;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "residence_status_id")
     private CodeValue resisdenceStatus;
 
@@ -47,13 +51,15 @@ public class AddressOther extends AbstractPersistableCustom {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
-    protected AddressOther() {}
-
-    public static AddressOther instance(CodeValue resisdenceStatus, LocalDate dateMovedIn, Address address) {
-        return new AddressOther(resisdenceStatus, dateMovedIn, address);
+    protected AddressOther() {
     }
 
-    public AddressOther(CodeValue resisdenceStatus, LocalDate dateMovedIn, Address address) {
+    public static AddressOther instance(CodeValue lga, CodeValue resisdenceStatus, LocalDate dateMovedIn, Address address) {
+        return new AddressOther(lga, resisdenceStatus, dateMovedIn, address);
+    }
+
+    public AddressOther(CodeValue lga, CodeValue resisdenceStatus, LocalDate dateMovedIn, Address address) {
+        this.lga = lga;
         this.resisdenceStatus = resisdenceStatus;
         this.dateMovedIn = dateMovedIn;
         this.address = address;
@@ -77,6 +83,14 @@ public class AddressOther extends AbstractPersistableCustom {
 
     public void setDateMovedIn(LocalDate dateMovedIn) {
         this.dateMovedIn = dateMovedIn;
+    }
+
+    public void setLga(CodeValue lga) {
+        this.lga = lga;
+    }
+
+    public CodeValue getLga() {
+        return lga;
     }
 
 }

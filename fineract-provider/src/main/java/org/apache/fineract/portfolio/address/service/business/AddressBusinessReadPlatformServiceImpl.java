@@ -87,7 +87,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         @Override
         public AddressBusinessData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
 
-            final Long lgaId = rs.getLong(" lgaId");
+            final Long lgaId = rs.getLong("lgaId");
             final String lgaName = rs.getString("lgaName");
             final CodeValueData lga = CodeValueData.instance(lgaId, lgaName);
 

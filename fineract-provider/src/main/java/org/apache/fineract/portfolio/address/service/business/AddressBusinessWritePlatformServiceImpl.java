@@ -134,7 +134,7 @@ public class AddressBusinessWritePlatformServiceImpl implements AddressBusinessW
         if (addressOther == null) {
             addressOther = AddressOther.instance(lga, resisdenceStatus, dateMovedIn, address);
         } else {
-            if (resisdenceStatus != null) {
+            if (lga != null) {
                 addressOther.setLga(lga);
             }
             if (resisdenceStatus != null) {

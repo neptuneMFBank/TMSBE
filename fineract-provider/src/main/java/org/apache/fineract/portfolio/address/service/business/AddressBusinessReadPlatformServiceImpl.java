@@ -34,7 +34,7 @@ import org.apache.fineract.portfolio.address.data.business.AddressBusinessData;
 import org.apache.fineract.portfolio.address.exception.AddressNotFoundException;
 import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -60,11 +60,11 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
             this.context.authenticatedUser();
 
             final AddMapper rm = new AddMapper();
-            final String sql = "select " + rm.schema() + " and ca.client_id=? and addr.id=? ";
+            final String sql = "select " + rm.schema() + " where ca.client_id=? and addr.id=? ";
 
             return this.jdbcTemplate.queryForObject(sql, rm, clientId, id);
 
-        } catch (final EmptyResultDataAccessException e) {
+        } catch (final DataAccessException e) {
             throw new AddressNotFoundException(clientId, id);
         }
     }
@@ -158,7 +158,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
     public Collection<AddressBusinessData> retrieveAllClientAddress(final long clientid) {
         this.context.authenticatedUser();
         final AddMapper rm = new AddMapper();
-        final String sql = "select " + rm.schema() + " and ca.client_id=?";
+        final String sql = "select " + rm.schema() + " where ca.client_id=?";
         return this.jdbcTemplate.query(sql, rm, new Object[] { clientid }); // NOSONAR
     }
 
@@ -167,7 +167,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         this.context.authenticatedUser();
 
         final AddMapper rm = new AddMapper();
-        final String sql = "select " + rm.schema() + " and ca.client_id=? and ca.address_type_id=?";
+        final String sql = "select " + rm.schema() + " where ca.client_id=? and ca.address_type_id=?";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] { clientid, typeid }); // NOSONAR
     }
@@ -178,7 +178,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         boolean temp = Boolean.parseBoolean(status);
 
         final AddMapper rm = new AddMapper();
-        final String sql = "select " + rm.schema() + " and ca.client_id=? and ca.address_type_id=? and ca.is_active=?";
+        final String sql = "select " + rm.schema() + " where ca.client_id=? and ca.address_type_id=? and ca.is_active=?";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] { clientid, typeid, temp }); // NOSONAR
     }
@@ -189,7 +189,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         boolean temp = Boolean.parseBoolean(status);
 
         final AddMapper rm = new AddMapper();
-        final String sql = "select " + rm.schema() + " and ca.client_id=? and ca.is_active=?";
+        final String sql = "select " + rm.schema() + " where ca.client_id=? and ca.is_active=?";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] { clientid, temp }); // NOSONAR
     }

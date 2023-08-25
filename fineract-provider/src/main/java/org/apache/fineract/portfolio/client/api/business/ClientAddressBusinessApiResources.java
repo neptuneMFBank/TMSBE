@@ -63,7 +63,7 @@ public class ClientAddressBusinessApiResources {
             Arrays.asList("addressId", "street", "addressLine1", "addressLine2", "addressLine3", "townVillage", "city", "countyDistrict",
                     "stateProvinceId", "countryId", "postalCode", "latitude", "longitude", "createdBy", "createdOn", "updatedBy",
                     "updatedOn", "clientAddressId", "client_id", "address_id", "address_type_id", "isActive", "fieldConfigurationId",
-                    "entity", "table", "field", "is_enabled", "is_mandatory", "validation_regex", "dateMovedIn", "residenceStatusId"));
+                    "entity", "table", "field", "is_enabled", "is_mandatory", "validation_regex", "dateMovedIn", "residentStatus", "lga"));
     private final String resourceNameForPermissions = "Address";
     private final PlatformSecurityContext context;
     private final AddressBusinessReadPlatformServiceImpl readPlatformService;
@@ -121,6 +121,30 @@ public class ClientAddressBusinessApiResources {
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
         return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @GET
+    @Path("/{clientid}/addresses/{id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Get Single address for a Client", description = """
+            Example Requests:
+
+            client/1/addresses/""")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+    // ClientAddressApiResourcesSwagger.GetClientClientIdAddressesResponse.class)))
+    ) })
+    public String getAddress(@QueryParam("id") @Parameter(description = "id") final long id,
+            @PathParam("clientid") @Parameter(description = "clientId") final long clientid, @Context final UriInfo uriInfo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        AddressBusinessData address = this.readPlatformService.retrieveOneAddress(clientid, id);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiJsonSerializer.serialize(settings, address, this.responseDataParameters);
+
     }
 
     @GET

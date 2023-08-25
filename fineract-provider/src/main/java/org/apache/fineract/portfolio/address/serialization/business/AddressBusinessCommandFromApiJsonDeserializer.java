@@ -71,6 +71,7 @@ public class AddressBusinessCommandFromApiJsonDeserializer {
         final Set<String> supportedParameters = configData.stream().map(FieldConfigurationData::getField).collect(Collectors.toSet());
 
         supportedParameters.add("dateMovedIn");
+        supportedParameters.add("lgaId");
         supportedParameters.add("residenceStatusId");
         supportedParameters.add("locale");
         supportedParameters.add("dateFormat");

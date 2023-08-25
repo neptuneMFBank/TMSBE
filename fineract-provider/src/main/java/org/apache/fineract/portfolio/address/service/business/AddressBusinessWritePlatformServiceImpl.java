@@ -59,6 +59,7 @@ public class AddressBusinessWritePlatformServiceImpl implements AddressBusinessW
     private final AddressOtherRepositoryWrapper addressOtherRepositoryWrapper;
     private final FromJsonHelper fromJsonHelper;
 
+    private final String lgaIdParam = "lgaId";
     private final String residenceStatusIdParam = "residenceStatusId";
     private final String dateMovedInParam = "dateMovedIn";
 
@@ -120,14 +121,22 @@ public class AddressBusinessWritePlatformServiceImpl implements AddressBusinessW
             final Long residenceStatusId = this.fromJsonHelper.extractLongNamed(residenceStatusIdParam, jsonObjectOthers);
             resisdenceStatus = codeValueRepository.getReferenceById(residenceStatusId);
         }
+        CodeValue lga = null;
+        if (this.fromJsonHelper.parameterExists(lgaIdParam, jsonObjectOthers)) {
+            final Long lgaId = this.fromJsonHelper.extractLongNamed(lgaIdParam, jsonObjectOthers);
+            lga = codeValueRepository.getReferenceById(lgaId);
+        }
         LocalDate dateMovedIn = null;
         if (this.fromJsonHelper.parameterExists(dateMovedInParam, jsonObjectOthers)) {
             dateMovedIn = this.fromJsonHelper.extractLocalDateNamed(dateMovedInParam, jsonObjectOthers);
         }
         AddressOther addressOther = this.addressOtherRepositoryWrapper.findOneByAddressId(address.getId());
         if (addressOther == null) {
-            addressOther = AddressOther.instance(resisdenceStatus, dateMovedIn, address);
+            addressOther = AddressOther.instance(lga, resisdenceStatus, dateMovedIn, address);
         } else {
+            if (resisdenceStatus != null) {
+                addressOther.setLga(lga);
+            }
             if (resisdenceStatus != null) {
                 addressOther.setResisdenceStatus(resisdenceStatus);
             }

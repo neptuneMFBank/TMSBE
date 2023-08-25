@@ -157,8 +157,9 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
             final Collection<CodeValueData> clientTypeOptions, final Collection<CodeValueData> clientClassificationOptions,
             final Collection<CodeValueData> clientNonPersonConstitutionOptions,
             final Collection<CodeValueData> clientNonPersonMainBusinessLineOptions, final List<EnumOptionData> clientLegalFormOptions,
-            final ClientFamilyMembersData familyMemberOptions, final Collection<AddressBusinessData> address, final Boolean isAddressEnabled,
-            final List<DatatableData> datatables, final Collection<CodeValueBusinessData> activationChannelOptions,
+            final ClientFamilyMembersData familyMemberOptions, final Collection<AddressBusinessData> address,
+            final Boolean isAddressEnabled, final List<DatatableData> datatables,
+            final Collection<CodeValueBusinessData> activationChannelOptions,
             final Collection<CodeValueBusinessData> bankAccountTypeOptions, final Collection<CodeValueBusinessData> bankOptions,
             final Collection<CodeValueBusinessData> salaryRangeOptions, final Collection<CodeValueBusinessData> employmentTypeOptions,
             final DocumentConfigData documentConfigData
@@ -206,8 +207,8 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 clientNonPersonDetails, clientLegalFormOptions, familyMemberOptions, legalForm, address, isAddressEnabled, datatables,
                 isStaff, clientCollateralManagements // , countryValues, stateValues
                 // , lgaValues
-                ,
-                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions, documentConfigData);
+                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                documentConfigData);
 
     }
 

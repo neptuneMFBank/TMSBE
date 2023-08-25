@@ -23,6 +23,8 @@ import org.apache.fineract.portfolio.address.data.business.AddressBusinessData;
 
 public interface AddressBusinessReadPlatformService {
 
+    AddressBusinessData retrieveOneAddress(long clientid, long id);
+
     Collection<AddressBusinessData> retrieveAllClientAddress(long clientid);
 
     Collection<AddressBusinessData> retrieveAddressbyType(long clientid, long typeid);

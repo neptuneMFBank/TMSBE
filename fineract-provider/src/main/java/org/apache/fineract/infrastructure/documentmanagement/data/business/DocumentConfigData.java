@@ -27,8 +27,7 @@ import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 
 /**
- * Immutable data object representing a user document being managed on the
- * platform.
+ * Immutable data object representing a user document being managed on the platform.
  */
 public class DocumentConfigData {
 

@@ -173,8 +173,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
         DocumentConfigData documentConfigData = null;
         if (legalFormId != null) {
-            documentConfigData
-                    = this.documentConfigReadPlatformService.retrieveDocumentConfigViaClientLegalForm(legalFormId);
+            documentConfigData = this.documentConfigReadPlatformService.retrieveDocumentConfigViaClientLegalForm(legalFormId);
         }
 
         // final List<CodeValueBusinessData> countryValuesOptions = new ArrayList<>(
@@ -197,8 +196,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
                 // , lgaValuesOptions
-                ,
-                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions, documentConfigData);
+                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                documentConfigData);
     }
 
     @Override

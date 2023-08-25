@@ -91,7 +91,7 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
                     sqlBuilder.append(" WHERE (").append(extraCriteria).append(")");
                 }
             } // else if (is(typeParam, "loans")) {
-            // }
+              // }
             else {
                 throw new UnrecognizedQueryParamException("typeRead", typeParam);
             }
@@ -152,7 +152,7 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
                     documentConfigData.setSettings(codeBusinessDatas);
                 }
             } // else if (is(typeParam, "loans")) {
-            // }
+              // }
             else {
                 throw new UnrecognizedQueryParamException("typeRetrieveOne", type);
             }
@@ -169,7 +169,7 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
             final CodeMapper rm = new CodeMapper();
             final String sql = "select " + codeMapper.codeClientDocumentSchema();
 
-            return this.jdbcTemplate.query(sql, rm, new Object[]{clientDocumentId});
+            return this.jdbcTemplate.query(sql, rm, new Object[] { clientDocumentId });
 
         } catch (DataAccessException e) {
             log.warn("retrieveAllCodesForClientDocument: {}", e);
@@ -209,7 +209,6 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
 
     private static final class CodeMapper implements RowMapper<CodeBusinessData> {
 
-
         public String codeClientDocumentSchema() {
             // for this isActive is use to check if value was selected for the configuration or not
             return " GROUP_CONCAT(cv.code_value) as concatCodeValues,   c.id as id, c.code_name as code_name, if(isnull(rp.m_document_client_config_id), false, true) as systemDefined from m_code as c "
@@ -230,8 +229,8 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
 
             CodeBusinessData codeData = CodeBusinessData.instance(id, code_name, systemDefined);
 
-                codeData.setValues(rs.getString("concatCodeValues"));
-                System.out.println("info: {}"+rs.getString("concatCodeValues"));
+            codeData.setValues(rs.getString("concatCodeValues"));
+            System.out.println("info: {}" + rs.getString("concatCodeValues"));
 
             return codeData;
         }
@@ -240,8 +239,7 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
     @Override
     public DocumentConfigData retrieveTemplate() {
         this.context.authenticatedUser();
-        final Collection<CodeData> codeDatas
-                = this.codeReadPlatformService.retrieveAllCodes();
+        final Collection<CodeData> codeDatas = this.codeReadPlatformService.retrieveAllCodes();
 
         final Collection<SavingsProductData> savingsProductDatas = this.savingsProductReadPlatformService.retrieveAllForLookup();
         final Collection<LoanProductData> loanProductDatas = this.loanProductReadPlatformService.retrieveAllLoanProductsForLookup(true);

@@ -51,8 +51,7 @@ public class AddressOther extends AbstractPersistableCustom {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
-    protected AddressOther() {
-    }
+    protected AddressOther() {}
 
     public static AddressOther instance(CodeValue lga, CodeValue resisdenceStatus, LocalDate dateMovedIn, Address address) {
         return new AddressOther(lga, resisdenceStatus, dateMovedIn, address);

@@ -233,7 +233,8 @@ public class AddressBusinessData implements Serializable {
         return new AddressBusinessData(null, client_idtemp, addressIdtemp, addressTypeIdtemp, is_activetemp, streettemp, addressLine1temp,
                 addressLine2temp, addressLine3temp, townVillagetemp, citytemp, countyDistricttemp, stateProvinceIdtemp, countryIdtemp, null,
                 null, postalCodetemp, latitudetemp, longitudetemp, createdBytemp, createdOntemp, updatedBytemp, updatedOntemp,
-                countryIdOptions, stateProvinceIdOptions, addressTypeIdOptions, lgaIdOptions, residentStatusOption, residentStatus, null, lga);
+                countryIdOptions, stateProvinceIdOptions, addressTypeIdOptions, lgaIdOptions, residentStatusOption, residentStatus, null,
+                lga);
     }
 
 }

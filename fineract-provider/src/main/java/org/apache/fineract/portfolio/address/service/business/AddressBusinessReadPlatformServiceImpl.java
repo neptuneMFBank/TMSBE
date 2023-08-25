@@ -76,11 +76,11 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
                     + "addr.address_line_3 as address_line_3,addr.town_village as town_village, addr.city as city,addr.county_district as county_district,"
                     + "addr.state_province_id as state_province_id,cv.code_value as state_name, addr.country_id as country_id,c.code_value as country_name,addr.postal_code as postal_code,addr.latitude as latitude,"
                     + "addr.longitude as longitude,addr.created_by as created_by,addr.created_on as created_on,addr.updated_by as updated_by,"
-                    + "addr.updated_on as updated_on, mao.date_moved_in dateMovedIn, mao.resisdence_status_id as residentStatusId, cvv.code_value as residentStatus, mao.lga_id as lgaId, cvvv.code_value as lgaName"
+                    + "addr.updated_on as updated_on, mao.date_moved_in dateMovedIn, mao.residence_status_id as residentStatusId, cvv.code_value as residentStatus, mao.lga_id as lgaId, cvvv.code_value as lgaName"
                     + " from m_address addr left join m_code_value cv on addr.state_province_id=cv.id"
                     + " left join  m_code_value c on addr.country_id=c.id" + " join m_client_address ca on addr.id= ca.address_id"
                     + " join m_code_value cv2 on ca.address_type_id=cv2.id" + " join m_address_other mao on mao.address_id=addr.id"
-                    + " join m_code_value cvv on mao.resisdence_status_id=cvv.id" + " join m_code_value cvvv on mao.lga_id=cvvv.id";
+                    + " join m_code_value cvv on mao.residence_status_id=cvv.id" + " join m_code_value cvvv on mao.lga_id=cvvv.id";
 
         }
 

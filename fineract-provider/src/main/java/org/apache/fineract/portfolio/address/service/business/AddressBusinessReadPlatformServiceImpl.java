@@ -91,7 +91,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
             final String lgaName = rs.getString("lgaName");
             final CodeValueData lga = CodeValueData.instance(lgaId, lgaName);
 
-            final Long residentStatusId = rs.getLong(" residentStatusId");
+            final Long residentStatusId = rs.getLong("residentStatusId");
             final String residentStatusName = rs.getString("residentStatus");
             final CodeValueData residentStatus = CodeValueData.instance(residentStatusId, residentStatusName);
 

@@ -99,6 +99,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
     // private final Collection<CodeValueBusinessData> countryValues;
     // private final Collection<CodeValueBusinessData> stateValues;
     // private final Collection<CodeValueBusinessData> lgaValues; salaryRange, employmentType
+    private final Collection<CodeValueBusinessData> titleOptions;
     private final Collection<CodeValueBusinessData> salaryRangeOptions;
     private final Collection<CodeValueBusinessData> employmentTypeOptions;
     private final Collection<CodeValueBusinessData> bankAccountTypeOptions;
@@ -162,7 +163,8 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
             final Collection<CodeValueBusinessData> activationChannelOptions,
             final Collection<CodeValueBusinessData> bankAccountTypeOptions, final Collection<CodeValueBusinessData> bankOptions,
             final Collection<CodeValueBusinessData> salaryRangeOptions, final Collection<CodeValueBusinessData> employmentTypeOptions,
-            final DocumentConfigData documentConfigData
+            final DocumentConfigData documentConfigData,
+            final Collection<CodeValueBusinessData> titleOptions
     // ,final Collection<CodeValueBusinessData> countryValues,
     // final Collection<CodeValueBusinessData> stateValues,
     // final Collection<CodeValueBusinessData> lgaValues
@@ -207,8 +209,9 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 clientNonPersonDetails, clientLegalFormOptions, familyMemberOptions, legalForm, address, isAddressEnabled, datatables,
                 isStaff, clientCollateralManagements // , countryValues, stateValues
                 // , lgaValues
-                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
-                documentConfigData);
+                ,
+                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                documentConfigData, titleOptions);
 
     }
 
@@ -232,7 +235,8 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
             final Collection<CodeValueBusinessData> activationChannelOptions,
             final Collection<CodeValueBusinessData> bankAccountTypeOptions, final Collection<CodeValueBusinessData> bankOptions,
             final Collection<CodeValueBusinessData> salaryRangeOptions, final Collection<CodeValueBusinessData> employmentTypeOptions,
-            final DocumentConfigData documentConfigData
+            final DocumentConfigData documentConfigData,
+            final Collection<CodeValueBusinessData> titleOptions
     // , final Collection<CodeValueBusinessData> countryValues,
     // final Collection<CodeValueBusinessData> stateValues,
     // final Collection<CodeValueBusinessData> lgaValues
@@ -312,6 +316,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
         this.salaryRangeOptions = salaryRangeOptions;
         this.employmentTypeOptions = employmentTypeOptions;
         this.documentConfigData = documentConfigData;
+        this.titleOptions = titleOptions;
     }
 
     public Long id() {

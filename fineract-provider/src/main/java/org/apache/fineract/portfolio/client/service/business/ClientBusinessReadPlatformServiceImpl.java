@@ -170,6 +170,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.salaryRangePARAM));
         final List<CodeValueBusinessData> employmentTypeOptions = new ArrayList<>(
                 this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.employmentTypePARAM));
+        final List<CodeValueBusinessData> titleOptions = new ArrayList<>(
+                this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.titleOptionsParam));
 
         DocumentConfigData documentConfigData = null;
         if (legalFormId != null) {
@@ -196,8 +198,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
                 // , lgaValuesOptions
-                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
-                documentConfigData);
+                ,
+                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                documentConfigData, titleOptions);
     }
 
     @Override

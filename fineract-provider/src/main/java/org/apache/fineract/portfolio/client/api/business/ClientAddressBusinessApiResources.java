@@ -135,7 +135,7 @@ public class ClientAddressBusinessApiResources {
     // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
     // ClientAddressApiResourcesSwagger.GetClientClientIdAddressesResponse.class)))
     ) })
-    public String getAddress(@QueryParam("id") @Parameter(description = "id") final long id,
+    public String getAddress(@PathParam("id") @Parameter(description = "id") final long id,
             @PathParam("clientid") @Parameter(description = "clientId") final long clientid, @Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);

@@ -127,9 +127,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 .retrieveGlobalConfiguration("Enable-Address");
 
         final Boolean isAddressEnabled = configuration.isEnabled();
-        if (isAddressEnabled) {
-            address = this.addressReadPlatformService.retrieveTemplate();
-        }
+        //if (isAddressEnabled) {
+        address = this.addressReadPlatformService.retrieveTemplate();
+        //}
 
         final ClientFamilyMembersData familyMemberOptions = this.clientFamilyMembersReadPlatformService.retrieveTemplate();
 

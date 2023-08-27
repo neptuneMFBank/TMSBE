@@ -35,10 +35,10 @@ import org.apache.fineract.infrastructure.documentmanagement.data.business.Docum
 import org.apache.fineract.organisation.office.data.OfficeData;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.portfolio.address.data.business.AddressBusinessData;
+import org.apache.fineract.portfolio.client.data.ClientCollateralManagementData;
 import org.apache.fineract.portfolio.client.data.ClientFamilyMembersData;
 import org.apache.fineract.portfolio.client.data.ClientNonPersonData;
 import org.apache.fineract.portfolio.client.data.ClientTimelineData;
-import org.apache.fineract.portfolio.collateralmanagement.data.ClientCollateralManagementData;
 import org.apache.fineract.portfolio.group.data.GroupGeneralData;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountData;
 import org.apache.fineract.portfolio.savings.data.SavingsProductData;
@@ -152,6 +152,42 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
         return officeName;
     }
 
+    public static ClientBusinessData instance(final String accountNo, final EnumOptionData status, final CodeValueData subStatus,
+            final Long officeId, final String officeName, final Long transferToOfficeId, final String transferToOfficeName, final Long id,
+            final String firstname, final String middlename, final String lastname, final String fullname, final String displayName,
+            final String externalId, final String mobileNo, final String emailAddress, final LocalDate dateOfBirth,
+            final CodeValueData gender, final LocalDate activationDate, final Long imageId, final Long staffId, final String staffName,
+            final ClientTimelineData timeline, final Long savingsProductId, final String savingsProductName, final Long savingsAccountId,
+            final CodeValueData clientType, final CodeValueData clientClassification, final EnumOptionData legalForm,
+            final ClientNonPersonData clientNonPerson, final Boolean isStaff) {
+
+        final Collection<OfficeData> allowedOffices = null;
+        final Collection<GroupGeneralData> groups = null;
+        final Collection<StaffData> staffOptions = null;
+        final Collection<CodeValueData> closureReasons = null;
+        final Collection<CodeValueData> genderOptions = null;
+        final Collection<SavingsProductData> savingProductOptions = null;
+        final Collection<CodeValueData> clientTypeOptions = null;
+        final Collection<CodeValueData> clientClassificationOptions = null;
+        final Collection<CodeValueData> clientNonPersonConstitutionOptions = null;
+        final Collection<CodeValueData> clientNonPersonMainBusinessLineOptions = null;
+        final List<EnumOptionData> clientLegalFormOptions = null;
+        final ClientFamilyMembersData familyMemberOptions = null;
+        final Set<ClientCollateralManagementData> clientCollateralManagements = null;
+        return new ClientBusinessData(
+                accountNo,
+                status,
+                subStatus, officeId, officeName,
+                transferToOfficeId, transferToOfficeName, id, firstname,
+                middlename, lastname, fullname, displayName, externalId, mobileNo, emailAddress, dateOfBirth, gender, activationDate,
+                imageId, staffId, staffName, allowedOffices, groups, staffOptions, closureReasons, genderOptions, timeline,
+                savingProductOptions, savingsProductId, savingsProductName, savingsAccountId, null, clientType, clientClassification,
+                clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions, clientNonPersonMainBusinessLineOptions,
+                clientNonPerson, clientLegalFormOptions, familyMemberOptions, legalForm, null, null, null, isStaff, clientCollateralManagements,
+                null, null, null, null, null, null, null);
+
+    }
+
     public static ClientBusinessData template(final Long officeId, final LocalDate joinedDate, final Collection<OfficeData> officeOptions,
             final Collection<StaffData> staffOptions, final Collection<CodeValueData> narrations,
             final Collection<CodeValueData> genderOptions, final Collection<SavingsProductData> savingProductOptions,
@@ -212,6 +248,57 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 ,
                  activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions);
+
+    }
+
+    public static ClientBusinessData templateWithSavingAccountOptions(final ClientBusinessData clientData,
+            final Collection<SavingsAccountData> savingAccountOptions) {
+        final Set<ClientCollateralManagementData> clientCollateralManagements = null;
+        return new ClientBusinessData(clientData.accountNo, clientData.status, clientData.subStatus, clientData.officeId, clientData.officeName,
+                clientData.transferToOfficeId, clientData.transferToOfficeName, clientData.id, clientData.firstname, clientData.middlename,
+                clientData.lastname, clientData.fullname, clientData.displayName, clientData.externalId, clientData.mobileNo,
+                clientData.emailAddress, clientData.dateOfBirth, clientData.gender, clientData.activationDate, clientData.imageId,
+                clientData.staffId, clientData.staffName, clientData.officeOptions, clientData.groups, clientData.staffOptions,
+                clientData.narrations, clientData.genderOptions, clientData.timeline, clientData.savingProductOptions,
+                clientData.savingsProductId, clientData.savingsProductName, clientData.savingsAccountId, savingAccountOptions,
+                clientData.clientType, clientData.clientClassification, clientData.clientTypeOptions,
+                clientData.clientClassificationOptions, clientData.clientNonPersonConstitutionOptions,
+                clientData.clientNonPersonMainBusinessLineOptions, clientData.clientNonPersonDetails, clientData.clientLegalFormOptions,
+                clientData.familyMemberOptions, clientData.legalForm, clientData.address, clientData.isAddressEnabled, null,
+                clientData.isStaff, clientCollateralManagements, null, null, null, null, null, null, null);
+
+    }
+
+    public static ClientBusinessData setParentGroups(final ClientBusinessData clientData, final Collection<GroupGeneralData> parentGroups,
+            final Set<ClientCollateralManagementData> clientCollateralManagements) {
+        return new ClientBusinessData(clientData.accountNo, clientData.status, clientData.subStatus, clientData.officeId, clientData.officeName,
+                clientData.transferToOfficeId, clientData.transferToOfficeName, clientData.id, clientData.firstname, clientData.middlename,
+                clientData.lastname, clientData.fullname, clientData.displayName, clientData.externalId, clientData.mobileNo,
+                clientData.emailAddress, clientData.dateOfBirth, clientData.gender, clientData.activationDate, clientData.imageId,
+                clientData.staffId, clientData.staffName, clientData.officeOptions, parentGroups, clientData.staffOptions, null, null,
+                clientData.timeline, clientData.savingProductOptions, clientData.savingsProductId, clientData.savingsProductName,
+                clientData.savingsAccountId, clientData.savingAccountOptions, clientData.clientType, clientData.clientClassification,
+                clientData.clientTypeOptions, clientData.clientClassificationOptions, clientData.clientNonPersonConstitutionOptions,
+                clientData.clientNonPersonMainBusinessLineOptions, clientData.clientNonPersonDetails, clientData.clientLegalFormOptions,
+                clientData.familyMemberOptions, clientData.legalForm, clientData.address, clientData.isAddressEnabled, null,
+                clientData.isStaff, clientCollateralManagements, null, null, null, null, null, null, null);
+
+    }
+
+    public static ClientBusinessData templateOnTop(final ClientBusinessData clientData, final ClientBusinessData templateData) {
+        final Set<ClientCollateralManagementData> clientCollateralManagements = null;
+        return new ClientBusinessData(clientData.accountNo, clientData.status, clientData.subStatus, clientData.officeId, clientData.officeName,
+                clientData.transferToOfficeId, clientData.transferToOfficeName, clientData.id, clientData.firstname, clientData.middlename,
+                clientData.lastname, clientData.fullname, clientData.displayName, clientData.externalId, clientData.mobileNo,
+                clientData.emailAddress, clientData.dateOfBirth, clientData.gender, clientData.activationDate, clientData.imageId,
+                clientData.staffId, clientData.staffName, templateData.officeOptions, clientData.groups, templateData.staffOptions,
+                templateData.narrations, templateData.genderOptions, clientData.timeline, templateData.savingProductOptions,
+                clientData.savingsProductId, clientData.savingsProductName, clientData.savingsAccountId, clientData.savingAccountOptions,
+                clientData.clientType, clientData.clientClassification, templateData.clientTypeOptions,
+                templateData.clientClassificationOptions, templateData.clientNonPersonConstitutionOptions,
+                templateData.clientNonPersonMainBusinessLineOptions, clientData.clientNonPersonDetails, templateData.clientLegalFormOptions,
+                templateData.familyMemberOptions, clientData.legalForm, clientData.address, clientData.isAddressEnabled, null,
+                clientData.isStaff, clientCollateralManagements, null, null, null, null, null, null, null);
 
     }
 
@@ -410,6 +497,10 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
 
     public Boolean getIsAddressEnabled() {
         return this.isAddressEnabled;
+    }
+
+    public EnumOptionData getLegalForm() {
+        return legalForm;
     }
 
 }

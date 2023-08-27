@@ -55,7 +55,6 @@ import org.apache.fineract.portfolio.businessevent.domain.client.ClientActivateB
 import org.apache.fineract.portfolio.businessevent.domain.client.ClientCreateBusinessEvent;
 import org.apache.fineract.portfolio.businessevent.service.BusinessEventNotifierService;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
-import org.apache.fineract.portfolio.client.data.ClientDataValidator;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessDataValidator;
 import org.apache.fineract.portfolio.client.domain.AccountNumberGenerator;
 import org.apache.fineract.portfolio.client.domain.Client;

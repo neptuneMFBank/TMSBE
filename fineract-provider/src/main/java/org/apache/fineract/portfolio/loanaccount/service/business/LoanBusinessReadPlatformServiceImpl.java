@@ -264,6 +264,11 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
                 extraCriterias.add(searchParameters.getOfficeId());
                 arrayPos = arrayPos + 1;
             }
+            if (searchParameters.isClientIdPassed()) {
+                sqlBuilder.append("and l.client_id =?");
+                extraCriterias.add(searchParameters.getClientId());
+                arrayPos = arrayPos + 1;
+            }
 
             if (searchParameters.isAccountNoPassed()) {
                 sqlBuilder.append(" and l.account_no = ?");

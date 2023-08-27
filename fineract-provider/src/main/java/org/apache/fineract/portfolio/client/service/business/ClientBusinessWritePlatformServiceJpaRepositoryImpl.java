@@ -55,7 +55,7 @@ import org.apache.fineract.portfolio.businessevent.domain.client.ClientActivateB
 import org.apache.fineract.portfolio.businessevent.domain.client.ClientCreateBusinessEvent;
 import org.apache.fineract.portfolio.businessevent.service.BusinessEventNotifierService;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
-import org.apache.fineract.portfolio.client.data.ClientDataValidator;
+import org.apache.fineract.portfolio.client.data.business.ClientBusinessDataValidator;
 import org.apache.fineract.portfolio.client.domain.AccountNumberGenerator;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientNonPerson;
@@ -92,7 +92,7 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
     private final OfficeRepositoryWrapper officeRepositoryWrapper;
     private final NoteRepository noteRepository;
     private final GroupRepository groupRepository;
-    private final ClientDataValidator fromApiJsonDeserializer;
+    private final ClientBusinessDataValidator fromApiJsonDeserializer;
     private final AccountNumberGenerator accountNumberGenerator;
     private final StaffRepositoryWrapper staffRepository;
     private final CodeValueRepositoryWrapper codeValueRepository;
@@ -114,7 +114,7 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
     public ClientBusinessWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
             final ClientRepositoryWrapper clientRepository, final ClientNonPersonRepositoryWrapper clientNonPersonRepository,
             final OfficeRepositoryWrapper officeRepositoryWrapper, final NoteRepository noteRepository,
-            final ClientDataValidator fromApiJsonDeserializer, final AccountNumberGenerator accountNumberGenerator,
+            final ClientBusinessDataValidator fromApiJsonDeserializer, final AccountNumberGenerator accountNumberGenerator,
             final GroupRepository groupRepository, final StaffRepositoryWrapper staffRepository,
             final CodeValueRepositoryWrapper codeValueRepository, final LoanRepositoryWrapper loanRepositoryWrapper,
             final SavingsAccountRepositoryWrapper savingsRepositoryWrapper, final SavingsProductRepository savingsProductRepository,
@@ -279,7 +279,7 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
                 extractAndCreateClientNonPerson(newClient, command);
             }
 
-            if (isAddressEnabled) {
+            if (isAddressEnabled && this.fromApiJsonHelper.parameterExists(ClientApiConstants.address, command.parsedJson())) {
                 this.addressWritePlatformService.addNewClientAddress(newClient, command);
             }
 
@@ -318,7 +318,8 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
     }
 
     /**
-     * This method extracts ClientNonPerson details from Client command and creates a new ClientNonPerson record
+     * This method extracts ClientNonPerson details from Client command and
+     * creates a new ClientNonPerson record
      *
      * @param client
      * @param command
@@ -557,7 +558,8 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
         if (client.getGroups() != null && maxNumberOfClients != null) {
             for (Group group : client.getGroups()) {
                 /**
-                 * Since this Client has not yet been associated with the group, reduce maxNumberOfClients by 1
+                 * Since this Client has not yet been associated with the group,
+                 * reduce maxNumberOfClients by 1
                  *
                  */
                 final boolean validationsuccess = group.isGroupsClientCountWithinMaxRange(maxNumberOfClients - 1);

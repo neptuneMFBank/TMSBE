@@ -171,7 +171,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         final List<CodeValueBusinessData> employmentTypeOptions = new ArrayList<>(
                 this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.employmentTypePARAM));
         final List<CodeValueBusinessData> titleOptions = new ArrayList<>(
-                this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.titleOptionsParam));
+                this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.TitlePARAM));
 
         DocumentConfigData documentConfigData = null;
         if (legalFormId != null) {

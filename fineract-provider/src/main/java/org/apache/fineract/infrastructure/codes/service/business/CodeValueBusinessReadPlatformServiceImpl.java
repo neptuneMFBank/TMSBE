@@ -51,7 +51,7 @@ public class CodeValueBusinessReadPlatformServiceImpl implements CodeValueBusine
         public CodeValueBusinessData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
 
             final Long id = rs.getLong("id");
-            final int codeScore = rs.getInt("codeScore");
+            final Long codeScore = rs.getLong("codeScore");
             final String value = rs.getString("value");
             final Integer position = rs.getInt("position");
             final String description = rs.getString("description");

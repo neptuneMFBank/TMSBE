@@ -26,7 +26,7 @@ import java.io.Serializable;
 public class CodeValueBusinessData implements Serializable {
 
     private final Long id;
-    private final Integer codeScore;
+    private final Long codeScore;
 
     private final String name;
 
@@ -39,12 +39,12 @@ public class CodeValueBusinessData implements Serializable {
     private final boolean mandatory;
 
     public static CodeValueBusinessData instance(final Long id, final String name, final Integer position, final String description,
-            final boolean isActive, final boolean mandatory, final Integer codeScore) {
+            final boolean isActive, final boolean mandatory, final Long codeScore) {
         return new CodeValueBusinessData(id, name, position, description, isActive, mandatory, codeScore);
     }
 
     private CodeValueBusinessData(final Long id, final String name, final Integer position, final String description, final boolean active,
-            final boolean mandatory, final Integer codeScore) {
+            final boolean mandatory, final Long codeScore) {
         this.id = id;
         this.name = name;
         this.position = position;

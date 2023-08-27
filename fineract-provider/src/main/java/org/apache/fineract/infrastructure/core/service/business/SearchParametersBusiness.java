@@ -25,6 +25,7 @@ public final class SearchParametersBusiness {
 
     private final String sqlSearch;
     private final Long officeId;
+    private final Long clientId;
     private final String externalId;
     private final String name;
     private final String hierarchy;
@@ -87,18 +88,20 @@ public final class SearchParametersBusiness {
         final String email = null;
         final String mobile = null;
         final Integer legalFormId = null;
+        final Long clientId = null;
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
-                productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active);
+                productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId);
     }
 
-    public static SearchParametersBusiness forLoansBusiness(final Long officeId, final String externalId, final Integer statusId,
+    public static SearchParametersBusiness forLoansBusiness(final Long clientId, final Long officeId, final String externalId, final Integer statusId,
             final String hierarchy, final Integer offset, final Integer limit, final String orderBy, final String sortOrder,
             final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate) {
 
         final boolean isSelfUser = false;
         final Boolean orphansOnly = false;
         final Long savingsId = null;
+
         final String status = null;
         final Long categoryId = null;
         final Long productId = null;
@@ -117,7 +120,7 @@ public final class SearchParametersBusiness {
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, name, hierarchy, firstname, lastname, offset, limit, orderBy,
                 sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId, productId,
-                provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active);
+                provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId);
     }
 
     public static SearchParametersBusiness forClientsBusiness(final Long officeId, final String externalId, final Integer statusId,
@@ -136,10 +139,11 @@ public final class SearchParametersBusiness {
         final String sqlSearch = null;
         final String type = null;
         final Boolean active = false;
+        final Long clientId = null;
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
-                productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active);
+                productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId);
     }
 
     private SearchParametersBusiness(final String sqlSearch, final Long officeId, final String externalId, final String name,
@@ -148,7 +152,7 @@ public final class SearchParametersBusiness {
             final Long savingsId, final Boolean orphansOnly, boolean isSelfUser, final LocalDate fromDate, final LocalDate toDate,
             final String status, final Long categoryId, final Long productId, final Long provisioningEntryId, final String currencyCode,
             final Integer statusId, final String email, final String mobile, final Integer legalFormId, final String type,
-            final Boolean active) {
+            final Boolean active, final Long clientId) {
         this.sqlSearch = sqlSearch;
         this.officeId = officeId;
         this.externalId = externalId;
@@ -179,7 +183,7 @@ public final class SearchParametersBusiness {
         this.legalFormId = legalFormId;
         this.type = type;
         this.active = active;
-
+        this.clientId = clientId;
     }
 
     public boolean isOrderByRequested() {
@@ -339,6 +343,14 @@ public final class SearchParametersBusiness {
 
     public boolean isProductIdPassed() {
         return this.productId != null && this.productId != 0;
+    }
+
+    public Long getClientId() {
+        return clientId;
+    }
+
+    public boolean isClientIdPassed() {
+        return this.clientId != null && this.clientId != 0;
     }
 
     public Long getCategoryId() {

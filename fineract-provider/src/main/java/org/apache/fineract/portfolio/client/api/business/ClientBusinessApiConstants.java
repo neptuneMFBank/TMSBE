@@ -192,6 +192,7 @@ public class ClientBusinessApiConstants {
     public static final String LGAPARAM = "LGA";
     public static final String ResidentPARAM = "Resident";
     public static final String TitlePARAM = "Title";
+    public static final String IndustryPARAM = "Industry";
     public static final String ActivationChannelPARAM = "ActivationChannel";
     public static final String activationChannelOptionsPARAM = "activationChannelOptions";
     public static final String bankPARAM = "Bank";

@@ -134,8 +134,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
             final String sql = "select " + this.clientBusinessMapper.schema()
                     + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
-            ClientBusinessData clientData = this.jdbcTemplate.queryForObject(sql,
-                    this.clientBusinessMapper, // NOSONAR
+            ClientBusinessData clientData = this.jdbcTemplate.queryForObject(sql, this.clientBusinessMapper, // NOSONAR
                     hierarchySearchString, hierarchySearchString, clientId);
 
             // Get client collaterals
@@ -153,14 +152,11 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
             if (clientData != null && showTemplate) {
                 final Integer legalFormid = clientData.getLegalForm() != null ? clientData.getLegalForm().getId().intValue() : null;
-                final ClientBusinessData templateData
-                        = this.retrieveTemplate(
-                                clientData.officeId(),
-                                staffInSelectedOfficeOnly, legalFormid);
-                clientData = ClientBusinessData.templateOnTop(
-                        clientData,
-                        templateData);
-                Collection<SavingsAccountData> savingAccountOptions = this.savingsAccountReadPlatformService.retrieveForLookup(clientId, null);
+                final ClientBusinessData templateData = this.retrieveTemplate(clientData.officeId(), staffInSelectedOfficeOnly,
+                        legalFormid);
+                clientData = ClientBusinessData.templateOnTop(clientData, templateData);
+                Collection<SavingsAccountData> savingAccountOptions = this.savingsAccountReadPlatformService.retrieveForLookup(clientId,
+                        null);
                 if (savingAccountOptions != null && !savingAccountOptions.isEmpty()) {
                     clientData = ClientBusinessData.templateWithSavingAccountOptions(clientData, savingAccountOptions);
                 }
@@ -171,9 +167,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             final Collection<GroupGeneralData> parentGroups = this.jdbcTemplate.query(clientGroupsSql, this.clientGroupsMapper, // NOSONAR
                     clientId);
 
-            return ClientBusinessData.setParentGroups(clientData,
-                    parentGroups,
-                    clientCollateralManagementDataSet);
+            return ClientBusinessData.setParentGroups(clientData, parentGroups, clientCollateralManagementDataSet);
 
         } catch (final EmptyResultDataAccessException e) {
             throw new ClientNotFoundException(clientId, e);
@@ -195,9 +189,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 .retrieveGlobalConfiguration("Enable-Address");
 
         final Boolean isAddressEnabled = configuration.isEnabled();
-        //if (isAddressEnabled) {
+        // if (isAddressEnabled) {
         address = this.addressReadPlatformService.retrieveTemplate();
-        //}
+        // }
 
         final ClientFamilyMembersData familyMemberOptions = this.clientFamilyMembersReadPlatformService.retrieveTemplate();
 
@@ -266,8 +260,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
                 // , lgaValuesOptions
-                ,
-                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions);
     }
 
@@ -675,8 +668,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                     submittedByLastname, activationDate, activatedByUsername, activatedByFirstname, activatedByLastname, closedOnDate,
                     closedByUsername, closedByFirstname, closedByLastname);
 
-            return ClientBusinessData.instance(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id,
-                    firstname, middlename, lastname, fullname, displayName, externalId, mobileNo, emailAddress, dateOfBirth, gender,
+            return ClientBusinessData.instance(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName,
+                    id, firstname, middlename, lastname, fullname, displayName, externalId, mobileNo, emailAddress, dateOfBirth, gender,
                     activationDate, imageId, staffId, staffName, timeline, savingsProductId, savingsProductName, savingsAccountId,
                     clienttype, classification, legalForm, clientNonPerson, isStaff);
 

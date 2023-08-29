@@ -94,9 +94,9 @@ public final class SearchParametersBusiness {
                 productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId);
     }
 
-    public static SearchParametersBusiness forLoansBusiness(final Long clientId, final Long officeId, final String externalId, final Integer statusId,
-            final String hierarchy, final Integer offset, final Integer limit, final String orderBy, final String sortOrder,
-            final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate) {
+    public static SearchParametersBusiness forLoansBusiness(final Long clientId, final Long officeId, final String externalId,
+            final Integer statusId, final String hierarchy, final Integer offset, final Integer limit, final String orderBy,
+            final String sortOrder, final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate) {
 
         final boolean isSelfUser = false;
         final Boolean orphansOnly = false;

@@ -217,7 +217,7 @@ public class ClientBusinessApiConstants {
             staffOptionsParamName, dateOfBirthParamName, genderParamName, clientTypeParamName, clientClassificationParamName,
             legalFormParamName, clientNonPersonDetailsParamName, isStaffParamName, lgaValuesParamName, activationChannelOptionsPARAM,
             bankPARAM, bankOptionsPARAM, bankAccountTypePARAM, bankAccountTypeOptionsPARAM, salaryRangeOptionsPARAM,
-            employmentTypeOptionsPARAM, datatables,titleOptionsParam));
+            employmentTypeOptionsPARAM, datatables, titleOptionsParam));
 
     protected static final Set<String> CLIENT_CHARGES_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(chargeIdParamName,
             clientIdParamName, chargeNameParamName, penaltyParamName, chargeTimeTypeParamName, dueAsOfDateParamName,

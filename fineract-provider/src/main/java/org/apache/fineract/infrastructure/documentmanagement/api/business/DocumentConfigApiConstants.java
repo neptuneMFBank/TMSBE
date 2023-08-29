@@ -26,6 +26,11 @@ import org.apache.fineract.portfolio.client.data.ClientData;
 @SuppressWarnings({ "HideUtilityClassConstructor" })
 public class DocumentConfigApiConstants {
 
+    public static final String entityTypeParam = "entityType";
+    public static final String entityIdParam = "entityId";
+
+    public static final String locationParam = "location";
+
     public static final String idParam = "id";
     public static final String formIdParam = "formId";
     public static final String typeParam = "type";
@@ -50,5 +55,8 @@ public class DocumentConfigApiConstants {
             Arrays.asList(formIdParam, typeParam, nameParam, descriptionParam, settingsParam));
     public static final Set<String> DOCUMENT_CONFIG_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(productIdsParam, idParam, formIdParam, typeParam, nameParam, descriptionParam, settingsParam));
+
+    public static final Set<String> DOCUMENT_CREATE_RESPONSE_DATA_PARAMETERS = new HashSet<>(
+            Arrays.asList(typeParam, locationParam, descriptionParam, nameParam));
 
 }

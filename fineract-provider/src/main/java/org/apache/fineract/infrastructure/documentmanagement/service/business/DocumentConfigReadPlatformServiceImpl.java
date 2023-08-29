@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.codes.data.CodeData;
 import org.apache.fineract.infrastructure.codes.data.business.CodeBusinessData;
-import org.apache.fineract.infrastructure.codes.service.CodeReadPlatformService;
+import org.apache.fineract.infrastructure.codes.service.business.CodeDocumentReadPlatformService;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.exception.UnrecognizedQueryParamException;
@@ -60,7 +60,7 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
     private final SavingsProductReadPlatformService savingsProductReadPlatformService;
-    private final CodeReadPlatformService codeReadPlatformService;
+    private final CodeDocumentReadPlatformService codeReadPlatformService;
     private final LoanProductReadPlatformService loanProductReadPlatformService;
     // data mappers
     private final PaginationHelper paginationHelper;
@@ -167,7 +167,8 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
         this.context.authenticatedUser();
         try {
             final CodeMapper rm = new CodeMapper();
-            final String sql = "select " + codeMapper.codeClientDocumentSchema();
+            final String sql = "select " + codeMapper.codeClientDocumentSchema()
+                    + " where mdca.code_allow=1 group by c.id order by c.code_name ";
 
             return this.jdbcTemplate.query(sql, rm, new Object[] { clientDocumentId });
 
@@ -211,10 +212,12 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
 
         public String codeClientDocumentSchema() {
             // for this isActive is use to check if value was selected for the configuration or not
-            return " GROUP_CONCAT(cv.code_value) as concatCodeValues,   c.id as id, c.code_name as code_name, if(isnull(rp.m_document_client_config_id), false, true) as systemDefined from m_code as c "
+            return " GROUP_CONCAT(cv.code_value) as concatCodeValues,   c.id as id, c.code_name as code_name, if(isnull(rp.m_document_client_config_id), false, true) as systemDefined "
+                    + " from m_code as c join m_document_code_allow mdca ON mdca.code_id=c.id "
                     + " left join m_code_value cv on cv.code_id=c.id "
                     + " left join m_document_client_config_code rp on rp.code_id = c.id and rp.m_document_client_config_id=? "
-                    + " group by c.id order by c.code_name";
+            // + " group by c.id order by c.code_name"
+            ;
         }
 
         // public String schema() {
@@ -239,7 +242,7 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
     @Override
     public DocumentConfigData retrieveTemplate() {
         this.context.authenticatedUser();
-        final Collection<CodeData> codeDatas = this.codeReadPlatformService.retrieveAllCodes();
+        final Collection<CodeData> codeDatas = this.codeReadPlatformService.retrieveAllCodesDocument();
 
         final Collection<SavingsProductData> savingsProductDatas = this.savingsProductReadPlatformService.retrieveAllForLookup();
         final Collection<LoanProductData> loanProductDatas = this.loanProductReadPlatformService.retrieveAllLoanProductsForLookup(true);

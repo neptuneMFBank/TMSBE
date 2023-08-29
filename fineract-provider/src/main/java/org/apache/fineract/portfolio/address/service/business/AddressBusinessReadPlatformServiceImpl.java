@@ -79,8 +79,10 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
                     + "addr.updated_on as updated_on, mao.date_moved_in dateMovedIn, mao.residence_status_id as residentStatusId, cvv.code_value as residentStatus, mao.lga_id as lgaId, cvvv.code_value as lgaName"
                     + " from m_address addr left join m_code_value cv on addr.state_province_id=cv.id"
                     + " left join  m_code_value c on addr.country_id=c.id" + " join m_client_address ca on addr.id= ca.address_id"
-                    + " left join m_code_value cv2 on ca.address_type_id=cv2.id" + " left join m_address_other mao on mao.address_id=addr.id"
-                    + " left join m_code_value cvv on mao.residence_status_id=cvv.id" + " left join m_code_value cvvv on mao.lga_id=cvvv.id";
+                    + " left join m_code_value cv2 on ca.address_type_id=cv2.id"
+                    + " left join m_address_other mao on mao.address_id=addr.id"
+                    + " left join m_code_value cvv on mao.residence_status_id=cvv.id"
+                    + " left join m_code_value cvvv on mao.lga_id=cvvv.id";
 
         }
 

@@ -38,7 +38,7 @@ public final class ContentRepositoryUtils {
 
     public enum ImageMIMEtype {
 
-        GIF("image/gif"), JPEG("image/jpeg"), PNG("image/png");
+        GIF("image/gif"), JPEG("image/jpeg"), PNG("image/png"), PDF("application/pdf");
 
         private final String value;
 
@@ -60,6 +60,8 @@ public final class ContentRepositoryUtils {
                     return ImageMIMEtype.JPEG;
                 case PNG:
                     return ImageMIMEtype.PNG;
+                case PDF:
+                    return ImageMIMEtype.PDF;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -68,7 +70,7 @@ public final class ContentRepositoryUtils {
 
     public enum ImageFileExtension {
 
-        GIF(".gif"), JPEG(".jpeg"), JPG(".jpg"), PNG(".png");
+        GIF(".gif"), JPEG(".jpeg"), JPG(".jpg"), PNG(".png"), PDF(".pdf");
 
         private final String value;
 
@@ -92,6 +94,8 @@ public final class ContentRepositoryUtils {
                     return ImageFileExtension.JPEG;
                 case PNG:
                     return ImageFileExtension.PNG;
+                case PDF:
+                    return ImageFileExtension.PDF;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -101,7 +105,7 @@ public final class ContentRepositoryUtils {
     public enum ImageDataURIsuffix {
 
         GIF("data:" + ImageMIMEtype.GIF.getValue() + ";base64,"), JPEG("data:" + ImageMIMEtype.JPEG.getValue() + ";base64,"), PNG(
-                "data:" + ImageMIMEtype.PNG.getValue() + ";base64,");
+                "data:" + ImageMIMEtype.PNG.getValue() + ";base64,"), PDF("data:" + ImageMIMEtype.PDF.getValue() + ";base64,");
 
         private final String value;
 
@@ -119,6 +123,8 @@ public final class ContentRepositoryUtils {
             return ContentRepositoryUtils.ImageFileExtension.GIF;
         } else if (StringUtils.endsWith(fileName, ContentRepositoryUtils.ImageFileExtension.PNG.getValue())) {
             return ContentRepositoryUtils.ImageFileExtension.PNG;
+        } else if (StringUtils.endsWith(fileName, ContentRepositoryUtils.ImageFileExtension.PDF.getValue())) {
+            return ContentRepositoryUtils.ImageFileExtension.PDF;
         } else {
             return ContentRepositoryUtils.ImageFileExtension.JPEG;
         }
@@ -131,7 +137,7 @@ public final class ContentRepositoryUtils {
      */
     public static void validateImageMimeType(final String mimeType) {
         if ((!mimeType.equalsIgnoreCase(ImageMIMEtype.GIF.getValue()) && !mimeType.equalsIgnoreCase(ImageMIMEtype.JPEG.getValue())
-                && !mimeType.equalsIgnoreCase(ImageMIMEtype.PNG.getValue()))) {
+                && !mimeType.equalsIgnoreCase(ImageMIMEtype.PNG.getValue()) && !mimeType.equalsIgnoreCase(ImageMIMEtype.PDF.getValue()))) {
             throw new ImageUploadException(mimeType);
         }
     }
@@ -154,6 +160,9 @@ public final class ContentRepositoryUtils {
         } else if (StringUtils.startsWith(dataURL, ImageDataURIsuffix.JPEG.getValue())) {
             base64EncodedString = dataURL.replaceAll(ImageDataURIsuffix.JPEG.getValue(), "");
             fileExtension = ImageFileExtension.JPEG.getValue();
+        } else if (StringUtils.startsWith(dataURL, ImageDataURIsuffix.PDF.getValue())) {
+            base64EncodedString = dataURL.replaceAll(ImageDataURIsuffix.PDF.getValue(), "");
+            fileExtension = ImageFileExtension.PDF.getValue();
         } else {
             throw new ImageDataURLNotValidException();
         }
@@ -166,7 +175,8 @@ public final class ContentRepositoryUtils {
          * Using Content-Length gives me size of the entire request, which is good enough for now for a fast fail as the
          * length of the rest of the content i.e name and description while compared to the uploaded file size is
          * negligible
-         **/
+         *
+         */
         if (fileSize != null && ((fileSize / (1024 * 1024)) > ContentRepository.MAX_FILE_UPLOAD_SIZE_IN_MB)) {
             throw new ContentManagementException(name, fileSize, ContentRepository.MAX_FILE_UPLOAD_SIZE_IN_MB);
         }
@@ -188,7 +198,6 @@ public final class ContentRepositoryUtils {
     /**
      * Generate a random String.
      */
-
     @SuppressFBWarnings(value = {
             "DMI_RANDOM_USED_ONLY_ONCE" }, justification = "False positive for random object created and used only once")
     public static String generateRandomString() {

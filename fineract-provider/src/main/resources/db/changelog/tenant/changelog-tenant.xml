@@ -70,4 +70,5 @@
     <include file="parts/0053_m_document_client_config.sql" relativeToChangelogFile="true" />
     <include file="parts/0054_m_document_client_config_code.sql" relativeToChangelogFile="true" />
     <include file="parts/0055_m_title_config_code.sql" relativeToChangelogFile="true" />
+    <include file="parts/0056_m_document_code_allow.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

@@ -63,7 +63,7 @@ public class ClientAddressBusinessApiResources {
             Arrays.asList("addressId", "street", "addressLine1", "addressLine2", "addressLine3", "townVillage", "city", "countyDistrict",
                     "stateProvinceId", "countryId", "postalCode", "latitude", "longitude", "createdBy", "createdOn", "updatedBy",
                     "updatedOn", "clientAddressId", "client_id", "address_id", "address_type_id", "isActive", "fieldConfigurationId",
-                    "entity", "table", "field", "is_enabled", "is_mandatory", "validation_regex", "dateMovedIn", "residentStatus", "lga"));
+                    "entity", "table", "field", "is_enabled", "is_mandatory", "validation_regex", "dateMovedIn", "residenceStatus", "lga"));
     private final String resourceNameForPermissions = "Address";
     private final PlatformSecurityContext context;
     private final AddressBusinessReadPlatformServiceImpl readPlatformService;

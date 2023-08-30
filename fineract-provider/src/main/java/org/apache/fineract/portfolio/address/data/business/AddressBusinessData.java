@@ -80,7 +80,7 @@ public class AddressBusinessData implements Serializable {
     private final Collection<CodeValueBusinessData> addressTypeIdOptions;
 
     private final LocalDate dateMovedIn;
-    private final CodeValueData resisdenceStatus;
+    private final CodeValueData residenceStatus;
     private final CodeValueData lga;
     private final Collection<CodeValueBusinessData> lgaIdOptions;
     private final Collection<CodeValueBusinessData> residentStatusOption;
@@ -114,7 +114,7 @@ public class AddressBusinessData implements Serializable {
         this.countryIdOptions = null;
         this.stateProvinceIdOptions = null;
         this.addressTypeIdOptions = null;
-        this.resisdenceStatus = null;
+        this.residenceStatus = null;
         this.lga = null;
         this.residentStatusOption = null;
         this.lgaIdOptions = null;
@@ -158,7 +158,7 @@ public class AddressBusinessData implements Serializable {
         this.addressTypeIdOptions = addressTypeIdOptions;
         this.lgaIdOptions = lgaIdOptions;
         this.residentStatusOption = residentStatusOption;
-        this.resisdenceStatus = residentStatus;
+        this.residenceStatus = residentStatus;
         this.lga = lga;
         this.dateMovedIn = dateMovedIn;
     }

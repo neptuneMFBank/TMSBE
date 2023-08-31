@@ -31,6 +31,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
+import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoansApiResource;
 import org.apache.fineract.portfolio.loanproduct.LoanProductConstants;
@@ -540,11 +541,19 @@ public interface LoanBusinessApiConstants {
             jsonObjectLoan.addProperty(LoanApiConstants.repaymentFrequencyNthDayTypeParameterName, repaymentFrequencyNthDayType);
         }
 
-        JsonArray charges;
+        JsonArray charges = new JsonArray();
         if (fromApiJsonHelper.parameterExists(LoanApiConstants.chargesParameterName, apiRequestBodyAsJsonElement)) {
             charges = fromApiJsonHelper.extractJsonArrayNamed(LoanApiConstants.chargesParameterName, apiRequestBodyAsJsonElement);
         } else {
-            charges = fromApiJsonHelper.extractJsonArrayNamed(LoanApiConstants.chargesParameterName, loanTemplateElement);
+            final JsonArray chargesCheck = fromApiJsonHelper.extractJsonArrayNamed(LoanApiConstants.chargesParameterName, loanTemplateElement);
+            if (chargesCheck != null && chargesCheck.isJsonArray()) {
+                for (JsonElement charge : chargesCheck) {
+                    final JsonObject chargesValue = new JsonObject();
+                    chargesValue.addProperty(ClientApiConstants.chargeIdParamName, fromApiJsonHelper.extractLongNamed(ClientApiConstants.chargeIdParamName, charge));
+                    chargesValue.addProperty(ClientApiConstants.amountParamName, fromApiJsonHelper.extractBigDecimalNamed(ClientApiConstants.amountParamName, charge, Locale.ENGLISH));
+                    charges.add(chargesValue);
+                }
+            }
         }
         jsonObjectLoan.add(LoanApiConstants.chargesParameterName, charges);
 

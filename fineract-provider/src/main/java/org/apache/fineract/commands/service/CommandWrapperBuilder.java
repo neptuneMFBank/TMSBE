@@ -3566,4 +3566,19 @@ public class CommandWrapperBuilder {
         this.href = "/documents/config/" + entityId;
         return this;
     }
+
+    public CommandWrapperBuilder createStaffBusiness() {
+        this.actionName = "CREATE_BUSINESS";
+        this.entityName = "STAFF";
+        this.href = "/staff/business";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateStaffBusiness(final Long staffId) {
+        this.actionName = "UPDATE_BUSINESS";
+        this.entityName = "STAFF";
+        this.entityId = staffId;
+        this.href = "/staff/business/" + staffId;
+        return this;
+    }
 }

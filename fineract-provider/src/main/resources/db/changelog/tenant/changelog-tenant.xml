@@ -71,5 +71,7 @@
     <include file="parts/0054_m_document_client_config_code.sql" relativeToChangelogFile="true" />
     <include file="parts/0055_m_title_config_code.sql" relativeToChangelogFile="true" />
     <include file="parts/0056_m_document_code_allow.sql" relativeToChangelogFile="true" />
-    <!-- <include file="parts/0057_m_others_config_code.sql" relativeToChangelogFile="true" /> -->
+    <include file="parts/0057_m_org_unit_config_code.sql" relativeToChangelogFile="true" />
+    <include file="parts/0058_m_create_staff_business_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0059_m_update_staff_business_permission.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

@@ -18,7 +18,7 @@
 --
 
 
--- INSERT m_code and relating to m_code_value
-
-INSERT INTO `m_code` (`id`, `code_name`, `is_system_defined`) VALUES
-    (47, 'Others', 0)
+-- INSERT m_permission
+INSERT INTO `m_permission` (`id`, `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`)
+VALUES
+     (NULL, 'portfolio', 'UPDATE_BUSINESS_STAFF', 'STAFF', 'UPDATE_BUSINESS', false)

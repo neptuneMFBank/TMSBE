@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityType;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
 import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
@@ -52,7 +53,8 @@ public final class DocumentConfigDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DocumentConfigApiConstants.DOCUMENT_CONFIG_CREATE_RESPONSE_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -65,8 +67,12 @@ public final class DocumentConfigDataValidator {
         final String name = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.nameParam, element);
         baseDataValidator.reset().parameter(DocumentConfigApiConstants.nameParam).value(name).notBlank();
 
-        final String typeParam = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.typeParam, element);
-        baseDataValidator.reset().parameter(DocumentConfigApiConstants.typeParam).value(typeParam).notBlank();
+        Integer typeParam = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(DocumentConfigApiConstants.typeParam, element);
+        final GlobalEntityType globalEntityType = GlobalEntityType.fromInt(typeParam);
+        if (globalEntityType == null) {
+            typeParam = null;
+        }
+        baseDataValidator.reset().parameter(DocumentConfigApiConstants.typeParam).value(typeParam).notNull().integerGreaterThanZero();
 
         if (this.fromApiJsonHelper.parameterExists(DocumentConfigApiConstants.descriptionParam, element)) {
             final String description = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.descriptionParam, element);
@@ -81,6 +87,10 @@ public final class DocumentConfigDataValidator {
             final JsonArray settings = this.fromApiJsonHelper.extractJsonArrayNamed(DocumentConfigApiConstants.settingsParam, element);
             baseDataValidator.reset().parameter(DocumentConfigApiConstants.settingsParam).value(settings).jsonArrayNotEmpty();
         }
+//        if (this.fromApiJsonHelper.parameterExists(DocumentConfigApiConstants.productIdsParam, element)) {
+//            final JsonArray productIds = this.fromApiJsonHelper.extractJsonArrayNamed(DocumentConfigApiConstants.productIdsParam, element);
+//            baseDataValidator.reset().parameter(DocumentConfigApiConstants.productIdsParam).value(productIds).jsonArrayNotEmpty();
+//        }
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }

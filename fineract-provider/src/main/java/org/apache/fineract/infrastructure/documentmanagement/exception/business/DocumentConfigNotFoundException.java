@@ -22,8 +22,12 @@ import org.apache.fineract.infrastructure.core.exception.AbstractPlatformResourc
 
 public class DocumentConfigNotFoundException extends AbstractPlatformResourceNotFoundException {
 
-    public DocumentConfigNotFoundException(final String entityType, final Long id) {
-        super("error.msg.document.id.invalid", "Document with identifier " + id + " does not exist for " + entityType, id);
+    public DocumentConfigNotFoundException(
+            //final String entityType, 
+            final Long id) {
+        super("error.msg.document.id.invalid", "Document with identifier " + id + " does not exist." //+ entityType
+                ,
+                 id);
     }
 
 }

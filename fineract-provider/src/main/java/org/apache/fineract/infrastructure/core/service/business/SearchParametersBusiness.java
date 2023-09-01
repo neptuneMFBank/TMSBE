@@ -60,11 +60,11 @@ public final class SearchParametersBusiness {
     private final String email;
     private final String mobile;
 
-    private final String type;
+    private final Integer type;
 
     private final Boolean active;
 
-    public static SearchParametersBusiness forDocumentConfig(final String type, final Integer offset, final Integer limit,
+    public static SearchParametersBusiness forDocumentConfig(final Integer type, final Integer offset, final Integer limit,
             final String orderBy, final String sortOrder, final LocalDate fromDate, final LocalDate toDate, final String displayName,
             final Boolean active) {
         final Long savingsId = null;
@@ -115,7 +115,7 @@ public final class SearchParametersBusiness {
         final String mobile = null;
         final String email = null;
         final Integer legalFormId = null;
-        final String type = null;
+        final Integer type = null;
         final Boolean active = false;
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, name, hierarchy, firstname, lastname, offset, limit, orderBy,
@@ -137,7 +137,7 @@ public final class SearchParametersBusiness {
         final String lastname = null;
         final Long loanId = null;
         final String sqlSearch = null;
-        final String type = null;
+        final Integer type = null;
         final Boolean active = false;
         final Long clientId = null;
 
@@ -151,7 +151,7 @@ public final class SearchParametersBusiness {
             final String orderBy, final String sortOrder, final Long staffId, final String accountNo, final Long loanId,
             final Long savingsId, final Boolean orphansOnly, boolean isSelfUser, final LocalDate fromDate, final LocalDate toDate,
             final String status, final Long categoryId, final Long productId, final Long provisioningEntryId, final String currencyCode,
-            final Integer statusId, final String email, final String mobile, final Integer legalFormId, final String type,
+            final Integer statusId, final String email, final String mobile, final Integer legalFormId, final Integer type,
             final Boolean active, final Long clientId) {
         this.sqlSearch = sqlSearch;
         this.officeId = officeId;
@@ -421,12 +421,12 @@ public final class SearchParametersBusiness {
         return this.legalFormId != null && this.legalFormId != 0;
     }
 
-    public String getType() {
+    public Integer getType() {
         return type;
     }
 
     public boolean isTypePassed() {
-        return StringUtils.isNotBlank(this.type);
+        return this.type != null && this.type != 0;
     }
 
     public Boolean isActive() {

@@ -17,19 +17,19 @@
 -- under the License.
 --
 
-CREATE TABLE `m_document_client_config`(
-      `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-      `active` tinyint(4) NOT NULL DEFAULT 0,
-      `name` varchar(100) NOT NULL,
-      `description` varchar(250) NULL,
-      `legal_form_id` INT NULL,
-      `type_id` INT NOT NULL,
+CREATE TABLE `m_document_config_product`(
+      `m_document_client_config_id` BIGINT NOT NULL,
+      `loan_product_id` BIGINT NULL,
+      `savings_product_id` BIGINT NULL,
       `created_by` BIGINT NOT NULL,
       `created_on_utc` DATETIME NULL,
       `last_modified_by` BIGINT NOT NULL,
       `last_modified_on_utc` DATETIME NULL,
-      UNIQUE KEY `legal_form_id_UNIQUE_m_document_client_config` (`name`),
-      UNIQUE KEY `name_UNIQUE_m_document_client_config` (`legal_form_id`),
-      CONSTRAINT `m_document_client_config_FK_created_by` FOREIGN KEY (`created_by`) REFERENCES m_appuser(`id`),
-      CONSTRAINT `m_document_client_config_FK_last_modified_by` FOREIGN KEY (`last_modified_by`) REFERENCES m_appuser(`id`)
+      CONSTRAINT `m_document_config_product_FK_config_id` FOREIGN KEY (`m_document_client_config_id`) REFERENCES m_document_client_config(`id`),
+      UNIQUE KEY `loan_product_UNIQUE_document_config` (`loan_product_id`),
+      CONSTRAINT `m_document_config_FK_loan_product` FOREIGN KEY (`loan_product_id`) REFERENCES m_product_loan(`id`),
+      UNIQUE KEY `savings_product_UNIQUE_document_config` (`savings_product_id`),
+      CONSTRAINT `m_document_config_FK_savings_product` FOREIGN KEY (`savings_product_id`) REFERENCES m_savings_product(`id`),
+      CONSTRAINT `m_document_config_FK_created_by` FOREIGN KEY (`created_by`) REFERENCES m_appuser(`id`),
+      CONSTRAINT `m_document_config_FK_last_modified_by` FOREIGN KEY (`last_modified_by`) REFERENCES m_appuser(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

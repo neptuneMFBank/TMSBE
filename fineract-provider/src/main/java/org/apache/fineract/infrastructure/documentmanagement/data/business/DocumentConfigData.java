@@ -20,14 +20,14 @@ package org.apache.fineract.infrastructure.documentmanagement.data.business;
 
 import java.util.Collection;
 import java.util.List;
+import org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityType;
 import org.apache.fineract.infrastructure.codes.data.CodeData;
 import org.apache.fineract.infrastructure.codes.data.business.CodeBusinessData;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
-import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
-import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 
 /**
- * Immutable data object representing a user document being managed on the platform.
+ * Immutable data object representing a user document being managed on the
+ * platform.
  */
 public class DocumentConfigData {
 
@@ -38,17 +38,20 @@ public class DocumentConfigData {
     private final String description;
     private Collection<CodeBusinessData> settings;
     private Collection<CodeData> settingsCode;
-    private Collection<LoanProductData> loanProductDatas;
+    //private Collection<LoanProductData> loanProductDatas;
     private List<EnumOptionData> clientLegalFormOptions;
-    private Collection<SavingsProductData> savingProductOptions;
+    //private Collection<SavingsProductData> savingProductOptions;
+    private GlobalEntityType globalEntityType;
+    private GlobalEntityType[] globalEntityTypes;
 
     public static DocumentConfigData template(final Collection<CodeData> settingsCode, final List<EnumOptionData> clientLegalFormOptions,
-            final Collection<LoanProductData> loanProductDatas, Collection<SavingsProductData> savingProductOptions) {
+            final GlobalEntityType[] globalEntityTypes) {
 
         final DocumentConfigData documentConfigData = new DocumentConfigData(null, null, null, false);
         documentConfigData.setClientLegalFormOptions(clientLegalFormOptions);
-        documentConfigData.setLoanProductDatas(loanProductDatas);
-        documentConfigData.setSavingProductOptions(savingProductOptions);
+        documentConfigData.setGlobalEntityTypes(globalEntityTypes);
+        //documentConfigData.setLoanProductDatas(loanProductDatas);
+        //documentConfigData.setSavingProductOptions(savingProductOptions);
         documentConfigData.setSettingsCode(settingsCode);
         return documentConfigData;
     }
@@ -76,14 +79,13 @@ public class DocumentConfigData {
         return settings;
     }
 
-    public Collection<LoanProductData> getLoanProductDatas() {
-        return loanProductDatas;
-    }
-
-    public void setLoanProductDatas(Collection<LoanProductData> loanProductDatas) {
-        this.loanProductDatas = loanProductDatas;
-    }
-
+//    public Collection<LoanProductData> getLoanProductDatas() {
+//        return loanProductDatas;
+//    }
+//
+//    public void setLoanProductDatas(Collection<LoanProductData> loanProductDatas) {
+//        this.loanProductDatas = loanProductDatas;
+//    }
     public boolean isActive() {
         return active;
     }
@@ -108,20 +110,35 @@ public class DocumentConfigData {
         this.clientLegalFormOptions = clientLegalFormOptions;
     }
 
-    public Collection<SavingsProductData> getSavingProductOptions() {
-        return savingProductOptions;
-    }
-
-    public void setSavingProductOptions(Collection<SavingsProductData> savingProductOptions) {
-        this.savingProductOptions = savingProductOptions;
-    }
-
+//    public Collection<SavingsProductData> getSavingProductOptions() {
+//        return savingProductOptions;
+//    }
+//
+//    public void setSavingProductOptions(Collection<SavingsProductData> savingProductOptions) {
+//        this.savingProductOptions = savingProductOptions;
+//    }
     public void setSettingsCode(Collection<CodeData> settingsCode) {
         this.settingsCode = settingsCode;
     }
 
     public Collection<CodeData> getSettingsCode() {
         return settingsCode;
+    }
+
+    public GlobalEntityType getGlobalEntityType() {
+        return globalEntityType;
+    }
+
+    public void setGlobalEntityType(GlobalEntityType globalEntityType) {
+        this.globalEntityType = globalEntityType;
+    }
+
+    public GlobalEntityType[] getGlobalEntityTypes() {
+        return globalEntityTypes;
+    }
+
+    public void setGlobalEntityTypes(GlobalEntityType[] globalEntityTypes) {
+        this.globalEntityTypes = globalEntityTypes;
     }
 
 }

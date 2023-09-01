@@ -30,13 +30,14 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import org.apache.fineract.infrastructure.codes.domain.Code;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
+import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.springframework.stereotype.Component;
 
 @Entity
 @Component
 @Table(name = "m_document_client_config", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "legal_form_id" }, name = "legal_form_id_UNIQUE_m_document_client_config"),
-        @UniqueConstraint(columnNames = { "name" }, name = "name_UNIQUE_m_document_client_config") })
+    @UniqueConstraint(columnNames = {"legal_form_id"}, name = "legal_form_id_UNIQUE_m_document_client_config"),
+    @UniqueConstraint(columnNames = {"name"}, name = "name_UNIQUE_m_document_client_config")})
 public class ClientDocumentConfig extends AbstractAuditableWithUTCDateTimeCustom {
 
     @Column(name = "active", nullable = false)
@@ -48,25 +49,34 @@ public class ClientDocumentConfig extends AbstractAuditableWithUTCDateTimeCustom
     @Column(name = "description")
     private String description;
 
-    @Column(name = "legal_form_id", nullable = false)
+    @Column(name = "legal_form_id")
     private Integer legalFormId;
+
+    @Column(name = "type_id", nullable = false)
+    private Integer typeId;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "m_document_client_config_code", joinColumns = @JoinColumn(name = "m_document_client_config_id"), inverseJoinColumns = @JoinColumn(name = "code_id"))
     private Set<Code> codes = new HashSet<>();
 
-    protected ClientDocumentConfig() {}
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "m_document_loan_config_product", joinColumns = @JoinColumn(name = "m_document_client_config_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
+    private Set<LoanProduct> loanProducts = new HashSet<>();
 
-    public static ClientDocumentConfig instance(final String name, final Integer legalFormId, final String description,
-            final boolean active) {
-        return new ClientDocumentConfig(name, legalFormId, description, active);
+    protected ClientDocumentConfig() {
     }
 
-    public ClientDocumentConfig(final String name, final Integer legalFormId, final String description, final boolean active) {
+    public static ClientDocumentConfig instance(final String name, final Integer legalFormId, final String description,
+            final boolean active, final Integer typeId) {
+        return new ClientDocumentConfig(name, legalFormId, description, active, typeId);
+    }
+
+    public ClientDocumentConfig(final String name, final Integer legalFormId, final String description, final boolean active, final Integer typeId) {
         this.legalFormId = legalFormId;
         this.description = description;
         this.active = active;
         this.name = name;
+        this.typeId = typeId;
     }
 
     public boolean updateCode(final Code code, final boolean isSelected) {
@@ -126,6 +136,22 @@ public class ClientDocumentConfig extends AbstractAuditableWithUTCDateTimeCustom
 
     public void setLegalFormId(Integer legalFormId) {
         this.legalFormId = legalFormId;
+    }
+
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
+    }
+
+    public Set<LoanProduct> getLoanProducts() {
+        return loanProducts;
+    }
+
+    public void setLoanProducts(Set<LoanProduct> loanProducts) {
+        this.loanProducts = loanProducts;
     }
 
 }

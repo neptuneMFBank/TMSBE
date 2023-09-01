@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.persistence.PersistenceException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.fineract.infrastructure.codes.domain.Code;
 import org.apache.fineract.infrastructure.codes.domain.business.CodeRepositoryWrapper;
@@ -34,7 +33,6 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
-import org.apache.fineract.infrastructure.core.exception.UnrecognizedQueryParamException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.documentmanagement.api.business.DocumentConfigApiConstants;
 import org.apache.fineract.infrastructure.documentmanagement.serialization.business.DocumentConfigDataValidator;
@@ -67,10 +65,9 @@ public class DocumentConfigWriteServiceImpl implements DocumentConfigWriteServic
         this.codeRepository = codeRepository;
     }
 
-    private boolean is(final String commandParam, final String commandValue) {
-        return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
-    }
-
+//    private boolean is(final String commandParam, final String commandValue) {
+//        return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
+//    }
     @Override
     public CommandProcessingResult createDocumentConfig(JsonCommand command) {
         this.context.authenticatedUser();
@@ -81,29 +78,27 @@ public class DocumentConfigWriteServiceImpl implements DocumentConfigWriteServic
 
             final String name = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.nameParam, jsonElement);
             final String description = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.descriptionParam, jsonElement);
-            final String typeParam = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.typeParam, jsonElement);
+            final Integer typeParam = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(DocumentConfigApiConstants.typeParam, jsonElement);
             final JsonArray settings = this.fromApiJsonHelper.extractJsonArrayNamed(DocumentConfigApiConstants.settingsParam, jsonElement);
             Set<Code> codes = saveDocumentSet(settings);
 
             // client
             // loans
-            if (is(typeParam, "client")) {
-
-                final Integer formId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(DocumentConfigApiConstants.formIdParam,
-                        jsonElement);
-                final ClientDocumentConfig clientDocumentConfig = ClientDocumentConfig.instance(name, formId, description, true);
-                if (!codes.isEmpty()) {
-                    clientDocumentConfig.setCodes(codes);
-                }
-                this.clientDocumentRepositoryWrapper.saveAndFlush(clientDocumentConfig);
-                entityId = clientDocumentConfig.getId();
-
-            } // else if (is(typeParam, "loans")) {
-              // }
-            else {
-                throw new UnrecognizedQueryParamException("type", typeParam);
+            // if (is(typeParam, "client")) {
+            final Integer formId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(DocumentConfigApiConstants.formIdParam,
+                    jsonElement);
+            final ClientDocumentConfig clientDocumentConfig = ClientDocumentConfig.instance(name, formId, description, true, typeParam);
+            if (!codes.isEmpty()) {
+                clientDocumentConfig.setCodes(codes);
             }
+            this.clientDocumentRepositoryWrapper.saveAndFlush(clientDocumentConfig);
+            entityId = clientDocumentConfig.getId();
 
+//            } else if (is(typeParam, "loans")) {
+//                final JsonArray productIds = this.fromApiJsonHelper.extractJsonArrayNamed(DocumentConfigApiConstants.productIdsParam, jsonElement);
+//            } else {
+//                throw new UnrecognizedQueryParamException("type", typeParam);
+//            }
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(entityId) //
@@ -138,7 +133,7 @@ public class DocumentConfigWriteServiceImpl implements DocumentConfigWriteServic
             this.fromApiJsonDeserializer.validateForCreate(command.json());
             final JsonElement jsonElement = this.fromApiJsonHelper.parse(command.json());
 
-            final String typeParam = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.typeParam, jsonElement);
+            final Integer typeParam = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(DocumentConfigApiConstants.typeParam, jsonElement);
             final JsonArray settings = this.fromApiJsonHelper.extractJsonArrayNamed(DocumentConfigApiConstants.settingsParam, jsonElement);
             Set<Code> codes = saveDocumentSet(settings);
 
@@ -146,46 +141,52 @@ public class DocumentConfigWriteServiceImpl implements DocumentConfigWriteServic
 
             // client
             // loans
-            if (is(typeParam, "client")) {
-                final ClientDocumentConfig clientDocumentConfig = this.clientDocumentRepositoryWrapper
-                        .findOneWithNotFoundDetection(entityId, typeParam);
+            //if (is(typeParam, "client")) {
+            final ClientDocumentConfig clientDocumentConfig = this.clientDocumentRepositoryWrapper
+                    .findOneWithNotFoundDetection(entityId//, typeParam
+                    );
 
-                if (command.isChangeInStringParameterNamed(DocumentConfigApiConstants.nameParam, clientDocumentConfig.getName())) {
-                    final String newValue = command.stringValueOfParameterNamed(DocumentConfigApiConstants.nameParam);
-                    changes.put(DocumentConfigApiConstants.nameParam, newValue);
-                    clientDocumentConfig.setName(newValue);
-                }
-
-                if (command.isChangeInStringParameterNamed(DocumentConfigApiConstants.descriptionParam, clientDocumentConfig.getName())) {
-                    final String newValue = command.stringValueOfParameterNamed(DocumentConfigApiConstants.descriptionParam);
-                    changes.put(DocumentConfigApiConstants.descriptionParam, newValue);
-                    clientDocumentConfig.setDescription(newValue);
-                }
-
-                if (command.isChangeInIntegerParameterNamed(DocumentConfigApiConstants.formIdParam,
-                        clientDocumentConfig.getLegalFormId())) {
-                    final Integer newValue = command.integerValueOfParameterNamed(DocumentConfigApiConstants.formIdParam);
-                    changes.put(DocumentConfigApiConstants.formIdParam, newValue);
-                    clientDocumentConfig.setLegalFormId(newValue);
-                }
-
-                Set<Code> codesCheck = clientDocumentConfig.getCodes();
-                if (!codesCheck.equals(codes)) {
-                    // only update if not equal
-                    clientDocumentConfig.setCodes(codes);
-                }
-
-                if (!changes.isEmpty()) {
-                    this.clientDocumentRepositoryWrapper.saveAndFlush(clientDocumentConfig);
-                }
-                entityId = clientDocumentConfig.getId();
-
-            } // else if (is(typeParam, "loans")) {
-              // }
-            else {
-                throw new UnrecognizedQueryParamException("type", typeParam);
+            if (command.isChangeInStringParameterNamed(DocumentConfigApiConstants.nameParam, clientDocumentConfig.getName())) {
+                final String newValue = command.stringValueOfParameterNamed(DocumentConfigApiConstants.nameParam);
+                changes.put(DocumentConfigApiConstants.nameParam, newValue);
+                clientDocumentConfig.setName(newValue);
             }
 
+            if (command.isChangeInStringParameterNamed(DocumentConfigApiConstants.descriptionParam, clientDocumentConfig.getName())) {
+                final String newValue = command.stringValueOfParameterNamed(DocumentConfigApiConstants.descriptionParam);
+                changes.put(DocumentConfigApiConstants.descriptionParam, newValue);
+                clientDocumentConfig.setDescription(newValue);
+            }
+
+            if (command.isChangeInIntegerParameterNamed(DocumentConfigApiConstants.formIdParam,
+                    clientDocumentConfig.getLegalFormId())) {
+                final Integer newValue = command.integerValueOfParameterNamed(DocumentConfigApiConstants.formIdParam);
+                changes.put(DocumentConfigApiConstants.formIdParam, newValue);
+                clientDocumentConfig.setLegalFormId(newValue);
+            }
+            if (command.isChangeInIntegerParameterNamed(DocumentConfigApiConstants.typeParam,
+                    clientDocumentConfig.getTypeId())) {
+                final Integer newValue = command.integerValueOfParameterNamed(DocumentConfigApiConstants.typeParam);
+                changes.put(DocumentConfigApiConstants.typeParam, newValue);
+                clientDocumentConfig.setTypeId(newValue);
+            }
+
+            Set<Code> codesCheck = clientDocumentConfig.getCodes();
+            if (!codesCheck.equals(codes)) {
+                // only update if not equal
+                clientDocumentConfig.setCodes(codes);
+            }
+
+            if (!changes.isEmpty()) {
+                this.clientDocumentRepositoryWrapper.saveAndFlush(clientDocumentConfig);
+            }
+            entityId = clientDocumentConfig.getId();
+
+//            } // else if (is(typeParam, "loans")) {
+//            // }
+//            else {
+//                throw new UnrecognizedQueryParamException("type", typeParam);
+//            }
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(entityId) //

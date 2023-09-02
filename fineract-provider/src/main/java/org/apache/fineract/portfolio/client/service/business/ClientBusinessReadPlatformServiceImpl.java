@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.client.service.business;
 
+import com.google.gson.JsonElement;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.codes.data.business.CodeValueBusinessData;
@@ -42,6 +44,7 @@ import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
+import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.PaginationHelper;
@@ -70,6 +73,7 @@ import org.apache.fineract.portfolio.client.data.ClientFamilyMembersData;
 import org.apache.fineract.portfolio.client.data.ClientNonPersonData;
 import org.apache.fineract.portfolio.client.data.ClientTimelineData;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
+import org.apache.fineract.portfolio.client.data.business.ClientBusinessDataValidator;
 import org.apache.fineract.portfolio.client.domain.ClientEnumerations;
 import org.apache.fineract.portfolio.client.domain.ClientStatus;
 import org.apache.fineract.portfolio.client.domain.LegalForm;
@@ -89,6 +93,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessReadPlatformService {
@@ -106,6 +111,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     private final ClientMapper clientMapper = new ClientMapper();
     private final ClientBusinessMapper clientBusinessMapper = new ClientBusinessMapper();
     private final ParentGroupsMapper clientGroupsMapper = new ParentGroupsMapper();
+    private final ClientLookupMapper lookupMapper = new ClientLookupMapper();
 
     private final AddressBusinessReadPlatformService addressReadPlatformService;
     private final ClientFamilyMembersReadPlatformService clientFamilyMembersReadPlatformService;
@@ -117,6 +123,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
     private final DocumentConfigReadPlatformService documentConfigReadPlatformService;
     private final SavingsAccountReadPlatformService savingsAccountReadPlatformService;
+
+    private final ClientBusinessDataValidator fromApiJsonDeserializer;
+    private final FromJsonHelper fromJsonHelper;
 
     private Long defaultToUsersOfficeIfNull(final Long officeId) {
         Long defaultOfficeId = officeId;
@@ -268,7 +277,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 ,
                  activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions
-                //, industryOptions
+        //, industryOptions
         );
     }
 
@@ -425,6 +434,65 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             extraCriteria = extraCriteria.substring(4);
         }
         return extraCriteria;
+    }
+
+    @Override
+    public ClientData findClient(String apiRequestBodyAsJson) {
+        this.context.authenticatedUser();
+        this.fromApiJsonDeserializer.validateFindClient(apiRequestBodyAsJson);
+        final JsonElement jsonElement = this.fromJsonHelper.parse(apiRequestBodyAsJson);
+        try {
+            final String key = this.fromJsonHelper.extractStringNamed(ClientBusinessApiConstants.keyParam, jsonElement);
+            final String value = this.fromJsonHelper.extractStringNamed(ClientBusinessApiConstants.valueParam, jsonElement);
+
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            sqlBuilder.append("select ");
+            sqlBuilder.append(this.lookupMapper.schema());
+            sqlBuilder.append(" WHERE ");
+            sqlBuilder.append(" c.");
+            sqlBuilder.append(key);
+            sqlBuilder.append("=");
+            sqlBuilder.append(value);
+            String sql = sqlBuilder.toString();
+            log.info("findClient: {}", sql);
+
+            return this.jdbcTemplate.queryForObject(sql, this.lookupMapper);
+
+        } catch (Exception e) {
+            log.warn("findClient: {}", e);
+            throw new ClientNotFoundException();
+        }
+    }
+
+    private static final class ClientLookupMapper implements RowMapper<ClientData> {
+
+        private final String schema;
+
+        ClientLookupMapper() {
+            final StringBuilder builder = new StringBuilder(200);
+
+            builder.append("c.id as id, c.display_name as displayName, ");
+            builder.append("c.office_id as officeId, o.name as officeName ");
+            builder.append("from m_client c ");
+            builder.append("join m_office o on o.id = c.office_id ");
+
+            this.schema = builder.toString();
+        }
+
+        public String schema() {
+            return this.schema;
+        }
+
+        @Override
+        public ClientData mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String displayName = rs.getString("displayName");
+            final Long officeId = rs.getLong("officeId");
+            final String officeName = rs.getString("officeName");
+
+            return ClientData.lookup(id, displayName, officeId, officeName);
+        }
     }
 
     private static final class ClientMapper implements RowMapper<ClientData> {

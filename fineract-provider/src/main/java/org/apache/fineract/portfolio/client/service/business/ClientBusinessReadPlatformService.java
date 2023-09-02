@@ -30,4 +30,6 @@ public interface ClientBusinessReadPlatformService {
     ClientBusinessData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly, final Integer legalFormId);
 
     Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
+
+    ClientData findClient(final String apiRequestBodyAsJson);
 }

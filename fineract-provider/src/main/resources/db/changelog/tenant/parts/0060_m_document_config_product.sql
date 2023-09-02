@@ -18,6 +18,7 @@
 --
 
 CREATE TABLE `m_document_config_product`(
+      `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
       `m_document_client_config_id` BIGINT NOT NULL,
       `loan_product_id` BIGINT NULL,
       `savings_product_id` BIGINT NULL,

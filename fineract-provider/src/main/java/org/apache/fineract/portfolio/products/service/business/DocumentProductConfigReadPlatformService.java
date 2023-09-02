@@ -16,14 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.infrastructure.documentmanagement.service.business;
+package org.apache.fineract.portfolio.products.service.business;
 
-import java.util.Collection;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
+import org.apache.fineract.portfolio.products.data.business.DocumentProductConfigData;
 
-public interface DocumentConfigReadPlatformService {
+public interface DocumentProductConfigReadPlatformService {
+
+    DocumentProductConfigData retrieveTemplate();
 
     DocumentConfigData retrieveDocumentConfigViaClientLegalForm(Integer formId);
 
@@ -32,9 +34,5 @@ public interface DocumentConfigReadPlatformService {
     );
 
     Page<DocumentConfigData> retrieveAll(final SearchParametersBusiness searchParameters);
-
-    Collection<DocumentConfigData> retrieveAllForProductConfigTemplate();
-
-    DocumentConfigData retrieveTemplate();
 
 }

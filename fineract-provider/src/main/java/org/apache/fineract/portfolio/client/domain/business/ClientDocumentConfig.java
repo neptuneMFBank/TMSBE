@@ -30,7 +30,6 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import org.apache.fineract.infrastructure.codes.domain.Code;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
-import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.springframework.stereotype.Component;
 
 @Entity
@@ -59,10 +58,9 @@ public class ClientDocumentConfig extends AbstractAuditableWithUTCDateTimeCustom
     @JoinTable(name = "m_document_client_config_code", joinColumns = @JoinColumn(name = "m_document_client_config_id"), inverseJoinColumns = @JoinColumn(name = "code_id"))
     private Set<Code> codes = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "m_document_loan_config_product", joinColumns = @JoinColumn(name = "m_document_client_config_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
-    private Set<LoanProduct> loanProducts = new HashSet<>();
-
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @JoinTable(name = "m_document_loan_config_product", joinColumns = @JoinColumn(name = "m_document_client_config_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
+//    private Set<LoanProduct> loanProducts = new HashSet<>();
     protected ClientDocumentConfig() {
     }
 
@@ -146,12 +144,11 @@ public class ClientDocumentConfig extends AbstractAuditableWithUTCDateTimeCustom
         this.typeId = typeId;
     }
 
-    public Set<LoanProduct> getLoanProducts() {
-        return loanProducts;
-    }
-
-    public void setLoanProducts(Set<LoanProduct> loanProducts) {
-        this.loanProducts = loanProducts;
-    }
-
+//    public Set<LoanProduct> getLoanProducts() {
+//        return loanProducts;
+//    }
+//
+//    public void setLoanProducts(Set<LoanProduct> loanProducts) {
+//        this.loanProducts = loanProducts;
+//    }
 }

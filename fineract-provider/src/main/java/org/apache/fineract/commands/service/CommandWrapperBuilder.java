@@ -3581,4 +3581,20 @@ public class CommandWrapperBuilder {
         this.href = "/staff/business/" + staffId;
         return this;
     }
+
+    public CommandWrapperBuilder createProductDocumentConfig() {
+        this.actionName = "CREATE_CONFIG_PRODUCT";
+        this.entityName = "DOCUMENT";
+        this.href = "/documents/config/product";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateProductDocumentConfig(final Long entityId) {
+        this.actionName = "UPDATE_CONFIG_PRODUCT";
+        this.entityName = "DOCUMENT";
+        this.entityId = entityId;
+        this.href = "/documents/config/product/" + entityId;
+        return this;
+    }
+
 }

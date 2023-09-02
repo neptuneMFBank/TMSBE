@@ -16,25 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.infrastructure.documentmanagement.service.business;
+package org.apache.fineract.portfolio.product.domain.business;
 
-import java.util.Collection;
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface DocumentConfigReadPlatformService {
+public interface DocumentProductConfigRepository
+        extends JpaRepository<DocumentProductConfig, Long>, JpaSpecificationExecutor<DocumentProductConfig> {
 
-    DocumentConfigData retrieveDocumentConfigViaClientLegalForm(Integer formId);
-
-    DocumentConfigData retrieveOne(final Long documentId
-    //, final String type
-    );
-
-    Page<DocumentConfigData> retrieveAll(final SearchParametersBusiness searchParameters);
-
-    Collection<DocumentConfigData> retrieveAllForProductConfigTemplate();
-
-    DocumentConfigData retrieveTemplate();
 
 }

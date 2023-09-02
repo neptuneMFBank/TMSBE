@@ -16,25 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.infrastructure.documentmanagement.service.business;
+package org.apache.fineract.portfolio.products.service.business;
 
-import java.util.Collection;
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
-public interface DocumentConfigReadPlatformService {
+public interface DocumentProductConfigWriteService {
 
-    DocumentConfigData retrieveDocumentConfigViaClientLegalForm(Integer formId);
+    CommandProcessingResult createProductDocumentConfig(JsonCommand command);
 
-    DocumentConfigData retrieveOne(final Long documentId
-    //, final String type
-    );
-
-    Page<DocumentConfigData> retrieveAll(final SearchParametersBusiness searchParameters);
-
-    Collection<DocumentConfigData> retrieveAllForProductConfigTemplate();
-
-    DocumentConfigData retrieveTemplate();
+    CommandProcessingResult updateProductDocumentConfig(Long entityId, JsonCommand command);
 
 }

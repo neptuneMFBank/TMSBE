@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.infrastructure.documentmanagement.service.business;
+package org.apache.fineract.portfolio.products.service.business;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,10 +27,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityType;
-import org.apache.fineract.infrastructure.codes.data.CodeData;
 import org.apache.fineract.infrastructure.codes.data.business.CodeBusinessData;
 import org.apache.fineract.infrastructure.codes.service.business.CodeDocumentReadPlatformService;
-import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.PaginationHelper;
@@ -38,11 +36,13 @@ import org.apache.fineract.infrastructure.core.service.business.SearchParameters
 import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
 import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
 import org.apache.fineract.infrastructure.documentmanagement.exception.business.DocumentConfigNotFoundException;
+import org.apache.fineract.infrastructure.documentmanagement.service.business.DocumentConfigReadPlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
-import org.apache.fineract.portfolio.client.domain.ClientEnumerations;
-import org.apache.fineract.portfolio.client.domain.LegalForm;
+import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
+import org.apache.fineract.portfolio.products.data.business.DocumentProductConfigData;
+import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 import org.apache.fineract.portfolio.savings.service.SavingsProductReadPlatformService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -53,7 +53,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigReadPlatformService {
+public class DocumentProductConfigReadPlatformServiceImpl implements DocumentProductConfigReadPlatformService {
 
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
@@ -66,11 +66,22 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
     private final ClientDocumentMapper clientDocumentMapper = new ClientDocumentMapper();
     private final CodeMapper codeMapper = new CodeMapper();
 
+    private final DocumentConfigReadPlatformService documentConfigReadPlatformService;
+
     private final ColumnValidator columnValidator;
 
 //    private boolean is(final String commandParam, final String commandValue) {
 //        return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
 //    }
+    @Override
+    public DocumentProductConfigData retrieveTemplate() {
+        this.context.authenticatedUser();
+        final Collection<DocumentConfigData> documentConfigDatas = this.documentConfigReadPlatformService.retrieveAllForProductConfigTemplate();
+        final Collection<SavingsProductData> savingsProductDatas = this.savingsProductReadPlatformService.retrieveAllForLookup();
+        final Collection<LoanProductData> loanProductDatas = this.loanProductReadPlatformService.retrieveAllLoanProductsForLookup(true);
+        return DocumentProductConfigData.template(loanProductDatas, documentConfigDatas, savingsProductDatas);
+    }
+
     @Override
     public Page<DocumentConfigData> retrieveAll(SearchParametersBusiness searchParameters) {
         this.context.authenticatedUser();
@@ -178,16 +189,6 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
         }
     }
 
-    @Override
-    public Collection<DocumentConfigData> retrieveAllForProductConfigTemplate() {
-        this.context.authenticatedUser();
-        final StringBuilder sqlBuilder = new StringBuilder(200);
-        sqlBuilder.append("select ");
-        sqlBuilder.append(this.clientDocumentMapper.schema());
-        sqlBuilder.append(" WHERE (").append(" mdc.legal_form_id is null and mdc.active=1 ").append(")");
-        return this.jdbcTemplate.query(sqlBuilder.toString(), this.clientDocumentMapper); // NOSONAR
-    }
-
     private static final class ClientDocumentMapper implements RowMapper<DocumentConfigData> {
 
         private final String schema;
@@ -255,20 +256,6 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
 
             return codeData;
         }
-    }
-
-    @Override
-    public DocumentConfigData retrieveTemplate() {
-        this.context.authenticatedUser();
-        final Collection<CodeData> codeDatas = this.codeReadPlatformService.retrieveAllCodesDocument();
-
-        final GlobalEntityType[] globalEntityTypes = GlobalEntityType.values();
-        //final Collection<SavingsProductData> savingsProductDatas = this.savingsProductReadPlatformService.retrieveAllForLookup();
-        //final Collection<LoanProductData> loanProductDatas = this.loanProductReadPlatformService.retrieveAllLoanProductsForLookup(true);
-        final List<EnumOptionData> clientLegalFormOptions = ClientEnumerations.legalForm(LegalForm.values());
-        return DocumentConfigData.template(codeDatas, clientLegalFormOptions, globalEntityTypes
-        //loanProductDatas, savingsProductDatas
-        );
     }
 
     private String buildSqlStringFromClientCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {

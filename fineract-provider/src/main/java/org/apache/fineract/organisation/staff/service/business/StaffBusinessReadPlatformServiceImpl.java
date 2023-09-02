@@ -72,7 +72,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
         public String schema() {
             return " s.id as id,s.office_id as officeId, o.name as officeName, s.firstname as firstname, s.lastname as lastname,"
                     + " s.display_name as displayName, s.is_loan_officer as isLoanOfficer, s.external_id as externalId, s.mobile_no as mobileNo,"
-                    + " s.is_active as isActive, s.joining_date as joiningDate "
+                    + " s.is_active as isActive, s.joining_date as joiningDate, "
                     + " s.organisational_role_parent_staff_id organisationalRoleParentStaff, ms.display_name organisationalRoleParentStaffName, s.organisational_role_enum organisationalRoleType, cv.code_value organisationalRoleTypeName "
                     + " from m_staff s "
                     + " join m_office o on o.id = s.office_id "

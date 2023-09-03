@@ -20,7 +20,6 @@ package org.apache.fineract.infrastructure.documentmanagement.data.business;
 
 import java.util.Collection;
 import java.util.List;
-import org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityType;
 import org.apache.fineract.infrastructure.codes.data.CodeData;
 import org.apache.fineract.infrastructure.codes.data.business.CodeBusinessData;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
@@ -41,11 +40,11 @@ public class DocumentConfigData {
     //private Collection<LoanProductData> loanProductDatas;
     private List<EnumOptionData> clientLegalFormOptions;
     //private Collection<SavingsProductData> savingProductOptions;
-    private GlobalEntityType globalEntityType;
-    private GlobalEntityType[] globalEntityTypes;
+    private EnumOptionData globalEntityType;
+    private List<EnumOptionData> globalEntityTypes;
 
     public static DocumentConfigData template(final Collection<CodeData> settingsCode, final List<EnumOptionData> clientLegalFormOptions,
-            final GlobalEntityType[] globalEntityTypes) {
+            final List<EnumOptionData> globalEntityTypes) {
 
         final DocumentConfigData documentConfigData = new DocumentConfigData(null, null, null, false);
         documentConfigData.setClientLegalFormOptions(clientLegalFormOptions);
@@ -54,6 +53,10 @@ public class DocumentConfigData {
         //documentConfigData.setSavingProductOptions(savingProductOptions);
         documentConfigData.setSettingsCode(settingsCode);
         return documentConfigData;
+    }
+
+    public static DocumentConfigData lookup(final Long id, final String name) {
+        return new DocumentConfigData(id, name, null, false);
     }
 
     public DocumentConfigData(final Long id, final String name, final String description, final boolean active) {
@@ -125,19 +128,19 @@ public class DocumentConfigData {
         return settingsCode;
     }
 
-    public GlobalEntityType getGlobalEntityType() {
+    public EnumOptionData getGlobalEntityType() {
         return globalEntityType;
     }
 
-    public void setGlobalEntityType(GlobalEntityType globalEntityType) {
+    public void setGlobalEntityType(EnumOptionData globalEntityType) {
         this.globalEntityType = globalEntityType;
     }
 
-    public GlobalEntityType[] getGlobalEntityTypes() {
+    public List<EnumOptionData> getGlobalEntityTypes() {
         return globalEntityTypes;
     }
 
-    public void setGlobalEntityTypes(GlobalEntityType[] globalEntityTypes) {
+    public void setGlobalEntityTypes(List<EnumOptionData> globalEntityTypes) {
         this.globalEntityTypes = globalEntityTypes;
     }
 

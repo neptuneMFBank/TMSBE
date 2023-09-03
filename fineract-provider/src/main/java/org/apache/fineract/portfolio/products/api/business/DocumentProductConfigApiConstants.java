@@ -24,6 +24,7 @@ import java.util.Set;
 
 @SuppressWarnings({"HideUtilityClassConstructor"})
 public class DocumentProductConfigApiConstants {
+
     public static final String resourceName = "DOCUMENT";
 
     public static final String idParam = "id";
@@ -42,7 +43,11 @@ public class DocumentProductConfigApiConstants {
     public static final Set<String> DOCUMENT_PRODUCT_CONFIG_TEMPLATE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(loanProductDatasParam, documentConfigDatasParam, savingProductOptionsParam));
 
-    public static final Set<String> DOCUMENT_PRODUCT_CONFIG_CREATE_RESPONSE_DATA_PARAMETERS = new HashSet<>(
+    public static final Set<String> DOCUMENT_PRODUCT_CONFIG_RESPONSE_DATA_PARAMETERS = new HashSet<>(
+            Arrays.asList(
+                    idParam, loanProductParam, savingsProductParam, configDataParam));
+
+    public static final Set<String> DOCUMENT_PRODUCT_CONFIG_CREATE_REQUEST_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(
                     loanProductIdsParam, savingsProductIdsParam, configDataIdParam));
 

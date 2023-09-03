@@ -65,7 +65,7 @@ public class ClientDocumentRepositoryWrapper {
         this.repository.flush();
     }
 
-    public void delete(final Long clientDocumentConfigId) {
+    public void deleteById(final Long clientDocumentConfigId) {
         this.repository.deleteById(clientDocumentConfigId);
     }
 

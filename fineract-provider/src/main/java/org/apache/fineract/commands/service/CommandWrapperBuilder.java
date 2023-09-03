@@ -3589,8 +3589,8 @@ public class CommandWrapperBuilder {
         return this;
     }
 
-    public CommandWrapperBuilder updateProductDocumentConfig(final Long entityId) {
-        this.actionName = "UPDATE_CONFIG_PRODUCT";
+    public CommandWrapperBuilder deleteProductDocumentConfig(final Long entityId) {
+        this.actionName = "DELETE_CONFIG_PRODUCT";
         this.entityName = "DOCUMENT";
         this.entityId = entityId;
         this.href = "/documents/config/product/" + entityId;

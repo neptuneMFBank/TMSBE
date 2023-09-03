@@ -47,6 +47,11 @@ public class DocumentProductConfigData {
         return new DocumentProductConfigData(id, loanProduct, savingsProduct, configData, loanProductDatas, documentConfigDatas, savingProductOptions);
     }
 
+    public static DocumentProductConfigData instance(Long id, LoanProductData loanProduct, SavingsProductData savingsProduct, DocumentConfigData configData
+    ) {
+        return new DocumentProductConfigData(id, loanProduct, savingsProduct, configData, null, null, null);
+    }
+
     public DocumentProductConfigData(Long id, LoanProductData loanProduct, SavingsProductData savingsProduct, DocumentConfigData configData, Collection<LoanProductData> loanProductDatas, Collection<DocumentConfigData> documentConfigDatas, Collection<SavingsProductData> savingProductOptions) {
         this.id = id;
         this.loanProduct = loanProduct;
@@ -55,6 +60,22 @@ public class DocumentProductConfigData {
         this.loanProductDatas = loanProductDatas;
         this.documentConfigDatas = documentConfigDatas;
         this.savingProductOptions = savingProductOptions;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public DocumentConfigData getConfigData() {
+        return configData;
+    }
+
+    public LoanProductData getLoanProduct() {
+        return loanProduct;
+    }
+
+    public SavingsProductData getSavingsProduct() {
+        return savingsProduct;
     }
 
 }

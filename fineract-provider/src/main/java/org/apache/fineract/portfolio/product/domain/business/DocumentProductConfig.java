@@ -68,4 +68,12 @@ public class DocumentProductConfig extends AbstractAuditableWithUTCDateTimeCusto
         this.savingsProduct = savingsProduct;
     }
 
+    public LoanProduct getLoanProduct() {
+        return loanProduct;
+    }
+
+    public SavingsProduct getSavingsProduct() {
+        return savingsProduct;
+    }
+
 }

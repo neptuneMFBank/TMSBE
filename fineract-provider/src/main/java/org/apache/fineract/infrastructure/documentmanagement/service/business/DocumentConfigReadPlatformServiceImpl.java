@@ -219,7 +219,9 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
             if (typeId != null) {
                 GlobalEntityType entityType = GlobalEntityType.fromInt(typeId);
                 if (entityType != null) {
-                    configData.setGlobalEntityType(entityType);
+                    EnumOptionData enumOptionData = new EnumOptionData(entityType.getValue().longValue(), entityType.getCode(),
+                            entityType.toString());
+                    configData.setGlobalEntityType(enumOptionData);
                 }
             }
             configData.setLegalFormId(legalFormId);
@@ -257,16 +259,27 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
         }
     }
 
+    public static List<EnumOptionData> globalEntityTypes(final GlobalEntityType[] globalEntityTypes) {
+        final List<EnumOptionData> optionDatas = new ArrayList<>();
+        for (final GlobalEntityType globalEntityType : globalEntityTypes) {
+            final EnumOptionData optionData = new EnumOptionData(globalEntityType.getValue().longValue(), globalEntityType.getCode(),
+                    globalEntityType.toString());
+            optionDatas.add(optionData);
+        }
+        return optionDatas;
+    }
+
     @Override
     public DocumentConfigData retrieveTemplate() {
         this.context.authenticatedUser();
         final Collection<CodeData> codeDatas = this.codeReadPlatformService.retrieveAllCodesDocument();
 
         final GlobalEntityType[] globalEntityTypes = GlobalEntityType.values();
+        List<EnumOptionData> enumGlobalEntityTypes = globalEntityTypes(globalEntityTypes);
         //final Collection<SavingsProductData> savingsProductDatas = this.savingsProductReadPlatformService.retrieveAllForLookup();
         //final Collection<LoanProductData> loanProductDatas = this.loanProductReadPlatformService.retrieveAllLoanProductsForLookup(true);
         final List<EnumOptionData> clientLegalFormOptions = ClientEnumerations.legalForm(LegalForm.values());
-        return DocumentConfigData.template(codeDatas, clientLegalFormOptions, globalEntityTypes
+        return DocumentConfigData.template(codeDatas, clientLegalFormOptions, enumGlobalEntityTypes
         //loanProductDatas, savingsProductDatas
         );
     }

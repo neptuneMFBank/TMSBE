@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.product.domain.business;
 
+import java.util.List;
 import org.apache.fineract.infrastructure.documentmanagement.exception.business.DocumentConfigNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,21 +48,26 @@ public class DocumentProductRepositoryWrapper {
     }
 
     @Transactional
-    public DocumentProductConfig saveAndFlush(final DocumentProductConfig clientDocumentConfig) {
-        return this.repository.saveAndFlush(clientDocumentConfig);
+    public DocumentProductConfig saveAndFlush(final DocumentProductConfig documentProductConfig) {
+        return this.repository.saveAndFlush(documentProductConfig);
     }
 
     @Transactional
-    public DocumentProductConfig save(final DocumentProductConfig clientDocumentConfig) {
-        return this.repository.save(clientDocumentConfig);
+    public void saveAllAndFlush(final List<DocumentProductConfig> documentProductConfigs) {
+        this.repository.saveAllAndFlush(documentProductConfigs);
+    }
+
+    @Transactional
+    public DocumentProductConfig save(final DocumentProductConfig documentProductConfig) {
+        return this.repository.save(documentProductConfig);
     }
 
     public void flush() {
         this.repository.flush();
     }
 
-    public void delete(final Long clientDocumentConfigId) {
-        this.repository.deleteById(clientDocumentConfigId);
+    public void delete(final Long documentProductConfigId) {
+        this.repository.deleteById(documentProductConfigId);
     }
 
 }

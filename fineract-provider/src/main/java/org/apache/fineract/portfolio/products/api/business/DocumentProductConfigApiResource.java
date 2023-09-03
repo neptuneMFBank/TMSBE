@@ -24,12 +24,11 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.LocalDate;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -38,7 +37,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import lombok.RequiredArgsConstructor;
-import org.apache.fineract.accounting.journalentry.api.DateParam;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
@@ -48,9 +46,7 @@ import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSeria
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
 import org.apache.fineract.portfolio.products.data.business.DocumentProductConfigData;
 import org.apache.fineract.portfolio.products.service.business.DocumentProductConfigReadPlatformService;
 import org.springframework.context.annotation.Scope;
@@ -121,11 +117,11 @@ public class DocumentProductConfigApiResource {
         return this.toBusinessApiJsonSerializer.serialize(result);
     }
 
-    @PUT
+    @DELETE
     @Path("{entityId}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Update a Document Config", description = """
+    @Operation(summary = "Delete a Document Config", description = """
             Note:
                                                                    """)
     @RequestBody(required = true
@@ -137,12 +133,11 @@ public class DocumentProductConfigApiResource {
         // , content = @Content(schema = @Schema(implementation =
         // ClientsApiResourceSwagger.PutClientsClientIdResponse.class))
         )})
-    public String update(@Parameter(description = "entityId") @PathParam("entityId") final Long entityId,
-            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+    public String delete(@Parameter(description = "entityId") @PathParam("entityId") final Long entityId) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
-                .updateProductDocumentConfig(entityId) //
-                .withJson(apiRequestBodyAsJson) //
+                .deleteProductDocumentConfig(entityId) //
+                .withNoJsonBody()
                 .build(); //
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
@@ -160,71 +155,85 @@ public class DocumentProductConfigApiResource {
         @ApiResponse(responseCode = "200", description = "OK"
         // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
         )})
-    public String retrieveAll(@Context final UriInfo uriInfo, @QueryParam("type") @Parameter(description = "type") final Integer type,
+    public String retrieveAll(@Context final UriInfo uriInfo,
+            @QueryParam("documentConfigId") @Parameter(description = "documentConfigId") final Long documentConfigId,
             @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
             @QueryParam("active") @Parameter(description = "active") final Boolean active,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
             @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
             @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
             @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
-            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
-            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @QueryParam("showLoanProducts") @Parameter(description = "showLoanProducts") final Boolean showLoanProducts,
+            @QueryParam("showSavingsProducts") @Parameter(description = "showSavingsProducts") final Boolean showSavingsProducts,
+            //@QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            //@QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
             @DefaultValue("en") @QueryParam("locale") final String locale,
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
         this.context.authenticatedUser().validateHasReadPermission(DocumentProductConfigApiConstants.resourceName);
 
-        LocalDate fromDate = null;
-        if (startPeriod != null) {
-            fromDate = startPeriod.getDate(LoanBusinessApiConstants.startPeriodParameterName, dateFormat, locale);
-        }
-        LocalDate toDate = null;
-        if (endPeriod != null) {
-            toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
-        }
-
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forDocumentConfig(type, offset, limit, orderBy,
-                sortOrder, fromDate, toDate, displayName, active);
-
-        final Page<DocumentConfigData> documentConfigData;
-        // client
-        // loans
-        //if (is(type, "client")) {
-        documentConfigData = this.documentConfigReadPlatformService.retrieveAll(searchParameters);
-//        } // else if (is(typeParam, "loans")) {
-//          // }
-//        else {
-//            throw new UnrecognizedQueryParamException("typeRetrieveAll", type);
+//        LocalDate fromDate = null;
+//        if (startPeriod != null) {
+//            fromDate = startPeriod.getDate(LoanBusinessApiConstants.startPeriodParameterName, dateFormat, locale);
 //        }
+//        LocalDate toDate = null;
+//        if (endPeriod != null) {
+//            toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
+//        }
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forDocumentProductConfig(documentConfigId, offset, limit, orderBy, sortOrder, showLoanProducts, showSavingsProducts);
 
+        final Page<DocumentProductConfigData> documentConfigData;
+        documentConfigData = this.documentProductConfigReadPlatformService.retrieveAll(searchParameters);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toBusinessApiJsonSerializer.serialize(settings, documentConfigData,
-                DocumentProductConfigApiConstants.DOCUMENT_CONFIG_RESPONSE_DATA_PARAMETERS);
+                DocumentProductConfigApiConstants.DOCUMENT_PRODUCT_CONFIG_RESPONSE_DATA_PARAMETERS);
     }
 
     @GET
-    @Path("{documentId}")
+    @Path("{loanProductId}/loan-product")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Retrieve a Document Config", description = """
+    @Operation(summary = "Retrieve a Loan ProductDocument Config", description = """
             """)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK"
         // , content = @Content(schema = @Schema(implementation =
         // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
         )})
-    public String retrieveOne(@PathParam("documentId") @Parameter(description = "documentId") final Long documentId,
-            @Context final UriInfo uriInfo, @QueryParam("type") @Parameter(description = "type") final String type) {
+    public String retrieveLoanProductDocument(@PathParam("loanProductId") @Parameter(description = "loanProductId") final Long loanProductId,
+            @Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(DocumentProductConfigApiConstants.resourceName);
 
-        final DocumentConfigData documentConfigData = this.documentConfigReadPlatformService.retrieveOne(documentId
-        //, type
-        );
+        final DocumentProductConfigData documentConfigData = this.documentProductConfigReadPlatformService.retrieveLoanProductDocument(loanProductId);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 
         return this.toBusinessApiJsonSerializer.serialize(settings, documentConfigData,
-                DocumentProductConfigApiConstants.DOCUMENT_CONFIG_RESPONSE_DATA_PARAMETERS);
+                DocumentProductConfigApiConstants.DOCUMENT_PRODUCT_CONFIG_RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
+    @Path("{savingsProductId}/savings-product")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve a Loan ProductDocument Config", description = """
+            """)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+        )})
+    public String retrieveSavingProductDocument(@PathParam("savingsProductId") @Parameter(description = "savingsProductId") final Long savingsProductId,
+            @Context final UriInfo uriInfo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(DocumentProductConfigApiConstants.resourceName);
+
+        final DocumentProductConfigData documentConfigData = this.documentProductConfigReadPlatformService.retrieveSavingProductDocument(savingsProductId);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+
+        return this.toBusinessApiJsonSerializer.serialize(settings, documentConfigData,
+                DocumentProductConfigApiConstants.DOCUMENT_PRODUCT_CONFIG_RESPONSE_DATA_PARAMETERS);
     }
 
 }

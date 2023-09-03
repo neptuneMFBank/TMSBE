@@ -20,19 +20,16 @@ package org.apache.fineract.portfolio.products.service.business;
 
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
 import org.apache.fineract.portfolio.products.data.business.DocumentProductConfigData;
 
 public interface DocumentProductConfigReadPlatformService {
 
     DocumentProductConfigData retrieveTemplate();
 
-    DocumentConfigData retrieveDocumentConfigViaClientLegalForm(Integer formId);
+    DocumentProductConfigData retrieveLoanProductDocument(final Long loanProductId);
 
-    DocumentConfigData retrieveOne(final Long documentId
-    //, final String type
-    );
+    DocumentProductConfigData retrieveSavingProductDocument(final Long savingProductId);
 
-    Page<DocumentConfigData> retrieveAll(final SearchParametersBusiness searchParameters);
+    Page<DocumentProductConfigData> retrieveAll(final SearchParametersBusiness searchParameters);
 
 }

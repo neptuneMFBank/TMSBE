@@ -16,15 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.products.service.business;
+package org.apache.fineract.portfolio.products.exception.business;
 
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.infrastructure.core.exception.AbstractPlatformResourceNotFoundException;
 
-public interface DocumentProductConfigWriteService {
+public class DocumentProductConfigNotFoundException extends AbstractPlatformResourceNotFoundException {
 
-    CommandProcessingResult createProductDocumentConfig(JsonCommand command);
-
-    CommandProcessingResult deleteProductDocumentConfig(Long entityId, JsonCommand command);
+    public DocumentProductConfigNotFoundException(
+            final Long id) {
+        super("error.msg.document.product.id.invalid", "Product Document with identifier " + id + " does not exist.",
+                id);
+    }
 
 }

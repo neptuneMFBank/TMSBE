@@ -26,8 +26,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityType;
-import org.apache.fineract.infrastructure.codes.data.business.CodeBusinessData;
 import org.apache.fineract.infrastructure.codes.service.business.CodeDocumentReadPlatformService;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.Page;
@@ -35,16 +33,15 @@ import org.apache.fineract.infrastructure.core.service.PaginationHelper;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
 import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
-import org.apache.fineract.infrastructure.documentmanagement.exception.business.DocumentConfigNotFoundException;
 import org.apache.fineract.infrastructure.documentmanagement.service.business.DocumentConfigReadPlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
 import org.apache.fineract.portfolio.products.data.business.DocumentProductConfigData;
+import org.apache.fineract.portfolio.products.exception.business.DocumentProductConfigNotFoundException;
 import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 import org.apache.fineract.portfolio.savings.service.SavingsProductReadPlatformService;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -63,8 +60,7 @@ public class DocumentProductConfigReadPlatformServiceImpl implements DocumentPro
     // data mappers
     private final PaginationHelper paginationHelper;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
-    private final ClientDocumentMapper clientDocumentMapper = new ClientDocumentMapper();
-    private final CodeMapper codeMapper = new CodeMapper();
+    private final DocumentProductMapper documentProductMapper = new DocumentProductMapper();
 
     private final DocumentConfigReadPlatformService documentConfigReadPlatformService;
 
@@ -83,7 +79,7 @@ public class DocumentProductConfigReadPlatformServiceImpl implements DocumentPro
     }
 
     @Override
-    public Page<DocumentConfigData> retrieveAll(SearchParametersBusiness searchParameters) {
+    public Page<DocumentProductConfigData> retrieveAll(SearchParametersBusiness searchParameters) {
         this.context.authenticatedUser();
         List<Object> paramList = new ArrayList<>();
         final StringBuilder sqlBuilder = new StringBuilder(200);
@@ -91,18 +87,11 @@ public class DocumentProductConfigReadPlatformServiceImpl implements DocumentPro
         sqlBuilder.append(sqlGenerator.calcFoundRows());
 
         if (searchParameters != null) {
-            //final String typeParam = searchParameters.getType();
-            //if (is(typeParam, "client")) {
-            sqlBuilder.append(this.clientDocumentMapper.schema());
+            sqlBuilder.append(this.documentProductMapper.schema());
             final String extraCriteria = buildSqlStringFromClientCriteria(searchParameters, paramList);
             if (StringUtils.isNotBlank(extraCriteria)) {
                 sqlBuilder.append(" WHERE (").append(extraCriteria).append(")");
             }
-            //} // else if (is(typeParam, "loans")) {
-            // }
-//            else {
-//                throw new UnrecognizedQueryParamException("typeRead", typeParam);
-//            }
 
             if (searchParameters.isOrderByRequested()) {
                 sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
@@ -122,82 +111,63 @@ public class DocumentProductConfigReadPlatformServiceImpl implements DocumentPro
                 }
             }
             return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(),
-                    this.clientDocumentMapper);
+                    this.documentProductMapper);
         }
         return new Page<>(new ArrayList<>(), 0);
     }
 
     @Override
-    public DocumentConfigData retrieveDocumentConfigViaClientLegalForm(Integer formId) {
+    public DocumentProductConfigData retrieveLoanProductDocument(final Long loanProductId) {
         this.context.authenticatedUser();
         try {
-            final String sql = "select " + this.clientDocumentMapper.schema() + " where mdc.legal_form_id = ?";
-            final DocumentConfigData documentConfigData = this.jdbcTemplate.queryForObject(sql, this.clientDocumentMapper, // NOSONAR
-                    formId);
-            if (documentConfigData != null) {
-                Collection<CodeBusinessData> codeBusinessDatas = retrieveAllCodesForClientDocument(documentConfigData.getId());
-                documentConfigData.setSettings(codeBusinessDatas);
+            final String sql = "select " + this.documentProductMapper.schema() + " where mdcp.loan_product_id = ?";
+            DocumentProductConfigData documentProductConfigData = this.jdbcTemplate.queryForObject(sql, this.documentProductMapper, // NOSONAR
+                    loanProductId);
+            if (documentProductConfigData != null) {
+                DocumentConfigData documentConfig = documentProductConfigData.getConfigData();
+                documentConfig = this.documentConfigReadPlatformService.retrieveOne(documentConfig.getId());
+                documentProductConfigData = DocumentProductConfigData.instance(documentProductConfigData.getId(), documentProductConfigData.getLoanProduct(), documentProductConfigData.getSavingsProduct(), documentConfig);
             }
-            return documentConfigData;
+
+            return documentProductConfigData;
         } catch (final EmptyResultDataAccessException e) {
-            log.warn("retrieveDocumentConfigViaClientLegalForm: {}", e);
-            return null;
+            throw new DocumentProductConfigNotFoundException(loanProductId);
         }
     }
 
     @Override
-    public DocumentConfigData retrieveOne(Long documentId
-    //, Integer type
-    ) {
+    public DocumentProductConfigData retrieveSavingProductDocument(Long savingProductId) {
         this.context.authenticatedUser();
         try {
-
-            DocumentConfigData documentConfigData;
-            //if (is(type, "client")) {
-            final String sql = "select " + this.clientDocumentMapper.schema() + " where mdc.id = ?";
-            documentConfigData = this.jdbcTemplate.queryForObject(sql, this.clientDocumentMapper, // NOSONAR
-                    documentId);
-            if (documentConfigData != null) {
-                Collection<CodeBusinessData> codeBusinessDatas = retrieveAllCodesForClientDocument(documentId);
-                documentConfigData.setSettings(codeBusinessDatas);
+            final String sql = "select " + this.documentProductMapper.schema() + " where mdcp.savings_product_id = ?";
+            DocumentProductConfigData documentProductConfigData = this.jdbcTemplate.queryForObject(sql, this.documentProductMapper, // NOSONAR
+                    savingProductId);
+            if (documentProductConfigData != null) {
+                DocumentConfigData documentConfig = documentProductConfigData.getConfigData();
+                documentConfig = this.documentConfigReadPlatformService.retrieveOne(documentConfig.getId());
+                documentProductConfigData = DocumentProductConfigData.instance(documentProductConfigData.getId(), documentProductConfigData.getLoanProduct(), documentProductConfigData.getSavingsProduct(), documentConfig);
             }
-//            } // else if (is(typeParam, "loans")) {
-//            // }
-//            else {
-//                throw new UnrecognizedQueryParamException("typeRetrieveOne", type);
-//            }
 
-            return documentConfigData;
+            return documentProductConfigData;
         } catch (final EmptyResultDataAccessException e) {
-            throw new DocumentConfigNotFoundException(//type, 
-                    documentId);
+            throw new DocumentProductConfigNotFoundException(savingProductId);
         }
     }
 
-    public Collection<CodeBusinessData> retrieveAllCodesForClientDocument(final Long clientDocumentId) {
-        this.context.authenticatedUser();
-        try {
-            final CodeMapper rm = new CodeMapper();
-            final String sql = "select " + codeMapper.codeClientDocumentSchema()
-                    + " where mdca.code_allow=1 group by c.id order by c.code_name ";
-
-            return this.jdbcTemplate.query(sql, rm, new Object[]{clientDocumentId});
-
-        } catch (DataAccessException e) {
-            log.warn("retrieveAllCodesForClientDocument: {}", e);
-            return null;
-        }
-    }
-
-    private static final class ClientDocumentMapper implements RowMapper<DocumentConfigData> {
+    private static final class DocumentProductMapper implements RowMapper<DocumentProductConfigData> {
 
         private final String schema;
 
-        ClientDocumentMapper() {
+        DocumentProductMapper() {
             final StringBuilder sqlBuilder = new StringBuilder(400);
 
-            sqlBuilder.append(" mdc.id, mdc.name, mdc.legal_form_id as legalFormId, mdc.type_id typeId, mdc.active, mdc.description ");
-            sqlBuilder.append(" from m_document_client_config mdc ");
+            sqlBuilder.append(" mdcp.id, mdcp.m_document_client_config_id documentConfig, mdcp.name documentConfigName, "
+                    + " mdcp.loan_product_id loanProductId, lp.name loanProductName, "
+                    + " mdcp.savings_product_id savingsProductId, sp.name savingsProductName ");
+            sqlBuilder.append(" from m_document_config_product mdcp "
+                    + " join m_document_client_config_id mdc on mdc.id=mdcp.m_document_client_config_id "
+                    + " left join loan_product_id lp on lp.id=mdcp.loan_product_id "
+                    + " left join savings_product_id sp on sp.id=mdcp.savings_product_id ");
 
             this.schema = sqlBuilder.toString();
         }
@@ -207,62 +177,28 @@ public class DocumentProductConfigReadPlatformServiceImpl implements DocumentPro
         }
 
         @Override
-        public DocumentConfigData mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+        public DocumentProductConfigData mapRow(final ResultSet rs, final int rowNum) throws SQLException {
             final Long id = JdbcSupport.getLongDefaultToNullIfZero(rs, "id");
-            final String name = rs.getString("name");
-            final String description = rs.getString("description");
-            final Integer legalFormId = JdbcSupport.getIntegerDefaultToNullIfZero(rs, "legalFormId");
-            final boolean active = rs.getBoolean("active");
 
-            final Integer typeId = JdbcSupport.getIntegerDefaultToNullIfZero(rs, "typeId");
+            final Long documentConfig = JdbcSupport.getLongDefaultToNullIfZero(rs, "documentConfig");
+            final String documentConfigName = rs.getString("documentConfigName");
+            final DocumentConfigData documentConfigData = DocumentConfigData.lookup(documentConfig, documentConfigName);
 
-            final DocumentConfigData configData = new DocumentConfigData(id, name, description, active);
-            if (typeId != null) {
-                GlobalEntityType entityType = GlobalEntityType.fromInt(typeId);
-                if (entityType != null) {
-                    configData.setGlobalEntityType(entityType);
-                }
-            }
-            configData.setLegalFormId(legalFormId);
-            return configData;
-        }
-    }
+            final Long loanProductId = JdbcSupport.getLongDefaultToNullIfZero(rs, "loanProductId");
+            final String loanProductName = rs.getString("loanProductName");
+            final LoanProductData loanProductData = LoanProductData.lookup(loanProductId, loanProductName, null);
 
-    private static final class CodeMapper implements RowMapper<CodeBusinessData> {
+            final Long savingsProductId = JdbcSupport.getLongDefaultToNullIfZero(rs, "savingsProductId");
+            final String savingsProductName = rs.getString("savingsProductName");
+            final SavingsProductData savingsProductData = SavingsProductData.lookup(savingsProductId, savingsProductName);
 
-        public String codeClientDocumentSchema() {
-            // for this isActive is use to check if value was selected for the configuration or not
-            return " GROUP_CONCAT(cv.code_value) as concatCodeValues,   c.id as id, c.code_name as code_name, if(isnull(rp.m_document_client_config_id), false, true) as systemDefined "
-                    + " from m_code as c join m_document_code_allow mdca ON mdca.code_id=c.id "
-                    + " left join m_code_value cv on cv.code_id=c.id "
-                    + " left join m_document_client_config_code rp on rp.code_id = c.id and rp.m_document_client_config_id=? " // + " group by c.id order by c.code_name"
-                    ;
-        }
-
-        // public String schema() {
-        // return " c.id as id, c.code_name as code_name, c.is_system_defined as systemDefined from m_code c ";
-        // }
-        @Override
-        public CodeBusinessData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
-
-            final Long id = rs.getLong("id");
-            final String code_name = rs.getString("code_name");
-            final boolean systemDefined = rs.getBoolean("systemDefined");
-
-            CodeBusinessData codeData = CodeBusinessData.instance(id, code_name, systemDefined);
-
-            codeData.setValues(rs.getString("concatCodeValues"));
-            System.out.println("info: {}" + rs.getString("concatCodeValues"));
-
-            return codeData;
+            return DocumentProductConfigData.instance(id, loanProductData, savingsProductData, documentConfigData);
         }
     }
 
     private String buildSqlStringFromClientCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
 
-        final String displayName = searchParameters.getName();
-        final Boolean active = searchParameters.isActive();
-        final Integer typeParam = searchParameters.getType();
+        final Long documentConfigId = searchParameters.getDocumentConfigId();
 
         String extraCriteria = "";
 
@@ -282,18 +218,16 @@ public class DocumentProductConfigReadPlatformServiceImpl implements DocumentPro
         // paramList.add(df.format(endPeriod));
         // }
         // }
-        if (displayName != null) {
-            paramList.add("%" + displayName + "%");
-            extraCriteria += " and mdc.name like ? ";
+        if (searchParameters.isShowLoanProductsPassed()) {
+            extraCriteria += " and mdcp.loan_product_id IS NOT NULL ";
+        }
+        if (searchParameters.isShowSavingsProductsPassed()) {
+            extraCriteria += " and mdcp.savings_product_id IS NOT NULL ";
         }
 
-        if (searchParameters.isActivePassed()) {
-            extraCriteria += " and mdc.active = ? ";
-            paramList.add(active);
-        }
-        if (searchParameters.isTypePassed()) {
-            extraCriteria += " and mdc.type_id = ? ";
-            paramList.add(typeParam);
+        if (searchParameters.isDocumentConfigIdPassed()) {
+            extraCriteria += " and mdcp.m_document_client_config_id = ? ";
+            paramList.add(documentConfigId);
         }
 
         if (StringUtils.isNotBlank(extraCriteria)) {

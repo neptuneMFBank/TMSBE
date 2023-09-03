@@ -28,19 +28,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@CommandType(entity = "DOCUMENT", action = "UPDATE_CONFIG_PRODUCT_DOCUMENT")
-public class UpdateDocumentProductConfigCommandHandler implements NewCommandSourceHandler {
+@CommandType(entity = "DOCUMENT", action = "DELETE_CONFIG_PRODUCT")
+public class DeleteDocumentProductConfigCommandHandler implements NewCommandSourceHandler {
 
     private final DocumentProductConfigWriteService documentProductConfigWritePlatformService;
 
     @Autowired
-    public UpdateDocumentProductConfigCommandHandler(final DocumentProductConfigWriteService documentProductConfigWritePlatformService) {
+    public DeleteDocumentProductConfigCommandHandler(final DocumentProductConfigWriteService documentProductConfigWritePlatformService) {
         this.documentProductConfigWritePlatformService = documentProductConfigWritePlatformService;
     }
 
     @Override
     @Transactional
     public CommandProcessingResult processCommand(JsonCommand command) {
-        return this.documentProductConfigWritePlatformService.updateProductDocumentConfig(command.entityId(), command);
+        return this.documentProductConfigWritePlatformService.deleteProductDocumentConfig(command.entityId(), command);
     }
 }

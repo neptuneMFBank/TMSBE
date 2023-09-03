@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@CommandType(entity = "DOCUMENT", action = "CREATE_CONFIG_PRODUCT_DOCUMENT")
+@CommandType(entity = "DOCUMENT", action = "CREATE_CONFIG_PRODUCT")
 public class CreateDocumentProductConfigCommandHandler implements NewCommandSourceHandler {
 
     private final DocumentProductConfigWriteService documentProductConfigWritePlatformService;

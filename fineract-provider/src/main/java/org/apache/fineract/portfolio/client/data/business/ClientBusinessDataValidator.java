@@ -40,6 +40,7 @@ import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidati
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
+import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -62,7 +63,8 @@ public final class ClientBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 ClientBusinessApiCollectionConstants.CLIENT_CREATE_REQUEST_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -351,7 +353,8 @@ public final class ClientBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 ClientBusinessApiCollectionConstants.CLIENT_UPDATE_REQUEST_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -588,7 +591,8 @@ public final class ClientBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 ClientBusinessApiCollectionConstants.ACTIVATION_REQUEST_DATA_PARAMETERS);
 
@@ -617,7 +621,8 @@ public final class ClientBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
 
         final Set<String> supportedParametersUnassignStaff = new HashSet<>(Arrays.asList(ClientApiConstants.staffIdParamName));
 
@@ -645,7 +650,8 @@ public final class ClientBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
 
         final Set<String> supportedParametersUnassignStaff = new HashSet<>(Arrays.asList(ClientApiConstants.staffIdParamName));
 
@@ -675,7 +681,8 @@ public final class ClientBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 ClientBusinessApiCollectionConstants.CLIENT_CLOSE_REQUEST_DATA_PARAMETERS);
 
@@ -701,7 +708,8 @@ public final class ClientBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
 
         final Set<String> supportedParameters = new HashSet<>(Arrays.asList(ClientApiConstants.savingsAccountIdParamName));
 
@@ -731,7 +739,8 @@ public final class ClientBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 ClientBusinessApiCollectionConstants.CLIENT_REJECT_DATA_PARAMETERS);
 
@@ -760,7 +769,8 @@ public final class ClientBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 ClientBusinessApiCollectionConstants.CLIENT_WITHDRAW_DATA_PARAMETERS);
 
@@ -789,7 +799,8 @@ public final class ClientBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 ClientBusinessApiCollectionConstants.REACTIVATION_REQUEST_DATA_PARAMETERS);
 
@@ -815,7 +826,8 @@ public final class ClientBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 ClientBusinessApiCollectionConstants.UNDOREJECTION_REQUEST_DATA_PARAMETERS);
 
@@ -841,7 +853,8 @@ public final class ClientBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 ClientBusinessApiCollectionConstants.UNDOWITHDRAWN_REQUEST_DATA_PARAMETERS);
 
@@ -856,6 +869,39 @@ public final class ClientBusinessDataValidator {
                 .validateDateBeforeOrEqual(DateUtils.getBusinessLocalDate());
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
+
+    }
+
+    public void validateFindClient(final String json) {
+
+        if (StringUtils.isBlank(json)) {
+            throw new InvalidJsonException();
+        }
+
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
+
+        final Set<String> supportedParameters = new HashSet<>(Arrays.asList(ClientBusinessApiConstants.keyParam, ClientBusinessApiConstants.valueParam));
+
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, supportedParameters);
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+                .resource(ClientApiConstants.CLIENT_RESOURCE_NAME);
+
+        final String keyParam = ClientBusinessApiConstants.keyParam;
+        final String key = this.fromApiJsonHelper.extractStringNamed(keyParam, element);
+        baseDataValidator.reset().parameter(keyParam).value(key).notBlank();
+
+        final String valueParam = ClientBusinessApiConstants.valueParam;
+        final String value = this.fromApiJsonHelper.extractStringNamed(valueParam, element);
+        baseDataValidator.reset().parameter(valueParam).value(value).notBlank();
+
+        if (!dataValidationErrors.isEmpty()) {
+            throw new PlatformApiDataValidationException(dataValidationErrors);
+        }
 
     }
 

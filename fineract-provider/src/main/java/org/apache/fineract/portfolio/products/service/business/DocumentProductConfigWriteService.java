@@ -16,20 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.service.business;
+package org.apache.fineract.portfolio.products.service.business;
 
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.client.data.ClientData;
-import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
-public interface ClientBusinessReadPlatformService {
+public interface DocumentProductConfigWriteService {
 
-    ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final boolean staffInSelectedOfficeOnly);
+    CommandProcessingResult createProductDocumentConfig(JsonCommand command);
 
-    ClientBusinessData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly, final Integer legalFormId);
+    CommandProcessingResult deleteProductDocumentConfig(Long entityId, JsonCommand command);
 
-    Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
-
-    ClientData findClient(final String apiRequestBodyAsJson);
 }

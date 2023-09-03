@@ -16,8 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.domain.business;
+package org.apache.fineract.portfolio.product.domain.business;
 
+import java.util.List;
 import org.apache.fineract.infrastructure.documentmanagement.exception.business.DocumentConfigNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,48 +26,48 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
- * Wrapper for {@link ClientDocumentConfig} that adds NULL checking and Error
+ * Wrapper for {@link DocumentProductConfig} that adds NULL checking and Error
  * handling capabilities
  * </p>
  */
 @Service
-public class ClientDocumentRepositoryWrapper {
+public class DocumentProductRepositoryWrapper {
 
-    private final ClientDocumentConfigRepository repository;
+    private final DocumentProductConfigRepository repository;
 
     @Autowired
-    public ClientDocumentRepositoryWrapper(final ClientDocumentConfigRepository repository) {
+    public DocumentProductRepositoryWrapper(final DocumentProductConfigRepository repository) {
         this.repository = repository;
     }
 
     @Transactional(readOnly = true)
-    public ClientDocumentConfig findOneWithNotFoundDetection(final Long id//, final String type
+    public DocumentProductConfig findOneWithNotFoundDetection(final Long id//, final String type
     ) {
         return this.repository.findById(id).orElseThrow(() -> new DocumentConfigNotFoundException(//type,
                 id));
     }
 
-    @Transactional(readOnly = true)
-    public ClientDocumentConfig findOneByLegalFormId(final Integer legalFormId) {
-        return this.repository.findOneByLegalFormId(legalFormId).orElse(null);
+    @Transactional
+    public DocumentProductConfig saveAndFlush(final DocumentProductConfig documentProductConfig) {
+        return this.repository.saveAndFlush(documentProductConfig);
     }
 
     @Transactional
-    public ClientDocumentConfig saveAndFlush(final ClientDocumentConfig clientDocumentConfig) {
-        return this.repository.saveAndFlush(clientDocumentConfig);
+    public void saveAllAndFlush(final List<DocumentProductConfig> documentProductConfigs) {
+        this.repository.saveAllAndFlush(documentProductConfigs);
     }
 
     @Transactional
-    public ClientDocumentConfig save(final ClientDocumentConfig clientDocumentConfig) {
-        return this.repository.save(clientDocumentConfig);
+    public DocumentProductConfig save(final DocumentProductConfig documentProductConfig) {
+        return this.repository.save(documentProductConfig);
     }
 
     public void flush() {
         this.repository.flush();
     }
 
-    public void deleteById(final Long clientDocumentConfigId) {
-        this.repository.deleteById(clientDocumentConfigId);
+    public void delete(final Long documentProductConfigId) {
+        this.repository.deleteById(documentProductConfigId);
     }
 
 }

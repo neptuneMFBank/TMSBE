@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.infrastructure.documentmanagement.service.business;
 
+import java.util.Collection;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
@@ -27,10 +28,12 @@ public interface DocumentConfigReadPlatformService {
     DocumentConfigData retrieveDocumentConfigViaClientLegalForm(Integer formId);
 
     DocumentConfigData retrieveOne(final Long documentId
-            //, final String type
+    //, final String type
     );
 
     Page<DocumentConfigData> retrieveAll(final SearchParametersBusiness searchParameters);
+
+    Collection<DocumentConfigData> retrieveAllForProductConfigTemplate();
 
     DocumentConfigData retrieveTemplate();
 

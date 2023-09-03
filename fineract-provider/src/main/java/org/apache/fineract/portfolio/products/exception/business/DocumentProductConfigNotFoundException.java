@@ -16,20 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.service.business;
+package org.apache.fineract.portfolio.products.exception.business;
 
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.client.data.ClientData;
-import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
+import org.apache.fineract.infrastructure.core.exception.AbstractPlatformResourceNotFoundException;
 
-public interface ClientBusinessReadPlatformService {
+public class DocumentProductConfigNotFoundException extends AbstractPlatformResourceNotFoundException {
 
-    ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final boolean staffInSelectedOfficeOnly);
+    public DocumentProductConfigNotFoundException(
+            final Long id) {
+        super("error.msg.document.product.id.invalid", "Product Document with identifier " + id + " does not exist.",
+                id);
+    }
 
-    ClientBusinessData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly, final Integer legalFormId);
-
-    Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
-
-    ClientData findClient(final String apiRequestBodyAsJson);
 }

@@ -16,20 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.service.business;
+package org.apache.fineract.portfolio.products.service.business;
 
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.client.data.ClientData;
-import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
+import org.apache.fineract.portfolio.products.data.business.DocumentProductConfigData;
 
-public interface ClientBusinessReadPlatformService {
+public interface DocumentProductConfigReadPlatformService {
 
-    ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final boolean staffInSelectedOfficeOnly);
+    DocumentProductConfigData retrieveTemplate();
 
-    ClientBusinessData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly, final Integer legalFormId);
+    DocumentProductConfigData retrieveLoanProductDocument(final Long loanProductId);
 
-    Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
+    DocumentProductConfigData retrieveSavingProductDocument(final Long savingProductId);
 
-    ClientData findClient(final String apiRequestBodyAsJson);
+    Page<DocumentProductConfigData> retrieveAll(final SearchParametersBusiness searchParameters);
+
 }

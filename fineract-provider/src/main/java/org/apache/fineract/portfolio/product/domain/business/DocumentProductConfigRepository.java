@@ -16,20 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.service.business;
+package org.apache.fineract.portfolio.product.domain.business;
 
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.client.data.ClientData;
-import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface ClientBusinessReadPlatformService {
+public interface DocumentProductConfigRepository
+        extends JpaRepository<DocumentProductConfig, Long>, JpaSpecificationExecutor<DocumentProductConfig> {
 
-    ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final boolean staffInSelectedOfficeOnly);
 
-    ClientBusinessData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly, final Integer legalFormId);
-
-    Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
-
-    ClientData findClient(final String apiRequestBodyAsJson);
 }

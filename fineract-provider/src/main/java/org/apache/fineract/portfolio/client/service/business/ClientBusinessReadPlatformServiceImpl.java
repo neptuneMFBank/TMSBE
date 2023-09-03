@@ -74,6 +74,7 @@ import org.apache.fineract.portfolio.client.data.ClientNonPersonData;
 import org.apache.fineract.portfolio.client.data.ClientTimelineData;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessDataValidator;
+import org.apache.fineract.portfolio.client.data.business.KycBusinessData;
 import org.apache.fineract.portfolio.client.domain.ClientEnumerations;
 import org.apache.fineract.portfolio.client.domain.ClientStatus;
 import org.apache.fineract.portfolio.client.domain.LegalForm;
@@ -112,6 +113,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     private final ClientBusinessMapper clientBusinessMapper = new ClientBusinessMapper();
     private final ParentGroupsMapper clientGroupsMapper = new ParentGroupsMapper();
     private final ClientLookupMapper lookupMapper = new ClientLookupMapper();
+    private final ClientLookupKycLevelMapper clientLookupKycLevelMapper = new ClientLookupKycLevelMapper();
 
     private final AddressBusinessReadPlatformService addressReadPlatformService;
     private final ClientFamilyMembersReadPlatformService clientFamilyMembersReadPlatformService;
@@ -465,6 +467,60 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         } catch (Exception e) {
             log.warn("findClient: {}", e);
             throw new ClientNotFoundException();
+        }
+    }
+
+    @Override
+    public KycBusinessData retrieveKycLevel(Long clientId) {
+        this.context.authenticatedUser();
+        try {
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            sqlBuilder.append("select ");
+            sqlBuilder.append(this.clientLookupKycLevelMapper.schema());
+            sqlBuilder.append(" WHERE mck.client_id=? ");
+
+            String sql = sqlBuilder.toString();
+            log.info("retrieveKycLevel: {}", sql);
+
+            return this.jdbcTemplate.queryForObject(sql, this.clientLookupKycLevelMapper, clientId);
+
+        } catch (Exception e) {
+            log.warn("retrieveKycLevel: {}", e);
+            throw new ClientNotFoundException();
+        }
+    }
+
+    private static final class ClientLookupKycLevelMapper implements RowMapper<KycBusinessData> {
+
+        private final String schema;
+
+        ClientLookupKycLevelMapper() {
+            final StringBuilder builder = new StringBuilder(200);
+
+            builder.append("mck.client_id,mck.has_personal,mck.has_residential,mck.has_employment,mck.has_agreement,mck.has_next_of_kin,mck.has_bank_detail,mck.has_identification ");
+            builder.append(" from m_client_kyc_checkers mck ");
+
+            this.schema = builder.toString();
+        }
+
+        public String schema() {
+            return this.schema;
+        }
+
+        @Override
+        public KycBusinessData mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+
+            final Long clientId = rs.getLong("client_id");
+
+            final Boolean personal = rs.getBoolean("has_personal");
+            final Boolean residential = rs.getBoolean("has_residential");
+            final Boolean employment = rs.getBoolean("has_employment");
+            final Boolean nextOfKin = rs.getBoolean("has_next_of_kin");
+            final Boolean bankDetail = rs.getBoolean("has_bank_detail");
+            final Boolean identification = rs.getBoolean("has_identification");
+            final Boolean agreement = rs.getBoolean("has_agreement");
+
+            return KycBusinessData.instance(clientId, personal, residential, employment, nextOfKin, bankDetail, identification, agreement);
         }
     }
 

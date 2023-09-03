@@ -449,7 +449,11 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             sqlBuilder.append("select ");
             sqlBuilder.append(this.lookupMapper.schema());
             sqlBuilder.append(" WHERE ");
-            sqlBuilder.append(" c.");
+            if (StringUtils.equalsIgnoreCase(key, "bvn")) {
+                sqlBuilder.append(" slk.");
+            } else {
+                sqlBuilder.append(" c.");
+            }
             sqlBuilder.append(key);
             sqlBuilder.append("=");
             sqlBuilder.append(value);
@@ -475,6 +479,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             builder.append("c.office_id as officeId, o.name as officeName ");
             builder.append("from m_client c ");
             builder.append("join m_office o on o.id = c.office_id ");
+            builder.append("left join secondLevelKYC slk on slk.client_id = c.id ");
 
             this.schema = builder.toString();
         }

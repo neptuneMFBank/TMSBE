@@ -22,6 +22,7 @@ import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
+import org.apache.fineract.portfolio.client.data.business.KycBusinessData;
 
 public interface ClientBusinessReadPlatformService {
 
@@ -32,4 +33,6 @@ public interface ClientBusinessReadPlatformService {
     Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
 
     ClientData findClient(final String apiRequestBodyAsJson);
+
+    KycBusinessData retrieveKycLevel(Long clientId);
 }

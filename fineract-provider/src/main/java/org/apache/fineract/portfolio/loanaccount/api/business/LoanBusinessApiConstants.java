@@ -201,7 +201,7 @@ public interface LoanBusinessApiConstants {
      */
     public static String loanTemplateConfig(final LoansApiResource loansApiResource, final String apiRequestBodyAsJson,
             final FromJsonHelper fromApiJsonHelper, final Long clientDefaultId, final boolean staffInSelectedOfficeOnly,
-            @Context final UriInfo uriInfo) {
+            @Context final UriInfo uriInfo, final Long loanId) {
 
         final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
 
@@ -229,10 +229,18 @@ public interface LoanBusinessApiConstants {
             clientId = clientDefaultId;
             jsonObjectLoan.addProperty(LoanApiConstants.clientIdParameterName, clientId);
         }
-        final String loanTemplate = loansApiResource.template(clientId, groupId, productId, loanType, staffInSelectedOfficeOnly, true,
-                uriInfo);
+
         // loanTemplate config
-        final JsonElement loanTemplateElement = fromApiJsonHelper.parse(loanTemplate);
+        JsonElement loanTemplateElement;
+        String loanTemplate;
+        if (loanId == null) {
+            loanTemplate = loansApiResource.template(clientId, groupId, productId, loanType, staffInSelectedOfficeOnly, true,
+                    uriInfo);
+            loanTemplateElement = fromApiJsonHelper.parse(loanTemplate);
+        } else {
+            loanTemplate = loansApiResource.retrieveLoan(loanId, staffInSelectedOfficeOnly, null, null, null, uriInfo);
+            loanTemplateElement = fromApiJsonHelper.parse(loanTemplate);
+        }
 
         String dateFormat = "yyyy-MM-dd";
         if (fromApiJsonHelper.parameterExists(LoanApiConstants.dateFormatParameterName, apiRequestBodyAsJsonElement)) {

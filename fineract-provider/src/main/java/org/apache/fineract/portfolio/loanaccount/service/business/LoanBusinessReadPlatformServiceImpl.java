@@ -170,7 +170,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
     public String calculateLoanScheduleLoanApplication(String apiRequestBodyAsJson, @Context final UriInfo uriInfo) {
         this.context.authenticatedUser();
         final String loanTemplateJson = LoanBusinessApiConstants.loanTemplateConfig(this.loansApiResource, apiRequestBodyAsJson,
-                fromJsonHelper, clientDefaultId, true, uriInfo);
+                fromJsonHelper, clientDefaultId, true, uriInfo,null);
         log.info("calculateLoanScheduleLoanApplicationTemplate: {}", loanTemplateJson);
         return this.loansApiResource.calculateLoanScheduleOrSubmitLoanApplication("calculateLoanSchedule", uriInfo, loanTemplateJson);
     }

@@ -54,7 +54,12 @@ mc.id client_id,
         WHEN 
              mci.active=200 THEN '1'
         ELSE '0'
-    END AS has_identification
+    END AS has_identification,
+    CASE
+        WHEN 
+             sk.active=1 THEN '1'
+        ELSE '0'
+    END AS has_directors
 FROM
     m_client mc
 LEFT JOIN
@@ -68,6 +73,8 @@ LEFT JOIN
 LEFT JOIN
     employerKYC ek ON ek.client_id =mc.id 
 LEFT JOIN
-    bankKYC bk ON bk.client_id =mc.id 
+    bankKYC bk ON bk.client_id =mc.id
+LEFT JOIN
+    signatoryKYC sk ON sk.client_id =mc.id 
 WHERE slk.bvn IS NOT NULL
 GROUP BY mc.id;

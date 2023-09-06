@@ -497,7 +497,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         ClientLookupKycLevelMapper() {
             final StringBuilder builder = new StringBuilder(200);
 
-            builder.append("mck.client_id,mck.has_personal,mck.has_residential,mck.has_employment,mck.has_agreement,mck.has_next_of_kin,mck.has_bank_detail,mck.has_identification ");
+            builder.append("mck.client_id,mck.has_personal,mck.has_residential,mck.has_employment,mck.has_agreement,mck.has_next_of_kin,mck.has_bank_detail,mck.has_identification,mck.has_directors ");
             builder.append(" from m_client_kyc_checkers mck ");
 
             this.schema = builder.toString();
@@ -518,9 +518,10 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             final Boolean nextOfKin = rs.getBoolean("has_next_of_kin");
             final Boolean bankDetail = rs.getBoolean("has_bank_detail");
             final Boolean identification = rs.getBoolean("has_identification");
+            final Boolean directors = rs.getBoolean("has_directors");
             final Boolean agreement = rs.getBoolean("has_agreement");
 
-            return KycBusinessData.instance(clientId, personal, residential, employment, nextOfKin, bankDetail, identification, agreement);
+            return KycBusinessData.instance(clientId, personal, residential, employment, nextOfKin, bankDetail, identification, agreement, directors);
         }
     }
 

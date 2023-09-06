@@ -31,6 +31,7 @@ public final class ExternalServicesConstants {
     public static final String S3_BUCKET_NAME = "s3_bucket_name";
     public static final String S3_ACCESS_KEY = "s3_access_key";
     public static final String S3_SECRET_KEY = "s3_secret_key";
+    public static final String S3_BUSINESS_REGION = "s3_business_region";
 
     public static final String SMTP_SERVICE_NAME = "SMTP_Email_Account";
     public static final String SMTP_USERNAME = "username";

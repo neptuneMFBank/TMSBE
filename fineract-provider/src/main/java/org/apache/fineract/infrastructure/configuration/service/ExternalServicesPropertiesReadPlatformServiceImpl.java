@@ -51,6 +51,7 @@ public class ExternalServicesPropertiesReadPlatformServiceImpl implements Extern
             String accessKey = null;
             String bucketName = null;
             String secretKey = null;
+            String businessRegion = null;
             while (rs.next()) {
                 if (rs.getString("name").equalsIgnoreCase(ExternalServicesConstants.S3_ACCESS_KEY)) {
                     accessKey = rs.getString("value");
@@ -58,9 +59,11 @@ public class ExternalServicesPropertiesReadPlatformServiceImpl implements Extern
                     bucketName = rs.getString("value");
                 } else if (rs.getString("name").equalsIgnoreCase(ExternalServicesConstants.S3_SECRET_KEY)) {
                     secretKey = rs.getString("value");
+                } else if (rs.getString("name").equalsIgnoreCase(ExternalServicesConstants.S3_BUSINESS_REGION)) {
+                    businessRegion = rs.getString("value");
                 }
             }
-            return new S3CredentialsData(bucketName, accessKey, secretKey);
+            return new S3CredentialsData(bucketName, accessKey, secretKey, businessRegion);
         }
     }
 
@@ -145,7 +148,7 @@ public class ExternalServicesPropertiesReadPlatformServiceImpl implements Extern
         final ResultSetExtractor<S3CredentialsData> resultSetExtractor = new S3CredentialsDataExtractor();
         final String sql = "SELECT esp.name, esp.value FROM c_external_service_properties esp inner join c_external_service es on esp.external_service_id = es.id where es.name = '"
                 + ExternalServicesConstants.S3_SERVICE_NAME + "'";
-        final S3CredentialsData s3CredentialsData = this.jdbcTemplate.query(sql, resultSetExtractor, new Object[] {});
+        final S3CredentialsData s3CredentialsData = this.jdbcTemplate.query(sql, resultSetExtractor, new Object[]{});
         return s3CredentialsData;
     }
 
@@ -155,7 +158,7 @@ public class ExternalServicesPropertiesReadPlatformServiceImpl implements Extern
         final ResultSetExtractor<SMTPCredentialsData> resultSetExtractor = new SMTPCredentialsDataExtractor();
         final String sql = "SELECT esp.name, esp.value FROM c_external_service_properties esp inner join c_external_service es on esp.external_service_id = es.id where es.name = '"
                 + ExternalServicesConstants.SMTP_SERVICE_NAME + "'";
-        final SMTPCredentialsData smtpCredentialsData = this.jdbcTemplate.query(sql, resultSetExtractor, new Object[] {});
+        final SMTPCredentialsData smtpCredentialsData = this.jdbcTemplate.query(sql, resultSetExtractor, new Object[]{});
         return smtpCredentialsData;
     }
 
@@ -165,7 +168,7 @@ public class ExternalServicesPropertiesReadPlatformServiceImpl implements Extern
         final String sql = "SELECT esp.name, esp.value FROM c_external_service_properties esp inner join c_external_service es on esp.external_service_id = es.id where es.name = '"
                 + ExternalServicesConstants.SMS_SERVICE_NAME + "'";
         final MessageGatewayConfigurationData messageGatewayConfigurationData = this.jdbcTemplate.query(sql, resultSetExtractor,
-                new Object[] {});
+                new Object[]{});
         return messageGatewayConfigurationData;
     }
 
@@ -175,19 +178,19 @@ public class ExternalServicesPropertiesReadPlatformServiceImpl implements Extern
         switch (serviceName) {
             case "S3":
                 serviceNameToUse = ExternalServicesConstants.S3_SERVICE_NAME;
-            break;
+                break;
 
             case "SMTP":
                 serviceNameToUse = ExternalServicesConstants.SMTP_SERVICE_NAME;
-            break;
+                break;
 
             case "SMS":
                 serviceNameToUse = ExternalServicesConstants.SMS_SERVICE_NAME;
-            break;
+                break;
 
             case "NOTIFICATION":
                 serviceNameToUse = ExternalServicesConstants.NOTIFICATION_SERVICE_NAME;
-            break;
+                break;
 
             default:
                 throw new ExternalServiceConfigurationNotFoundException(serviceName);
@@ -225,7 +228,7 @@ public class ExternalServicesPropertiesReadPlatformServiceImpl implements Extern
         final String sql = "SELECT esp.name, esp.value FROM c_external_service_properties esp inner join c_external_service es on esp.external_service_id = es.id where es.name = '"
                 + ExternalServicesConstants.NOTIFICATION_SERVICE_NAME + "'";
         final NotificationConfigurationData notificationConfigurationData = this.jdbcTemplate.query(sql, resultSetExtractor,
-                new Object[] {});
+                new Object[]{});
         return notificationConfigurationData;
     }
 

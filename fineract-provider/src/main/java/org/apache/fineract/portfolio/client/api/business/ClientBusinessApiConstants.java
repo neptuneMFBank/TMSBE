@@ -210,6 +210,15 @@ public class ClientBusinessApiConstants {
     public static final String employmentTypePARAM = "Employment Type";
     public static final String employmentTypeOptionsPARAM = "employmentTypeOptions";
 
+    public static final String personalParamName = "personal";
+    public static final String residentialParamName = "residential";
+    public static final String employmentParamName = "employment";
+    public static final String nextOfKinParamName = "nextOfKin";
+    public static final String bankDetailParamName = "bankDetail";
+    public static final String identificationParamName = "identification";
+    public static final String agreementParamName = "agreement";
+    public static final String directorsParamName = "directors";
+
     /**
      * These parameters will match the class level parameters of
      * {@link ClientData}. Where possible, we try to get response parameters to
@@ -235,5 +244,9 @@ public class ClientBusinessApiConstants {
     protected static final Set<String> CLIENT_TRANSACTION_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idParamName,
             transactionAmountParamName, paymentDetailDataParamName, reversedParamName, dateParamName, officeIdParamName,
             officeNameParamName, transactionTypeParamName, transactionCurrencyParamName, externalIdParamName, submittedOnDateParamName));
+
+    protected static final Set<String> KYC_CHECKERS_DATA_PARAMETERS = new HashSet<>(Arrays.asList(clientIdParamName,
+            personalParamName, residentialParamName, employmentParamName, nextOfKinParamName, bankDetailParamName,
+            identificationParamName, agreementParamName, directorsParamName));
 
 }

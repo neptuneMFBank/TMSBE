@@ -349,6 +349,6 @@ public class ClientsBusinessApiResource {
 
         KycBusinessData clientData = this.clientBusinessReadPlatformService.retrieveKycLevel(clientId);
 
-        return this.toKycBusinessApiJsonSerializer.serialize(settings, clientData, ClientBusinessApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
+        return this.toKycBusinessApiJsonSerializer.serialize(settings, clientData, ClientBusinessApiConstants.KYC_CHECKERS_DATA_PARAMETERS);
     }
 }

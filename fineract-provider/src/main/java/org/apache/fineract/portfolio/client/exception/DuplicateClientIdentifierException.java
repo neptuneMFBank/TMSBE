@@ -48,7 +48,7 @@ public class DuplicateClientIdentifierException extends AbstractPlatformDomainRu
 
     public DuplicateClientIdentifierException(final String clientName, final String officeName, final String identifierType,
             final String identifierKey) {
-        super("error.msg.clientIdentifier.identityKey.duplicate", "Client " + clientName + "under " + officeName + " Branch already has a "
+        super("error.msg.clientIdentifier.identityKey.duplicate", "Client " + clientName + " under " + officeName + " Branch already has a "
                 + identifierType + " with unique key " + identifierKey, clientName, officeName, identifierType, identifierKey);
         this.identifierType = identifierType;
         this.identifierKey = identifierKey;

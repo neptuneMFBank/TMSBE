@@ -351,4 +351,51 @@ public class ClientsBusinessApiResource {
 
         return this.toKycBusinessApiJsonSerializer.serialize(settings, clientData, ClientBusinessApiConstants.KYC_CHECKERS_DATA_PARAMETERS);
     }
+
+    @GET
+    @Path("pend")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "List Pend Clients", description = """
+            Example Requests:""")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+        )})
+    public String retrievePendingActivation(@Context final UriInfo uriInfo,
+            @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
+            @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
+            @QueryParam("bvn") @Parameter(description = "bvn") final String bvn,
+            @QueryParam("legalFormId") @Parameter(description = "legalFormId") final Integer legalFormId,
+            @QueryParam("supervisorStaffId") @Parameter(description = "supervisorStaffId") final Long supervisorStaffId,
+            @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @DefaultValue("en") @QueryParam("locale") final String locale,
+            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
+
+        this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
+
+        LocalDate fromDate = null;
+        if (startPeriod != null) {
+            fromDate = startPeriod.getDate(LoanBusinessApiConstants.startPeriodParameterName, dateFormat, locale);
+        }
+        LocalDate toDate = null;
+        if (endPeriod != null) {
+            toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
+        }
+
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forClientPendingActivation(fromDate, toDate, legalFormId,
+                officeId, supervisorStaffId, bvn, displayName, accountNo, offset, limit, orderBy, sortOrder);
+
+        final Page<ClientBusinessData> clientData = this.clientBusinessReadPlatformService.retrievePendingActivation(searchParameters);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toBusinessApiJsonSerializer.serialize(settings, clientData, ClientBusinessApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
+    }
+
 }

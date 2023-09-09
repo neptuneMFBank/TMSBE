@@ -32,6 +32,8 @@ public interface ClientBusinessReadPlatformService {
 
     Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
 
+    Page<ClientBusinessData> retrievePendingActivation(SearchParametersBusiness searchParameters);
+
     ClientData findClient(final String apiRequestBodyAsJson);
 
     KycBusinessData retrieveKycLevel(Long clientId);

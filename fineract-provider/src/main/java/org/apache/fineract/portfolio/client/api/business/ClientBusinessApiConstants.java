@@ -219,6 +219,10 @@ public class ClientBusinessApiConstants {
     public static final String agreementParamName = "agreement";
     public static final String directorsParamName = "directors";
 
+    public static final String iAgreeParamName = "iAgree";
+    public static final String bvnParamName = "bvn";
+    public static final String supervisorStaffDataParamName = "supervisorStaffData";
+
     /**
      * These parameters will match the class level parameters of
      * {@link ClientData}. Where possible, we try to get response parameters to
@@ -232,7 +236,7 @@ public class ClientBusinessApiConstants {
             staffOptionsParamName, dateOfBirthParamName, genderParamName, clientTypeParamName, clientClassificationParamName,
             legalFormParamName, clientNonPersonDetailsParamName, isStaffParamName, lgaValuesParamName, activationChannelOptionsPARAM,
             bankPARAM, bankOptionsPARAM, bankAccountTypePARAM, bankAccountTypeOptionsPARAM, salaryRangeOptionsPARAM,
-            employmentTypeOptionsPARAM, datatables, titleOptionsParam
+            employmentTypeOptionsPARAM, datatables, titleOptionsParam, bvnParamName, iAgreeParamName, supervisorStaffDataParamName
     //, industryOptionsParam
     ));
 

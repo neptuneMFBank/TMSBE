@@ -137,6 +137,10 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
     private Long legalFormId;
     private LocalDate submittedOnDate;
 
+    private final StaffData supervisorStaffData;
+    private final String bvn;
+    private final Boolean iAgree;
+
     public Integer getRowIndex() {
         return rowIndex;
     }
@@ -151,6 +155,62 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
 
     public String getOfficeName() {
         return officeName;
+    }
+
+    public static ClientBusinessData pendingActivation(final String accountNo,
+            final Long officeId, final String officeName, final Long id,
+            final String displayName,
+            final Long staffId, final String staffName,
+            final ClientTimelineData timeline,
+            final EnumOptionData legalForm,
+            final StaffData supervisorStaffData,
+            final String bvn, final Boolean iAgree
+    ) {
+        final CodeValueData clientType = null;
+        final CodeValueData clientClassification = null;
+        final ClientNonPersonData clientNonPerson = null;
+        final Boolean isStaff = null;
+        final Long savingsProductId = null;
+        final String savingsProductName = null;
+        final Long savingsAccountId = null;
+        final EnumOptionData status = null;
+        final CodeValueData subStatus = null;
+        final Long transferToOfficeId = null;
+        final String transferToOfficeName = null;
+        final String firstname = null;
+        final String middlename = null;
+        final String lastname = null;
+        final String fullname = null;
+        final String externalId = null;
+        final String mobileNo = null;
+        final String emailAddress = null;
+        final LocalDate dateOfBirth = null;
+        final CodeValueData gender = null;
+        final LocalDate activationDate = null;
+        final Long imageId = null;
+        final Collection<OfficeData> allowedOffices = null;
+        final Collection<GroupGeneralData> groups = null;
+        final Collection<StaffData> staffOptions = null;
+        final Collection<CodeValueData> closureReasons = null;
+        final Collection<CodeValueData> genderOptions = null;
+        final Collection<SavingsProductData> savingProductOptions = null;
+        final Collection<CodeValueData> clientTypeOptions = null;
+        final Collection<CodeValueData> clientClassificationOptions = null;
+        final Collection<CodeValueData> clientNonPersonConstitutionOptions = null;
+        final Collection<CodeValueData> clientNonPersonMainBusinessLineOptions = null;
+        final List<EnumOptionData> clientLegalFormOptions = null;
+        final ClientFamilyMembersData familyMemberOptions = null;
+        final Set<ClientCollateralManagementData> clientCollateralManagements = null;
+        return new ClientBusinessData(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id,
+                firstname, middlename, lastname, fullname, displayName, externalId, mobileNo, emailAddress, dateOfBirth, gender,
+                activationDate, imageId, staffId, staffName, allowedOffices, groups, staffOptions, closureReasons, genderOptions, timeline,
+                savingProductOptions, savingsProductId, savingsProductName, savingsAccountId, null, clientType, clientClassification,
+                clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions, clientNonPersonMainBusinessLineOptions,
+                clientNonPerson, clientLegalFormOptions, familyMemberOptions, legalForm, null, null, null, isStaff,
+                clientCollateralManagements, null, null, null, null, null, null, null,
+                supervisorStaffData, bvn, iAgree
+        );
+
     }
 
     public static ClientBusinessData instance(final String accountNo, final EnumOptionData status, final CodeValueData subStatus,
@@ -181,8 +241,8 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 savingProductOptions, savingsProductId, savingsProductName, savingsAccountId, null, clientType, clientClassification,
                 clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions, clientNonPersonMainBusinessLineOptions,
                 clientNonPerson, clientLegalFormOptions, familyMemberOptions, legalForm, null, null, null, isStaff,
-                clientCollateralManagements, null, null, null, null, null, null, null
-        //, null
+                clientCollateralManagements, null, null, null, null, null, null, null,
+                null, null, null
         );
 
     }
@@ -246,8 +306,9 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 // , lgaValues
                 ,
                  activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
-                documentConfigData, titleOptions
-        //, industryOptions
+                documentConfigData, titleOptions //, industryOptions
+                ,
+                 null, null, null
         );
 
     }
@@ -266,8 +327,8 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 clientData.clientClassificationOptions, clientData.clientNonPersonConstitutionOptions,
                 clientData.clientNonPersonMainBusinessLineOptions, clientData.clientNonPersonDetails, clientData.clientLegalFormOptions,
                 clientData.familyMemberOptions, clientData.legalForm, clientData.address, clientData.isAddressEnabled, null,
-                clientData.isStaff, clientCollateralManagements, null, null, null, null, null, null, null
-        //, null
+                clientData.isStaff, clientCollateralManagements, null, null, null, null, null, null, null,
+                null, null, null
         );
 
     }
@@ -285,8 +346,8 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 clientData.clientNonPersonConstitutionOptions, clientData.clientNonPersonMainBusinessLineOptions,
                 clientData.clientNonPersonDetails, clientData.clientLegalFormOptions, clientData.familyMemberOptions, clientData.legalForm,
                 clientData.address, clientData.isAddressEnabled, null, clientData.isStaff, clientCollateralManagements, null, null, null,
-                null, null, null, null
-        //, null
+                null, null, null, null,
+                null, null, null
         );
 
     }
@@ -304,8 +365,8 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 templateData.clientClassificationOptions, templateData.clientNonPersonConstitutionOptions,
                 templateData.clientNonPersonMainBusinessLineOptions, clientData.clientNonPersonDetails, templateData.clientLegalFormOptions,
                 templateData.familyMemberOptions, clientData.legalForm, clientData.address, clientData.isAddressEnabled, null,
-                clientData.isStaff, clientCollateralManagements, null, null, null, null, null, null, null
-        //, null
+                clientData.isStaff, clientCollateralManagements, null, null, null, null, null, null, null,
+                null, null, null
         );
 
     }
@@ -330,7 +391,9 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
             final Collection<CodeValueBusinessData> activationChannelOptions,
             final Collection<CodeValueBusinessData> bankAccountTypeOptions, final Collection<CodeValueBusinessData> bankOptions,
             final Collection<CodeValueBusinessData> salaryRangeOptions, final Collection<CodeValueBusinessData> employmentTypeOptions,
-            final DocumentConfigData documentConfigData, final Collection<CodeValueBusinessData> titleOptions
+            final DocumentConfigData documentConfigData, final Collection<CodeValueBusinessData> titleOptions,
+            final StaffData supervisorStaffData,
+            final String bvn, final Boolean iAgree
     //,final List<CodeValueBusinessData> industryOptions
     // , final Collection<CodeValueBusinessData> countryValues,
     // final Collection<CodeValueBusinessData> stateValues,
@@ -413,6 +476,9 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
         this.documentConfigData = documentConfigData;
         this.titleOptions = titleOptions;
         //this.industryOptions = industryOptions;
+        this.supervisorStaffData = supervisorStaffData;
+        this.bvn = bvn;
+        this.iAgree = iAgree;
     }
 
     public Long id() {

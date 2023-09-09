@@ -113,6 +113,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     private final ClientBusinessMapper clientBusinessMapper = new ClientBusinessMapper();
     private final ParentGroupsMapper clientGroupsMapper = new ParentGroupsMapper();
     private final ClientLookupMapper lookupMapper = new ClientLookupMapper();
+    private final ClientPendingActivationMapper clientPendingActivationMapper = new ClientPendingActivationMapper();
     private final ClientLookupKycLevelMapper clientLookupKycLevelMapper = new ClientLookupKycLevelMapper();
 
     private final AddressBusinessReadPlatformService addressReadPlatformService;
@@ -829,6 +830,167 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             final String accountNo = rs.getString("accountNo");
 
             return GroupGeneralData.lookup(groupId, accountNo, groupName);
+        }
+    }
+
+    @Override
+    public Page<ClientBusinessData> retrievePendingActivation(SearchParametersBusiness searchParameters) {
+        this.context.authenticatedUser();
+
+        List<Object> paramList = new ArrayList<>();
+        final StringBuilder sqlBuilder = new StringBuilder(200);
+        sqlBuilder.append("select ");
+        sqlBuilder.append(sqlGenerator.calcFoundRows());
+        sqlBuilder.append(" ");
+        sqlBuilder.append(this.clientPendingActivationMapper.schema());
+
+        if (searchParameters != null) {
+
+            final String extraCriteria = buildSqlStringFromClientPendingActivationCriteria(searchParameters, paramList);
+
+            if (StringUtils.isNotBlank(extraCriteria)) {
+                sqlBuilder.append(" WHERE (").append(extraCriteria).append(")");
+            }
+
+            if (searchParameters.isOrderByRequested()) {
+                sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
+                this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getOrderBy());
+                if (searchParameters.isSortOrderProvided()) {
+                    sqlBuilder.append(' ').append(searchParameters.getSortOrder());
+                    this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getSortOrder());
+                }
+            }
+
+            if (searchParameters.isLimited()) {
+                sqlBuilder.append(" ");
+                if (searchParameters.isOffset()) {
+                    sqlBuilder.append(sqlGenerator.limit(searchParameters.getLimit(), searchParameters.getOffset()));
+                } else {
+                    sqlBuilder.append(sqlGenerator.limit(searchParameters.getLimit()));
+                }
+            }
+        }
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.clientPendingActivationMapper);
+    }
+
+    private String buildSqlStringFromClientPendingActivationCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
+
+        final Integer legalFormId = searchParameters.getLegalFormId();
+        final Long officeId = searchParameters.getOfficeId();
+        final Long supervisorStaffId = searchParameters.getStaffId();
+        final String bvn = searchParameters.getBvn();
+        final String displayName = searchParameters.getName();
+        final String accountNo = searchParameters.getAccountNo();
+
+        String extraCriteria = "";
+
+        if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
+            final LocalDate startPeriod = searchParameters.getFromDate();
+            final LocalDate endPeriod = searchParameters.getToDate();
+            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            if (startPeriod != null && endPeriod != null) {
+                extraCriteria += " and CAST(cpa.submittedon_date AS DATE) BETWEEN ? AND ? ";
+                paramList.add(df.format(startPeriod));
+                paramList.add(df.format(endPeriod));
+            } else if (startPeriod != null) {
+                extraCriteria += " and CAST(cpa.submittedon_date AS DATE) >= ? ";
+                paramList.add(df.format(startPeriod));
+            } else if (endPeriod != null) {
+                extraCriteria += " and CAST(cpa.submittedon_date AS DATE) <= ? ";
+                paramList.add(df.format(endPeriod));
+            }
+        }
+
+        if (officeId != null) {
+            extraCriteria += " and cpa.office_id = ? ";
+            paramList.add(officeId);
+        }
+
+        if (searchParameters.isBvnPassed()) {
+            paramList.add(bvn);
+            extraCriteria += " and cpa.bvn = ? ";
+        }
+
+        if (searchParameters.isLegalFormIdPassed()) {
+            paramList.add(legalFormId);
+            extraCriteria += " and cpa.legal_form_enum = ? ";
+        }
+
+        if (searchParameters.isStaffIdPassed()) {
+            extraCriteria += " and cpa.organisational_role_parent_staff_id = ? ";
+            paramList.add(supervisorStaffId);
+        }
+
+        if (searchParameters.isAccountNoPassed()) {
+            paramList.add(accountNo);
+            extraCriteria += " and cpa.account_no = ? ";
+        }
+
+        if (displayName != null) {
+            paramList.add("%" + displayName + "%");
+            extraCriteria += " and cpa.client_display_name like ? ";
+        }
+
+        if (StringUtils.isNotBlank(extraCriteria)) {
+            extraCriteria = extraCriteria.substring(4);
+        }
+        return extraCriteria;
+    }
+
+    private static final class ClientPendingActivationMapper implements RowMapper<ClientBusinessData> {
+
+        private final String schema;
+
+        ClientPendingActivationMapper() {
+            final StringBuilder builder = new StringBuilder(200);
+
+            builder.append(" cpa.id, cpa.account_no, cpa.client_display_name, cpa.legal_form_enum, cpa.submittedon_date,");
+            builder.append(" cpa.office_id, cpa.office_name, cpa.staff_id, cpa.staff_display_name, ");
+            builder.append(" cpa.organisational_role_parent_staff_id, cpa.organisational_role_parent_staff_display_name, ");
+            builder.append(" cpa.bvn, cpa.iAgree ");
+            builder.append(" from m_client_pending_activation cpa ");
+
+            this.schema = builder.toString();
+        }
+
+        public String schema() {
+            return this.schema;
+        }
+
+        @Override
+        public ClientBusinessData mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String accountNo = rs.getString("account_no");
+            final String clientDisplayName = rs.getString("client_display_name");
+
+            final LocalDate submittedOnDate = JdbcSupport.getLocalDate(rs, "submittedon_date");
+
+            final Integer legalFormEnum = JdbcSupport.getInteger(rs, "legal_form_enum");
+            EnumOptionData legalForm = null;
+            if (legalFormEnum != null) {
+                legalForm = ClientEnumerations.legalForm(legalFormEnum);
+            }
+
+            final Long officeId = rs.getLong("office_id");
+            final String officeName = rs.getString("office_name");
+
+            final Long staffId = rs.getLong("staff_id");
+            final String staffDisplayName = rs.getString("staff_display_name");
+
+            final Long organisationalRoleParentStaffId = rs.getLong("organisational_role_parent_staff_id");
+            final String organisationalRoleParentStaffDisplayName = rs.getString("organisational_role_parent_staff_display_name");
+            final StaffData supervisorStaffData = StaffData.lookup(organisationalRoleParentStaffId, organisationalRoleParentStaffDisplayName);
+
+            final String bvn = rs.getString("bvn");
+            final Boolean iAgree = rs.getBoolean("iAgree");
+
+            final ClientTimelineData clientTimelineData
+                    = new ClientTimelineData(submittedOnDate, null, null, null, null,
+                            null, null,
+                            null, null, null, null, null);
+
+            return ClientBusinessData.pendingActivation(accountNo, officeId, officeName, id, clientDisplayName, staffId, staffDisplayName, clientTimelineData, legalForm, supervisorStaffData, bvn, iAgree);
         }
     }
 

@@ -42,7 +42,7 @@ mc.id client_id,
     END AS has_agreement,
     CASE
         WHEN 
-             sfmk.active=1  THEN '1'
+             sfmk.client_id > 0  THEN '1'
         ELSE '0'
     END AS has_next_of_kin,
     CASE

@@ -972,16 +972,26 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 legalForm = ClientEnumerations.legalForm(legalFormEnum);
             }
 
-            final Long officeId = rs.getLong("office_id");
-            final String officeName = rs.getString("office_name");
-
-            final Long staffId = rs.getLong("staff_id");
-            final String staffDisplayName = rs.getString("staff_display_name");
-
+            String officeName = null;
+            Long officeId = rs.getLong("office_id");
+            if (officeId > 0) {
+                officeName = rs.getString("office_name");
+            } else {
+                officeId = null;
+            }
+            String staffDisplayName = null;
+            Long staffId = rs.getLong("staff_id");
+            if (staffId > 0) {
+                staffDisplayName = rs.getString("staff_display_name");
+            } else {
+                staffId = null;
+            }
+            StaffData supervisorStaffData = null;
             final Long organisationalRoleParentStaffId = rs.getLong("organisational_role_parent_staff_id");
-            final String organisationalRoleParentStaffDisplayName = rs.getString("organisational_role_parent_staff_display_name");
-            final StaffData supervisorStaffData = StaffData.lookup(organisationalRoleParentStaffId, organisationalRoleParentStaffDisplayName);
-
+            if (organisationalRoleParentStaffId > 0) {
+                final String organisationalRoleParentStaffDisplayName = rs.getString("organisational_role_parent_staff_display_name");
+                supervisorStaffData = StaffData.lookup(organisationalRoleParentStaffId, organisationalRoleParentStaffDisplayName);
+            }
             final String bvn = rs.getString("bvn");
             final Boolean iAgree = rs.getBoolean("iAgree");
 

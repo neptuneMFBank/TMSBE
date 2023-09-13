@@ -66,13 +66,14 @@ public class DocumentProductConfigReadPlatformServiceImpl implements DocumentPro
 
     private final ColumnValidator columnValidator;
 
-//    private boolean is(final String commandParam, final String commandValue) {
-//        return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
-//    }
+    // private boolean is(final String commandParam, final String commandValue) {
+    // return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
+    // }
     @Override
     public DocumentProductConfigData retrieveTemplate() {
         this.context.authenticatedUser();
-        final Collection<DocumentConfigData> documentConfigDatas = this.documentConfigReadPlatformService.retrieveAllForProductConfigTemplate();
+        final Collection<DocumentConfigData> documentConfigDatas = this.documentConfigReadPlatformService
+                .retrieveAllForProductConfigTemplate();
         final Collection<SavingsProductData> savingsProductDatas = this.savingsProductReadPlatformService.retrieveAllForLookup();
         final Collection<LoanProductData> loanProductDatas = this.loanProductReadPlatformService.retrieveAllLoanProductsForLookup(true);
         return DocumentProductConfigData.template(loanProductDatas, documentConfigDatas, savingsProductDatas);
@@ -126,7 +127,8 @@ public class DocumentProductConfigReadPlatformServiceImpl implements DocumentPro
             if (documentProductConfigData != null) {
                 DocumentConfigData documentConfig = documentProductConfigData.getConfigData();
                 documentConfig = this.documentConfigReadPlatformService.retrieveOne(documentConfig.getId());
-                documentProductConfigData = DocumentProductConfigData.instance(documentProductConfigData.getId(), documentProductConfigData.getLoanProduct(), documentProductConfigData.getSavingsProduct(), documentConfig);
+                documentProductConfigData = DocumentProductConfigData.instance(documentProductConfigData.getId(),
+                        documentProductConfigData.getLoanProduct(), documentProductConfigData.getSavingsProduct(), documentConfig);
             }
 
             return documentProductConfigData;
@@ -145,7 +147,8 @@ public class DocumentProductConfigReadPlatformServiceImpl implements DocumentPro
             if (documentProductConfigData != null) {
                 DocumentConfigData documentConfig = documentProductConfigData.getConfigData();
                 documentConfig = this.documentConfigReadPlatformService.retrieveOne(documentConfig.getId());
-                documentProductConfigData = DocumentProductConfigData.instance(documentProductConfigData.getId(), documentProductConfigData.getLoanProduct(), documentProductConfigData.getSavingsProduct(), documentConfig);
+                documentProductConfigData = DocumentProductConfigData.instance(documentProductConfigData.getId(),
+                        documentProductConfigData.getLoanProduct(), documentProductConfigData.getSavingsProduct(), documentConfig);
             }
 
             return documentProductConfigData;

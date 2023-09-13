@@ -33,8 +33,8 @@ import org.springframework.stereotype.Component;
 @Entity
 @Component
 @Table(name = "m_document_config_product", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"loan_product_id"}, name = "loan_product_UNIQUE_document_config"),
-    @UniqueConstraint(columnNames = {"savings_product_id"}, name = "savings_product_UNIQUE_document_config")})
+        @UniqueConstraint(columnNames = { "loan_product_id" }, name = "loan_product_UNIQUE_document_config"),
+        @UniqueConstraint(columnNames = { "savings_product_id" }, name = "savings_product_UNIQUE_document_config") })
 public class DocumentProductConfig extends AbstractAuditableWithUTCDateTimeCustom {
 
     @ManyToOne
@@ -49,15 +49,16 @@ public class DocumentProductConfig extends AbstractAuditableWithUTCDateTimeCusto
     @JoinColumn(name = "savings_product_id", nullable = true)
     private SavingsProduct savingsProduct;
 
-    protected DocumentProductConfig() {
-    }
+    protected DocumentProductConfig() {}
 
-    public static DocumentProductConfig instanceLoanProduct(final ClientDocumentConfig clientDocumentConfig, final LoanProduct loanProduct) {
+    public static DocumentProductConfig instanceLoanProduct(final ClientDocumentConfig clientDocumentConfig,
+            final LoanProduct loanProduct) {
         final SavingsProduct savingsProduct = null;
         return new DocumentProductConfig(clientDocumentConfig, loanProduct, savingsProduct);
     }
 
-    public static DocumentProductConfig instanceSavingsProduct(final ClientDocumentConfig clientDocumentConfig, final SavingsProduct savingsProduct) {
+    public static DocumentProductConfig instanceSavingsProduct(final ClientDocumentConfig clientDocumentConfig,
+            final SavingsProduct savingsProduct) {
         final LoanProduct loanProduct = null;
         return new DocumentProductConfig(clientDocumentConfig, loanProduct, savingsProduct);
     }

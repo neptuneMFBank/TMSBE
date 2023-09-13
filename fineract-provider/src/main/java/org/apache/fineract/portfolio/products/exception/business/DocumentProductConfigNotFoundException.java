@@ -22,10 +22,8 @@ import org.apache.fineract.infrastructure.core.exception.AbstractPlatformResourc
 
 public class DocumentProductConfigNotFoundException extends AbstractPlatformResourceNotFoundException {
 
-    public DocumentProductConfigNotFoundException(
-            final Long id) {
-        super("error.msg.document.product.id.invalid", "Product Document with identifier " + id + " does not exist.",
-                id);
+    public DocumentProductConfigNotFoundException(final Long id) {
+        super("error.msg.document.product.id.invalid", "Product Document with identifier " + id + " does not exist.", id);
     }
 
 }

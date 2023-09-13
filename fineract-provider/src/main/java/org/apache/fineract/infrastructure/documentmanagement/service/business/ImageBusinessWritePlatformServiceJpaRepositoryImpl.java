@@ -54,7 +54,8 @@ public class ImageBusinessWritePlatformServiceJpaRepositoryImpl implements Image
     @Autowired
     public ImageBusinessWritePlatformServiceJpaRepositoryImpl(final ContentRepositoryFactory documentStoreFactory,
             final ClientRepositoryWrapper clientRepositoryWrapper, final ImageRepository imageRepository,
-            final StaffRepositoryWrapper staffRepositoryWrapper, final DocumentBusinessDataValidator fromApiJsonDeserializer, final FromJsonHelper fromApiJsonHelper) {
+            final StaffRepositoryWrapper staffRepositoryWrapper, final DocumentBusinessDataValidator fromApiJsonDeserializer,
+            final FromJsonHelper fromApiJsonHelper) {
         this.contentRepositoryFactory = documentStoreFactory;
         this.clientRepositoryWrapper = clientRepositoryWrapper;
         this.imageRepository = imageRepository;

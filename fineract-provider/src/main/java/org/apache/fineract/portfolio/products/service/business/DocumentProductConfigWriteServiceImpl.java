@@ -61,10 +61,12 @@ public class DocumentProductConfigWriteServiceImpl implements DocumentProductCon
     private final DocumentProductRepositoryWrapper documentProductRepositoryWrapper;
 
     @Autowired
-    public DocumentProductConfigWriteServiceImpl(final PlatformSecurityContext context, final DocumentProductConfigDataValidator fromApiJsonDeserializer,
-            final FromJsonHelper fromApiJsonHelper, final ClientDocumentRepositoryWrapper clientDocumentRepositoryWrapper,
+    public DocumentProductConfigWriteServiceImpl(final PlatformSecurityContext context,
+            final DocumentProductConfigDataValidator fromApiJsonDeserializer, final FromJsonHelper fromApiJsonHelper,
+            final ClientDocumentRepositoryWrapper clientDocumentRepositoryWrapper,
             final LoanProductRepositoryWrapper loanProductRepositoryWrapper,
-            final SavingsProductRepositoryWrapper savingsProductRepositoryWrapper, final DocumentProductRepositoryWrapper documentProductRepositoryWrapper) {
+            final SavingsProductRepositoryWrapper savingsProductRepositoryWrapper,
+            final DocumentProductRepositoryWrapper documentProductRepositoryWrapper) {
         this.context = context;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.fromApiJsonHelper = fromApiJsonHelper;
@@ -81,16 +83,19 @@ public class DocumentProductConfigWriteServiceImpl implements DocumentProductCon
         this.fromApiJsonDeserializer.validateForCreate(command.json());
         final JsonElement jsonElement = this.fromApiJsonHelper.parse(command.json());
 
-        //loanProductIdsParam, savingsProductIdsParam, configDataIdParam
-        final Long configDataIdParam = this.fromApiJsonHelper.extractLongNamed(DocumentProductConfigApiConstants.configDataIdParam, jsonElement);
+        // loanProductIdsParam, savingsProductIdsParam, configDataIdParam
+        final Long configDataIdParam = this.fromApiJsonHelper.extractLongNamed(DocumentProductConfigApiConstants.configDataIdParam,
+                jsonElement);
         final ClientDocumentConfig clientDocumentConfig = clientDocumentRepositoryWrapper.findOneWithNotFoundDetection(configDataIdParam);
 
         try {
 
-            final JsonArray savingsProductIdsParam = this.fromApiJsonHelper.extractJsonArrayNamed(DocumentProductConfigApiConstants.savingsProductIdsParam, jsonElement);
+            final JsonArray savingsProductIdsParam = this.fromApiJsonHelper
+                    .extractJsonArrayNamed(DocumentProductConfigApiConstants.savingsProductIdsParam, jsonElement);
             saveSavingsProduct(clientDocumentConfig, savingsProductIdsParam);
 
-            final JsonArray loanProductIdsParam = this.fromApiJsonHelper.extractJsonArrayNamed(DocumentProductConfigApiConstants.loanProductIdsParam, jsonElement);
+            final JsonArray loanProductIdsParam = this.fromApiJsonHelper
+                    .extractJsonArrayNamed(DocumentProductConfigApiConstants.loanProductIdsParam, jsonElement);
             saveLoanProduct(clientDocumentConfig, loanProductIdsParam);
 
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {

@@ -58,8 +58,9 @@ public class StaffBusinessWritePlatformServiceJpaRepositoryImpl implements Staff
 
     @Autowired
     public StaffBusinessWritePlatformServiceJpaRepositoryImpl(final StaffBusinessCommandFromApiJsonDeserializer fromApiJsonDeserializer,
-            final StaffRepository staffRepository, final OfficeRepositoryWrapper officeRepositoryWrapper, final FromJsonHelper fromJsonHelper,
-            final CodeValueRepositoryWrapper codeValueRepositoryWrapper, final StaffRepositoryWrapper staffRepositoryWrapper) {
+            final StaffRepository staffRepository, final OfficeRepositoryWrapper officeRepositoryWrapper,
+            final FromJsonHelper fromJsonHelper, final CodeValueRepositoryWrapper codeValueRepositoryWrapper,
+            final StaffRepositoryWrapper staffRepositoryWrapper) {
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.staffRepository = staffRepository;
         this.officeRepositoryWrapper = officeRepositoryWrapper;
@@ -89,8 +90,10 @@ public class StaffBusinessWritePlatformServiceJpaRepositoryImpl implements Staff
             }
 
             if (this.fromJsonHelper.parameterExists("organisationalRoleParentStaffId", jsonElement)) {
-                final Long organisationalRoleParentStaffId = this.fromJsonHelper.extractLongNamed("organisationalRoleParentStaffId", jsonElement);
-                final Staff organisationalRoleParentStaff = this.staffRepositoryWrapper.findOneWithNotFoundDetection(organisationalRoleParentStaffId);
+                final Long organisationalRoleParentStaffId = this.fromJsonHelper.extractLongNamed("organisationalRoleParentStaffId",
+                        jsonElement);
+                final Staff organisationalRoleParentStaff = this.staffRepositoryWrapper
+                        .findOneWithNotFoundDetection(organisationalRoleParentStaffId);
                 staff.setOrganisationalRoleParentStaff(organisationalRoleParentStaff);
             }
 
@@ -135,7 +138,8 @@ public class StaffBusinessWritePlatformServiceJpaRepositoryImpl implements Staff
 
             if (command.isChangeInIntegerParameterNamed("organisationalRoleParentStaffId", staffForUpdate.getOrganisationalRoleType())) {
                 final Long organisationalRoleParentStaffId = command.longValueOfParameterNamed("organisationalRoleParentStaffId");
-                final Staff organisationalRoleParentStaff = this.staffRepositoryWrapper.findOneWithNotFoundDetection(organisationalRoleParentStaffId);
+                final Staff organisationalRoleParentStaff = this.staffRepositoryWrapper
+                        .findOneWithNotFoundDetection(organisationalRoleParentStaffId);
                 staffForUpdate.setOrganisationalRoleParentStaff(organisationalRoleParentStaff);
                 changesOnly.put("organisationalRoleParentStaffId", organisationalRoleParentStaffId);
             }

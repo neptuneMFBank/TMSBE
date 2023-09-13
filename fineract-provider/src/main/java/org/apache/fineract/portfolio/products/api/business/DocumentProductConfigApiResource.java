@@ -66,20 +66,19 @@ public class DocumentProductConfigApiResource {
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final DocumentProductConfigReadPlatformService documentProductConfigReadPlatformService;
 
-//    private boolean is(final String commandParam, final String commandValue) {
-//        return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
-//    }
+    // private boolean is(final String commandParam, final String commandValue) {
+    // return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
+    // }
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Document Product Config Template", description = """
             """)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
+    ) })
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(DocumentProductConfigApiConstants.resourceName);
@@ -92,18 +91,17 @@ public class DocumentProductConfigApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create an array Product Document Config", description = """
                 Note:
             """)
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
+    ) })
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
         // client
         // loans
@@ -119,8 +117,8 @@ public class DocumentProductConfigApiResource {
 
     @DELETE
     @Path("{entityId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Delete a Document Config", description = """
             Note:
                                                                    """)
@@ -128,17 +126,15 @@ public class DocumentProductConfigApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // ClientsApiResourceSwagger.PutClientsClientIdRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.PutClientsClientIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.PutClientsClientIdResponse.class))
+    ) })
     public String delete(@Parameter(description = "entityId") @PathParam("entityId") final Long entityId) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .deleteProductDocumentConfig(entityId) //
-                .withNoJsonBody()
-                .build(); //
+                .withNoJsonBody().build(); //
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
@@ -146,15 +142,14 @@ public class DocumentProductConfigApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Clients", description = """
             Note:
             """)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+    ) })
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("documentConfigId") @Parameter(description = "documentConfigId") final Long documentConfigId,
             @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
@@ -165,21 +160,22 @@ public class DocumentProductConfigApiResource {
             @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
             @QueryParam("showLoanProducts") @Parameter(description = "showLoanProducts") final Boolean showLoanProducts,
             @QueryParam("showSavingsProducts") @Parameter(description = "showSavingsProducts") final Boolean showSavingsProducts,
-            //@QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
-            //@QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            // @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            // @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
             @DefaultValue("en") @QueryParam("locale") final String locale,
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
         this.context.authenticatedUser().validateHasReadPermission(DocumentProductConfigApiConstants.resourceName);
 
-//        LocalDate fromDate = null;
-//        if (startPeriod != null) {
-//            fromDate = startPeriod.getDate(LoanBusinessApiConstants.startPeriodParameterName, dateFormat, locale);
-//        }
-//        LocalDate toDate = null;
-//        if (endPeriod != null) {
-//            toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
-//        }
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forDocumentProductConfig(documentConfigId, offset, limit, orderBy, sortOrder, showLoanProducts, showSavingsProducts);
+        // LocalDate fromDate = null;
+        // if (startPeriod != null) {
+        // fromDate = startPeriod.getDate(LoanBusinessApiConstants.startPeriodParameterName, dateFormat, locale);
+        // }
+        // LocalDate toDate = null;
+        // if (endPeriod != null) {
+        // toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
+        // }
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forDocumentProductConfig(documentConfigId, offset, limit,
+                orderBy, sortOrder, showLoanProducts, showSavingsProducts);
 
         final Page<DocumentProductConfigData> documentConfigData;
         documentConfigData = this.documentProductConfigReadPlatformService.retrieveAll(searchParameters);
@@ -190,21 +186,22 @@ public class DocumentProductConfigApiResource {
 
     @GET
     @Path("{loanProductId}/loan-product")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Loan ProductDocument Config", description = """
             """)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
-        )})
-    public String retrieveLoanProductDocument(@PathParam("loanProductId") @Parameter(description = "loanProductId") final Long loanProductId,
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+    ) })
+    public String retrieveLoanProductDocument(
+            @PathParam("loanProductId") @Parameter(description = "loanProductId") final Long loanProductId,
             @Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(DocumentProductConfigApiConstants.resourceName);
 
-        final DocumentProductConfigData documentConfigData = this.documentProductConfigReadPlatformService.retrieveLoanProductDocument(loanProductId);
+        final DocumentProductConfigData documentConfigData = this.documentProductConfigReadPlatformService
+                .retrieveLoanProductDocument(loanProductId);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 
@@ -214,21 +211,22 @@ public class DocumentProductConfigApiResource {
 
     @GET
     @Path("{savingsProductId}/savings-product")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Loan ProductDocument Config", description = """
             """)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
-        )})
-    public String retrieveSavingProductDocument(@PathParam("savingsProductId") @Parameter(description = "savingsProductId") final Long savingsProductId,
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+    ) })
+    public String retrieveSavingProductDocument(
+            @PathParam("savingsProductId") @Parameter(description = "savingsProductId") final Long savingsProductId,
             @Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(DocumentProductConfigApiConstants.resourceName);
 
-        final DocumentProductConfigData documentConfigData = this.documentProductConfigReadPlatformService.retrieveSavingProductDocument(savingsProductId);
+        final DocumentProductConfigData documentConfigData = this.documentProductConfigReadPlatformService
+                .retrieveSavingProductDocument(savingsProductId);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 

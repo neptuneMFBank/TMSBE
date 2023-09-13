@@ -34,8 +34,10 @@ import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
+import org.apache.fineract.infrastructure.documentmanagement.exception.InvalidEntityTypeForImageManagementException;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.service.business.DocumentBusinessWritePlatformService;
+import org.apache.fineract.infrastructure.documentmanagement.service.business.ImageBusinessWritePlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -64,23 +66,26 @@ public class DocumentBusinessManagementApiResource {
     private final DocumentBusinessWritePlatformService documentWritePlatformService;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final ToApiJsonSerializer<DocumentData> toApiJsonSerializer;
+    private final ImageBusinessWritePlatformService imageWritePlatformService;
 
     @Autowired
     public DocumentBusinessManagementApiResource(final PlatformSecurityContext context,
             final DocumentReadPlatformService documentReadPlatformService,
             final DocumentBusinessWritePlatformService documentWritePlatformService,
-            final ApiRequestParameterHelper apiRequestParameterHelper, final ToApiJsonSerializer<DocumentData> toApiJsonSerializer) {
+            final ApiRequestParameterHelper apiRequestParameterHelper, final ToApiJsonSerializer<DocumentData> toApiJsonSerializer,
+            final ImageBusinessWritePlatformService imageWritePlatformService) {
         this.context = context;
         this.documentReadPlatformService = documentReadPlatformService;
         this.documentWritePlatformService = documentWritePlatformService;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.toApiJsonSerializer = toApiJsonSerializer;
+        this.imageWritePlatformService = imageWritePlatformService;
     }
 
     @POST
     @Path("base64")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create a Base64 Document", description = """
             Note: A document is created using Base64 upload
 
@@ -101,10 +106,11 @@ public class DocumentBusinessManagementApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = ""
-    // , content = @Content(schema = @Schema(implementation =
-    // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = ""
+        // , content = @Content(schema = @Schema(implementation =
+        // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))
+        )})
     public String createBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
 
@@ -117,17 +123,18 @@ public class DocumentBusinessManagementApiResource {
 
     @POST
     @Path("bulk-base64")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create a Bulk Base64 Document", description = "")
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation =
     // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = ""
-    // , content = @Content(schema = @Schema(implementation =
-    // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = ""
+        // , content = @Content(schema = @Schema(implementation =
+        // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))
+        )})
     public String createBulkBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
 
@@ -138,4 +145,56 @@ public class DocumentBusinessManagementApiResource {
 
     }
 
+    @POST
+    @Path("avatar")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Create a Base64 Avatar", description = """
+            Note: An avatar is created using Base64 upload """)
+    @RequestBody(required = true
+    // , content = @Content(schema = @Schema(implementation =
+    // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsRequest.class))
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = ""
+        // , content = @Content(schema = @Schema(implementation =
+        // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))
+        )})
+    public String addNewClientStaffImageBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
+            @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
+        validateEntityTypeforImage(entityType);
+
+        final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityType, entityId, apiRequestBodyAsJson);
+
+        return this.toApiJsonSerializer.serialize(result);
+
+    }
+
+    /**
+     * * Entities for document Management *
+     */
+    public enum EntityTypeForImages {
+
+        STAFF, CLIENTS;
+
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
+    }
+
+    private void validateEntityTypeforImage(final String entityName) {
+        if (!checkValidEntityType(entityName)) {
+            throw new InvalidEntityTypeForImageManagementException(entityName);
+        }
+    }
+
+    private static boolean checkValidEntityType(final String entityType) {
+        for (final EntityTypeForImages entities : EntityTypeForImages.values()) {
+            if (entities.name().equalsIgnoreCase(entityType)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

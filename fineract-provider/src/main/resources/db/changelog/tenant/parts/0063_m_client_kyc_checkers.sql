@@ -18,45 +18,45 @@
 --
 
 CREATE VIEW m_client_kyc_checkers AS
-SELECT 
+SELECT
 mc.id client_id,
     CASE
-        WHEN 
+        WHEN
              mc.status_enum=300 IS NOT NULL THEN '1'
         ELSE '0'
     END AS has_personal,
     CASE
-        WHEN 
+        WHEN
              mca.is_active=1 THEN '1'
         ELSE '0'
     END AS has_residential,
     CASE
-        WHEN 
+        WHEN
              ek.active=1  THEN '1'
         ELSE '0'
     END AS has_employment,
     CASE
-        WHEN 
+        WHEN
              slk.iAgree=1 THEN '1'
         ELSE '0'
     END AS has_agreement,
     CASE
-        WHEN 
+        WHEN
              sfmk.client_id > 0  THEN '1'
         ELSE '0'
     END AS has_next_of_kin,
     CASE
-        WHEN 
+        WHEN
              bk.active=1  THEN '1'
         ELSE '0'
     END AS has_bank_detail,
     CASE
-        WHEN 
+        WHEN
              mci.active=200 THEN '1'
         ELSE '0'
     END AS has_identification,
     CASE
-        WHEN 
+        WHEN
              sk.active=1 THEN '1'
         ELSE '0'
     END AS has_directors
@@ -67,14 +67,14 @@ LEFT JOIN
 LEFT JOIN
     m_client_address mca ON mca.client_id =mc.id AND mca.address_type_id=15
 LEFT JOIN
-    secondFamilyMemberKYC sfmk ON sfmk.client_id =mc.id 
+    secondFamilyMemberKYC sfmk ON sfmk.client_id =mc.id
 LEFT JOIN
-    m_client_identifier mci ON mci.client_id =mc.id 
+    m_client_identifier mci ON mci.client_id =mc.id
 LEFT JOIN
-    employerKYC ek ON ek.client_id =mc.id 
+    employerKYC ek ON ek.client_id =mc.id
 LEFT JOIN
     bankKYC bk ON bk.client_id =mc.id
 LEFT JOIN
-    signatoryKYC sk ON sk.client_id =mc.id 
+    signatoryKYC sk ON sk.client_id =mc.id
 WHERE slk.bvn IS NOT NULL
 GROUP BY mc.id;

@@ -34,7 +34,8 @@ public class ClientIdentifierBusinessApiCollectionConstants extends ClientApiCon
     public static final String typeParam = "type";
 
     public static final Set<String> CLIENT_IDENTIFIER_BUSINESS_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(ClientBusinessApiConstants.clientIdParamName, documentTypeIdParam, documentKeyParam, descriptionParam, locationParam, typeParam));
+            Arrays.asList(ClientBusinessApiConstants.clientIdParamName, documentTypeIdParam, documentKeyParam, descriptionParam,
+                    locationParam, typeParam));
 
     public static final String resourceNameForPermissions = "CLIENTIDENTIFIER";
 

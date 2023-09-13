@@ -51,9 +51,8 @@ public final class DocumentProductConfigDataValidator {
             throw new InvalidJsonException();
         }
 
-        //loanProductIdsParam, savingsProductIdsParam, configDataIdParam
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        // loanProductIdsParam, savingsProductIdsParam, configDataIdParam
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DocumentProductConfigApiConstants.DOCUMENT_PRODUCT_CONFIG_CREATE_REQUEST_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -63,17 +62,23 @@ public final class DocumentProductConfigDataValidator {
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
                 .resource(DocumentProductConfigApiConstants.resourceName);
 
-        Integer configDataIdParam = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(DocumentProductConfigApiConstants.configDataIdParam, element);
-        baseDataValidator.reset().parameter(DocumentProductConfigApiConstants.configDataIdParam).value(configDataIdParam).notNull().integerGreaterThanZero();
+        Integer configDataIdParam = this.fromApiJsonHelper
+                .extractIntegerSansLocaleNamed(DocumentProductConfigApiConstants.configDataIdParam, element);
+        baseDataValidator.reset().parameter(DocumentProductConfigApiConstants.configDataIdParam).value(configDataIdParam).notNull()
+                .integerGreaterThanZero();
 
         if (this.fromApiJsonHelper.parameterExists(DocumentProductConfigApiConstants.savingsProductIdsParam, element)) {
-            final JsonArray savingsProductIdsParam = this.fromApiJsonHelper.extractJsonArrayNamed(DocumentProductConfigApiConstants.savingsProductIdsParam, element);
-            baseDataValidator.reset().parameter(DocumentProductConfigApiConstants.savingsProductIdsParam).value(savingsProductIdsParam).jsonArrayNotEmpty();
+            final JsonArray savingsProductIdsParam = this.fromApiJsonHelper
+                    .extractJsonArrayNamed(DocumentProductConfigApiConstants.savingsProductIdsParam, element);
+            baseDataValidator.reset().parameter(DocumentProductConfigApiConstants.savingsProductIdsParam).value(savingsProductIdsParam)
+                    .jsonArrayNotEmpty();
         }
 
         if (this.fromApiJsonHelper.parameterExists(DocumentProductConfigApiConstants.loanProductIdsParam, element)) {
-            final JsonArray loanProductIdsParam = this.fromApiJsonHelper.extractJsonArrayNamed(DocumentProductConfigApiConstants.loanProductIdsParam, element);
-            baseDataValidator.reset().parameter(DocumentProductConfigApiConstants.loanProductIdsParam).value(loanProductIdsParam).jsonArrayNotEmpty();
+            final JsonArray loanProductIdsParam = this.fromApiJsonHelper
+                    .extractJsonArrayNamed(DocumentProductConfigApiConstants.loanProductIdsParam, element);
+            baseDataValidator.reset().parameter(DocumentProductConfigApiConstants.loanProductIdsParam).value(loanProductIdsParam)
+                    .jsonArrayNotEmpty();
         }
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }

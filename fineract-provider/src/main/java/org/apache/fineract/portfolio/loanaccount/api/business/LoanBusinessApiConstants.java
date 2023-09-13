@@ -234,8 +234,7 @@ public interface LoanBusinessApiConstants {
         JsonElement loanTemplateElement;
         String loanTemplate;
         if (loanId == null) {
-            loanTemplate = loansApiResource.template(clientId, groupId, productId, loanType, staffInSelectedOfficeOnly, true,
-                    uriInfo);
+            loanTemplate = loansApiResource.template(clientId, groupId, productId, loanType, staffInSelectedOfficeOnly, true, uriInfo);
             loanTemplateElement = fromApiJsonHelper.parse(loanTemplate);
         } else {
             loanTemplate = loansApiResource.retrieveLoan(loanId, staffInSelectedOfficeOnly, null, null, null, uriInfo);
@@ -553,12 +552,15 @@ public interface LoanBusinessApiConstants {
         if (fromApiJsonHelper.parameterExists(LoanApiConstants.chargesParameterName, apiRequestBodyAsJsonElement)) {
             charges = fromApiJsonHelper.extractJsonArrayNamed(LoanApiConstants.chargesParameterName, apiRequestBodyAsJsonElement);
         } else {
-            final JsonArray chargesCheck = fromApiJsonHelper.extractJsonArrayNamed(LoanApiConstants.chargesParameterName, loanTemplateElement);
+            final JsonArray chargesCheck = fromApiJsonHelper.extractJsonArrayNamed(LoanApiConstants.chargesParameterName,
+                    loanTemplateElement);
             if (chargesCheck != null && chargesCheck.isJsonArray()) {
                 for (JsonElement charge : chargesCheck) {
                     final JsonObject chargesValue = new JsonObject();
-                    chargesValue.addProperty(ClientApiConstants.chargeIdParamName, fromApiJsonHelper.extractLongNamed(ClientApiConstants.chargeIdParamName, charge));
-                    chargesValue.addProperty(ClientApiConstants.amountParamName, fromApiJsonHelper.extractBigDecimalNamed(ClientApiConstants.amountParamName, charge, Locale.ENGLISH));
+                    chargesValue.addProperty(ClientApiConstants.chargeIdParamName,
+                            fromApiJsonHelper.extractLongNamed(ClientApiConstants.chargeIdParamName, charge));
+                    chargesValue.addProperty(ClientApiConstants.amountParamName,
+                            fromApiJsonHelper.extractBigDecimalNamed(ClientApiConstants.amountParamName, charge, Locale.ENGLISH));
                     charges.add(chargesValue);
                 }
             }

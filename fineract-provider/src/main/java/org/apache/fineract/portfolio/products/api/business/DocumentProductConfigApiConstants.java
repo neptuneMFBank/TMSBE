@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-@SuppressWarnings({"HideUtilityClassConstructor"})
+@SuppressWarnings({ "HideUtilityClassConstructor" })
 public class DocumentProductConfigApiConstants {
 
     public static final String resourceName = "DOCUMENT";
@@ -44,11 +44,9 @@ public class DocumentProductConfigApiConstants {
             Arrays.asList(loanProductDatasParam, documentConfigDatasParam, savingProductOptionsParam));
 
     public static final Set<String> DOCUMENT_PRODUCT_CONFIG_RESPONSE_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(
-                    idParam, loanProductParam, savingsProductParam, configDataParam));
+            Arrays.asList(idParam, loanProductParam, savingsProductParam, configDataParam));
 
     public static final Set<String> DOCUMENT_PRODUCT_CONFIG_CREATE_REQUEST_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(
-                    loanProductIdsParam, savingsProductIdsParam, configDataIdParam));
+            Arrays.asList(loanProductIdsParam, savingsProductIdsParam, configDataIdParam));
 
 }

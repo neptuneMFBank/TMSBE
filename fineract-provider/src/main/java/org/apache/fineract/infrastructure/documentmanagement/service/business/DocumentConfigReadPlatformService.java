@@ -28,7 +28,7 @@ public interface DocumentConfigReadPlatformService {
     DocumentConfigData retrieveDocumentConfigViaClientLegalForm(Integer formId);
 
     DocumentConfigData retrieveOne(final Long documentId
-    //, final String type
+    // , final String type
     );
 
     Page<DocumentConfigData> retrieveAll(final SearchParametersBusiness searchParameters);

@@ -35,8 +35,8 @@ import org.springframework.stereotype.Component;
 @Entity
 @Component
 @Table(name = "m_document_client_config", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"legal_form_id"}, name = "legal_form_id_UNIQUE_m_document_client_config"),
-    @UniqueConstraint(columnNames = {"name"}, name = "name_UNIQUE_m_document_client_config")})
+        @UniqueConstraint(columnNames = { "legal_form_id" }, name = "legal_form_id_UNIQUE_m_document_client_config"),
+        @UniqueConstraint(columnNames = { "name" }, name = "name_UNIQUE_m_document_client_config") })
 public class ClientDocumentConfig extends AbstractAuditableWithUTCDateTimeCustom {
 
     @Column(name = "active", nullable = false)
@@ -58,18 +58,19 @@ public class ClientDocumentConfig extends AbstractAuditableWithUTCDateTimeCustom
     @JoinTable(name = "m_document_client_config_code", joinColumns = @JoinColumn(name = "m_document_client_config_id"), inverseJoinColumns = @JoinColumn(name = "code_id"))
     private Set<Code> codes = new HashSet<>();
 
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable(name = "m_document_loan_config_product", joinColumns = @JoinColumn(name = "m_document_client_config_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
-//    private Set<LoanProduct> loanProducts = new HashSet<>();
-    protected ClientDocumentConfig() {
-    }
+    // @ManyToMany(fetch = FetchType.EAGER)
+    // @JoinTable(name = "m_document_loan_config_product", joinColumns = @JoinColumn(name =
+    // "m_document_client_config_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
+    // private Set<LoanProduct> loanProducts = new HashSet<>();
+    protected ClientDocumentConfig() {}
 
     public static ClientDocumentConfig instance(final String name, final Integer legalFormId, final String description,
             final boolean active, final Integer typeId) {
         return new ClientDocumentConfig(name, legalFormId, description, active, typeId);
     }
 
-    public ClientDocumentConfig(final String name, final Integer legalFormId, final String description, final boolean active, final Integer typeId) {
+    public ClientDocumentConfig(final String name, final Integer legalFormId, final String description, final boolean active,
+            final Integer typeId) {
         this.legalFormId = legalFormId;
         this.description = description;
         this.active = active;
@@ -144,11 +145,11 @@ public class ClientDocumentConfig extends AbstractAuditableWithUTCDateTimeCustom
         this.typeId = typeId;
     }
 
-//    public Set<LoanProduct> getLoanProducts() {
-//        return loanProducts;
-//    }
-//
-//    public void setLoanProducts(Set<LoanProduct> loanProducts) {
-//        this.loanProducts = loanProducts;
-//    }
+    // public Set<LoanProduct> getLoanProducts() {
+    // return loanProducts;
+    // }
+    //
+    // public void setLoanProducts(Set<LoanProduct> loanProducts) {
+    // this.loanProducts = loanProducts;
+    // }
 }

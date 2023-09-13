@@ -246,15 +246,15 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.employmentTypePARAM));
         final List<CodeValueBusinessData> titleOptions = new ArrayList<>(
                 this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.TitlePARAM));
-        //List<CodeValueBusinessData> industryOptions = null;
+        // List<CodeValueBusinessData> industryOptions = null;
 
         DocumentConfigData documentConfigData = null;
         if (legalFormId != null) {
             documentConfigData = this.documentConfigReadPlatformService.retrieveDocumentConfigViaClientLegalForm(legalFormId);
-            //if (legalFormId > 1) {
-            //  industryOptions = new ArrayList<>(
-            //        this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.IndustryPARAM));
-            //}
+            // if (legalFormId > 1) {
+            // industryOptions = new ArrayList<>(
+            // this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.IndustryPARAM));
+            // }
         }
 
         // final List<CodeValueBusinessData> countryValuesOptions = new ArrayList<>(
@@ -277,10 +277,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
                 // , lgaValuesOptions
-                ,
-                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions
-        //, industryOptions
+        // , industryOptions
         );
     }
 
@@ -498,7 +497,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         ClientLookupKycLevelMapper() {
             final StringBuilder builder = new StringBuilder(200);
 
-            builder.append("mck.client_id,mck.has_personal,mck.has_residential,mck.has_employment,mck.has_agreement,mck.has_next_of_kin,mck.has_bank_detail,mck.has_identification,mck.has_directors ");
+            builder.append(
+                    "mck.client_id,mck.has_personal,mck.has_residential,mck.has_employment,mck.has_agreement,mck.has_next_of_kin,mck.has_bank_detail,mck.has_identification,mck.has_directors ");
             builder.append(" from m_client_kyc_checkers mck ");
 
             this.schema = builder.toString();
@@ -522,7 +522,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             final Boolean directors = rs.getBoolean("has_directors");
             final Boolean agreement = rs.getBoolean("has_agreement");
 
-            return KycBusinessData.instance(clientId, personal, residential, employment, nextOfKin, bankDetail, identification, agreement, directors);
+            return KycBusinessData.instance(clientId, personal, residential, employment, nextOfKin, bankDetail, identification, agreement,
+                    directors);
         }
     }
 
@@ -870,10 +871,12 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 }
             }
         }
-        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.clientPendingActivationMapper);
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(),
+                this.clientPendingActivationMapper);
     }
 
-    private String buildSqlStringFromClientPendingActivationCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
+    private String buildSqlStringFromClientPendingActivationCriteria(final SearchParametersBusiness searchParameters,
+            List<Object> paramList) {
 
         final Integer legalFormId = searchParameters.getLegalFormId();
         final Long officeId = searchParameters.getOfficeId();
@@ -995,12 +998,11 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             final String bvn = rs.getString("bvn");
             final Boolean iAgree = rs.getBoolean("iAgree");
 
-            final ClientTimelineData clientTimelineData
-                    = new ClientTimelineData(submittedOnDate, null, null, null, null,
-                            null, null,
-                            null, null, null, null, null);
+            final ClientTimelineData clientTimelineData = new ClientTimelineData(submittedOnDate, null, null, null, null, null, null, null,
+                    null, null, null, null);
 
-            return ClientBusinessData.pendingActivation(accountNo, officeId, officeName, id, clientDisplayName, staffId, staffDisplayName, clientTimelineData, legalForm, supervisorStaffData, bvn, iAgree);
+            return ClientBusinessData.pendingActivation(accountNo, officeId, officeName, id, clientDisplayName, staffId, staffDisplayName,
+                    clientTimelineData, legalForm, supervisorStaffData, bvn, iAgree);
         }
     }
 

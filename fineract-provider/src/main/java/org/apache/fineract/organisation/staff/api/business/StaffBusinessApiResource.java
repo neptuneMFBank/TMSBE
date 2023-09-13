@@ -64,11 +64,11 @@ import org.springframework.stereotype.Component;
 public class StaffBusinessApiResource {
 
     /**
-     * The set of parameters that are supported in response for
-     * {@link StaffData}.
+     * The set of parameters that are supported in response for {@link StaffData}.
      */
-    private final Set<String> responseDataParameters = new HashSet<>(Arrays.asList("id", "firstname", "lastname", "displayName", "officeId",
-            "officeName", "isLoanOfficer", "externalId", "mobileNo", "allowedOffices", "isActive", "joiningDate", "organisationalRoleType", "organisationalRoleParentStaff"));
+    private final Set<String> responseDataParameters = new HashSet<>(
+            Arrays.asList("id", "firstname", "lastname", "displayName", "officeId", "officeName", "isLoanOfficer", "externalId", "mobileNo",
+                    "allowedOffices", "isActive", "joiningDate", "organisationalRoleType", "organisationalRoleParentStaff"));
 
     private final String resourceNameForPermissions = "STAFF";
 
@@ -83,7 +83,8 @@ public class StaffBusinessApiResource {
 
     @Autowired
     public StaffBusinessApiResource(final PlatformSecurityContext context, final StaffBusinessReadPlatformService readPlatformService,
-            final OfficeReadPlatformService officeReadPlatformService, final DefaultToApiJsonSerializer<StaffBusinessData> toApiJsonSerializer,
+            final OfficeReadPlatformService officeReadPlatformService,
+            final DefaultToApiJsonSerializer<StaffBusinessData> toApiJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
             final BulkImportWorkbookService bulkImportWorkbookService,
@@ -99,23 +100,22 @@ public class StaffBusinessApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create a staff member", description = """
-                                                                Creates a staff member.
-                                                                
-                                                                Mandatory Fields: 
-                                                                officeId, firstname, lastname
-                                                                
-                                                                Optional Fields: 
-                                                                isLoanOfficer, isActive""")
+            Creates a staff member.
+
+            Mandatory Fields:
+            officeId, firstname, lastname
+
+            Optional Fields:
+            isLoanOfficer, isActive""")
     @RequestBody(required = true
-    //        , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.PostStaffRequest.class))
+    // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.PostStaffRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        //        , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.CreateStaffResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.CreateStaffResponse.class))
+    ) })
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().createStaffBusiness().withJson(apiRequestBodyAsJson).build();
@@ -127,14 +127,13 @@ public class StaffBusinessApiResource {
 
     @GET
     @Path("{staffId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Staff Member", description = "Returns the details of a Staff Member.\n" + "\n" + "Example Requests:\n"
             + "\n" + "staff/1")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        //, content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.RetrieveOneResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.RetrieveOneResponse.class))
+    ) })
     public String retrieveOne(@PathParam("staffId") @Parameter(description = "staffId") final Long staffId,
             @Context final UriInfo uriInfo) {
 
@@ -152,19 +151,20 @@ public class StaffBusinessApiResource {
 
     @PUT
     @Path("{staffId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update a Staff Member", description = "Updates the details of a staff member.")
-    @RequestBody(required = true//, content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.PutStaffRequest.class))
+    @RequestBody(required = true// , content = @Content(schema = @Schema(implementation =
+                                // StaffApiResourceSwagger.PutStaffRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-                //, content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.UpdateStaffResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.UpdateStaffResponse.class))
+    ) })
     public String update(@PathParam("staffId") @Parameter(description = "staffId") final Long staffId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateStaffBusiness(staffId).withJson(apiRequestBodyAsJson).build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateStaffBusiness(staffId).withJson(apiRequestBodyAsJson)
+                .build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 

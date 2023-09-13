@@ -18,6 +18,13 @@
  */
 package org.apache.fineract.portfolio.client.data.business;
 
+import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.CLIENT_IDENTIFIER_BUSINESS_DATA_PARAMETERS;
+import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.descriptionParam;
+import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.documentKeyParam;
+import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.documentTypeIdParam;
+import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.locationParam;
+import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.typeParam;
+
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -32,12 +39,6 @@ import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.documentmanagement.api.business.DocumentConfigApiConstants;
-import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.CLIENT_IDENTIFIER_BUSINESS_DATA_PARAMETERS;
-import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.descriptionParam;
-import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.documentKeyParam;
-import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.documentTypeIdParam;
-import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.locationParam;
-import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.typeParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -57,10 +58,8 @@ public final class ClientIdentifierBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
-        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
-                CLIENT_IDENTIFIER_BUSINESS_DATA_PARAMETERS);
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, CLIENT_IDENTIFIER_BUSINESS_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();

@@ -53,8 +53,7 @@ public final class DocumentConfigDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DocumentConfigApiConstants.DOCUMENT_CONFIG_CREATE_RESPONSE_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -87,10 +86,11 @@ public final class DocumentConfigDataValidator {
             final JsonArray settings = this.fromApiJsonHelper.extractJsonArrayNamed(DocumentConfigApiConstants.settingsParam, element);
             baseDataValidator.reset().parameter(DocumentConfigApiConstants.settingsParam).value(settings).jsonArrayNotEmpty();
         }
-//        if (this.fromApiJsonHelper.parameterExists(DocumentConfigApiConstants.productIdsParam, element)) {
-//            final JsonArray productIds = this.fromApiJsonHelper.extractJsonArrayNamed(DocumentConfigApiConstants.productIdsParam, element);
-//            baseDataValidator.reset().parameter(DocumentConfigApiConstants.productIdsParam).value(productIds).jsonArrayNotEmpty();
-//        }
+        // if (this.fromApiJsonHelper.parameterExists(DocumentConfigApiConstants.productIdsParam, element)) {
+        // final JsonArray productIds =
+        // this.fromApiJsonHelper.extractJsonArrayNamed(DocumentConfigApiConstants.productIdsParam, element);
+        // baseDataValidator.reset().parameter(DocumentConfigApiConstants.productIdsParam).value(productIds).jsonArrayNotEmpty();
+        // }
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }

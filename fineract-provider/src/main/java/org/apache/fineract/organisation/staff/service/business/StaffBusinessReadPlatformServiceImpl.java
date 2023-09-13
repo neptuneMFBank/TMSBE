@@ -61,7 +61,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
             final StaffMapper rm = new StaffMapper();
             final String sql = "select " + rm.schema() + " where s.id = ? and o.hierarchy like ? ";
 
-            return this.jdbcTemplate.queryForObject(sql, rm, new Object[]{staffId, hierarchy}); // NOSONAR
+            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { staffId, hierarchy }); // NOSONAR
         } catch (final EmptyResultDataAccessException e) {
             throw new StaffNotFoundException(staffId, e);
         }
@@ -74,8 +74,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
                     + " s.display_name as displayName, s.is_loan_officer as isLoanOfficer, s.external_id as externalId, s.mobile_no as mobileNo,"
                     + " s.is_active as isActive, s.joining_date as joiningDate, "
                     + " s.organisational_role_parent_staff_id organisationalRoleParentStaff, ms.display_name organisationalRoleParentStaffName, s.organisational_role_enum organisationalRoleType, cv.code_value organisationalRoleTypeName "
-                    + " from m_staff s "
-                    + " join m_office o on o.id = s.office_id "
+                    + " from m_staff s " + " join m_office o on o.id = s.office_id "
                     + " left join m_staff ms on ms.id=s.organisational_role_parent_staff_id "
                     + " left join m_code_value mc on mc.id=s.organisational_role_enum ";
         }
@@ -109,8 +108,8 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
                 organisationalRoleTypeData = CodeValueData.instance(organisationalRoleType, organisationalRoleTypeName);
             }
 
-            return StaffBusinessData.instance(id, firstname, lastname, displayName, officeId, officeName, isLoanOfficer, externalId, mobileNo,
-                    isActive, joiningDate, organisationalRoleTypeData, supervisorStaffData);
+            return StaffBusinessData.instance(id, firstname, lastname, displayName, officeId, officeName, isLoanOfficer, externalId,
+                    mobileNo, isActive, joiningDate, organisationalRoleTypeData, supervisorStaffData);
         }
     }
 

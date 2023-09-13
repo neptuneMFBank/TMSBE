@@ -30,6 +30,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
@@ -42,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @Scope("singleton")
 @Path("business/{entityType}/{entityId}/documents")
@@ -161,10 +163,17 @@ public class DocumentBusinessManagementApiResource {
         )})
     public String addNewClientStaffImageBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
+        log.info("addNewClientStaffImageBase64Document: {}",apiRequestBodyAsJson);
+//
+//        final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityType, entityId, apiRequestBodyAsJson);
+//
+//        return this.toApiJsonSerializer.serialize(result);
 
-        final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityType, entityId, apiRequestBodyAsJson);
+        
+        final CommandProcessingResult documentIdentifier = this.documentWritePlatformService.createBase64Document(entityType, entityId,
+                apiRequestBodyAsJson);
 
-        return this.toApiJsonSerializer.serialize(result);
+        return this.toApiJsonSerializer.serialize(documentIdentifier);
 
     }
 

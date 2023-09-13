@@ -24,5 +24,4 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface DocumentProductConfigRepository
         extends JpaRepository<DocumentProductConfig, Long>, JpaSpecificationExecutor<DocumentProductConfig> {
 
-
 }

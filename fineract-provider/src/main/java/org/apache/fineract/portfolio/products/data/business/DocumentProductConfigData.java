@@ -24,8 +24,7 @@ import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 
 /**
- * Immutable data object representing a user document being managed on the
- * platform.
+ * Immutable data object representing a user document being managed on the platform.
  */
 public class DocumentProductConfigData {
 
@@ -44,15 +43,18 @@ public class DocumentProductConfigData {
         final SavingsProductData savingsProduct = null;
         final DocumentConfigData configData = null;
 
-        return new DocumentProductConfigData(id, loanProduct, savingsProduct, configData, loanProductDatas, documentConfigDatas, savingProductOptions);
+        return new DocumentProductConfigData(id, loanProduct, savingsProduct, configData, loanProductDatas, documentConfigDatas,
+                savingProductOptions);
     }
 
-    public static DocumentProductConfigData instance(Long id, LoanProductData loanProduct, SavingsProductData savingsProduct, DocumentConfigData configData
-    ) {
+    public static DocumentProductConfigData instance(Long id, LoanProductData loanProduct, SavingsProductData savingsProduct,
+            DocumentConfigData configData) {
         return new DocumentProductConfigData(id, loanProduct, savingsProduct, configData, null, null, null);
     }
 
-    public DocumentProductConfigData(Long id, LoanProductData loanProduct, SavingsProductData savingsProduct, DocumentConfigData configData, Collection<LoanProductData> loanProductDatas, Collection<DocumentConfigData> documentConfigDatas, Collection<SavingsProductData> savingProductOptions) {
+    public DocumentProductConfigData(Long id, LoanProductData loanProduct, SavingsProductData savingsProduct, DocumentConfigData configData,
+            Collection<LoanProductData> loanProductDatas, Collection<DocumentConfigData> documentConfigDatas,
+            Collection<SavingsProductData> savingProductOptions) {
         this.id = id;
         this.loanProduct = loanProduct;
         this.savingsProduct = savingsProduct;

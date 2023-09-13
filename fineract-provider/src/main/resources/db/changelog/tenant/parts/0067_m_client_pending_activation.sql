@@ -18,13 +18,13 @@
 --
 
 CREATE VIEW m_client_pending_activation AS
-SELECT mc.id, mc.account_no, mc.display_name client_display_name, mc.legal_form_enum, mc.submittedon_date, 
+SELECT mc.id, mc.account_no, mc.display_name client_display_name, mc.legal_form_enum, mc.submittedon_date,
 mo.id office_id, mo.name office_name, ms.id staff_id, ms.display_name staff_display_name,
 mss.id organisational_role_parent_staff_id, mss.display_name organisational_role_parent_staff_display_name,
-slk.bvn, slk.iAgree 
-FROM m_client mc 
-LEFT JOIN secondLevelKYC slk ON slk.client_id =mc.id 
+slk.bvn, slk.iAgree
+FROM m_client mc
+LEFT JOIN secondLevelKYC slk ON slk.client_id =mc.id
 LEFT JOIN m_staff ms ON ms.id=mc.staff_id
-LEFT JOIN m_staff mss ON mss.id=ms.organisational_role_parent_staff_id 
-LEFT JOIN m_office mo ON mo.id=mc.office_id 
+LEFT JOIN m_staff mss ON mss.id=ms.organisational_role_parent_staff_id
+LEFT JOIN m_office mo ON mo.id=mc.office_id
 WHERE mc.status_enum = 100;

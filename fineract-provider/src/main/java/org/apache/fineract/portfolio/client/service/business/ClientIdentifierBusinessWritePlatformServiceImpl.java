@@ -18,6 +18,13 @@
  */
 package org.apache.fineract.portfolio.client.service.business;
 
+import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.descriptionParam;
+import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.documentKeyParam;
+import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.documentTypeIdParam;
+import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.locationParam;
+import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.resourceIdParam;
+import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.typeParam;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
@@ -31,12 +38,6 @@ import org.apache.fineract.infrastructure.documentmanagement.service.business.Do
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.client.api.ClientIdentifiersApiResource;
-import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.descriptionParam;
-import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.documentKeyParam;
-import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.documentTypeIdParam;
-import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.locationParam;
-import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.resourceIdParam;
-import static org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessApiCollectionConstants.typeParam;
 import org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessDataValidator;
 import org.apache.fineract.portfolio.client.domain.ClientIdentifierRepository;
 import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
@@ -65,7 +66,8 @@ public class ClientIdentifierBusinessWritePlatformServiceImpl implements ClientI
             final ClientRepositoryWrapper clientRepository, final ClientIdentifierRepository clientIdentifierRepository,
             final CodeValueRepositoryWrapper codeValueRepository,
             final ClientIdentifierBusinessDataValidator clientIdentifierBusinessDataValidator, final FromJsonHelper fromApiJsonHelper,
-            final ClientIdentifiersApiResource clientIdentifiersApiResource, final DocumentBusinessWritePlatformService documentWritePlatformService) {
+            final ClientIdentifiersApiResource clientIdentifiersApiResource,
+            final DocumentBusinessWritePlatformService documentWritePlatformService) {
         this.context = context;
         this.clientRepository = clientRepository;
         this.clientIdentifierRepository = clientIdentifierRepository;
@@ -85,8 +87,7 @@ public class ClientIdentifierBusinessWritePlatformServiceImpl implements ClientI
         final JsonElement jsonElement = this.fromApiJsonHelper.parse(apiRequestBodyAsJson);
 
         final Long documentTypeId = this.fromApiJsonHelper.extractLongNamed(documentTypeIdParam, jsonElement);
-        final CodeValue documentType = this.codeValueRepository
-                .findOneWithNotFoundDetection(documentTypeId);
+        final CodeValue documentType = this.codeValueRepository.findOneWithNotFoundDetection(documentTypeId);
         final String name = documentType.label();
 
         final String documentKey = this.fromApiJsonHelper.extractStringNamed(documentKeyParam, jsonElement);
@@ -104,7 +105,8 @@ public class ClientIdentifierBusinessWritePlatformServiceImpl implements ClientI
         }
         jsonClientIdentifier.addProperty(ClientApiConstants.statusParamName, "Active");
 
-        final String clientIdentifierResult = this.clientIdentifiersApiResource.createClientIdentifier(clientId, jsonClientIdentifier.toString());
+        final String clientIdentifierResult = this.clientIdentifiersApiResource.createClientIdentifier(clientId,
+                jsonClientIdentifier.toString());
         final JsonElement jsonclientIdentifierElement = this.fromApiJsonHelper.parse(clientIdentifierResult);
         final Long resourceId = this.fromApiJsonHelper.extractLongNamed(resourceIdParam, jsonclientIdentifierElement);
 
@@ -112,17 +114,15 @@ public class ClientIdentifierBusinessWritePlatformServiceImpl implements ClientI
         jsonClientIdentifierDocument.addProperty(typeParam, type);
         jsonClientIdentifierDocument.addProperty(locationParam, location);
         jsonClientIdentifierDocument.addProperty(DocumentConfigApiConstants.nameParam, name);
-        //if (StringUtils.isNotBlank(description)) {
-        //  jsonClientIdentifierDocument.addProperty(descriptionParam, documentTypeId);
-        //}
-        final CommandProcessingResult documentIdentifier = this.documentWritePlatformService.createBase64Document("client_identifiers", resourceId,
-                jsonClientIdentifierDocument.toString());
+        // if (StringUtils.isNotBlank(description)) {
+        // jsonClientIdentifierDocument.addProperty(descriptionParam, documentTypeId);
+        // }
+        final CommandProcessingResult documentIdentifier = this.documentWritePlatformService.createBase64Document("client_identifiers",
+                resourceId, jsonClientIdentifierDocument.toString());
         final Long subResourceId = documentIdentifier.resourceId();
 
         return new CommandProcessingResultBuilder() //
-                .withEntityId(resourceId)
-                .withSubEntityId(subResourceId)
-                .build();
+                .withEntityId(resourceId).withSubEntityId(subResourceId).build();
 
     }
 

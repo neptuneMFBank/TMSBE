@@ -80,10 +80,8 @@ public class AddressBusinessWritePlatformServiceImpl implements AddressBusinessW
         final ClientAddress clientAddress = createClientAddress(client, jsonObject, addressTypeIdCodeValue, address);
         clientAddressRepository.saveAndFlush(clientAddress);
 
-        return new CommandProcessingResultBuilder().withCommandId(command.commandId())
-                .withSubEntityId(clientAddress.getId())
-                .withEntityId(address.getId())
-                .build();
+        return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withSubEntityId(clientAddress.getId())
+                .withEntityId(address.getId()).build();
     }
 
     @Override
@@ -299,9 +297,7 @@ public class AddressBusinessWritePlatformServiceImpl implements AddressBusinessW
 
         otherAddressProcess(command.parsedJson().getAsJsonObject(), addobj);
 
-        return new CommandProcessingResultBuilder().withCommandId(command.commandId())
-                .withSubEntityId(clientAddressObj.getId())
-                .withEntityId(addressId)
-                .build();
+        return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withSubEntityId(clientAddressObj.getId())
+                .withEntityId(addressId).build();
     }
 }

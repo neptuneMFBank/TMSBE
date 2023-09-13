@@ -31,6 +31,7 @@ import org.apache.fineract.infrastructure.documentmanagement.contentrepository.C
 import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
 import org.apache.fineract.infrastructure.documentmanagement.domain.ImageRepository;
 import org.apache.fineract.infrastructure.documentmanagement.domain.StorageType;
+import org.apache.fineract.infrastructure.documentmanagement.exception.InvalidEntityTypeForImageManagementException;
 import org.apache.fineract.infrastructure.documentmanagement.serialization.business.DocumentBusinessDataValidator;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
@@ -54,7 +55,8 @@ public class ImageBusinessWritePlatformServiceJpaRepositoryImpl implements Image
     @Autowired
     public ImageBusinessWritePlatformServiceJpaRepositoryImpl(final ContentRepositoryFactory documentStoreFactory,
             final ClientRepositoryWrapper clientRepositoryWrapper, final ImageRepository imageRepository,
-            final StaffRepositoryWrapper staffRepositoryWrapper, final DocumentBusinessDataValidator fromApiJsonDeserializer, final FromJsonHelper fromApiJsonHelper) {
+            final StaffRepositoryWrapper staffRepositoryWrapper, final DocumentBusinessDataValidator fromApiJsonDeserializer,
+            final FromJsonHelper fromApiJsonHelper) {
         this.contentRepositoryFactory = documentStoreFactory;
         this.clientRepositoryWrapper = clientRepositoryWrapper;
         this.imageRepository = imageRepository;
@@ -66,6 +68,7 @@ public class ImageBusinessWritePlatformServiceJpaRepositoryImpl implements Image
     @Transactional
     @Override
     public CommandProcessingResult saveOrUpdateImage(String entityName, final Long entityId, final String jsonRequestBody) {
+        validateEntityTypeforImage(entityName);
         this.fromApiJsonDeserializer.validateForImage(entityName, entityId, jsonRequestBody);
         final JsonElement jsonElement = this.fromApiJsonHelper.parse(jsonRequestBody);
         final String avatarBase64 = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.avatarBase64Param, jsonElement);
@@ -133,6 +136,34 @@ public class ImageBusinessWritePlatformServiceJpaRepositoryImpl implements Image
             image.setStorageType(storageType.getValue());
         }
         return image;
+    }
+
+    /**
+     * * Entities for document Management *
+     */
+    public enum EntityTypeForImages {
+
+        STAFF, CLIENTS;
+
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
+    }
+
+    private void validateEntityTypeforImage(final String entityName) {
+        if (!checkValidEntityType(entityName)) {
+            throw new InvalidEntityTypeForImageManagementException(entityName);
+        }
+    }
+
+    private static boolean checkValidEntityType(final String entityType) {
+        for (final EntityTypeForImages entities : EntityTypeForImages.values()) {
+            if (entities.name().equalsIgnoreCase(entityType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

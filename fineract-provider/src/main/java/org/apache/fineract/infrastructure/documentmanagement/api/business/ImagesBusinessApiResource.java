@@ -45,8 +45,8 @@ public class ImagesBusinessApiResource {
     private final DefaultToApiJsonSerializer<ClientData> toApiJsonSerializer;
 
     @Autowired
-    public ImagesBusinessApiResource(
-            final ImageBusinessWritePlatformService imageWritePlatformService, final DefaultToApiJsonSerializer<ClientData> toApiJsonSerializer) {
+    public ImagesBusinessApiResource(final ImageBusinessWritePlatformService imageWritePlatformService,
+            final DefaultToApiJsonSerializer<ClientData> toApiJsonSerializer) {
         this.imageWritePlatformService = imageWritePlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
     }
@@ -60,11 +60,11 @@ public class ImagesBusinessApiResource {
      * @return
      */
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @RequestBody(required = true)
     public String addNewClientImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId,
-            @Parameter(hidden = true) final String jsonRequestBody) {
+            @Parameter(hidden = false) final String jsonRequestBody) {
         validateEntityTypeforImage(entityName);
 
         final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityName, entityId, jsonRequestBody);
@@ -73,8 +73,8 @@ public class ImagesBusinessApiResource {
     }
 
     /**
-     * This method is added only for consistency with other URL patterns and for
-     * maintaining consistency of usage of the HTTP "verb" at the client side
+     * This method is added only for consistency with other URL patterns and for maintaining consistency of usage of the
+     * HTTP "verb" at the client side
      *
      * Upload image as a Data URL (essentially a base64 encoded stream)
      *
@@ -84,11 +84,11 @@ public class ImagesBusinessApiResource {
      * @return
      */
     @PUT
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @RequestBody(required = true)
     public String updateClientImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId,
-            @Parameter(hidden = true) final String jsonRequestBody) {
+            @Parameter(hidden = false) final String jsonRequestBody) {
         return addNewClientImage(entityName, entityId, jsonRequestBody);
     }
 

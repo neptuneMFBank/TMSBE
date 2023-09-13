@@ -54,6 +54,6 @@ public class ContentRepositoryFactory {
     private ContentRepository createS3DocumentStore() {
         final S3CredentialsData s3CredentialsData = this.externalServicesReadPlatformService.getS3Credentials();
         return new S3ContentRepository(s3CredentialsData.getBucketName(), s3CredentialsData.getSecretKey(),
-                s3CredentialsData.getAccessKey(),s3CredentialsData.getBusinessRegion());
+                s3CredentialsData.getAccessKey(), s3CredentialsData.getBusinessRegion());
     }
 }

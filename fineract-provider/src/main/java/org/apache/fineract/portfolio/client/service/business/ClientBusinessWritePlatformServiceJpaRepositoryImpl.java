@@ -322,8 +322,7 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
     }
 
     /**
-     * This method extracts ClientNonPerson details from Client command and
-     * creates a new ClientNonPerson record
+     * This method extracts ClientNonPerson details from Client command and creates a new ClientNonPerson record
      *
      * @param client
      * @param command
@@ -562,8 +561,7 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
         if (client.getGroups() != null && maxNumberOfClients != null) {
             for (Group group : client.getGroups()) {
                 /**
-                 * Since this Client has not yet been associated with the group,
-                 * reduce maxNumberOfClients by 1
+                 * Since this Client has not yet been associated with the group, reduce maxNumberOfClients by 1
                  *
                  */
                 final boolean validationsuccess = group.isGroupsClientCountWithinMaxRange(maxNumberOfClients - 1);

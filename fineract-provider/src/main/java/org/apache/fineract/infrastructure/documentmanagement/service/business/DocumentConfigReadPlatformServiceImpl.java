@@ -68,9 +68,9 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
 
     private final ColumnValidator columnValidator;
 
-//    private boolean is(final String commandParam, final String commandValue) {
-//        return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
-//    }
+    // private boolean is(final String commandParam, final String commandValue) {
+    // return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
+    // }
     @Override
     public Page<DocumentConfigData> retrieveAll(SearchParametersBusiness searchParameters) {
         this.context.authenticatedUser();
@@ -80,18 +80,18 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
         sqlBuilder.append(sqlGenerator.calcFoundRows());
 
         if (searchParameters != null) {
-            //final String typeParam = searchParameters.getType();
-            //if (is(typeParam, "client")) {
+            // final String typeParam = searchParameters.getType();
+            // if (is(typeParam, "client")) {
             sqlBuilder.append(this.clientDocumentMapper.schema());
             final String extraCriteria = buildSqlStringFromClientCriteria(searchParameters, paramList);
             if (StringUtils.isNotBlank(extraCriteria)) {
                 sqlBuilder.append(" WHERE (").append(extraCriteria).append(")");
             }
-            //} // else if (is(typeParam, "loans")) {
+            // } // else if (is(typeParam, "loans")) {
             // }
-//            else {
-//                throw new UnrecognizedQueryParamException("typeRead", typeParam);
-//            }
+            // else {
+            // throw new UnrecognizedQueryParamException("typeRead", typeParam);
+            // }
 
             if (searchParameters.isOrderByRequested()) {
                 sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
@@ -136,13 +136,13 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
 
     @Override
     public DocumentConfigData retrieveOne(Long documentId
-    //, Integer type
+    // , Integer type
     ) {
         this.context.authenticatedUser();
         try {
 
             DocumentConfigData documentConfigData;
-            //if (is(type, "client")) {
+            // if (is(type, "client")) {
             final String sql = "select " + this.clientDocumentMapper.schema() + " where mdc.id = ?";
             documentConfigData = this.jdbcTemplate.queryForObject(sql, this.clientDocumentMapper, // NOSONAR
                     documentId);
@@ -150,15 +150,15 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
                 Collection<CodeBusinessData> codeBusinessDatas = retrieveAllCodesForClientDocument(documentId);
                 documentConfigData.setSettings(codeBusinessDatas);
             }
-//            } // else if (is(typeParam, "loans")) {
-//            // }
-//            else {
-//                throw new UnrecognizedQueryParamException("typeRetrieveOne", type);
-//            }
+            // } // else if (is(typeParam, "loans")) {
+            // // }
+            // else {
+            // throw new UnrecognizedQueryParamException("typeRetrieveOne", type);
+            // }
 
             return documentConfigData;
         } catch (final EmptyResultDataAccessException e) {
-            throw new DocumentConfigNotFoundException(//type, 
+            throw new DocumentConfigNotFoundException(// type,
                     documentId);
         }
     }
@@ -170,7 +170,7 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
             final String sql = "select " + codeMapper.codeClientDocumentSchema()
                     + " where mdca.code_allow=1 group by c.id order by c.code_name ";
 
-            return this.jdbcTemplate.query(sql, rm, new Object[]{clientDocumentId});
+            return this.jdbcTemplate.query(sql, rm, new Object[] { clientDocumentId });
 
         } catch (DataAccessException e) {
             log.warn("retrieveAllCodesForClientDocument: {}", e);
@@ -236,8 +236,15 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
             return " GROUP_CONCAT(cv.code_value) as concatCodeValues,   c.id as id, c.code_name as code_name, if(isnull(rp.m_document_client_config_id), false, true) as systemDefined "
                     + " from m_code as c join m_document_code_allow mdca ON mdca.code_id=c.id "
                     + " left join m_code_value cv on cv.code_id=c.id "
-                    + " left join m_document_client_config_code rp on rp.code_id = c.id and rp.m_document_client_config_id=? " // + " group by c.id order by c.code_name"
-                    ;
+                    + " left join m_document_client_config_code rp on rp.code_id = c.id and rp.m_document_client_config_id=? " // +
+                                                                                                                               // "
+                                                                                                                               // group
+                                                                                                                               // by
+                                                                                                                               // c.id
+                                                                                                                               // order
+                                                                                                                               // by
+                                                                                                                               // c.code_name"
+            ;
         }
 
         // public String schema() {
@@ -276,11 +283,13 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
 
         final GlobalEntityType[] globalEntityTypes = GlobalEntityType.values();
         List<EnumOptionData> enumGlobalEntityTypes = globalEntityTypes(globalEntityTypes);
-        //final Collection<SavingsProductData> savingsProductDatas = this.savingsProductReadPlatformService.retrieveAllForLookup();
-        //final Collection<LoanProductData> loanProductDatas = this.loanProductReadPlatformService.retrieveAllLoanProductsForLookup(true);
+        // final Collection<SavingsProductData> savingsProductDatas =
+        // this.savingsProductReadPlatformService.retrieveAllForLookup();
+        // final Collection<LoanProductData> loanProductDatas =
+        // this.loanProductReadPlatformService.retrieveAllLoanProductsForLookup(true);
         final List<EnumOptionData> clientLegalFormOptions = ClientEnumerations.legalForm(LegalForm.values());
         return DocumentConfigData.template(codeDatas, clientLegalFormOptions, enumGlobalEntityTypes
-        //loanProductDatas, savingsProductDatas
+        // loanProductDatas, savingsProductDatas
         );
     }
 

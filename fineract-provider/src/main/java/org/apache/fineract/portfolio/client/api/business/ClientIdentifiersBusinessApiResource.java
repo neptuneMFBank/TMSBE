@@ -48,8 +48,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("singleton")
 @Tag(name = "Client Identifier", description = """
-                                               Client Identifiers refer to documents that are used to uniquely identify a customer
-                                               Ex: Drivers License, Passport, Ration card etc """)
+        Client Identifiers refer to documents that are used to uniquely identify a customer
+        Ex: Drivers License, Passport, Ration card etc """)
 public class ClientIdentifiersBusinessApiResource {
 
     private final PlatformSecurityContext context;
@@ -80,22 +80,24 @@ public class ClientIdentifiersBusinessApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create an Identifier for a Client", description = """
-                                                                            Mandatory Fields
-                                                                            documentKey, documentTypeId, location, type """)
+            Mandatory Fields
+            documentKey, documentTypeId, location, type """)
     @RequestBody(required = true
-    //, content = @Content(schema = @Schema(implementation = ClientIdentifiersApiResourceSwagger.PostClientsClientIdIdentifiersRequest.class))
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientIdentifiersApiResourceSwagger.PostClientsClientIdIdentifiersRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        //, content = @Content(schema = @Schema(implementation = ClientIdentifiersApiResourceSwagger.PostClientsClientIdIdentifiersResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientIdentifiersApiResourceSwagger.PostClientsClientIdIdentifiersResponse.class))
+    ) })
     public String createClientIdentifier(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
-        final CommandProcessingResult documentIdentifier = this.clientIdentifierBusinessWritePlatformService.addClientIdentifier(clientId, apiRequestBodyAsJson);
+        final CommandProcessingResult documentIdentifier = this.clientIdentifierBusinessWritePlatformService.addClientIdentifier(clientId,
+                apiRequestBodyAsJson);
 
         return this.toApiJsonSerializer.serialize(documentIdentifier);
     }

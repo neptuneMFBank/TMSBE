@@ -27,8 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
- * Wrapper for {@link DocumentProductConfig} that adds NULL checking and Error
- * handling capabilities
+ * Wrapper for {@link DocumentProductConfig} that adds NULL checking and Error handling capabilities
  * </p>
  */
 @Service
@@ -42,10 +41,9 @@ public class SavingsProductRepositoryWrapper {
     }
 
     @Transactional(readOnly = true)
-    public SavingsProduct findOneWithNotFoundDetection(final Long id//, final String type
+    public SavingsProduct findOneWithNotFoundDetection(final Long id// , final String type
     ) {
-        return this.repository.findById(id).orElseThrow(() -> new SavingsProductNotFoundException(
-                id));
+        return this.repository.findById(id).orElseThrow(() -> new SavingsProductNotFoundException(id));
     }
 
 }

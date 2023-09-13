@@ -45,8 +45,9 @@ public final class StaffBusinessCommandFromApiJsonDeserializer {
     /**
      * The parameters supported for this command.
      */
-    private final Set<String> supportedParameters = new HashSet<>(Arrays.asList("firstname", "lastname", "officeId", "externalId",
-            "mobileNo", "isLoanOfficer", "isActive", "joiningDate", "dateFormat", "locale", "forceStatus", "organisationalRoleTypeId", "organisationalRoleParentStaffId"));
+    private final Set<String> supportedParameters = new HashSet<>(
+            Arrays.asList("firstname", "lastname", "officeId", "externalId", "mobileNo", "isLoanOfficer", "isActive", "joiningDate",
+                    "dateFormat", "locale", "forceStatus", "organisationalRoleTypeId", "organisationalRoleParentStaffId"));
 
     private final FromJsonHelper fromApiJsonHelper;
 
@@ -64,8 +65,7 @@ public final class StaffBusinessCommandFromApiJsonDeserializer {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -113,11 +113,14 @@ public final class StaffBusinessCommandFromApiJsonDeserializer {
 
         if (this.fromApiJsonHelper.parameterExists("organisationalRoleTypeId", element)) {
             final Long organisationalRoleTypeId = this.fromApiJsonHelper.extractLongNamed("organisationalRoleTypeId", element);
-            baseDataValidator.reset().parameter("organisationalRoleTypeId").value(organisationalRoleTypeId).notNull().integerGreaterThanZero();
+            baseDataValidator.reset().parameter("organisationalRoleTypeId").value(organisationalRoleTypeId).notNull()
+                    .integerGreaterThanZero();
         }
         if (this.fromApiJsonHelper.parameterExists("organisationalRoleTypeId", element)) {
-            final Long organisationalRoleParentStaffId = this.fromApiJsonHelper.extractLongNamed("organisationalRoleParentStaffId", element);
-            baseDataValidator.reset().parameter("organisationalRoleParentStaffId").value(organisationalRoleParentStaffId).notNull().integerGreaterThanZero();
+            final Long organisationalRoleParentStaffId = this.fromApiJsonHelper.extractLongNamed("organisationalRoleParentStaffId",
+                    element);
+            baseDataValidator.reset().parameter("organisationalRoleParentStaffId").value(organisationalRoleParentStaffId).notNull()
+                    .integerGreaterThanZero();
         }
         if (this.fromApiJsonHelper.parameterExists("externalId", element)) {
             final String externalId = this.fromApiJsonHelper.extractStringNamed("externalId", element);
@@ -136,8 +139,7 @@ public final class StaffBusinessCommandFromApiJsonDeserializer {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -207,11 +209,14 @@ public final class StaffBusinessCommandFromApiJsonDeserializer {
 
         if (this.fromApiJsonHelper.parameterExists("organisationalRoleTypeId", element)) {
             final Long organisationalRoleTypeId = this.fromApiJsonHelper.extractLongNamed("organisationalRoleTypeId", element);
-            baseDataValidator.reset().parameter("organisationalRoleTypeId").value(organisationalRoleTypeId).notNull().integerGreaterThanZero();
+            baseDataValidator.reset().parameter("organisationalRoleTypeId").value(organisationalRoleTypeId).notNull()
+                    .integerGreaterThanZero();
         }
         if (this.fromApiJsonHelper.parameterExists("organisationalRoleTypeId", element)) {
-            final Long organisationalRoleParentStaffId = this.fromApiJsonHelper.extractLongNamed("organisationalRoleParentStaffId", element);
-            baseDataValidator.reset().parameter("organisationalRoleParentStaffId").value(organisationalRoleParentStaffId).notNull().integerGreaterThanZero();
+            final Long organisationalRoleParentStaffId = this.fromApiJsonHelper.extractLongNamed("organisationalRoleParentStaffId",
+                    element);
+            baseDataValidator.reset().parameter("organisationalRoleParentStaffId").value(organisationalRoleParentStaffId).notNull()
+                    .integerGreaterThanZero();
         }
         if (this.fromApiJsonHelper.parameterExists("externalId", element)) {
             final String externalId = this.fromApiJsonHelper.extractStringNamed("externalId", element);

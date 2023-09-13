@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.fineract.portfolio.client.data.ClientData;
 
-@SuppressWarnings({"HideUtilityClassConstructor"})
+@SuppressWarnings({ "HideUtilityClassConstructor" })
 public class ClientBusinessApiConstants {
 
     public static final String keyParam = "key";
@@ -195,7 +195,7 @@ public class ClientBusinessApiConstants {
     public static final String LGAPARAM = "LGA";
     public static final String ResidentPARAM = "Resident";
     public static final String TitlePARAM = "Title";
-    //public static final String IndustryPARAM = "Industry";
+    // public static final String IndustryPARAM = "Industry";
     public static final String ActivationChannelPARAM = "ActivationChannel";
     public static final String activationChannelOptionsPARAM = "activationChannelOptions";
     public static final String bankPARAM = "Bank";
@@ -224,9 +224,8 @@ public class ClientBusinessApiConstants {
     public static final String supervisorStaffDataParamName = "supervisorStaffData";
 
     /**
-     * These parameters will match the class level parameters of
-     * {@link ClientData}. Where possible, we try to get response parameters to
-     * match those of request parameters.
+     * These parameters will match the class level parameters of {@link ClientData}. Where possible, we try to get
+     * response parameters to match those of request parameters.
      */
     protected static final Set<String> CLIENT_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idParamName, accountNoParamName,
             externalIdParamName, statusParamName, activeParamName, activationDateParamName, firstnameParamName, middlenameParamName,
@@ -237,7 +236,7 @@ public class ClientBusinessApiConstants {
             legalFormParamName, clientNonPersonDetailsParamName, isStaffParamName, lgaValuesParamName, activationChannelOptionsPARAM,
             bankPARAM, bankOptionsPARAM, bankAccountTypePARAM, bankAccountTypeOptionsPARAM, salaryRangeOptionsPARAM,
             employmentTypeOptionsPARAM, datatables, titleOptionsParam, bvnParamName, iAgreeParamName, supervisorStaffDataParamName
-    //, industryOptionsParam
+    // , industryOptionsParam
     ));
 
     protected static final Set<String> CLIENT_CHARGES_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(chargeIdParamName,
@@ -249,8 +248,8 @@ public class ClientBusinessApiConstants {
             transactionAmountParamName, paymentDetailDataParamName, reversedParamName, dateParamName, officeIdParamName,
             officeNameParamName, transactionTypeParamName, transactionCurrencyParamName, externalIdParamName, submittedOnDateParamName));
 
-    protected static final Set<String> KYC_CHECKERS_DATA_PARAMETERS = new HashSet<>(Arrays.asList(clientIdParamName,
-            personalParamName, residentialParamName, employmentParamName, nextOfKinParamName, bankDetailParamName,
-            identificationParamName, agreementParamName, directorsParamName));
+    protected static final Set<String> KYC_CHECKERS_DATA_PARAMETERS = new HashSet<>(
+            Arrays.asList(clientIdParamName, personalParamName, residentialParamName, employmentParamName, nextOfKinParamName,
+                    bankDetailParamName, identificationParamName, agreementParamName, directorsParamName));
 
 }

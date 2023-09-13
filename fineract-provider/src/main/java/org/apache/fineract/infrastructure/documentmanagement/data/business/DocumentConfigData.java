@@ -25,8 +25,7 @@ import org.apache.fineract.infrastructure.codes.data.business.CodeBusinessData;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 
 /**
- * Immutable data object representing a user document being managed on the
- * platform.
+ * Immutable data object representing a user document being managed on the platform.
  */
 public class DocumentConfigData {
 
@@ -37,9 +36,9 @@ public class DocumentConfigData {
     private final String description;
     private Collection<CodeBusinessData> settings;
     private Collection<CodeData> settingsCode;
-    //private Collection<LoanProductData> loanProductDatas;
+    // private Collection<LoanProductData> loanProductDatas;
     private List<EnumOptionData> clientLegalFormOptions;
-    //private Collection<SavingsProductData> savingProductOptions;
+    // private Collection<SavingsProductData> savingProductOptions;
     private EnumOptionData globalEntityType;
     private List<EnumOptionData> globalEntityTypes;
 
@@ -49,8 +48,8 @@ public class DocumentConfigData {
         final DocumentConfigData documentConfigData = new DocumentConfigData(null, null, null, false);
         documentConfigData.setClientLegalFormOptions(clientLegalFormOptions);
         documentConfigData.setGlobalEntityTypes(globalEntityTypes);
-        //documentConfigData.setLoanProductDatas(loanProductDatas);
-        //documentConfigData.setSavingProductOptions(savingProductOptions);
+        // documentConfigData.setLoanProductDatas(loanProductDatas);
+        // documentConfigData.setSavingProductOptions(savingProductOptions);
         documentConfigData.setSettingsCode(settingsCode);
         return documentConfigData;
     }
@@ -82,13 +81,13 @@ public class DocumentConfigData {
         return settings;
     }
 
-//    public Collection<LoanProductData> getLoanProductDatas() {
-//        return loanProductDatas;
-//    }
-//
-//    public void setLoanProductDatas(Collection<LoanProductData> loanProductDatas) {
-//        this.loanProductDatas = loanProductDatas;
-//    }
+    // public Collection<LoanProductData> getLoanProductDatas() {
+    // return loanProductDatas;
+    // }
+    //
+    // public void setLoanProductDatas(Collection<LoanProductData> loanProductDatas) {
+    // this.loanProductDatas = loanProductDatas;
+    // }
     public boolean isActive() {
         return active;
     }
@@ -113,13 +112,13 @@ public class DocumentConfigData {
         this.clientLegalFormOptions = clientLegalFormOptions;
     }
 
-//    public Collection<SavingsProductData> getSavingProductOptions() {
-//        return savingProductOptions;
-//    }
-//
-//    public void setSavingProductOptions(Collection<SavingsProductData> savingProductOptions) {
-//        this.savingProductOptions = savingProductOptions;
-//    }
+    // public Collection<SavingsProductData> getSavingProductOptions() {
+    // return savingProductOptions;
+    // }
+    //
+    // public void setSavingProductOptions(Collection<SavingsProductData> savingProductOptions) {
+    // this.savingProductOptions = savingProductOptions;
+    // }
     public void setSettingsCode(Collection<CodeData> settingsCode) {
         this.settingsCode = settingsCode;
     }

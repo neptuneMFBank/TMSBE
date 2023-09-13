@@ -52,7 +52,8 @@ public final class DocumentBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DocumentConfigApiConstants.DOCUMENT_CREATE_RESPONSE_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -117,6 +118,32 @@ public final class DocumentBusinessDataValidator {
             //
             throw new PlatformApiDataValidationException(dataValidationErrors);
         }
+    }
+
+    public void validateForImage(final String entityType, final Long entityId, final String json) {
+
+        if (StringUtils.isBlank(json)) {
+            throw new InvalidJsonException();
+        }
+
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
+                DocumentConfigApiConstants.IMAGE_CREATE_RESPONSE_DATA_PARAMETERS);
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+                .resource(DocumentConfigApiConstants.resourceName);
+
+        baseDataValidator.reset().parameter(DocumentConfigApiConstants.entityTypeParam).value(entityType).notBlank();
+        baseDataValidator.reset().parameter(DocumentConfigApiConstants.entityIdParam).value(entityId).longGreaterThanZero();
+
+        final String avatarBase64 = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.avatarBase64Param, element);
+        baseDataValidator.reset().parameter(DocumentConfigApiConstants.avatarBase64Param).value(avatarBase64).notBlank();
+
+        throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }
 
 }

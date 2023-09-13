@@ -34,6 +34,7 @@ public class DocumentConfigApiConstants {
     public static final String idParam = "id";
     public static final String formIdParam = "formId";
     public static final String typeParam = "type";
+    public static final String avatarBase64Param = "avatarBase64";
     public static final String nameParam = "name";
     public static final String descriptionParam = "description";
     public static final String settingsParam = "settings";
@@ -64,5 +65,8 @@ public class DocumentConfigApiConstants {
 
     public static final Set<String> DOCUMENT_CREATE_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(typeParam, locationParam, descriptionParam, nameParam));
+
+    public static final Set<String> IMAGE_CREATE_RESPONSE_DATA_PARAMETERS = new HashSet<>(
+            Arrays.asList(avatarBase64Param));
 
 }

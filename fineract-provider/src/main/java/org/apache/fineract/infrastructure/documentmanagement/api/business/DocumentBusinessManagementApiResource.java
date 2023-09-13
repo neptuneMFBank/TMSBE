@@ -34,7 +34,6 @@ import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
-import org.apache.fineract.infrastructure.documentmanagement.exception.InvalidEntityTypeForImageManagementException;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.service.business.DocumentBusinessWritePlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.service.business.ImageBusinessWritePlatformService;
@@ -162,7 +161,6 @@ public class DocumentBusinessManagementApiResource {
         )})
     public String addNewClientStaffImageBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
-        validateEntityTypeforImage(entityType);
 
         final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityType, entityId, apiRequestBodyAsJson);
 
@@ -170,31 +168,4 @@ public class DocumentBusinessManagementApiResource {
 
     }
 
-    /**
-     * * Entities for document Management *
-     */
-    public enum EntityTypeForImages {
-
-        STAFF, CLIENTS;
-
-        @Override
-        public String toString() {
-            return name().toLowerCase();
-        }
-    }
-
-    private void validateEntityTypeforImage(final String entityName) {
-        if (!checkValidEntityType(entityName)) {
-            throw new InvalidEntityTypeForImageManagementException(entityName);
-        }
-    }
-
-    private static boolean checkValidEntityType(final String entityType) {
-        for (final EntityTypeForImages entities : EntityTypeForImages.values()) {
-            if (entities.name().equalsIgnoreCase(entityType)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.infrastructure.documentmanagement.api.business;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -39,12 +41,11 @@ import org.springframework.stereotype.Component;
 @Path("business/{entity}/{entityId}/images")
 public class ImagesBusinessApiResource {
 
-
     private final ImageBusinessWritePlatformService imageWritePlatformService;
     private final DefaultToApiJsonSerializer<ClientData> toApiJsonSerializer;
 
     @Autowired
-    public ImagesBusinessApiResource( 
+    public ImagesBusinessApiResource(
             final ImageBusinessWritePlatformService imageWritePlatformService, final DefaultToApiJsonSerializer<ClientData> toApiJsonSerializer) {
         this.imageWritePlatformService = imageWritePlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
@@ -61,8 +62,9 @@ public class ImagesBusinessApiResource {
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
+    @RequestBody(required = true)
     public String addNewClientImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId,
-            final String jsonRequestBody) {
+            @Parameter(hidden = true) final String jsonRequestBody) {
         validateEntityTypeforImage(entityName);
 
         final CommandProcessingResult result = this.imageWritePlatformService.saveOrUpdateImage(entityName, entityId, jsonRequestBody);
@@ -84,8 +86,9 @@ public class ImagesBusinessApiResource {
     @PUT
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
+    @RequestBody(required = true)
     public String updateClientImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId,
-            final String jsonRequestBody) {
+            @Parameter(hidden = true) final String jsonRequestBody) {
         return addNewClientImage(entityName, entityId, jsonRequestBody);
     }
 

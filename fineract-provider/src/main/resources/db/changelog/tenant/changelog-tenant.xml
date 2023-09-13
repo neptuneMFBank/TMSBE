@@ -82,4 +82,6 @@
     <include file="parts/0065_m_signature_code.sql" relativeToChangelogFile="true" />
     <include file="parts/0066_m_proof_address_code.sql" relativeToChangelogFile="true" />
     <include file="parts/0067_m_client_pending_activation.sql" relativeToChangelogFile="true" />
+    <include file="parts/0068_m_employer.sql" relativeToChangelogFile="true" />
+    <include file="parts/0069_m_employer_view.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

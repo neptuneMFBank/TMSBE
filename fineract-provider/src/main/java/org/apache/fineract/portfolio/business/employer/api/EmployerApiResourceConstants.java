@@ -28,24 +28,23 @@ public final class EmployerApiResourceConstants {
 
     }
 
-    public static final String resourceName = "EMPLOYER";
+    public static final String RESOURCENAME = "EMPLOYER";
+    public static final String ADDRESS_OPTIONS = "addressOptions";
+    public static final String CLIENT_CLASSIFICATION_ID = "clientClassificationId";
+    public static final String CLIENT_CLASSIFICATION = "clientClassification";
+    public static final String CLIENT_CLASSIFICATION_OPTIONS = "clientClassificationOptions";
+    public static final String INDUSTRY_OPTIONS = "industryOptions";
     public static final String ID = "id";
     public static final String NAME = "name";
     public static final String SLUG = "slug";
-    public static final String clientType = "clientType";
-    public static final String clientTypeIdParamName = "clientTypeId";
     public static final String RCNUMBER = "rcNumber";
     public static final String STATE = "state";
     public static final String STATEID = "stateId";
     public static final String COUNTRY = "country";
     public static final String COUNTRYID = "countryId";
-    public static final String PARENTID = "parentId";
-    public static final String externalId = "externalId";
-    public static final String SOURCENAME = "sourceName";
+    public static final String EXTERNALID = "externalId";
     public static final String BUSINESSID = "businessId";
-    public static final String WALLETID = "walletId";
-    public static final String SECTOR = "sector";
-    public static final String SECTORID = "sectorId";
+    public static final String BUSINESS = "business";
     public static final String INDUSTRY = "industry";
     public static final String INDUSTRYID = "industryId";
     public static final String LGA = "lga";
@@ -59,41 +58,20 @@ public final class EmployerApiResourceConstants {
     public static final String EMAIL_EXTENSION = "emailExtension";
     public static final String CONTACT_PERSON = "contactPerson";
 
-    // Employer Loan Product
-    public static final String EMPLOYER_ID = "employerId";
-    public static final String EMPLOYER_LOAN_PRODUCT_ID = "loanProductId";
-    public static final String EMPLOYER_LOAN_PRODUCT_NAME = "loanProductName";
-    public static final String EMPLOYER_LOAN_PRODUCT_INTEREST = "interestRate";
-    public static final String EMPLOYER_LOAN_PRODUCT_PRINCIPAL = "principal";
-    public static final String EMPLOYER_LOAN_PRODUCT_TERM_FREQUENCY = "termFrequency";
-    public static final String EMPLOYER_LOAN_PRODUCT_OPTIONS = "loanProductOptions";
-    public static final String EMPLOYER_LOAN_PRODUCT_DSR = "dsr";
-    public static final String localeParamName = "locale";
-    public static final String teamLeadDisburseParamName = "teamLeadDisburse";
-    public static final String teamLeadMaxDisburseParamName = "teamLeadMaxDisburse";
-    public static final String SHOW_SIGNATURE = "showSignature";
+    public static final String STAFF_ID = "staffId";
+    public static final String STAFF_DATA = "staffData";
+    public static final String SUPERVISOR_STAFF_DATA = "supervisorStaffData";
 
-    public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ID, NAME, SLUG, RCNUMBER, STATE, COUNTRY, SECTOR,
-            INDUSTRY, LGA, OFFICEADDRESS, NEARESTLANDMARK, ACTIVE, PARENTID, MOBILE_NO, EMAIL_ADDRESS, EMAIL_EXTENSION, CONTACT_PERSON,
-            clientType, SOURCENAME, externalId, WALLETID, "paypoint", SHOW_SIGNATURE));
+    public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ID, NAME, SLUG, RCNUMBER, STATE, COUNTRY,
+            LGA, OFFICEADDRESS, NEARESTLANDMARK, ACTIVE, MOBILE_NO, EMAIL_ADDRESS, EMAIL_EXTENSION, CONTACT_PERSON,
+            INDUSTRY, CLIENT_CLASSIFICATION, BUSINESS, EXTERNALID, STAFF_DATA, SUPERVISOR_STAFF_DATA));
 
-    public static final Set<String> REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(NAME, SLUG, RCNUMBER, COUNTRYID, STATEID,
-            SECTORID, INDUSTRYID, LGAID, OFFICEADDRESS, NEARESTLANDMARK, ACTIVE, PARENTID, MOBILE_NO, EMAIL_ADDRESS, EMAIL_EXTENSION,
-            CONTACT_PERSON, clientTypeIdParamName, BUSINESSID, SOURCENAME, externalId, SHOW_SIGNATURE));
+    public static final Set<String> REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(NAME, SLUG, RCNUMBER, STATEID, COUNTRYID,
+            LGAID, OFFICEADDRESS, NEARESTLANDMARK, ACTIVE, MOBILE_NO, EMAIL_ADDRESS, EMAIL_EXTENSION, CONTACT_PERSON,
+            INDUSTRYID, CLIENT_CLASSIFICATION_ID, BUSINESSID, EXTERNALID, STAFF_ID));
 
-    public static final Set<String> REQUEST_EMPLOYER_LOAN_PRODUCTS_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(teamLeadMaxDisburseParamName, teamLeadDisburseParamName, "noCharge", "acceptDisbursementServiceFeeFromExternal",
-                    "downPaymentPaidFull", EMPLOYER_LOAN_PRODUCT_ID, EMPLOYER_LOAN_PRODUCT_INTEREST, localeParamName,
-                    EMPLOYER_LOAN_PRODUCT_PRINCIPAL, EMPLOYER_LOAN_PRODUCT_TERM_FREQUENCY, EMPLOYER_LOAN_PRODUCT_DSR,
-                    "minNominalInterestRatePerPeriod", "maxNominalInterestRatePerPeriod", "minNumberOfRepayments", "maxNumberOfRepayments",
-                    "minPrincipal", "maxPrincipal", "downPaymentLimit", "charges", "maxAge", "minServiceYear", "maxServiceYear"));
-
-    public static final Set<String> RESPONSE_EMPLOYER_LOAN_PRODUCTS_DATA_PARAMETERS = new HashSet<>(Arrays.asList("timestampCreatedDate",
-            teamLeadMaxDisburseParamName, teamLeadDisburseParamName, "noCharge", "acceptDisbursementServiceFeeFromExternal",
-            "downPaymentPaidFull", ID, EMPLOYER_ID, EMPLOYER_LOAN_PRODUCT_ID, EMPLOYER_LOAN_PRODUCT_NAME, EMPLOYER_LOAN_PRODUCT_INTEREST,
-            EMPLOYER_LOAN_PRODUCT_OPTIONS, EMPLOYER_LOAN_PRODUCT_PRINCIPAL, EMPLOYER_LOAN_PRODUCT_TERM_FREQUENCY, EMPLOYER_LOAN_PRODUCT_DSR,
-            "minPrincipal", "maxPrincipal", "minNominalInterestRatePerPeriod", "maxNominalInterestRatePerPeriod", "minNumberOfRepayments",
-            "maxNumberOfRepayments", "downPaymentLimit", "charges", "totalOutstanding", "transactions", "status", "nextRepaymentDate",
-            "loanPurposeName", "loanAmount", "employerLoanProductTopUps", "maxAge", "minServiceYear", "maxServiceYear"));
+    public static final Set<String> RESPONSE_TEMPLATE_PARAMETERS = new HashSet<>(Arrays.asList(ADDRESS_OPTIONS,
+            CLIENT_CLASSIFICATION_OPTIONS,
+            INDUSTRY_OPTIONS));
 
 }

@@ -26,6 +26,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
+import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.portfolio.client.domain.Client;
 
 @Entity
@@ -38,7 +39,7 @@ import org.apache.fineract.portfolio.client.domain.Client;
 public class Employer extends AbstractAuditableWithUTCDateTimeCustom {
 
     @ManyToOne
-    @JoinColumn(name = "client_classification_cv_id")
+    @JoinColumn(name = "client_classification_cv_id", nullable = false)
     private CodeValue clientClassification;
 
     @Column(name = "external_id")
@@ -85,6 +86,10 @@ public class Employer extends AbstractAuditableWithUTCDateTimeCustom {
     @JoinColumn(name = "lga_id")
     private CodeValue lga;
 
+    @ManyToOne
+    @JoinColumn(name = "staff_id")
+    private Staff staff;
+
     @Column(name = "office_address")
     private String officeAddress;
 
@@ -97,7 +102,9 @@ public class Employer extends AbstractAuditableWithUTCDateTimeCustom {
     protected Employer() {
     }
 
-    private Employer(CodeValue clientClassification, String externalId, String name, String slug, String mobileNo, String emailAddress, String emailExtension, String contactPerson, String rcNumber, CodeValue industry, Client business, CodeValue state, CodeValue country, CodeValue lga, String officeAddress, String nearestLandMark, Boolean active) {
+    private Employer(CodeValue clientClassification, String externalId, String name, String slug, String mobileNo,
+            String emailAddress, String emailExtension, String contactPerson, String rcNumber, CodeValue industry,
+            Client business, CodeValue state, CodeValue country, CodeValue lga, String officeAddress, String nearestLandMark, Boolean active, Staff staff) {
         this.clientClassification = clientClassification;
         this.externalId = externalId;
         this.name = name;
@@ -115,10 +122,11 @@ public class Employer extends AbstractAuditableWithUTCDateTimeCustom {
         this.officeAddress = officeAddress;
         this.nearestLandMark = nearestLandMark;
         this.active = active;
+        this.staff = staff;
     }
 
-    public static Employer create(CodeValue clientClassification, String externalId, String name, String slug, String mobileNo, String emailAddress, String emailExtension, String contactPerson, String rcNumber, CodeValue industry, Client business, CodeValue state, CodeValue country, CodeValue lga, String officeAddress, String nearestLandMark, Boolean active) {
-        return new Employer(clientClassification, externalId, name, slug, mobileNo, emailAddress, emailExtension, contactPerson, rcNumber, industry, business, state, country, lga, officeAddress, nearestLandMark, active);
+    public static Employer create(CodeValue clientClassification, String externalId, String name, String slug, String mobileNo, String emailAddress, String emailExtension, String contactPerson, String rcNumber, CodeValue industry, Client business, CodeValue state, CodeValue country, CodeValue lga, String officeAddress, String nearestLandMark, Boolean active, Staff staff) {
+        return new Employer(clientClassification, externalId, name, slug, mobileNo, emailAddress, emailExtension, contactPerson, rcNumber, industry, business, state, country, lga, officeAddress, nearestLandMark, active, staff);
     }
 
     public CodeValue getClientClassification() {
@@ -147,10 +155,6 @@ public class Employer extends AbstractAuditableWithUTCDateTimeCustom {
 
     public String getEmailExtension() {
         return emailExtension;
-    }
-
-    public String getContactPersonName() {
-        return contactPerson;
     }
 
     public String getRcNumber() {
@@ -187,6 +191,14 @@ public class Employer extends AbstractAuditableWithUTCDateTimeCustom {
 
     public Boolean getActive() {
         return active;
+    }
+
+    public String getContactPerson() {
+        return contactPerson;
+    }
+
+    public Staff getStaff() {
+        return staff;
     }
 
 }

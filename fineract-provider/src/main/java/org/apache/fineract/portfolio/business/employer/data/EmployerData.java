@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import lombok.Data;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
+import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.portfolio.address.data.business.AddressBusinessData;
 import org.apache.fineract.portfolio.client.data.ClientData;
 
@@ -69,6 +70,9 @@ public class EmployerData implements Serializable {
     private final Collection<CodeValueData> clientClassificationOptions;
     private final Collection<CodeValueData> industryOptions;
 
+    private final StaffData staffData;
+    private final StaffData supervisorStaffData;
+
     public static EmployerData template(
             AddressBusinessData addressOptions, Collection<CodeValueData> clientClassificationOptions,
             Collection<CodeValueData> industryOptions) {
@@ -90,11 +94,15 @@ public class EmployerData implements Serializable {
         final String nearestLandMark = null;
         final Boolean active = null;
         final ClientData business = null;
-        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country, clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions, clientClassificationOptions, industryOptions);
+
+        final StaffData staffData = null;
+        final StaffData supervisorStaffData = null;
+        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country, clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions, clientClassificationOptions, industryOptions, staffData, supervisorStaffData);
     }
 
-    public static EmployerData instance(Long id, String externalId, String mobileNo, String contactPerson, String emailAddress, String emailExtension, String name, String slug, String rcNumber, CodeValueData state, CodeValueData country, CodeValueData clientClassification, CodeValueData industry, CodeValueData lga, String officeAddress, String nearestLandMark, Boolean active, ClientData business, AddressBusinessData addressOptions, Collection<CodeValueData> clientClassificationOptions, Collection<CodeValueData> industryOptions) {
-        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country, clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions, clientClassificationOptions, industryOptions);
+    public static EmployerData instance(Long id, String externalId, String mobileNo, String contactPerson, String emailAddress, String emailExtension, String name, String slug, String rcNumber, CodeValueData state, CodeValueData country, CodeValueData clientClassification, CodeValueData industry,
+            CodeValueData lga, String officeAddress, String nearestLandMark, Boolean active, ClientData business, AddressBusinessData addressOptions, Collection<CodeValueData> clientClassificationOptions, Collection<CodeValueData> industryOptions, final StaffData staffData, final StaffData supervisorStaffData) {
+        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country, clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions, clientClassificationOptions, industryOptions, staffData, supervisorStaffData);
     }
 
 }

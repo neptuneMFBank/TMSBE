@@ -20,7 +20,7 @@
 CREATE VIEW m_employer_view AS
 SELECT me.id, me.name, me.mobile_no, me.email_address, 
 me.client_classification_cv_id, mcv.code_value client_classification_value, 
-me.industry_id, mcvv.industry_value, me.active,
+me.industry_id, mcvv.code_value industry_value, me.active,
 me.staff_id, ms.display_name staff_display_name,
 mss.id organisational_role_parent_staff_id, mss.display_name organisational_role_parent_staff_display_name, me.created_on_utc
 FROM m_employer me

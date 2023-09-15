@@ -19,6 +19,7 @@
 
 CREATE TABLE `m_employer`(
       `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+      `staff_id` BIGINT NULL,
       `client_classification_cv_id` INT NOT NULL,
       `external_id` VARCHAR(100) NULL,
       `name` VARCHAR(150) NOT NULL,
@@ -44,6 +45,7 @@ CREATE TABLE `m_employer`(
       UNIQUE KEY `employer_external_id_UNIQUE` (`external_id`),
       UNIQUE KEY `employer_name_UNIQUE` (`name`),
       CONSTRAINT `FK_m_employer_industry_id` FOREIGN KEY (`industry_id`) REFERENCES `m_code_value` (`id`),
+      CONSTRAINT `FK_m_employer_staff_id` FOREIGN KEY (`staff_id`) REFERENCES `m_staff` (`id`),
       CONSTRAINT `FK_m_employer_business_id` FOREIGN KEY (`business_id`) REFERENCES `m_client` (`id`),
       CONSTRAINT `FK_m_employer_lga_id` FOREIGN KEY (`lga_id`) REFERENCES `m_code_value` (`id`),
       CONSTRAINT `FK_m_employer_country_id` FOREIGN KEY (`country_id`) REFERENCES `m_code_value` (`id`),

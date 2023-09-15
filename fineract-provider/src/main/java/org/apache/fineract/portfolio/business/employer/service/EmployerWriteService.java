@@ -28,4 +28,8 @@ public interface EmployerWriteService {
     CommandProcessingResult updateEmployer(Long id, JsonCommand command);
 
     CommandProcessingResult deleteEmployer(Long id);
+
+    CommandProcessingResult activateEmployer(Long entityId, JsonCommand command);
+
+    CommandProcessingResult closeEmployer(Long entityId, JsonCommand command);
 }

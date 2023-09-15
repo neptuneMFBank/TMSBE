@@ -19,15 +19,15 @@
 package org.apache.fineract.portfolio.business.employer.service;
 
 import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.SearchParameters;
+import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.business.employer.data.EmployerData;
 
 public interface EmployerReadPlatformService {
 
-    Page<EmployerData> retrieveAllEmployers(final SearchParameters searchParameters);
+    Page<EmployerData> retrieveAll(final SearchParametersBusiness searchParameters);
 
-    EmployerData retrieveOne(Long employerId);
+    EmployerData retrieveOne(final Long employerId);
 
-    EmployerData template();
+    EmployerData retrieveTemplate();
 
 }

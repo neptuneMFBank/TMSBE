@@ -84,4 +84,10 @@
     <include file="parts/0067_m_client_pending_activation.sql" relativeToChangelogFile="true" />
     <include file="parts/0068_m_employer.sql" relativeToChangelogFile="true" />
     <include file="parts/0069_m_employer_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0070_m_read_employer_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0071_m_create_employer_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0072_m_update_employer_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0073_m_activate_employer_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0074_m_close_employer_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0075_m_proof_employment_code.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

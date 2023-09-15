@@ -19,6 +19,7 @@
 package org.apache.fineract.portfolio.business.employer.data;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collection;
 import lombok.Data;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
@@ -72,6 +73,7 @@ public class EmployerData implements Serializable {
 
     private final StaffData staffData;
     private final StaffData supervisorStaffData;
+    private final LocalDate createdOn;
 
     public static EmployerData template(
             AddressBusinessData addressOptions, Collection<CodeValueData> clientClassificationOptions,
@@ -94,15 +96,18 @@ public class EmployerData implements Serializable {
         final String nearestLandMark = null;
         final Boolean active = null;
         final ClientData business = null;
-
+        final LocalDate createdOn = null;
         final StaffData staffData = null;
         final StaffData supervisorStaffData = null;
-        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country, clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions, clientClassificationOptions, industryOptions, staffData, supervisorStaffData);
+        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country, clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions, clientClassificationOptions, industryOptions, staffData, supervisorStaffData, createdOn);
     }
 
     public static EmployerData instance(Long id, String externalId, String mobileNo, String contactPerson, String emailAddress, String emailExtension, String name, String slug, String rcNumber, CodeValueData state, CodeValueData country, CodeValueData clientClassification, CodeValueData industry,
-            CodeValueData lga, String officeAddress, String nearestLandMark, Boolean active, ClientData business, AddressBusinessData addressOptions, Collection<CodeValueData> clientClassificationOptions, Collection<CodeValueData> industryOptions, final StaffData staffData, final StaffData supervisorStaffData) {
-        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country, clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions, clientClassificationOptions, industryOptions, staffData, supervisorStaffData);
+            CodeValueData lga, String officeAddress, String nearestLandMark, Boolean active, ClientData business, final StaffData staffData, final StaffData supervisorStaffData, LocalDate createdOn) {
+        final AddressBusinessData addressOptions = null;
+        final Collection<CodeValueData> clientClassificationOptions = null;
+        final Collection<CodeValueData> industryOptions = null;
+        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country, clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions, clientClassificationOptions, industryOptions, staffData, supervisorStaffData, createdOn);
     }
 
 }

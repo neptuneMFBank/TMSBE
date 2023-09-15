@@ -3597,4 +3597,34 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createEmployer() {
+        this.actionName = "CREATE";
+        this.entityName = "EMPLOYER";
+        this.href = "/employers";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateEmployer(final Long employerId) {
+        this.actionName = "UPDATE";
+        this.entityName = "EMPLOYER";
+        this.entityId = employerId;
+        this.href = "/employers/" + entityId;
+        return this;
+    }
+
+    public CommandWrapperBuilder activateEmployer(final Long employerId) {
+        this.actionName = "ACTIVATE";
+        this.entityName = "EMPLOYER";
+        this.entityId = employerId;
+        this.href = "/employers/" + employerId + "?command=activate";
+        return this;
+    }
+
+    public CommandWrapperBuilder closeEmployer(final Long employerId) {
+        this.actionName = "CLOSE";
+        this.entityName = "EMPLOYER";
+        this.entityId = employerId;
+        this.href = "/employers/" + employerId + "?command=close";
+        return this;
+    }
 }

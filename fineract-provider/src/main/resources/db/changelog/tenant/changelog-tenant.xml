@@ -92,4 +92,5 @@
     <include file="parts/0075_m_proof_employment_code.sql" relativeToChangelogFile="true" />
     <include file="parts/0076_m_create_checker_employer_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0077_m_update_checker_employer_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0078_azure_config.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

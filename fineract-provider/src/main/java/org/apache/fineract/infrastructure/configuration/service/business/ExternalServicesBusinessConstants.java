@@ -16,35 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.infrastructure.documentmanagement.domain;
+package org.apache.fineract.infrastructure.configuration.service.business;
 
-import java.util.HashMap;
-import java.util.Map;
+public final class ExternalServicesBusinessConstants {
 
-public enum StorageType {
+    private ExternalServicesBusinessConstants() {
 
-    FILE_SYSTEM(1), S3(2), AZURE(3);
-
-    private final Integer value;
-
-    StorageType(final Integer value) {
-        this.value = value;
     }
+    
+    
+    public static final String AZURE_SERVICE_NAME = "Azure";
+    public static final String AZURE_ACCOUNT_KEY = "accountKey";
+    public static final String AZURE_ACCOUNT_NAME = "accountName";
+    public static final String AZURE_ENDPOINT_SUFFIX = "endpointSuffix";
+    public static final String AZURE_CONTAINER_NAME = "containerName";
 
-    public Integer getValue() {
-        return this.value;
-    }
-
-    private static final Map<Integer, StorageType> intToEnumMap = new HashMap<>();
-
-    static {
-        for (final StorageType type : StorageType.values()) {
-            intToEnumMap.put(type.value, type);
-        }
-    }
-
-    public static StorageType fromInt(final int i) {
-        final StorageType type = intToEnumMap.get(Integer.valueOf(i));
-        return type;
-    }
 }

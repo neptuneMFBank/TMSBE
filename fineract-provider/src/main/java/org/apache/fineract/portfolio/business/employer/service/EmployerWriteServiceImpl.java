@@ -91,7 +91,7 @@ public class EmployerWriteServiceImpl implements EmployerWriteService {
         if (command.isChangeInStringParameterNamed(EmployerApiResourceConstants.SLUG, employer.getSlug())) {
             final String slug = this.fromApiJsonHelper.extractStringNamed(EmployerApiResourceConstants.SLUG, element);
             changes.put(EmployerApiResourceConstants.SLUG, slug);
-            employer.setName(slug);
+            employer.setSlug(slug);
         }
 
         final Long oldStaffId = employer.getStaff() != null ? employer.getStaff().getId() : null;
@@ -108,7 +108,7 @@ public class EmployerWriteServiceImpl implements EmployerWriteService {
         if (command.isChangeInStringParameterNamed(EmployerApiResourceConstants.RCNUMBER, employer.getRcNumber())) {
             final String RCNUMBER = this.fromApiJsonHelper.extractStringNamed(EmployerApiResourceConstants.RCNUMBER, element);
             changes.put(EmployerApiResourceConstants.RCNUMBER, RCNUMBER);
-            employer.setName(RCNUMBER);
+            employer.setRcNumber(RCNUMBER);
         }
 
         final Long oldStateId = employer.getState() != null ? employer.getState().getId() : null;
@@ -158,19 +158,19 @@ public class EmployerWriteServiceImpl implements EmployerWriteService {
         if (command.isChangeInStringParameterNamed(EmployerApiResourceConstants.OFFICEADDRESS, employer.getOfficeAddress())) {
             final String OFFICEADDRESS = this.fromApiJsonHelper.extractStringNamed(EmployerApiResourceConstants.OFFICEADDRESS, element);
             changes.put(EmployerApiResourceConstants.OFFICEADDRESS, OFFICEADDRESS);
-            employer.setName(OFFICEADDRESS);
+            employer.setOfficeAddress(OFFICEADDRESS);
         }
 
         if (command.isChangeInStringParameterNamed(EmployerApiResourceConstants.NEARESTLANDMARK, employer.getNearestLandMark())) {
             final String NEARESTLANDMARK = this.fromApiJsonHelper.extractStringNamed(EmployerApiResourceConstants.NEARESTLANDMARK, element);
             changes.put(EmployerApiResourceConstants.NEARESTLANDMARK, NEARESTLANDMARK);
-            employer.setName(NEARESTLANDMARK);
+            employer.setNearestLandMark(NEARESTLANDMARK);
         }
 
         if (command.isChangeInStringParameterNamed(EmployerApiResourceConstants.MOBILE_NO, employer.getMobileNo())) {
             final String MOBILE_NO = this.fromApiJsonHelper.extractStringNamed(EmployerApiResourceConstants.MOBILE_NO, element);
             changes.put(EmployerApiResourceConstants.MOBILE_NO, MOBILE_NO);
-            employer.setName(MOBILE_NO);
+            employer.setMobileNo(MOBILE_NO);
         }
 
         final Long oldBusinessId = employer.getBusiness() != null ? employer.getBusiness().getId() : null;

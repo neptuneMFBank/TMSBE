@@ -78,6 +78,7 @@ dependencies {
             'org.mapstruct:mapstruct',
             'com.googlecode.libphonenumber:libphonenumber:8.13.12',
             // 'mysql:mysql-connector-java',
+            'com.azure:azure-storage-blob:12.7.0',
             )
 
     implementation ('org.apache.commons:commons-email') {

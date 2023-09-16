@@ -20,8 +20,10 @@ package org.apache.fineract.infrastructure.documentmanagement.contentrepository;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.infrastructure.configuration.data.S3CredentialsData;
+import org.apache.fineract.infrastructure.configuration.data.business.AzureConfigurationData;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.configuration.service.ExternalServicesPropertiesReadPlatformService;
+import org.apache.fineract.infrastructure.documentmanagement.contentrepository.business.AzureContentRepository;
 import org.apache.fineract.infrastructure.documentmanagement.domain.StorageType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -38,6 +40,11 @@ public class ContentRepositoryFactory {
     public ContentRepository getRepository() {
         final ConfigurationDomainService configurationDomainServiceJpa = this.applicationContext.getBean("configurationDomainServiceJpa",
                 ConfigurationDomainService.class);
+
+        if (configurationDomainServiceJpa.isAzureStorageBlob()) {
+            return createAzureDocumentStore();
+        }
+
         if (configurationDomainServiceJpa.isAmazonS3Enabled()) {
             return createS3DocumentStore();
         }
@@ -45,6 +52,9 @@ public class ContentRepositoryFactory {
     }
 
     public ContentRepository getRepository(final StorageType documentStoreType) {
+        if (documentStoreType == StorageType.AZURE) {
+            return createAzureDocumentStore();
+        }
         if (documentStoreType == StorageType.FILE_SYSTEM) {
             return new FileSystemContentRepository(contentPathSanitizer);
         }
@@ -55,5 +65,11 @@ public class ContentRepositoryFactory {
         final S3CredentialsData s3CredentialsData = this.externalServicesReadPlatformService.getS3Credentials();
         return new S3ContentRepository(s3CredentialsData.getBucketName(), s3CredentialsData.getSecretKey(),
                 s3CredentialsData.getAccessKey(), s3CredentialsData.getBusinessRegion());
+    }
+
+    private ContentRepository createAzureDocumentStore() {
+        final AzureConfigurationData azureConfigurationData = this.externalServicesReadPlatformService.getAzureCredentials();
+        return new AzureContentRepository(azureConfigurationData.getAccountKey(), azureConfigurationData.getAccountName(),
+                azureConfigurationData.getEndpointSuffix(), azureConfigurationData.getContainerName());
     }
 }

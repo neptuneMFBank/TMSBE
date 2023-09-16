@@ -179,7 +179,7 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
         this.context.authenticatedUser();
         try {
             final String sql = "select " + employerMapper.schema() + " where me.id = ?";
-            return this.jdbcTemplate.queryForObject(sql, employerMapper, new Object[] { employerId });
+            return this.jdbcTemplate.queryForObject(sql, employerMapper, new Object[]{employerId});
         } catch (DataAccessException e) {
             LOG.error("Employer not found: {}", e);
             throw new EmployerNotFoundException(employerId);
@@ -201,13 +201,18 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
             final String name = rs.getString("name");
             final String emailAddress = rs.getString("emailAddress");
 
-            final Long classificationId = JdbcSupport.getLong(rs, "classificationId");
-            final String classificationValue = rs.getString("classificationValue");
-            final CodeValueData classification = CodeValueData.instance(classificationId, classificationValue);
-
-            final Long industryId = JdbcSupport.getLong(rs, "industryId");
-            final String industryValue = rs.getString("industryValue");
-            final CodeValueData industry = CodeValueData.instance(industryId, industryValue);
+            CodeValueData classification = null;
+            final Long classificationId = rs.getLong("classificationId");
+            if (classificationId > 0) {
+                final String classificationValue = rs.getString("classificationValue");
+                classification = CodeValueData.instance(classificationId, classificationValue);
+            }
+            CodeValueData industry = null;
+            final Long industryId = rs.getLong("industryId");
+            if (industryId > 0) {
+                final String industryValue = rs.getString("industryValue");
+                industry = CodeValueData.instance(industryId, industryValue);
+            }
             final boolean active = rs.getBoolean("active");
 
             StaffData staffData = null;
@@ -237,7 +242,7 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
 
         public String schema() {
             return " mc.display_name as businessDisplayName, me.external_id as externalId, "
-                    + " me.client_classification_cv_id classificationId, mcv.code_value client_classification_value classificationValue, "
+                    + " me.client_classification_cv_id classificationId, mcv.code_value classificationValue, "
                     + " me.business_id as businessId, me.id as id, me.mobile_no as mobileNo, me.email_address as emailAddress, "
                     + " me.email_extension as emailExtension, me.contact_person as contactPerson, me.name as name, me.slug as slug, me.rc_number as rcNumber,"
                     + " me.office_address as officeAddress, me.nearest_land_mark as nearestLandMark,"

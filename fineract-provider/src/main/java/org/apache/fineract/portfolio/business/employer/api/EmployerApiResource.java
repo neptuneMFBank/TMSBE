@@ -75,14 +75,15 @@ public class EmployerApiResource {
 
     @GET
     @Path("template")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve Employer Template", description = """
             """)
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
+        )})
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(EmployerApiResourceConstants.RESOURCENAME);
@@ -94,13 +95,14 @@ public class EmployerApiResource {
     }
 
     @GET
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve all Employers", description = "Retrieve list of Employers")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
-    // EmployerApiResourceSwagger.GetEmployersResponse.class)))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+        // EmployerApiResourceSwagger.GetEmployersResponse.class)))
+        )})
     public String getAllEmployers(@Context final UriInfo uriInfo,
             @QueryParam("supervisorId") @Parameter(description = "supervisorId") final Long supervisorId,
             @QueryParam("industryId") @Parameter(description = "industryId") final Long industryId,
@@ -137,13 +139,14 @@ public class EmployerApiResource {
 
     @GET
     @Path("{employerId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve a Employer", description = "Retrieves a Employer")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // EmployerApiResourceSwagger.GetEmployersEmployerIdResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // EmployerApiResourceSwagger.GetEmployersEmployerIdResponse.class))
+        )})
     public String retrieveOneEmployer(@PathParam("employerId") @Parameter(description = "employerId") final Long employerId,
             @Context final UriInfo uriInfo) {
         this.securityContext.authenticatedUser().validateHasReadPermission(EmployerApiResourceConstants.RESOURCENAME);
@@ -153,8 +156,8 @@ public class EmployerApiResource {
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create an Employer", description = """
             Creates a new Employer
 
@@ -166,9 +169,10 @@ public class EmployerApiResource {
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
+        )})
     public String createEmployer(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .createEmployer()//
@@ -180,8 +184,8 @@ public class EmployerApiResource {
 
     @POST
     @Path("{employerId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create an Employer", description = """
             Creates a new Employer
 
@@ -193,9 +197,10 @@ public class EmployerApiResource {
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
+        )})
     public String actions(@PathParam("employerId") @Parameter(description = "employerId") final Long employerId,
             @QueryParam("command") @Parameter(description = "command") final String commandParam,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
@@ -213,7 +218,7 @@ public class EmployerApiResource {
         }
 
         if (result == null) {
-            throw new UnrecognizedQueryParamException("command", commandParam, new Object[] { "activate", "close" });
+            throw new UnrecognizedQueryParamException("command", commandParam, new Object[]{"activate", "close"});
         }
 
         return this.jsonSerializer.serialize(result);
@@ -221,17 +226,18 @@ public class EmployerApiResource {
 
     @PUT
     @Path("{employerId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Update Employer", description = "Updates an Employer")
     @RequestBody(required = true
     // ,content = @Content(schema = @Schema(implementation =
     // EmployerApiResourceSwagger.PutEmployersEmployerIdRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // EmployerApiResourceSwagger.PutEmployersEmployerIdResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // EmployerApiResourceSwagger.PutEmployersEmployerIdResponse.class))
+        )})
     public String updateEmployer(@PathParam("employerId") @Parameter(description = "employerId") final Long employerId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         final CommandWrapper commandRequest = new CommandWrapperBuilder().updateEmployer(employerId).withJson(apiRequestBodyAsJson).build();

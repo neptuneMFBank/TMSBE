@@ -51,7 +51,8 @@ public class EmployerDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         if (isUpdate) {
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, UPDATE_EMPLOYER_REQUEST_DATA_PARAMETERS);
         } else {
@@ -67,9 +68,10 @@ public class EmployerDataValidator {
         // NAME, SLUG, RCNUMBER, STATEID, COUNTRYID,
         // LGAID, OFFICEADDRESS, NEARESTLANDMARK, ACTIVE, MOBILE_NO, EMAIL_ADDRESS, EMAIL_EXTENSION, CONTACT_PERSON,
         // INDUSTRYID, CLIENT_CLASSIFICATION_ID, BUSINESSID, EXTERNALID, STAFF_ID
-        final String name = this.fromApiJsonHelper.extractStringNamed(EmployerApiResourceConstants.NAME, element);
-        baseDataValidator.reset().parameter(EmployerApiResourceConstants.NAME).value(name).notBlank();
-
+        if (this.fromApiJsonHelper.parameterExists(EmployerApiResourceConstants.NAME, element)) {
+            final String name = this.fromApiJsonHelper.extractStringNamed(EmployerApiResourceConstants.NAME, element);
+            baseDataValidator.reset().parameter(EmployerApiResourceConstants.NAME).value(name).notBlank();
+        }
         final Long clientClassificationId = this.fromApiJsonHelper.extractLongNamed(EmployerApiResourceConstants.CLIENT_CLASSIFICATION_ID,
                 element);
         baseDataValidator.reset().parameter(EmployerApiResourceConstants.CLIENT_CLASSIFICATION_ID).value(clientClassificationId).notBlank()

@@ -44,6 +44,7 @@ CREATE TABLE `m_employer`(
       CONSTRAINT `FK_m_employer_client_classification_cv_id` FOREIGN KEY (`client_classification_cv_id`) REFERENCES `m_code_value` (`id`),
       UNIQUE KEY `employer_external_id_UNIQUE` (`external_id`),
       UNIQUE KEY `employer_name_UNIQUE` (`name`),
+      UNIQUE KEY `employer_rc_number_UNIQUE` (`rc_number`),
       CONSTRAINT `FK_m_employer_industry_id` FOREIGN KEY (`industry_id`) REFERENCES `m_code_value` (`id`),
       CONSTRAINT `FK_m_employer_staff_id` FOREIGN KEY (`staff_id`) REFERENCES `m_staff` (`id`),
       CONSTRAINT `FK_m_employer_business_id` FOREIGN KEY (`business_id`) REFERENCES `m_client` (`id`),

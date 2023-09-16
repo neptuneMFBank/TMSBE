@@ -78,8 +78,7 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
         final List<CodeValueData> industryOptions = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_NON_PERSON_CONSTITUTION));
 
-        final EmployerData employerData
-                = EmployerData.template(addressOptions, clientClassificationOptions, industryOptions);
+        final EmployerData employerData = EmployerData.template(addressOptions, clientClassificationOptions, industryOptions);
         return employerData;
     }
 
@@ -115,8 +114,7 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
             }
         }
 
-        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(),
-                this.employerViewMapper);
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.employerViewMapper);
     }
 
     private String buildSqlStringFromEmployerCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
@@ -181,7 +179,7 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
         this.context.authenticatedUser();
         try {
             final String sql = "select " + employerMapper.schema() + " where me.id = ?";
-            return this.jdbcTemplate.queryForObject(sql, employerMapper, new Object[]{employerId});
+            return this.jdbcTemplate.queryForObject(sql, employerMapper, new Object[] { employerId });
         } catch (DataAccessException e) {
             LOG.error("Employer not found: {}", e);
             throw new EmployerNotFoundException(employerId);
@@ -228,7 +226,8 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
             final LocalDateTime createdOnTime = JdbcSupport.getLocalDateTime(rs, "createdOn");
             final LocalDate createdOn = createdOnTime != null ? createdOnTime.toLocalDate() : null;
 
-            final EmployerData employerDataResult = EmployerData.instance(id, null, null, null, emailAddress, null, name, null, null, null, null, classification, industry, null, null, null, active, null, staffData, supervisorStaffData, createdOn);
+            final EmployerData employerDataResult = EmployerData.instance(id, null, null, null, emailAddress, null, name, null, null, null,
+                    null, classification, industry, null, null, null, active, null, staffData, supervisorStaffData, createdOn);
             return employerDataResult;
         }
 
@@ -251,8 +250,7 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
                     + " LEFT JOIN m_code_value cvstate ON me.state_id=cvstate.id"
                     + " LEFT JOIN m_code_value cvcountry ON me.country_id=cvcountry.id"
                     + " LEFT JOIN m_code_value cvindustry ON me.industry_id=cvindustry.id"
-                    + " LEFT JOIN m_code_value cvlga ON me.lga_id=cvlga.id"
-                    + " LEFT JOIN m_staff ms ON ms.id=me.staff_id"
+                    + " LEFT JOIN m_code_value cvlga ON me.lga_id=cvlga.id" + " LEFT JOIN m_staff ms ON ms.id=me.staff_id"
                     + " LEFT JOIN m_staff mss ON mss.id=ms.organisational_role_parent_staff_id";
         }
 
@@ -317,8 +315,9 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
             final LocalDateTime createdOnTime = JdbcSupport.getLocalDateTime(rs, "createdOn");
             final LocalDate createdOn = createdOnTime != null ? createdOnTime.toLocalDate() : null;
 
-            final EmployerData employerDataResult = EmployerData.instance(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country,
-                    classification, industry, lga, officeAddress, nearestLandMark, active, business, staffData, supervisorStaffData, createdOn);
+            final EmployerData employerDataResult = EmployerData.instance(id, externalId, mobileNo, contactPerson, emailAddress,
+                    emailExtension, name, slug, rcNumber, state, country, classification, industry, lga, officeAddress, nearestLandMark,
+                    active, business, staffData, supervisorStaffData, createdOn);
             return employerDataResult;
         }
 

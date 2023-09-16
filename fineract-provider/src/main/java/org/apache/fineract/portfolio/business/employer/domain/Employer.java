@@ -30,12 +30,13 @@ import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.portfolio.client.domain.Client;
 
 @Entity
-@Table(name = "m_employer", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"external_id"}, name = "employer_external_id_UNIQUE"),
-    @UniqueConstraint(columnNames = {"name"}, name = "employer_name_UNIQUE"), //@UniqueConstraint(columnNames = {"mobile_no"}, name = "employer_mobile_no_UNIQUE"),
-//@UniqueConstraint(columnNames = {"email_address"}, name = "employer_email_address_UNIQUE")
-}
-)
+@Table(name = "m_employer", uniqueConstraints = { @UniqueConstraint(columnNames = { "rc_number" }, name = "employer_rc_number_UNIQUE"),
+        @UniqueConstraint(columnNames = { "external_id" }, name = "employer_external_id_UNIQUE"),
+        @UniqueConstraint(columnNames = { "name" }, name = "employer_name_UNIQUE"), // @UniqueConstraint(columnNames =
+                                                                                    // {"mobile_no"}, name =
+                                                                                    // "employer_mobile_no_UNIQUE"),
+// @UniqueConstraint(columnNames = {"email_address"}, name = "employer_email_address_UNIQUE")
+})
 public class Employer extends AbstractAuditableWithUTCDateTimeCustom {
 
     @ManyToOne
@@ -99,12 +100,11 @@ public class Employer extends AbstractAuditableWithUTCDateTimeCustom {
     @Column(name = "active")
     private Boolean active;
 
-    protected Employer() {
-    }
+    protected Employer() {}
 
-    private Employer(CodeValue clientClassification, String externalId, String name, String slug, String mobileNo,
-            String emailAddress, String emailExtension, String contactPerson, String rcNumber, CodeValue industry,
-            Client business, CodeValue state, CodeValue country, CodeValue lga, String officeAddress, String nearestLandMark, Boolean active, Staff staff) {
+    private Employer(CodeValue clientClassification, String externalId, String name, String slug, String mobileNo, String emailAddress,
+            String emailExtension, String contactPerson, String rcNumber, CodeValue industry, Client business, CodeValue state,
+            CodeValue country, CodeValue lga, String officeAddress, String nearestLandMark, Boolean active, Staff staff) {
         this.clientClassification = clientClassification;
         this.externalId = externalId;
         this.name = name;
@@ -125,8 +125,11 @@ public class Employer extends AbstractAuditableWithUTCDateTimeCustom {
         this.staff = staff;
     }
 
-    public static Employer create(CodeValue clientClassification, String externalId, String name, String slug, String mobileNo, String emailAddress, String emailExtension, String contactPerson, String rcNumber, CodeValue industry, Client business, CodeValue state, CodeValue country, CodeValue lga, String officeAddress, String nearestLandMark, Boolean active, Staff staff) {
-        return new Employer(clientClassification, externalId, name, slug, mobileNo, emailAddress, emailExtension, contactPerson, rcNumber, industry, business, state, country, lga, officeAddress, nearestLandMark, active, staff);
+    public static Employer create(CodeValue clientClassification, String externalId, String name, String slug, String mobileNo,
+            String emailAddress, String emailExtension, String contactPerson, String rcNumber, CodeValue industry, Client business,
+            CodeValue state, CodeValue country, CodeValue lga, String officeAddress, String nearestLandMark, Boolean active, Staff staff) {
+        return new Employer(clientClassification, externalId, name, slug, mobileNo, emailAddress, emailExtension, contactPerson, rcNumber,
+                industry, business, state, country, lga, officeAddress, nearestLandMark, active, staff);
     }
 
     public CodeValue getClientClassification() {
@@ -199,6 +202,78 @@ public class Employer extends AbstractAuditableWithUTCDateTimeCustom {
 
     public Staff getStaff() {
         return staff;
+    }
+
+    public void setClientClassification(CodeValue clientClassification) {
+        this.clientClassification = clientClassification;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public void setMobileNo(String mobileNo) {
+        this.mobileNo = mobileNo;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+
+    public void setEmailExtension(String emailExtension) {
+        this.emailExtension = emailExtension;
+    }
+
+    public void setContactPerson(String contactPerson) {
+        this.contactPerson = contactPerson;
+    }
+
+    public void setRcNumber(String rcNumber) {
+        this.rcNumber = rcNumber;
+    }
+
+    public void setIndustry(CodeValue industry) {
+        this.industry = industry;
+    }
+
+    public void setBusiness(Client business) {
+        this.business = business;
+    }
+
+    public void setState(CodeValue state) {
+        this.state = state;
+    }
+
+    public void setCountry(CodeValue country) {
+        this.country = country;
+    }
+
+    public void setLga(CodeValue lga) {
+        this.lga = lga;
+    }
+
+    public void setStaff(Staff staff) {
+        this.staff = staff;
+    }
+
+    public void setOfficeAddress(String officeAddress) {
+        this.officeAddress = officeAddress;
+    }
+
+    public void setNearestLandMark(String nearestLandMark) {
+        this.nearestLandMark = nearestLandMark;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
 }

@@ -17,14 +17,8 @@
 -- under the License.
 --
 
-CREATE VIEW m_employer_view AS
-SELECT me.id, me.name, me.mobile_no, me.email_address,
-me.client_classification_cv_id, mcv.code_value client_classification_value,
-me.industry_id, mcvv.code_value industry_value, me.active,
-me.staff_id, ms.display_name staff_display_name,
-mss.id organisational_role_parent_staff_id, mss.display_name organisational_role_parent_staff_display_name, me.created_on_utc
-FROM m_employer me
-LEFT JOIN m_code_value mcv ON mcv.id=me.client_classification_cv_id
-LEFT JOIN m_code_value mcvv ON mcvv.id=me.industry_id
-LEFT JOIN m_staff ms ON ms.id=me.staff_id
-LEFT JOIN m_staff mss ON mss.id=ms.organisational_role_parent_staff_id;
+
+-- INSERT m_permission
+INSERT INTO `m_permission` (`id`, `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`)
+VALUES
+     (NULL, 'portfolio', 'UPDATE_EMPLOYER_CHECKER', 'EMPLOYER', 'UPDATE', false)

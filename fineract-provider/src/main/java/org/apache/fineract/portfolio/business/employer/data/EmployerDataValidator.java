@@ -40,19 +40,23 @@ public class EmployerDataValidator {
 
     private final FromJsonHelper fromApiJsonHelper;
     private static final Set<String> CREATE_EMPLOYER_REQUEST_DATA_PARAMETERS = EmployerApiResourceConstants.REQUEST_DATA_PARAMETERS;
+    private static final Set<String> UPDATE_EMPLOYER_REQUEST_DATA_PARAMETERS = EmployerApiResourceConstants.REQUEST_UPDATE_DATA_PARAMETERS;
 
     @Autowired
     public EmployerDataValidator(final FromJsonHelper fromApiJsonHelper) {
         this.fromApiJsonHelper = fromApiJsonHelper;
     }
 
-    public void validateForCreate(final String json) {
+    public void validateForCreate(final String json, final boolean isUpdate) {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
-        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, CREATE_EMPLOYER_REQUEST_DATA_PARAMETERS);
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        if (isUpdate) {
+            this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, UPDATE_EMPLOYER_REQUEST_DATA_PARAMETERS);
+        } else {
+            this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, CREATE_EMPLOYER_REQUEST_DATA_PARAMETERS);
+        }
         final JsonElement element = this.fromApiJsonHelper.parse(json);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -60,13 +64,14 @@ public class EmployerDataValidator {
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
                 .resource(EmployerApiResourceConstants.RESOURCENAME);
 
-        //NAME, SLUG, RCNUMBER, STATEID, COUNTRYID,
-        //  LGAID, OFFICEADDRESS, NEARESTLANDMARK, ACTIVE, MOBILE_NO, EMAIL_ADDRESS, EMAIL_EXTENSION, CONTACT_PERSON,
+        // NAME, SLUG, RCNUMBER, STATEID, COUNTRYID,
+        // LGAID, OFFICEADDRESS, NEARESTLANDMARK, ACTIVE, MOBILE_NO, EMAIL_ADDRESS, EMAIL_EXTENSION, CONTACT_PERSON,
         // INDUSTRYID, CLIENT_CLASSIFICATION_ID, BUSINESSID, EXTERNALID, STAFF_ID
         final String name = this.fromApiJsonHelper.extractStringNamed(EmployerApiResourceConstants.NAME, element);
         baseDataValidator.reset().parameter(EmployerApiResourceConstants.NAME).value(name).notBlank();
 
-        final Long clientClassificationId = this.fromApiJsonHelper.extractLongNamed(EmployerApiResourceConstants.CLIENT_CLASSIFICATION_ID, element);
+        final Long clientClassificationId = this.fromApiJsonHelper.extractLongNamed(EmployerApiResourceConstants.CLIENT_CLASSIFICATION_ID,
+                element);
         baseDataValidator.reset().parameter(EmployerApiResourceConstants.CLIENT_CLASSIFICATION_ID).value(clientClassificationId).notBlank()
                 .integerGreaterThanZero();
 
@@ -130,7 +135,8 @@ public class EmployerDataValidator {
 
         if (this.fromApiJsonHelper.parameterExists(EmployerApiResourceConstants.EXTERNALID, element)) {
             final String externalId = this.fromApiJsonHelper.extractStringNamed(EmployerApiResourceConstants.EXTERNALID, element);
-            baseDataValidator.reset().parameter(EmployerApiResourceConstants.EXTERNALID).value(externalId).notBlank().notExceedingLengthOf(100);
+            baseDataValidator.reset().parameter(EmployerApiResourceConstants.EXTERNALID).value(externalId).notBlank()
+                    .notExceedingLengthOf(100);
         }
 
         if (this.fromApiJsonHelper.parameterExists(EmployerApiResourceConstants.CONTACT_PERSON, element)) {
@@ -145,8 +151,7 @@ public class EmployerDataValidator {
 
         if (this.fromApiJsonHelper.parameterExists(EmployerApiResourceConstants.EMAIL_ADDRESS, element)) {
             final String EMAIL_ADDRESS = this.fromApiJsonHelper.extractStringNamed(EmployerApiResourceConstants.EMAIL_ADDRESS, element);
-            baseDataValidator.reset().parameter(EmployerApiResourceConstants.EMAIL_ADDRESS).value(EMAIL_ADDRESS).notBlank()
-                    .isValidEmail();
+            baseDataValidator.reset().parameter(EmployerApiResourceConstants.EMAIL_ADDRESS).value(EMAIL_ADDRESS).notBlank().isValidEmail();
         }
 
         if (this.fromApiJsonHelper.parameterExists(EmployerApiResourceConstants.ACTIVE, element)) {

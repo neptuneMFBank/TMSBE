@@ -76,5 +76,5 @@ LEFT JOIN
     bankKYC bk ON bk.client_id =mc.id
 LEFT JOIN
     signatoryKYC sk ON sk.client_id =mc.id
-WHERE slk.bvn IS NOT NULL
+WHERE (slk.bvn IS NOT NULL OR slk.tin IS NOT NULL)
 GROUP BY mc.id;

@@ -73,8 +73,7 @@ public class EmployerData implements Serializable {
     private final StaffData supervisorStaffData;
     private final LocalDate createdOn;
 
-    public static EmployerData template(
-            AddressBusinessData addressOptions, Collection<CodeValueData> clientClassificationOptions,
+    public static EmployerData template(AddressBusinessData addressOptions, Collection<CodeValueData> clientClassificationOptions,
             Collection<CodeValueData> industryOptions) {
         final Long id = null;
         final String externalId = null;
@@ -97,18 +96,28 @@ public class EmployerData implements Serializable {
         final LocalDate createdOn = null;
         final StaffData staffData = null;
         final StaffData supervisorStaffData = null;
-        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country, clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions, clientClassificationOptions, industryOptions, staffData, supervisorStaffData, createdOn);
+        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country,
+                clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions,
+                clientClassificationOptions, industryOptions, staffData, supervisorStaffData, createdOn);
     }
 
-    public static EmployerData instance(Long id, String externalId, String mobileNo, String contactPerson, String emailAddress, String emailExtension, String name, String slug, String rcNumber, CodeValueData state, CodeValueData country, CodeValueData clientClassification, CodeValueData industry,
-            CodeValueData lga, String officeAddress, String nearestLandMark, Boolean active, ClientData business, final StaffData staffData, final StaffData supervisorStaffData, LocalDate createdOn) {
+    public static EmployerData instance(Long id, String externalId, String mobileNo, String contactPerson, String emailAddress,
+            String emailExtension, String name, String slug, String rcNumber, CodeValueData state, CodeValueData country,
+            CodeValueData clientClassification, CodeValueData industry, CodeValueData lga, String officeAddress, String nearestLandMark,
+            Boolean active, ClientData business, final StaffData staffData, final StaffData supervisorStaffData, LocalDate createdOn) {
         final AddressBusinessData addressOptions = null;
         final Collection<CodeValueData> clientClassificationOptions = null;
         final Collection<CodeValueData> industryOptions = null;
-        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country, clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions, clientClassificationOptions, industryOptions, staffData, supervisorStaffData, createdOn);
+        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country,
+                clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions,
+                clientClassificationOptions, industryOptions, staffData, supervisorStaffData, createdOn);
     }
 
-    public EmployerData(Long id, String externalId, String mobileNo, String contactPerson, String emailAddress, String emailExtension, String name, String slug, String rcNumber, CodeValueData state, CodeValueData country, CodeValueData clientClassification, CodeValueData industry, CodeValueData lga, String officeAddress, String nearestLandMark, Boolean active, ClientData business, AddressBusinessData addressOptions, Collection<CodeValueData> clientClassificationOptions, Collection<CodeValueData> industryOptions, StaffData staffData, StaffData supervisorStaffData, LocalDate createdOn) {
+    public EmployerData(Long id, String externalId, String mobileNo, String contactPerson, String emailAddress, String emailExtension,
+            String name, String slug, String rcNumber, CodeValueData state, CodeValueData country, CodeValueData clientClassification,
+            CodeValueData industry, CodeValueData lga, String officeAddress, String nearestLandMark, Boolean active, ClientData business,
+            AddressBusinessData addressOptions, Collection<CodeValueData> clientClassificationOptions,
+            Collection<CodeValueData> industryOptions, StaffData staffData, StaffData supervisorStaffData, LocalDate createdOn) {
         this.id = id;
         this.externalId = externalId;
         this.mobileNo = mobileNo;

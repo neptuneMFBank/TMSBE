@@ -21,4 +21,4 @@
 -- INSERT m_permission
 INSERT INTO `m_permission` (`id`, `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`)
 VALUES
-     (NULL, 'portfolio', 'UPDATE_EMPLOYER_CHECKER', 'EMPLOYER', 'UPDATE', false)
+     (NULL, 'portfolio', 'UPDATE_EMPLOYER_CHECKER', 'EMPLOYER', 'UPDATE_CHECKER', false)

@@ -70,9 +70,50 @@ public final class SearchParametersBusiness {
 
     private final String bvn;
 
+    private final Long industryId;
+    private final Long classificationId;
+
+    public static SearchParametersBusiness forEmployer(final Boolean active, final Integer offset, final Integer limit,
+            final String orderBy, final String sortOrder, final Long supervisorId, final LocalDate fromDate, final LocalDate toDate,
+            final String displayName, final Long industryId, final Long classificationId) {
+        final String accountNo = null;
+        final Boolean orphansOnly = null;
+        final boolean isSelfUser = false;
+        final String email = null;
+        final String mobile = null;
+        final Integer legalFormId = null;
+        final Boolean showLoanProducts = null;
+        final Boolean showSavingsProducts = null;
+        final Long savingsId = null;
+        final String status = null;
+        final Long categoryId = null;
+        final Long productId = null;
+        final Long provisioningEntryId = null;
+        final String currencyCode = null;
+        final String firstname = null;
+        final String lastname = null;
+        final Long loanId = null;
+        final Integer statusId = null;
+        final String sqlSearch = null;
+        final String externalId = null;
+        final String hierarchy = null;
+        final Integer type = null;
+        final Long documentConfigId = null;
+        final Long clientId = null;
+        final Long officeId = null;
+
+        return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
+                orderBy, sortOrder, supervisorId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status,
+                categoryId, productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
+                showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId);
+    }
+
     public static SearchParametersBusiness forClientPendingActivation(final LocalDate fromDate, final LocalDate toDate,
             final Integer legalFormId, final Long officeId, final Long supervisorStaffId, final String bvn, final String displayName,
             final String accountNo, final Integer offset, final Integer limit, final String orderBy, final String sortOrder) {
+
+        final Long industryId = null;
+        final Long classificationId = null;
         final Boolean showLoanProducts = null;
         final Boolean showSavingsProducts = null;
         final Long documentConfigId = null;
@@ -99,11 +140,13 @@ public final class SearchParametersBusiness {
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, supervisorStaffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status,
                 categoryId, productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
-                showLoanProducts, showSavingsProducts, documentConfigId, bvn);
+                showLoanProducts, showSavingsProducts, documentConfigId, bvn, industryId, classificationId);
     }
 
     public static SearchParametersBusiness forDocumentProductConfig(final Long documentConfigId, final Integer offset, final Integer limit,
             final String orderBy, final String sortOrder, final Boolean showLoanProducts, final Boolean showSavingsProducts) {
+        final Long industryId = null;
+        final Long classificationId = null;
         final Integer type = null;
         final Boolean active = null;
         final Long savingsId = null;
@@ -134,12 +177,14 @@ public final class SearchParametersBusiness {
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
                 productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
-                showLoanProducts, showSavingsProducts, documentConfigId, null);
+                showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId);
     }
 
     public static SearchParametersBusiness forDocumentConfig(final Integer type, final Integer offset, final Integer limit,
             final String orderBy, final String sortOrder, final LocalDate fromDate, final LocalDate toDate, final String displayName,
             final Boolean active) {
+        final Long industryId = null;
+        final Long classificationId = null;
         final Boolean showLoanProducts = null;
         final Boolean showSavingsProducts = null;
         final Long savingsId = null;
@@ -168,13 +213,15 @@ public final class SearchParametersBusiness {
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
                 productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
-                showLoanProducts, showSavingsProducts, documentConfigId, null);
+                showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId);
     }
 
     public static SearchParametersBusiness forLoansBusiness(final Long clientId, final Long officeId, final String externalId,
             final Integer statusId, final String hierarchy, final Integer offset, final Integer limit, final String orderBy,
             final String sortOrder, final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate) {
 
+        final Long industryId = null;
+        final Long classificationId = null;
         final Boolean showLoanProducts = null;
         final Boolean showSavingsProducts = null;
         final boolean isSelfUser = false;
@@ -201,7 +248,7 @@ public final class SearchParametersBusiness {
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, name, hierarchy, firstname, lastname, offset, limit, orderBy,
                 sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId, productId,
                 provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId, showLoanProducts,
-                showSavingsProducts, documentConfigId, null);
+                showSavingsProducts, documentConfigId, null, industryId, classificationId);
     }
 
     public static SearchParametersBusiness forClientsBusiness(final Long officeId, final String externalId, final Integer statusId,
@@ -209,6 +256,8 @@ public final class SearchParametersBusiness {
             final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate, final String displayName,
             final Boolean orphansOnly, final boolean isSelfUser, final String email, final String mobile, final Integer legalFormId) {
 
+        final Long industryId = null;
+        final Long classificationId = null;
         final Boolean showLoanProducts = null;
         final Boolean showSavingsProducts = null;
         final Long savingsId = null;
@@ -229,7 +278,7 @@ public final class SearchParametersBusiness {
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
                 productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
-                showLoanProducts, showSavingsProducts, documentConfigId, null);
+                showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId);
     }
 
     private SearchParametersBusiness(final String sqlSearch, final Long officeId, final String externalId, final String name,
@@ -239,7 +288,9 @@ public final class SearchParametersBusiness {
             final String status, final Long categoryId, final Long productId, final Long provisioningEntryId, final String currencyCode,
             final Integer statusId, final String email, final String mobile, final Integer legalFormId, final Integer type,
             final Boolean active, final Long clientId, final Boolean showLoanProducts, final Boolean showSavingsProducts,
-            final Long documentConfigId, final String bvn) {
+            final Long documentConfigId, final String bvn, final Long industryId, final Long classificationId) {
+        this.industryId = industryId;
+        this.classificationId = classificationId;
         this.sqlSearch = sqlSearch;
         this.officeId = officeId;
         this.externalId = externalId;
@@ -559,4 +610,21 @@ public final class SearchParametersBusiness {
     public boolean isBvnPassed() {
         return StringUtils.isNotBlank(this.bvn);
     }
+
+    public Long getIndustryId() {
+        return industryId;
+    }
+
+    public boolean isIndustryIdPassed() {
+        return this.industryId != null && this.industryId != 0;
+    }
+
+    public Long getClassificationId() {
+        return classificationId;
+    }
+
+    public boolean isClassificationIdPassed() {
+        return this.classificationId != null && this.classificationId != 0;
+    }
+
 }

@@ -330,7 +330,7 @@ public class EmployerWriteServiceImpl implements EmployerWriteService {
 
         final String EMAIL_ADDRESS = this.fromApiJsonHelper.extractStringNamed(EmployerApiResourceConstants.EMAIL_ADDRESS, element);
 
-        Boolean active = true;
+        Boolean active = false;
         if (this.fromApiJsonHelper.parameterExists(EmployerApiResourceConstants.ACTIVE, element)) {
             active = this.fromApiJsonHelper.extractBooleanNamed(EmployerApiResourceConstants.ACTIVE, element);
         }

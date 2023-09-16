@@ -248,7 +248,7 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
                     + " me.office_address as officeAddress, me.nearest_land_mark as nearestLandMark,"
                     + " me.state_id as stateId,  cvstate.code_value as stateValue, me.country_id as countryId,"
                     + " cvcountry.code_value as countryValue, me.industry_id as industryId, cvindustry.code_value as industryValue, me.lga_id as lgaId,"
-                    + " cvlga.code_value as lgaValue, me.staff_id, ms.staff_display_name, ms.organisational_role_parent_staff_id, mss.organisational_role_parent_staff_display_name, "
+                    + " cvlga.code_value as lgaValue, me.staff_id, ms.display_name staffDisplayName, ms.organisational_role_parent_staff_id, mss.display_name supervisorStaffDisplayName, "
                     + " me.active as active, me.created_on_utc createdOn from m_employer me "
                     + " LEFT JOIN m_client mc ON mc.id=me.business_id "
                     + " LEFT JOIN m_code_value mcv ON mcv.id=me.client_classification_cv_id "
@@ -307,13 +307,13 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
             StaffData staffData = null;
             Long staffId = rs.getLong("staff_id");
             if (staffId > 0) {
-                final String staffDisplayName = rs.getString("staff_display_name");
+                final String staffDisplayName = rs.getString("staffDisplayName");
                 staffData = StaffData.lookup(staffId, staffDisplayName);
             }
             StaffData supervisorStaffData = null;
             final Long organisationalRoleParentStaffId = rs.getLong("organisational_role_parent_staff_id");
             if (organisationalRoleParentStaffId > 0) {
-                final String organisationalRoleParentStaffDisplayName = rs.getString("organisational_role_parent_staff_display_name");
+                final String organisationalRoleParentStaffDisplayName = rs.getString("supervisorStaffDisplayName");
                 supervisorStaffData = StaffData.lookup(organisationalRoleParentStaffId, organisationalRoleParentStaffDisplayName);
             }
 

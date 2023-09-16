@@ -38,6 +38,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.journalentry.api.DateParam;
 import org.apache.fineract.commands.domain.CommandWrapper;
@@ -56,6 +57,7 @@ import org.apache.fineract.portfolio.business.employer.service.EmployerReadPlatf
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Path("/employers")
 @Component
 @RequiredArgsConstructor

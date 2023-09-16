@@ -20,17 +20,18 @@ package org.apache.fineract.portfolio.business.employer.service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
+import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.PaginationHelper;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
@@ -51,6 +52,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformService {
@@ -130,7 +132,8 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
         if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
             final LocalDate startPeriod = searchParameters.getFromDate();
             final LocalDate endPeriod = searchParameters.getToDate();
-            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            
+            final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
             if (startPeriod != null && endPeriod != null) {
                 extraCriteria += " and CAST(me.created_on_utc AS DATE) BETWEEN ? AND ? ";
                 paramList.add(df.format(startPeriod));

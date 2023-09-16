@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -367,7 +368,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
             final LocalDate startPeriod = searchParameters.getFromDate();
             final LocalDate endPeriod = searchParameters.getToDate();
-            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
             if (startPeriod != null && endPeriod != null) {
                 extraCriteria += " and CAST(c.submittedon_date AS DATE) BETWEEN ? AND ? ";
                 paramList.add(df.format(startPeriod));

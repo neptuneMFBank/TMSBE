@@ -63,7 +63,7 @@ public class EmployerWriteServiceImpl implements EmployerWriteService {
     @Transactional
     @Override
     public CommandProcessingResult updateEmployer(Long employerId, JsonCommand command) {
-        log.info("updateEmployer: {}",command.json());
+        //log.info("updateEmployer: {}",command.json());
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForCreate(command.json(), true);
         Employer employer = this.repositoryWrapper.findOneWithNotFoundDetection(employerId);

@@ -160,7 +160,7 @@ public class EmployerWriteServiceImpl implements EmployerWriteService {
             employer.setName(OFFICEADDRESS);
         }
 
-        if (command.isChangeInStringParameterNamed(EmployerApiResourceConstants.OFFICEADDRESS, employer.getNearestLandMark())) {
+        if (command.isChangeInStringParameterNamed(EmployerApiResourceConstants.NEARESTLANDMARK, employer.getNearestLandMark())) {
             final String NEARESTLANDMARK = this.fromApiJsonHelper.extractStringNamed(EmployerApiResourceConstants.NEARESTLANDMARK, element);
             changes.put(EmployerApiResourceConstants.NEARESTLANDMARK, NEARESTLANDMARK);
             employer.setName(NEARESTLANDMARK);
@@ -226,7 +226,7 @@ public class EmployerWriteServiceImpl implements EmployerWriteService {
     @Override
     public CommandProcessingResult deleteEmployer(Long id) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from
-                                                                       // nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        // nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Transactional

@@ -28,6 +28,7 @@ import org.apache.fineract.infrastructure.configuration.service.ExternalServices
 import org.apache.fineract.infrastructure.configuration.service.ExternalServicesConstants.S3JSONinputParams;
 import org.apache.fineract.infrastructure.configuration.service.ExternalServicesConstants.SMSJSONinputParams;
 import org.apache.fineract.infrastructure.configuration.service.ExternalServicesConstants.SMTPJSONinputParams;
+import org.apache.fineract.infrastructure.configuration.service.business.ExternalServicesBusinessConstants.AzureJSONinputParams;
 import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExternalServicesPropertiesCommandFromApiJsonDeserializer {
 
+    private final Set<String> azureSupportedParameters = AzureJSONinputParams.getAllValues();
     private final Set<String> s3SupportedParameters = S3JSONinputParams.getAllValues();
     private final Set<String> smtpSupportedParameters = SMTPJSONinputParams.getAllValues();
     private final Set<String> smsSupportedParameters = SMSJSONinputParams.getAllValues();
@@ -52,23 +54,28 @@ public class ExternalServicesPropertiesCommandFromApiJsonDeserializer {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         switch (externalServiceName) {
+            case "Azure":
+                this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.azureSupportedParameters);
+                break;
+
             case "S3":
                 this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.s3SupportedParameters);
-            break;
+                break;
 
             case "SMTP":
                 this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.smtpSupportedParameters);
-            break;
+                break;
 
             case "SMS":
                 this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.smsSupportedParameters);
-            break;
+                break;
 
             case "NOTIFICATION":
                 this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.notificationSupportedParameters);
-            break;
+                break;
 
             default:
                 throw new ExternalServiceConfigurationNotFoundException(externalServiceName);
@@ -77,7 +84,8 @@ public class ExternalServicesPropertiesCommandFromApiJsonDeserializer {
     }
 
     public Set<String> getNameKeys(final String json) {
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         Map<String, String> jsonMap = this.fromApiJsonHelper.extractDataMap(typeOfMap, json);
         Set<String> keyNames = jsonMap.keySet();
         return keyNames;

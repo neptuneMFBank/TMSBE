@@ -211,6 +211,10 @@ public class ExternalServicesPropertiesReadPlatformServiceImpl implements Extern
     public Collection<ExternalServicesPropertiesData> retrieveOne(String serviceName) {
         String serviceNameToUse = null;
         switch (serviceName) {
+            case "Azure":
+                serviceNameToUse = ExternalServicesBusinessConstants.AZURE_SERVICE_NAME;
+                break;
+                
             case "S3":
                 serviceNameToUse = ExternalServicesConstants.S3_SERVICE_NAME;
                 break;

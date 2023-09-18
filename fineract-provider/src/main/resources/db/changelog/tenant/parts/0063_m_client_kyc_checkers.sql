@@ -22,17 +22,17 @@ SELECT
 mc.id client_id,
     CASE
         WHEN
-             mc.status_enum=300 IS NOT NULL THEN '1'
+             mc.id > 0 IS NOT NULL THEN '1'
         ELSE '0'
     END AS has_personal,
     CASE
         WHEN
-             mca.is_active=1 THEN '1'
+             mca.client_id > 0 THEN '1'
         ELSE '0'
     END AS has_residential,
     CASE
         WHEN
-             ek.active=1  THEN '1'
+             ek.client_id > 0  THEN '1'
         ELSE '0'
     END AS has_employment,
     CASE
@@ -47,17 +47,17 @@ mc.id client_id,
     END AS has_next_of_kin,
     CASE
         WHEN
-             bk.active=1  THEN '1'
+             bk.client_id > 0  THEN '1'
         ELSE '0'
     END AS has_bank_detail,
     CASE
         WHEN
-             mci.active=200 THEN '1'
+             mci.client_id > 0 THEN '1'
         ELSE '0'
     END AS has_identification,
     CASE
         WHEN
-             sk.active=1 THEN '1'
+             sk.client_id > 0 THEN '1'
         ELSE '0'
     END AS has_directors
 FROM

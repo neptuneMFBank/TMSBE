@@ -138,7 +138,7 @@ public class StaffBusinessApiResource {
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("supervisorId") @Parameter(description = "supervisorId") final Long supervisorId,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
-            @QueryParam("isOrganisationalRoleEnumIdPassed") @Parameter(description = "isOrganisationalRoleEnumIdPassed") final Long isOrganisationalRoleEnumIdPassed,
+            @QueryParam("organisationalRoleEnumId") @Parameter(description = "organisationalRoleEnumId") final Long organisationalRoleEnumId,
             @QueryParam("name") @Parameter(description = "name") final String name,
             @QueryParam("active") @Parameter(description = "active") Boolean active,
             @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
@@ -160,7 +160,7 @@ public class StaffBusinessApiResource {
             toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
         }
 
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forStaff(active, offset, limit, orderBy, sortOrder, supervisorId, fromDate, toDate, name, isOrganisationalRoleEnumIdPassed, officeId);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forStaff(active, offset, limit, orderBy, sortOrder, supervisorId, fromDate, toDate, name, organisationalRoleEnumId, officeId);
 
         final Page<StaffBusinessData> employerData = this.readPlatformService.retrieveAll(searchParameters);
 

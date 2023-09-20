@@ -77,7 +77,7 @@ public final class SearchParametersBusiness {
 
     public static SearchParametersBusiness forUser(final Boolean active, final Integer offset, final Integer limit,
             final String orderBy, final String sortOrder, final LocalDate fromDate, final LocalDate toDate,
-            final Long officeId, final String username,final boolean isSelfUser) {
+            final Long officeId, final String username,final Boolean isSelfUser) {
         final Long organisationalRoleEnumId = null;
         final String displayName = null;
         final Long supervisorId = null;

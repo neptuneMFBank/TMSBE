@@ -16,15 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.organisation.staff.service.business;
+package org.apache.fineract.useradministration.api.business;
 
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.organisation.staff.data.business.StaffBusinessData;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-public interface StaffBusinessReadPlatformService {
+public final class AppUserBusinessApiConstant {
 
-    Page<StaffBusinessData> retrieveAll(SearchParametersBusiness searchParameters);
+    private AppUserBusinessApiConstant() {
 
-    StaffBusinessData retrieveStaff(Long staffId);
+    }
+    public static final Set<String> responseDataParameters = new HashSet<>(Arrays.asList("id", "officeId", "officeName", "username", "firstname",
+            "lastname", "email", "allowedOffices", "availableRoles", "selectedRoles", "staff"));
+
+    public static final String resourceNameForPermissions = "USER";
+
 }

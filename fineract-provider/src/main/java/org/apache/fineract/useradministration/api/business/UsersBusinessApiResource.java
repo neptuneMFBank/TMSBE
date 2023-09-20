@@ -24,24 +24,30 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDate;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
-import org.apache.fineract.infrastructure.bulkimport.service.BulkImportWorkbookPopulatorService;
-import org.apache.fineract.infrastructure.bulkimport.service.BulkImportWorkbookService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
+import org.apache.fineract.infrastructure.core.service.Page;
+import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.organisation.office.service.OfficeReadPlatformService;
 import org.apache.fineract.useradministration.data.AppUserData;
-import org.apache.fineract.useradministration.service.AppUserReadPlatformService;
+import org.apache.fineract.useradministration.service.business.AppUserBusinessReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -54,32 +60,66 @@ import org.springframework.stereotype.Component;
 public class UsersBusinessApiResource {
 
     /**
-     * The set of parameters that are supported in response for {@link AppUserData}.
+     * The set of parameters that are supported in response for
+     * {@link AppUserData}.
      */
     private final PlatformSecurityContext context;
-    private final AppUserReadPlatformService readPlatformService;
-    private final OfficeReadPlatformService officeReadPlatformService;
+    private final AppUserBusinessReadPlatformService readPlatformService;
     private final DefaultToApiJsonSerializer<AppUserData> toApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
-    private final BulkImportWorkbookPopulatorService bulkImportWorkbookPopulatorService;
-    private final BulkImportWorkbookService bulkImportWorkbookService;
 
     @Autowired
-    public UsersBusinessApiResource(final PlatformSecurityContext context, final AppUserReadPlatformService readPlatformService,
-            final OfficeReadPlatformService officeReadPlatformService, final DefaultToApiJsonSerializer<AppUserData> toApiJsonSerializer,
+    public UsersBusinessApiResource(final PlatformSecurityContext context, final AppUserBusinessReadPlatformService readPlatformService,
+            final DefaultToApiJsonSerializer<AppUserData> toApiJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
-            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
-            final BulkImportWorkbookPopulatorService bulkImportWorkbookPopulatorService,
-            final BulkImportWorkbookService bulkImportWorkbookService) {
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
         this.readPlatformService = readPlatformService;
-        this.officeReadPlatformService = officeReadPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
-        this.bulkImportWorkbookPopulatorService = bulkImportWorkbookPopulatorService;
-        this.bulkImportWorkbookService = bulkImportWorkbookService;
+    }
+
+    @GET
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Retrieve all Staff", description = "Retrieve list of Employers")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+        // EmployerApiResourceSwagger.GetEmployersResponse.class)))
+        )})
+    public String retrieveAll(@Context final UriInfo uriInfo,
+            @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
+            @QueryParam("username") @Parameter(description = "username") final String username,
+            @QueryParam("active") @Parameter(description = "active") Boolean active,
+            @QueryParam("isSelfUser") @Parameter(description = "isSelfUser") Boolean isSelfUser,
+            //@QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            //@QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @DefaultValue("u.id") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @DefaultValue("desc") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            @DefaultValue("en") @QueryParam("locale") final String locale
+    //,@DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat
+    ) {
+        this.context.authenticatedUser().validateHasReadPermission(AppUserBusinessApiConstant.resourceNameForPermissions);
+
+        LocalDate fromDate = null;
+//        if (startPeriod != null) {
+//            fromDate = startPeriod.getDate(LoanBusinessApiConstants.startPeriodParameterName, dateFormat, locale);
+//        }
+        LocalDate toDate = null;
+//        if (endPeriod != null) {
+//            toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
+//        }
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forUser(active, offset, limit, orderBy, sortOrder, fromDate,
+                toDate, officeId, username, isSelfUser);
+        final Page<AppUserData> appUserData = this.readPlatformService.retrieveAllUsers(searchParameters);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiJsonSerializer.serialize(settings, appUserData, AppUserBusinessApiConstant.responseDataParameters);
     }
 
     @PUT
@@ -88,11 +128,12 @@ public class UsersBusinessApiResource {
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
-    ) })
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
+        )})
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public String update(@PathParam("userId") @Parameter(description = "userId") final Long userId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -112,11 +153,12 @@ public class UsersBusinessApiResource {
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
-    ) })
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
+        )})
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public String update(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //

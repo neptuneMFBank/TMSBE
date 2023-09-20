@@ -21,8 +21,17 @@ package org.apache.fineract.organisation.staff.service.business;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
+import org.apache.fineract.infrastructure.core.service.DateUtils;
+import org.apache.fineract.infrastructure.core.service.Page;
+import org.apache.fineract.infrastructure.core.service.PaginationHelper;
+import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
+import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.organisation.staff.data.StaffData;
@@ -33,6 +42,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPlatformService {
@@ -40,15 +50,21 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
     private final ColumnValidator columnValidator;
+    private final PaginationHelper paginationHelper;
+    final StaffMapper rm = new StaffMapper();
+    private final DatabaseSpecificSQLGenerator sqlGenerator;
 
     @Autowired
     public StaffBusinessReadPlatformServiceImpl(final PlatformSecurityContext context, final JdbcTemplate jdbcTemplate,
-            final ColumnValidator columnValidator) {
+            final ColumnValidator columnValidator, DatabaseSpecificSQLGenerator sqlGenerator, final PaginationHelper paginationHelper) {
         this.context = context;
         this.jdbcTemplate = jdbcTemplate;
         this.columnValidator = columnValidator;
+        this.sqlGenerator = sqlGenerator;
+        this.paginationHelper = paginationHelper;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public StaffBusinessData retrieveStaff(final Long staffId) {
 
@@ -58,13 +74,106 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
         final String hierarchy = this.context.authenticatedUser().getOffice().getHierarchy() + "%";
 
         try {
-            final StaffMapper rm = new StaffMapper();
             final String sql = "select " + rm.schema() + " where s.id = ? and o.hierarchy like ? ";
 
-            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { staffId, hierarchy }); // NOSONAR
+            return this.jdbcTemplate.queryForObject(sql, rm, new Object[]{staffId, hierarchy}); // NOSONAR
         } catch (final EmptyResultDataAccessException e) {
             throw new StaffNotFoundException(staffId, e);
         }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<StaffBusinessData> retrieveAll(SearchParametersBusiness searchParameters) {
+        this.context.authenticatedUser();
+        List<Object> paramList = new ArrayList<>();
+        final StringBuilder sqlBuilder = new StringBuilder(200);
+        sqlBuilder.append("select ");
+        sqlBuilder.append(sqlGenerator.calcFoundRows());
+        sqlBuilder.append(rm.schema());
+
+        if (searchParameters != null) {
+            final String extraCriteria = buildSqlStringFromStaffCriteria(searchParameters, paramList);
+            if (StringUtils.isNotBlank(extraCriteria)) {
+                sqlBuilder.append(" where (").append(extraCriteria).append(")");
+            }
+
+            if (searchParameters.isOrderByRequested()) {
+                sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
+                this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getOrderBy());
+                if (searchParameters.isSortOrderProvided()) {
+                    sqlBuilder.append(' ').append(searchParameters.getSortOrder());
+                    this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getSortOrder());
+                }
+            }
+
+            if (searchParameters.isLimited()) {
+                sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+                if (searchParameters.isOffset()) {
+                    sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+                }
+            }
+        }
+
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.rm);
+    }
+
+    private String buildSqlStringFromStaffCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
+
+        //s.office_id,s.display_name,s.is_active,s.organisational_role_parent_staff_id,s.organisational_role_enum
+        final Long officeId = searchParameters.getOfficeId();
+        final Long supervisorId = searchParameters.getStaffId();
+        final String name = searchParameters.getName();
+        final Long isOrganisationalRoleEnumIdPassed = searchParameters.getOrganisationalRoleEnumId();
+        final Boolean active = searchParameters.isActive();
+
+        String extraCriteria = "";
+
+        if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
+            final LocalDate startPeriod = searchParameters.getFromDate();
+            final LocalDate endPeriod = searchParameters.getToDate();
+
+            final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
+            if (startPeriod != null && endPeriod != null) {
+                extraCriteria += " and CAST(s.joining_date AS DATE) BETWEEN ? AND ? ";
+                paramList.add(df.format(startPeriod));
+                paramList.add(df.format(endPeriod));
+            } else if (startPeriod != null) {
+                extraCriteria += " and CAST(s.joining_date AS DATE) >= ? ";
+                paramList.add(df.format(startPeriod));
+            } else if (endPeriod != null) {
+                extraCriteria += " and CAST(s.joining_date AS DATE) <= ? ";
+                paramList.add(df.format(endPeriod));
+            }
+        }
+
+        if (searchParameters.isOfficeIdPassed()) {
+            extraCriteria += " and s.office_id = ? ";
+            paramList.add(officeId);
+        }
+        if (searchParameters.isStaffIdPassed()) {
+            extraCriteria += " and s.organisational_role_parent_staff_id = ? ";
+            paramList.add(supervisorId);
+        }
+
+        if (searchParameters.isNamePassed()) {
+            paramList.add("%".concat(name.concat("%")));
+            extraCriteria += " and s.display_name like ? ";
+        }
+        if (searchParameters.isActivePassed()) {
+            extraCriteria += " and s.is_active = ? ";
+            paramList.add(active);
+        }
+
+        if (searchParameters.isOrganisationalRoleEnumIdPassed()) {
+            extraCriteria += " and s.organisational_role_enum = ? ";
+            paramList.add(isOrganisationalRoleEnumIdPassed);
+        }
+
+        if (StringUtils.isNotBlank(extraCriteria)) {
+            extraCriteria = extraCriteria.substring(4);
+        }
+        return extraCriteria;
     }
 
     private static final class StaffMapper implements RowMapper<StaffBusinessData> {
@@ -73,10 +182,10 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
             return " s.id as id,s.office_id as officeId, o.name as officeName, s.firstname as firstname, s.lastname as lastname,"
                     + " s.display_name as displayName, s.is_loan_officer as isLoanOfficer, s.external_id as externalId, s.mobile_no as mobileNo,"
                     + " s.is_active as isActive, s.joining_date as joiningDate, "
-                    + " s.organisational_role_parent_staff_id organisationalRoleParentStaff, ms.display_name organisationalRoleParentStaffName, s.organisational_role_enum organisationalRoleType, cv.code_value organisationalRoleTypeName "
+                    + " s.organisational_role_parent_staff_id organisationalRoleParentStaff, ms.display_name organisationalRoleParentStaffName, s.organisational_role_enum organisationalRoleType, mcv.code_value organisationalRoleTypeName "
                     + " from m_staff s " + " join m_office o on o.id = s.office_id "
                     + " left join m_staff ms on ms.id=s.organisational_role_parent_staff_id "
-                    + " left join m_code_value mc on mc.id=s.organisational_role_enum ";
+                    + " left join m_code_value mcv on mcv.id=s.organisational_role_enum ";
         }
 
         @Override

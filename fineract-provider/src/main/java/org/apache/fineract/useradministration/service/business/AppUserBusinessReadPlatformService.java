@@ -16,15 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.organisation.staff.service.business;
+package org.apache.fineract.useradministration.service.business;
 
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.organisation.staff.data.business.StaffBusinessData;
+import org.apache.fineract.useradministration.data.AppUserData;
 
-public interface StaffBusinessReadPlatformService {
+public interface AppUserBusinessReadPlatformService {
 
-    Page<StaffBusinessData> retrieveAll(SearchParametersBusiness searchParameters);
+    Page<AppUserData> retrieveAllUsers(SearchParametersBusiness searchParameters);
 
-    StaffBusinessData retrieveStaff(Long staffId);
 }

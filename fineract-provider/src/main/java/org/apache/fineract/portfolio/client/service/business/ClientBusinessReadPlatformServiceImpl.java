@@ -22,8 +22,6 @@ import com.google.gson.JsonElement;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -278,7 +276,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
                 // , lgaValuesOptions
-                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                ,
+                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions
         // , industryOptions
         );
@@ -891,7 +890,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
             final LocalDate startPeriod = searchParameters.getFromDate();
             final LocalDate endPeriod = searchParameters.getToDate();
-            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
             if (startPeriod != null && endPeriod != null) {
                 extraCriteria += " and CAST(cpa.submittedon_date AS DATE) BETWEEN ? AND ? ";
                 paramList.add(df.format(startPeriod));

@@ -34,11 +34,13 @@ public final class ContentRepositoryUtils {
 
     private static final SecureRandom random = new SecureRandom();
 
-    private ContentRepositoryUtils() {}
+    private ContentRepositoryUtils() {
+    }
 
     public enum ImageMIMEtype {
 
-        GIF("image/gif"), JPEG("image/jpeg"), PNG("image/png"), PDF("application/pdf");
+        GIF("image/gif"), JPEG("image/jpeg"), PNG("image/png"), PDF("application/pdf"), XLSX("application/xlsx"), XLS("application/xls"), DOC(
+                "application/doc"), DOCX("application/docx");
 
         private final String value;
 
@@ -70,7 +72,7 @@ public final class ContentRepositoryUtils {
 
     public enum ImageFileExtension {
 
-        GIF(".gif"), JPEG(".jpeg"), JPG(".jpg"), PNG(".png"), PDF(".pdf");
+        GIF(".gif"), JPEG(".jpeg"), JPG(".jpg"), PNG(".png"), PDF(".pdf"), XLSX(".xlsx"), XLS(".xls"), DOC(".doc"), DOCX(".docx");
 
         private final String value;
 
@@ -105,7 +107,11 @@ public final class ContentRepositoryUtils {
     public enum ImageDataURIsuffix {
 
         GIF("data:" + ImageMIMEtype.GIF.getValue() + ";base64,"), JPEG("data:" + ImageMIMEtype.JPEG.getValue() + ";base64,"), PNG(
-                "data:" + ImageMIMEtype.PNG.getValue() + ";base64,"), PDF("data:" + ImageMIMEtype.PDF.getValue() + ";base64,");
+                "data:" + ImageMIMEtype.PNG.getValue() + ";base64,"), PDF("data:" + ImageMIMEtype.PDF.getValue() + ";base64,"), DOC(
+                "data:" + ImageMIMEtype.DOC.getValue() + ";base64,"), DOCX(
+                "data:" + ImageMIMEtype.DOCX.getValue() + ";base64,"), XLS(
+                "data:" + ImageMIMEtype.XLS.getValue() + ";base64,"), XLSX(
+                "data:" + ImageMIMEtype.XLSX.getValue() + ";base64,");
 
         private final String value;
 
@@ -145,8 +151,7 @@ public final class ContentRepositoryUtils {
     /**
      * Extracts Image from a Data URL
      *
-     * @param dataURL
-     *            mimeType
+     * @param dataURL mimeType
      */
     public static Base64EncodedImage extractImageFromDataURL(final String dataURL) {
         String fileExtension = "";
@@ -172,9 +177,10 @@ public final class ContentRepositoryUtils {
 
     public static void validateFileSizeWithinPermissibleRange(final Long fileSize, final String name) {
         /**
-         * Using Content-Length gives me size of the entire request, which is good enough for now for a fast fail as the
-         * length of the rest of the content i.e name and description while compared to the uploaded file size is
-         * negligible
+         * Using Content-Length gives me size of the entire request, which is
+         * good enough for now for a fast fail as the length of the rest of the
+         * content i.e name and description while compared to the uploaded file
+         * size is negligible
          *
          */
         if (fileSize != null && ((fileSize / (1024 * 1024)) > ContentRepository.MAX_FILE_UPLOAD_SIZE_IN_MB)) {
@@ -199,7 +205,7 @@ public final class ContentRepositoryUtils {
      * Generate a random String.
      */
     @SuppressFBWarnings(value = {
-            "DMI_RANDOM_USED_ONLY_ONCE" }, justification = "False positive for random object created and used only once")
+        "DMI_RANDOM_USED_ONLY_ONCE"}, justification = "False positive for random object created and used only once")
     public static String generateRandomString() {
         final String characters = "abcdefghijklmnopqrstuvwxyz123456789";
         // length is a random number between 5 to 16

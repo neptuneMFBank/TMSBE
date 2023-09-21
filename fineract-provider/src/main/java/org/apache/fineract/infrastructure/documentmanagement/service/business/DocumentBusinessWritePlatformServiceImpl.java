@@ -34,10 +34,13 @@ import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityEx
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.documentmanagement.api.business.DocumentConfigApiConstants;
 import org.apache.fineract.infrastructure.documentmanagement.command.DocumentCommand;
+import org.apache.fineract.infrastructure.documentmanagement.contentrepository.ContentRepositoryUtils;
 import org.apache.fineract.infrastructure.documentmanagement.contentrepository.ContentRepositoryUtils.ImageFileExtension;
 import org.apache.fineract.infrastructure.documentmanagement.contentrepository.ContentRepositoryUtils.ImageMIMEtype;
+import org.apache.fineract.infrastructure.documentmanagement.data.FileData;
 import org.apache.fineract.infrastructure.documentmanagement.exception.ContentManagementException;
 import org.apache.fineract.infrastructure.documentmanagement.serialization.business.DocumentBusinessDataValidator;
+import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentWritePlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.simplifytech.data.GeneralConstants;
@@ -52,15 +55,17 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
     private final DocumentBusinessDataValidator fromApiJsonDeserializer;
     private final FromJsonHelper fromApiJsonHelper;
     private final DocumentWritePlatformService documentWritePlatformService;
+    private final DocumentReadPlatformService documentReadPlatformService;
 
     @Autowired
     public DocumentBusinessWritePlatformServiceImpl(final PlatformSecurityContext context,
             final DocumentBusinessDataValidator fromApiJsonDeserializer, final FromJsonHelper fromApiJsonHelper,
-            final DocumentWritePlatformService documentWritePlatformService) {
+            final DocumentWritePlatformService documentWritePlatformService, final DocumentReadPlatformService documentReadPlatformService) {
         this.context = context;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.documentWritePlatformService = documentWritePlatformService;
+        this.documentReadPlatformService = documentReadPlatformService;
     }
 
     @Override
@@ -138,5 +143,55 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
             log.warn("createBulkBase64Document Error: {}", e);
             throw new PlatformDataIntegrityException("error.document.bulk.base64.upload", "Invalid documents uploaded");
         }
+    }
+
+    @Override
+    public CommandProcessingResult retrieveAttachment(final String entityName, final Long entityId, final Long documentId) {
+        this.context.authenticatedUser();
+        final FileData fileData = this.documentReadPlatformService.retrieveFileData(entityName, entityId, documentId);
+
+        try {
+            String documentDataURISuffix = getFileExtension(fileData);
+
+            byte[] resizedImageBytes = fileData.getByteSource().read();
+            if (resizedImageBytes != null) {
+                final String imageAsBase64Text = documentDataURISuffix + Base64.getMimeEncoder().encodeToString(resizedImageBytes);
+                return new CommandProcessingResultBuilder()
+                        .withEntityId(entityId)
+                        .withResourceIdAsString(imageAsBase64Text)
+                        .build();
+            } else {
+                throw new ContentManagementException(fileData.name(), "Document not available.");
+            }
+        } catch (Exception e) {
+            throw new ContentManagementException(fileData.name(), e.getMessage(), e);
+        }
+    }
+
+    private static String getFileExtension(FileData fileData) {
+        String fileDataURISuffix = ContentRepositoryUtils.ImageDataURIsuffix.JPEG.getValue();
+        if (StringUtils.equalsIgnoreCase(fileData.contentType(), ContentRepositoryUtils.ImageMIMEtype.GIF.getValue())
+                || StringUtils.endsWith(fileData.name(), ContentRepositoryUtils.ImageFileExtension.GIF.getValue())) {
+            fileDataURISuffix = ContentRepositoryUtils.ImageDataURIsuffix.GIF.getValue();
+        } else if (StringUtils.equalsIgnoreCase(fileData.contentType(), ContentRepositoryUtils.ImageMIMEtype.PNG.getValue())
+                || StringUtils.endsWith(fileData.name(), ContentRepositoryUtils.ImageFileExtension.PNG.getValue())) {
+            fileDataURISuffix = ContentRepositoryUtils.ImageDataURIsuffix.PNG.getValue();
+        } else if (StringUtils.equalsIgnoreCase(fileData.contentType(), ContentRepositoryUtils.ImageMIMEtype.PDF.getValue())
+                || StringUtils.endsWith(fileData.name(), ContentRepositoryUtils.ImageFileExtension.PDF.getValue())) {
+            fileDataURISuffix = ContentRepositoryUtils.ImageDataURIsuffix.PDF.getValue();
+        } else if (StringUtils.equalsIgnoreCase(fileData.contentType(), ContentRepositoryUtils.ImageMIMEtype.DOC.getValue())
+                || StringUtils.endsWith(fileData.name(), ContentRepositoryUtils.ImageFileExtension.DOC.getValue())) {
+            fileDataURISuffix = ContentRepositoryUtils.ImageDataURIsuffix.DOC.getValue();
+        } else if (StringUtils.equalsIgnoreCase(fileData.contentType(), ContentRepositoryUtils.ImageMIMEtype.DOCX.getValue())
+                || StringUtils.endsWith(fileData.name(), ContentRepositoryUtils.ImageFileExtension.DOCX.getValue())) {
+            fileDataURISuffix = ContentRepositoryUtils.ImageDataURIsuffix.DOCX.getValue();
+        } else if (StringUtils.equalsIgnoreCase(fileData.contentType(), ContentRepositoryUtils.ImageMIMEtype.XLS.getValue())
+                || StringUtils.endsWith(fileData.name(), ContentRepositoryUtils.ImageFileExtension.XLS.getValue())) {
+            fileDataURISuffix = ContentRepositoryUtils.ImageDataURIsuffix.XLS.getValue();
+        } else if (StringUtils.equalsIgnoreCase(fileData.contentType(), ContentRepositoryUtils.ImageMIMEtype.XLSX.getValue())
+                || StringUtils.endsWith(fileData.name(), ContentRepositoryUtils.ImageFileExtension.XLSX.getValue())) {
+            fileDataURISuffix = ContentRepositoryUtils.ImageDataURIsuffix.XLSX.getValue();
+        }
+        return fileDataURISuffix;
     }
 }

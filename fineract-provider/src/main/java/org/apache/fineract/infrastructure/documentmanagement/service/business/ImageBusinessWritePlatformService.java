@@ -26,4 +26,7 @@ public interface ImageBusinessWritePlatformService {
     @PreAuthorize(value = "hasAnyAuthority('ALL_FUNCTIONS', 'CREATE_CLIENTIMAGE','CREATE_STAFFIMAGE')")
     CommandProcessingResult saveOrUpdateImage(String entityName, Long entityId, String jsonRequestBody);
 
+    @PreAuthorize(value = "hasAnyAuthority('ALL_FUNCTIONS', 'READ_CLIENTIMAGE','READ_STAFFIMAGE')")
+    CommandProcessingResult retrieveImage(String entityName, Long entityId);
+
 }

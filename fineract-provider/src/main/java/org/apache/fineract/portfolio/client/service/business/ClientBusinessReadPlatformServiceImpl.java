@@ -283,6 +283,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         );
     }
 
+    
     @Override
     @Transactional(readOnly = true)
     public Page<ClientData> retrieveAll(final SearchParametersBusiness searchParameters) {
@@ -348,7 +349,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     }
 
     private String buildSqlStringFromClientCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
-
+        final String bvn = searchParameters.getBvn();
         final Integer statusId = searchParameters.getStatusId();
         final Integer legalFormId = searchParameters.getLegalFormId();
         final Long officeId = searchParameters.getOfficeId();
@@ -381,6 +382,10 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             }
         }
 
+        if (searchParameters.isBvnPassed()) {
+            paramList.add(bvn);
+            extraCriteria += " and slk.bvn = ? ";
+        }
         if (officeId != null) {
             extraCriteria += " and c.office_id = ? ";
             paramList.add(officeId);
@@ -587,6 +592,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             sqlBuilder.append("left join m_staff s on s.id = c.staff_id ");
             sqlBuilder.append("left join m_appuser sbu on sbu.id = c.created_by ");
             sqlBuilder.append("left join m_code_value cvclassification on cvclassification.id = c.client_classification_cv_id ");
+            sqlBuilder.append("left join secondLevelKYC slk on slk.client_id = c.id ");
 
             this.schema = sqlBuilder.toString();
         }

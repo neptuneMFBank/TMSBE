@@ -345,7 +345,7 @@ public final class SearchParametersBusiness {
     public static SearchParametersBusiness forClientsBusiness(final Long officeId, final String externalId, final Integer statusId,
             final String hierarchy, final Integer offset, final Integer limit, final String orderBy, final String sortOrder,
             final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate, final String displayName,
-            final Boolean orphansOnly, final boolean isSelfUser, final String email, final String mobile, final Integer legalFormId) {
+            final Boolean orphansOnly, final boolean isSelfUser, final String email, final String mobile, final Integer legalFormId, final String bvn) {
 
         final Long industryId = null;
         final Long organisationalRoleEnumId = null;
@@ -370,7 +370,7 @@ public final class SearchParametersBusiness {
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
                 productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
-                showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId, username);
+                showLoanProducts, showSavingsProducts, documentConfigId, bvn, industryId, classificationId, organisationalRoleEnumId, username);
     }
 
     private SearchParametersBusiness(final String sqlSearch, final Long officeId, final String externalId, final String name,

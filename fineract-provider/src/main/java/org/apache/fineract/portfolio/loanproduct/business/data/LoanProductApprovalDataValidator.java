@@ -52,8 +52,7 @@ public class LoanProductApprovalDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         if (isUpdate) {
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, UPDATE_REQUEST_DATA_PARAMETERS);
         } else {
@@ -72,13 +71,17 @@ public class LoanProductApprovalDataValidator {
         }
 
         if (isUpdate == false || this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, element)) {
-            final long LOANPRODUCTID = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, element);
-            baseDataValidator.reset().parameter(LoanProductApprovalApiResourceConstants.LOANPRODUCTID).value(LOANPRODUCTID).notBlank().longGreaterThanZero();
+            final long LOANPRODUCTID = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID,
+                    element);
+            baseDataValidator.reset().parameter(LoanProductApprovalApiResourceConstants.LOANPRODUCTID).value(LOANPRODUCTID).notBlank()
+                    .longGreaterThanZero();
         }
 
         if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element)) {
-            final JsonArray LOANPRODUCTAPPROVALCONFIGDATA = this.fromApiJsonHelper.extractJsonArrayNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
-            baseDataValidator.reset().parameter(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA).value(LOANPRODUCTAPPROVALCONFIGDATA).notNull().jsonArrayNotEmpty();
+            final JsonArray LOANPRODUCTAPPROVALCONFIGDATA = this.fromApiJsonHelper
+                    .extractJsonArrayNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
+            baseDataValidator.reset().parameter(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA)
+                    .value(LOANPRODUCTAPPROVALCONFIGDATA).notNull().jsonArrayNotEmpty();
         }
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);

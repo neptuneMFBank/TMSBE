@@ -33,9 +33,8 @@ import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDa
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 
 @Entity
-@Table(name = "m_role_loan_product_approval", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"name"}, name = "rlpa_UNIQUE_name"),
-    @UniqueConstraint(columnNames = {"loan_product_id"}, name = "rlpa_UNIQUE_loan_product")})
+@Table(name = "m_role_loan_product_approval", uniqueConstraints = { @UniqueConstraint(columnNames = { "name" }, name = "rlpa_UNIQUE_name"),
+        @UniqueConstraint(columnNames = { "loan_product_id" }, name = "rlpa_UNIQUE_loan_product") })
 public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom {
 
     @Column(name = "name", nullable = false)
@@ -48,8 +47,7 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "LoanProductApproval", orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<LoanProductApprovalConfig> loanProductApprovalConfig = new HashSet<>();
 
-    protected LoanProductApproval() {
-    }
+    protected LoanProductApproval() {}
 
     private LoanProductApproval(String name, LoanProduct loanProduct, Set<LoanProductApprovalConfig> loanProductApprovalConfig) {
         this.name = name;
@@ -57,7 +55,8 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
         this.loanProductApprovalConfig = loanProductApprovalConfig;
     }
 
-    public static LoanProductApproval create(String name, LoanProduct loanProduct, Set<LoanProductApprovalConfig> loanProductApprovalConfig) {
+    public static LoanProductApproval create(String name, LoanProduct loanProduct,
+            Set<LoanProductApprovalConfig> loanProductApprovalConfig) {
         return new LoanProductApproval(name, loanProduct, loanProductApprovalConfig);
     }
 

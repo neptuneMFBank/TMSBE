@@ -231,7 +231,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
             if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
                 final LocalDate startPeriod = searchParameters.getFromDate();
                 final LocalDate endPeriod = searchParameters.getToDate();
-                //final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                // final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                 final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
                 if (startPeriod != null && endPeriod != null) {
                     sqlBuilder.append(" and CAST(l.submittedon_date AS DATE) BETWEEN ? AND ? ");

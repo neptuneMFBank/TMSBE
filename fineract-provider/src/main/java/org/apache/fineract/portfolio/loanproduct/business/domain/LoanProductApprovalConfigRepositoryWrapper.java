@@ -35,7 +35,8 @@ public class LoanProductApprovalConfigRepositoryWrapper {
 
     @Transactional(readOnly = true)
     public LoanProductApprovalConfig findOneWithNotFoundDetection(final Long id) {
-        return this.repository.findById(id).orElseThrow(() -> new LoanProductApprovalNotFoundException("Loan product approval config does not exit for id " + id));
+        return this.repository.findById(id)
+                .orElseThrow(() -> new LoanProductApprovalNotFoundException("Loan product approval config does not exit for id " + id));
     }
 
 }

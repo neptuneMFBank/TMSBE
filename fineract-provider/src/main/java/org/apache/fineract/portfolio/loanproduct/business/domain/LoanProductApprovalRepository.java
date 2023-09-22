@@ -22,7 +22,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface LoanProductApprovalRepository extends JpaRepository<LoanProductApproval, Long>, JpaSpecificationExecutor<LoanProductApproval> {
+public interface LoanProductApprovalRepository
+        extends JpaRepository<LoanProductApproval, Long>, JpaSpecificationExecutor<LoanProductApproval> {
 
     List<LoanProductApproval> findByLoanProductId(final Long loanProductId);
 

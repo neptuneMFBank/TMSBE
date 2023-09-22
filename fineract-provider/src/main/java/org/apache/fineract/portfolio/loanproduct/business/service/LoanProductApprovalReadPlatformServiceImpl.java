@@ -111,7 +111,8 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
             }
         }
 
-        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.loanProductApprovalMapper);
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(),
+                this.loanProductApprovalMapper);
     }
 
     private String buildSqlStringFromLoanProductApprovalCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
@@ -159,9 +160,9 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
         this.context.authenticatedUser();
         try {
             final String sql = "select " + loanProductApprovalMapper.schema() + " where lpa.id = ?";
-            LoanProductApprovalData loanProductApprovalData = this.jdbcTemplate.queryForObject(sql, loanProductApprovalMapper, new Object[]{loanProductApprovalId});
-            Collection<LoanProductApprovalConfigData> retrieveConfig
-                    = retrieveConfig(loanProductApprovalId);
+            LoanProductApprovalData loanProductApprovalData = this.jdbcTemplate.queryForObject(sql, loanProductApprovalMapper,
+                    new Object[] { loanProductApprovalId });
+            Collection<LoanProductApprovalConfigData> retrieveConfig = retrieveConfig(loanProductApprovalId);
             if (!CollectionUtils.isEmpty(retrieveConfig)) {
                 loanProductApprovalData = LoanProductApprovalData.lookUpFinal(retrieveConfig, loanProductApprovalData);
             }
@@ -177,10 +178,10 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
         this.context.authenticatedUser();
         try {
             final String sql = "select " + loanProductApprovalMapper.schema() + " where lpa.loan_product_id = ?";
-            LoanProductApprovalData loanProductApprovalData = this.jdbcTemplate.queryForObject(sql, loanProductApprovalMapper, new Object[]{loanProductId});
+            LoanProductApprovalData loanProductApprovalData = this.jdbcTemplate.queryForObject(sql, loanProductApprovalMapper,
+                    new Object[] { loanProductId });
             if (loanProductApprovalData != null) {
-                Collection<LoanProductApprovalConfigData> retrieveConfig
-                        = retrieveConfig(loanProductApprovalData.getId());
+                Collection<LoanProductApprovalConfigData> retrieveConfig = retrieveConfig(loanProductApprovalData.getId());
                 if (!CollectionUtils.isEmpty(retrieveConfig)) {
                     loanProductApprovalData = LoanProductApprovalData.lookUpFinal(retrieveConfig, loanProductApprovalData);
                 }
@@ -196,16 +197,14 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
     public Collection<LoanProductApprovalConfigData> retrieveConfig(Long loanProductApprovalId) {
         this.context.authenticatedUser();
         final String sql = "select " + loanProductApprovalConfigMapper.schema();
-        return this.jdbcTemplate.query(sql, loanProductApprovalConfigMapper, new Object[]{loanProductApprovalId}); // NOSONAR
+        return this.jdbcTemplate.query(sql, loanProductApprovalConfigMapper, new Object[] { loanProductApprovalId }); // NOSONAR
     }
 
     private static final class LoanProductApprovalMapper implements RowMapper<LoanProductApprovalData> {
 
         public String schema() {
-            return " lpa.id, lpa.name, lpa.loan_product_id loanProductId,"
-                    + " mpl.name loanProductName "
-                    + " from m_role_loan_product_approval lpa "
-                    + " JOIN m_product_loan mpl ON mpl.id=lpa.loan_product_id ";
+            return " lpa.id, lpa.name, lpa.loan_product_id loanProductId," + " mpl.name loanProductName "
+                    + " from m_role_loan_product_approval lpa " + " JOIN m_product_loan mpl ON mpl.id=lpa.loan_product_id ";
         }
 
         @Override
@@ -224,8 +223,7 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
 
         public String schema() {
             return " lpac.id, lpac.role_id roleId, mr.name as roleName, lpac.max_approval_amount maxApprovalAmount, lpac.rank "
-                    + " from m_role_loan_product_approval_config lpac "
-                    + " JOIN m_role mr ON mr.id=lpac.role_id ";
+                    + " from m_role_loan_product_approval_config lpac " + " JOIN m_role mr ON mr.id=lpac.role_id ";
         }
 
         @Override

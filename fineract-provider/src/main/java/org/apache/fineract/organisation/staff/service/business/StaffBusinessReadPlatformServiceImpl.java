@@ -76,7 +76,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
         try {
             final String sql = "select " + rm.schema() + " where s.id = ? and o.hierarchy like ? ";
 
-            return this.jdbcTemplate.queryForObject(sql, rm, new Object[]{staffId, hierarchy}); // NOSONAR
+            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { staffId, hierarchy }); // NOSONAR
         } catch (final EmptyResultDataAccessException e) {
             throw new StaffNotFoundException(staffId, e);
         }
@@ -120,7 +120,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
 
     private String buildSqlStringFromStaffCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
 
-        //s.office_id,s.display_name,s.is_active,s.organisational_role_parent_staff_id,s.organisational_role_enum
+        // s.office_id,s.display_name,s.is_active,s.organisational_role_parent_staff_id,s.organisational_role_enum
         final Long officeId = searchParameters.getOfficeId();
         final Long supervisorId = searchParameters.getStaffId();
         final String name = searchParameters.getName();

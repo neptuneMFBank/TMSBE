@@ -162,10 +162,7 @@ public class ImageBusinessWritePlatformServiceJpaRepositoryImpl implements Image
             byte[] resizedImageBytes = imageData.getByteSource().read();
             if (resizedImageBytes != null) {
                 final String imageAsBase64Text = imageDataURISuffix + Base64.getMimeEncoder().encodeToString(resizedImageBytes);
-                return new CommandProcessingResultBuilder()
-                        .withEntityId(entityId)
-                        .withResourceIdAsString(imageAsBase64Text)
-                        .build();
+                return new CommandProcessingResultBuilder().withEntityId(entityId).withResourceIdAsString(imageAsBase64Text).build();
             } else {
                 throw new ContentManagementException(imageData.name(), "Image not available.");
             }

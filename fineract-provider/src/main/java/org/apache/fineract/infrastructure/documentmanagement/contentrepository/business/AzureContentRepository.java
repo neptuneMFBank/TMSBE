@@ -125,6 +125,7 @@ public class AzureContentRepository implements ContentRepository {
             blobClient.download(outputStream);
 
             return new FileData(new ByteSource() {
+
                 @Override
                 public InputStream openStream() throws IOException {
                     return new ByteArrayInputStream(outputStream.toByteArray());
@@ -178,7 +179,7 @@ public class AzureContentRepository implements ContentRepository {
             }, imageData.getEntityDisplayName(), imageData.contentType().getValue());
 
         } catch (Exception e) {
-            log.warn("Azure fetchImageError: {}",e);
+            log.warn("Azure fetchImageError: {}", e);
             return null;
         }
     }

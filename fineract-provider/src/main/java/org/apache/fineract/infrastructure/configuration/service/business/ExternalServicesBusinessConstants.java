@@ -35,7 +35,8 @@ public final class ExternalServicesBusinessConstants {
 
     public enum AzureJSONinputParams {
 
-        AZURE_ACCOUNT_KEY("accountKey"), AZURE_ACCOUNT_NAME("accountName"), AZURE_ENDPOINT_SUFFIX("endpointSuffix"), AZURE_CONTAINER_NAME("containerName");
+        AZURE_ACCOUNT_KEY("accountKey"), AZURE_ACCOUNT_NAME("accountName"), AZURE_ENDPOINT_SUFFIX("endpointSuffix"), AZURE_CONTAINER_NAME(
+                "containerName");
 
         private final String value;
 

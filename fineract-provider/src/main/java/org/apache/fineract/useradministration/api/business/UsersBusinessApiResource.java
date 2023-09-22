@@ -60,8 +60,7 @@ import org.springframework.stereotype.Component;
 public class UsersBusinessApiResource {
 
     /**
-     * The set of parameters that are supported in response for
-     * {@link AppUserData}.
+     * The set of parameters that are supported in response for {@link AppUserData}.
      */
     private final PlatformSecurityContext context;
     private final AppUserBusinessReadPlatformService readPlatformService;
@@ -71,8 +70,7 @@ public class UsersBusinessApiResource {
 
     @Autowired
     public UsersBusinessApiResource(final PlatformSecurityContext context, final AppUserBusinessReadPlatformService readPlatformService,
-            final DefaultToApiJsonSerializer<AppUserData> toApiJsonSerializer,
-            final ApiRequestParameterHelper apiRequestParameterHelper,
+            final DefaultToApiJsonSerializer<AppUserData> toApiJsonSerializer, final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
         this.readPlatformService = readPlatformService;
@@ -82,40 +80,39 @@ public class UsersBusinessApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve all Users", description = "Retrieve list of Userss")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
-        // EmployerApiResourceSwagger.GetEmployersResponse.class)))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+    // EmployerApiResourceSwagger.GetEmployersResponse.class)))
+    ) })
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
             @QueryParam("username") @Parameter(description = "username") final String username,
             @QueryParam("active") @Parameter(description = "active") Boolean active,
             @QueryParam("isSelfUser") @Parameter(description = "isSelfUser") Boolean isSelfUser,
-            //@QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
-            //@QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            // @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            // @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
             @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
             @DefaultValue("u.id") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
             @DefaultValue("desc") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
             @DefaultValue("en") @QueryParam("locale") final String locale
-    //,@DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat
+    // ,@DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat
     ) {
         this.context.authenticatedUser().validateHasReadPermission(AppUserBusinessApiConstant.resourceNameForPermissions);
 
         LocalDate fromDate = null;
-//        if (startPeriod != null) {
-//            fromDate = startPeriod.getDate(LoanBusinessApiConstants.startPeriodParameterName, dateFormat, locale);
-//        }
+        // if (startPeriod != null) {
+        // fromDate = startPeriod.getDate(LoanBusinessApiConstants.startPeriodParameterName, dateFormat, locale);
+        // }
         LocalDate toDate = null;
-//        if (endPeriod != null) {
-//            toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
-//        }
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forUser(active, offset, limit, orderBy, sortOrder, fromDate,
-                toDate, officeId, username, isSelfUser);
+        // if (endPeriod != null) {
+        // toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
+        // }
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forUser(active, offset, limit, orderBy, sortOrder,
+                fromDate, toDate, officeId, username, isSelfUser);
         final Page<AppUserData> appUserData = this.readPlatformService.retrieveAllUsers(searchParameters);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
@@ -128,12 +125,11 @@ public class UsersBusinessApiResource {
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
-        )})
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
+    ) })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String update(@PathParam("userId") @Parameter(description = "userId") final Long userId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -153,12 +149,11 @@ public class UsersBusinessApiResource {
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
-        )})
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
+    ) })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String update(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //

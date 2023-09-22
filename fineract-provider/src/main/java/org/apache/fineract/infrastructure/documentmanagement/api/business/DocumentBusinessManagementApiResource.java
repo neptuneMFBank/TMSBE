@@ -80,8 +80,8 @@ public class DocumentBusinessManagementApiResource {
 
     @POST
     @Path("base64")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create a Base64 Document", description = """
             Note: A document is created using Base64 upload
 
@@ -102,11 +102,10 @@ public class DocumentBusinessManagementApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = ""
-        // , content = @Content(schema = @Schema(implementation =
-        // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = ""
+    // , content = @Content(schema = @Schema(implementation =
+    // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))
+    ) })
     public String createBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
 
@@ -119,18 +118,17 @@ public class DocumentBusinessManagementApiResource {
 
     @POST
     @Path("bulk-base64")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create a Bulk Base64 Document", description = "")
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation =
     // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = ""
-        // , content = @Content(schema = @Schema(implementation =
-        // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = ""
+    // , content = @Content(schema = @Schema(implementation =
+    // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))
+    ) })
     public String createBulkBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
 
@@ -143,15 +141,13 @@ public class DocumentBusinessManagementApiResource {
 
     @GET
     @Path("{documentId}/attachment")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Avatar", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        //, content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetAllClientIdResponse.class))
-        )})
-    public String retrieveAttachment(
-            @PathParam("documentId") @Parameter(description = "documentId") final Long documentId,
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetAllClientIdResponse.class))
+    ) })
+    public String retrieveAttachment(@PathParam("documentId") @Parameter(description = "documentId") final Long documentId,
             @PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId) {
         this.context.authenticatedUser().validateHasReadPermission(this.systemEntityType);

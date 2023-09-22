@@ -71,15 +71,14 @@ public class LoanProductApprovalApiResource {
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Loan Product Approval Template", description = """
             """)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
+    ) })
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(LoanProductApprovalApiResourceConstants.RESOURCENAME);
@@ -87,18 +86,18 @@ public class LoanProductApprovalApiResource {
         final LoanProductApprovalData loanProductApprovalData = this.readPlatformService.retrieveTemplate();
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.jsonSerializer.serialize(settings, loanProductApprovalData, LoanProductApprovalApiResourceConstants.RESPONSE_TEMPLATE_PARAMETERS);
+        return this.jsonSerializer.serialize(settings, loanProductApprovalData,
+                LoanProductApprovalApiResourceConstants.RESPONSE_TEMPLATE_PARAMETERS);
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve all Employers", description = "Retrieve list of Employers")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
-        // EmployerApiResourceSwagger.GetEmployersResponse.class)))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+    // EmployerApiResourceSwagger.GetEmployersResponse.class)))
+    ) })
     public String getAllEmployers(@Context final UriInfo uriInfo,
             @QueryParam("productId") @Parameter(description = "productId") final Long productId,
             @QueryParam("name") @Parameter(description = "name") final String name,
@@ -127,39 +126,40 @@ public class LoanProductApprovalApiResource {
         final Page<LoanProductApprovalData> loanProductApprovalDatas = this.readPlatformService.retrieveAll(searchParameters);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.jsonSerializer.serialize(settings, loanProductApprovalDatas, LoanProductApprovalApiResourceConstants.RESPONSE_DATA_PARAMETERS);
+        return this.jsonSerializer.serialize(settings, loanProductApprovalDatas,
+                LoanProductApprovalApiResourceConstants.RESPONSE_DATA_PARAMETERS);
     }
 
     @GET
     @Path("{loanProductApprovalId}")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve a loan Product Approval", description = "Retrieves a loan Product Approval")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // EmployerApiResourceSwagger.GetEmployersEmployerIdResponse.class))
-        )})
-    public String retrieveOneEmployer(@PathParam("loanProductApprovalId") @Parameter(description = "loanProductApprovalId") final Long loanProductApprovalId,
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // EmployerApiResourceSwagger.GetEmployersEmployerIdResponse.class))
+    ) })
+    public String retrieveOneEmployer(
+            @PathParam("loanProductApprovalId") @Parameter(description = "loanProductApprovalId") final Long loanProductApprovalId,
             @Context final UriInfo uriInfo) {
         this.securityContext.authenticatedUser().validateHasReadPermission(LoanProductApprovalApiResourceConstants.RESOURCENAME);
         final LoanProductApprovalData loanProductApprovalData = this.readPlatformService.retrieveOne(loanProductApprovalId);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.jsonSerializer.serialize(settings, loanProductApprovalData, LoanProductApprovalApiResourceConstants.RESPONSE_DATA_PARAMETERS);
+        return this.jsonSerializer.serialize(settings, loanProductApprovalData,
+                LoanProductApprovalApiResourceConstants.RESPONSE_DATA_PARAMETERS);
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create Loan Product Approval", description = """
             Creates a new Loan Product Approval""")
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
+    ) })
     public String createEmployer(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .createLoanProductApproval()//
@@ -171,21 +171,22 @@ public class LoanProductApprovalApiResource {
 
     @PUT
     @Path("{loanProductApprovalId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update Loan Product Approval", description = "Update Loan Product Approval")
     @RequestBody(required = true
     // ,content = @Content(schema = @Schema(implementation =
     // EmployerApiResourceSwagger.PutEmployersEmployerIdRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // EmployerApiResourceSwagger.PutEmployersEmployerIdResponse.class))
-        )})
-    public String updateEmployer(@PathParam("loanProductApprovalId") @Parameter(description = "loanProductApprovalId") final Long loanProductApprovalId,
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // EmployerApiResourceSwagger.PutEmployersEmployerIdResponse.class))
+    ) })
+    public String updateEmployer(
+            @PathParam("loanProductApprovalId") @Parameter(description = "loanProductApprovalId") final Long loanProductApprovalId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateLoanProductApproval(loanProductApprovalId).withJson(apiRequestBodyAsJson).build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateLoanProductApproval(loanProductApprovalId)
+                .withJson(apiRequestBodyAsJson).build();
         final CommandProcessingResult result = this.commandWritePlatformService.logCommandSource(commandRequest);
         return this.jsonSerializer.serialize(result);
     }

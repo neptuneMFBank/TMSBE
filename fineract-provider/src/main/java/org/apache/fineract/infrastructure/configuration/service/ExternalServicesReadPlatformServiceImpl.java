@@ -47,23 +47,23 @@ public class ExternalServicesReadPlatformServiceImpl implements ExternalServices
         switch (serviceName) {
             case "Azure":
                 serviceNameToUse = ExternalServicesBusinessConstants.AZURE_SERVICE_NAME;
-                break;
+            break;
 
             case "S3":
                 serviceNameToUse = ExternalServicesConstants.S3_SERVICE_NAME;
-                break;
+            break;
 
             case "SMTP":
                 serviceNameToUse = ExternalServicesConstants.SMTP_SERVICE_NAME;
-                break;
+            break;
 
             case "SMS":
                 serviceNameToUse = ExternalServicesConstants.SMS_SERVICE_NAME;
-                break;
+            break;
 
             case "NOTIFICATION":
                 serviceNameToUse = ExternalServicesConstants.NOTIFICATION_SERVICE_NAME;
-                break;
+            break;
 
             default:
                 throw new ExternalServiceConfigurationNotFoundException(serviceName);

@@ -92,22 +92,22 @@ public class EmployerDataValidator {
             baseDataValidator.reset().parameter(EmployerApiResourceConstants.RCNUMBER).value(RCNUMBER).notBlank().longGreaterThanZero();
         }
 
-        if (this.fromApiJsonHelper.extractLongNamed(EmployerApiResourceConstants.STATEID, element) != null) {
+        if (this.fromApiJsonHelper.parameterExists(EmployerApiResourceConstants.STATEID, element)) {
             final long STATEID = this.fromApiJsonHelper.extractLongNamed(EmployerApiResourceConstants.STATEID, element);
             baseDataValidator.reset().parameter(EmployerApiResourceConstants.STATEID).value(STATEID).notBlank().longGreaterThanZero();
         }
 
-        if (this.fromApiJsonHelper.extractLongNamed(EmployerApiResourceConstants.LGAID, element) != null) {
+        if (this.fromApiJsonHelper.parameterExists(EmployerApiResourceConstants.LGAID, element)) {
             final long LGAID = this.fromApiJsonHelper.extractLongNamed(EmployerApiResourceConstants.LGAID, element);
             baseDataValidator.reset().parameter(EmployerApiResourceConstants.LGAID).value(LGAID).notBlank().longGreaterThanZero();
         }
 
-        if (this.fromApiJsonHelper.extractLongNamed(EmployerApiResourceConstants.COUNTRYID, element) != null) {
+        if (this.fromApiJsonHelper.parameterExists(EmployerApiResourceConstants.COUNTRYID, element)) {
             final long COUNTRYID = this.fromApiJsonHelper.extractLongNamed(EmployerApiResourceConstants.COUNTRYID, element);
             baseDataValidator.reset().parameter(EmployerApiResourceConstants.COUNTRYID).value(COUNTRYID).notBlank().longGreaterThanZero();
         }
 
-        if (this.fromApiJsonHelper.extractLongNamed(EmployerApiResourceConstants.INDUSTRYID, element) != null) {
+        if (this.fromApiJsonHelper.parameterExists(EmployerApiResourceConstants.INDUSTRYID, element)) {
             final long INDUSTRYID = this.fromApiJsonHelper.extractLongNamed(EmployerApiResourceConstants.INDUSTRYID, element);
             baseDataValidator.reset().parameter(EmployerApiResourceConstants.INDUSTRYID).value(INDUSTRYID).notBlank().longGreaterThanZero();
         }
@@ -129,7 +129,7 @@ public class EmployerDataValidator {
             baseDataValidator.reset().parameter(EmployerApiResourceConstants.MOBILE_NO).value(MOBILE_NO).notBlank();
         }
 
-        if (this.fromApiJsonHelper.extractLongNamed(EmployerApiResourceConstants.BUSINESSID, element) != null) {
+        if (this.fromApiJsonHelper.parameterExists(EmployerApiResourceConstants.BUSINESSID, element)) {
             final Long businessId = this.fromApiJsonHelper.extractLongNamed(EmployerApiResourceConstants.BUSINESSID, element);
             baseDataValidator.reset().parameter(EmployerApiResourceConstants.BUSINESSID).value(businessId).notBlank()
                     .integerGreaterThanZero();

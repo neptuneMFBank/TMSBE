@@ -100,4 +100,9 @@
     <include file="parts/0083_azure_prop_account_key.sql" relativeToChangelogFile="true" />
     <include file="parts/0084_m_role_loan_product_approval.sql" relativeToChangelogFile="true" />
     <include file="parts/0085_m_role_loan_product_approval_config.sql" relativeToChangelogFile="true" />
+    <include file="parts/0086_m_read_loan_product_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0087_m_create_loan_product_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0088_m_update_loan_product_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0089_m_create_checker_loan_product_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0090_m_update_checker_loan_product_approval_permission.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

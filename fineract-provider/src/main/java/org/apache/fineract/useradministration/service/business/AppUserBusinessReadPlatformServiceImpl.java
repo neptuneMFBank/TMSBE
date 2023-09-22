@@ -76,10 +76,12 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
         sqlBuilder.append(sqlGenerator.calcFoundRows());
         sqlBuilder.append(mapper.schema());
 
+        sqlBuilder.append(" where u.is_deleted=false ");
+
         if (searchParameters != null) {
             final String extraCriteria = buildSqlStringFromUserCriteria(searchParameters, paramList);
             if (StringUtils.isNotBlank(extraCriteria)) {
-                sqlBuilder.append(" where (").append(extraCriteria).append(")");
+                sqlBuilder.append("(").append(extraCriteria).append(")");
             }
 
             if (searchParameters.isOrderByRequested()) {
@@ -195,7 +197,7 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
         public String schema() {
             return " u.enabled as enabled, u.id as id, u.username as username, u.firstname as firstname, u.lastname as lastname, u.email as email, u.password_never_expires as passwordNeverExpires, "
                     + " u.office_id as officeId, o.name as officeName, u.staff_id as staffId, u.is_self_service_user as isSelfServiceUser from m_appuser u "
-                    + " join m_office o on o.id = u.office_id where o.hierarchy like ? and u.is_deleted=false order by u.username";
+                    + " join m_office o on o.id = u.office_id ";
         }
 
     }

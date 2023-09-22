@@ -75,9 +75,49 @@ public final class SearchParametersBusiness {
     private final Long organisationalRoleEnumId;
     private final String username;
 
+    public static SearchParametersBusiness forLoanProductApproval(final Integer offset, final Integer limit,
+            final String orderBy, final String sortOrder, final Long productId, final LocalDate fromDate, final LocalDate toDate,
+            final String displayName) {
+        final Long classificationId = null;
+        final Boolean active = null;
+        final Long organisationalRoleEnumId = null;
+        final Long staffId = null;
+        final Long industryId = null;
+        final String accountNo = null;
+        final Boolean orphansOnly = null;
+        final String email = null;
+        final String mobile = null;
+        final Integer legalFormId = null;
+        final Boolean isSelfUser = null;
+        final Boolean showLoanProducts = null;
+        final Boolean showSavingsProducts = null;
+        final Long savingsId = null;
+        final String status = null;
+        final Long categoryId = null;
+        final Long provisioningEntryId = null;
+        final String currencyCode = null;
+        final String firstname = null;
+        final String lastname = null;
+        final Long loanId = null;
+        final Integer statusId = null;
+        final String sqlSearch = null;
+        final String externalId = null;
+        final String hierarchy = null;
+        final String username = null;
+        final Integer type = null;
+        final Long documentConfigId = null;
+        final Long clientId = null;
+        final Long officeId = null;
+
+        return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
+                orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status,
+                categoryId, productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
+                showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId, username);
+    }
+
     public static SearchParametersBusiness forUser(final Boolean active, final Integer offset, final Integer limit,
             final String orderBy, final String sortOrder, final LocalDate fromDate, final LocalDate toDate,
-            final Long officeId, final String username,final Boolean isSelfUser) {
+            final Long officeId, final String username, final Boolean isSelfUser) {
         final Long organisationalRoleEnumId = null;
         final String displayName = null;
         final Long supervisorId = null;
@@ -121,7 +161,7 @@ public final class SearchParametersBusiness {
         final Long classificationId = null;
         final String accountNo = null;
         final Boolean orphansOnly = null;
-        final boolean isSelfUser = false;
+        final Boolean isSelfUser = null;
         final String email = null;
         final String mobile = null;
         final Integer legalFormId = null;
@@ -156,7 +196,7 @@ public final class SearchParametersBusiness {
             final String displayName, final Long industryId, final Long classificationId) {
         final String accountNo = null;
         final Boolean orphansOnly = null;
-        final boolean isSelfUser = false;
+        final Boolean isSelfUser = null;
         final String email = null;
         final String mobile = null;
         final Integer legalFormId = null;
@@ -314,7 +354,7 @@ public final class SearchParametersBusiness {
         final Long classificationId = null;
         final Boolean showLoanProducts = null;
         final Boolean showSavingsProducts = null;
-        final boolean isSelfUser = false;
+        final Boolean isSelfUser = null;
         final Boolean orphansOnly = false;
         final Long savingsId = null;
         final Long documentConfigId = null;
@@ -345,7 +385,7 @@ public final class SearchParametersBusiness {
     public static SearchParametersBusiness forClientsBusiness(final Long officeId, final String externalId, final Integer statusId,
             final String hierarchy, final Integer offset, final Integer limit, final String orderBy, final String sortOrder,
             final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate, final String displayName,
-            final Boolean orphansOnly, final boolean isSelfUser, final String email, final String mobile, final Integer legalFormId, final String bvn) {
+            final Boolean orphansOnly, final Boolean isSelfUser, final String email, final String mobile, final Integer legalFormId, final String bvn) {
 
         final Long industryId = null;
         final Long organisationalRoleEnumId = null;
@@ -376,7 +416,7 @@ public final class SearchParametersBusiness {
     private SearchParametersBusiness(final String sqlSearch, final Long officeId, final String externalId, final String name,
             final String hierarchy, final String firstname, final String lastname, final Integer offset, final Integer limit,
             final String orderBy, final String sortOrder, final Long staffId, final String accountNo, final Long loanId,
-            final Long savingsId, final Boolean orphansOnly, boolean isSelfUser, final LocalDate fromDate, final LocalDate toDate,
+            final Long savingsId, final Boolean orphansOnly, Boolean isSelfUser, final LocalDate fromDate, final LocalDate toDate,
             final String status, final Long categoryId, final Long productId, final Long provisioningEntryId, final String currencyCode,
             final Integer statusId, final String email, final String mobile, final Integer legalFormId, final Integer type,
             final Boolean active, final Long clientId, final Boolean showLoanProducts, final Boolean showSavingsProducts,
@@ -597,7 +637,7 @@ public final class SearchParametersBusiness {
         return this.categoryId != null && this.categoryId != 0;
     }
 
-    public boolean isSelfUser() {
+    public Boolean isSelfUser() {
         return this.isSelfUser;
     }
 
@@ -605,7 +645,7 @@ public final class SearchParametersBusiness {
         return orphansOnly;
     }
 
-    public boolean isSelfUserPassed() {
+    public Boolean isSelfUserPassed() {
         return isSelfUser != null;
     }
 

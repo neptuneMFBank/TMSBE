@@ -39,23 +39,20 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.journalentry.api.DateParam;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.infrastructure.core.exception.UnrecognizedQueryParamException;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.portfolio.business.employer.api.EmployerApiResourceConstants;
-import org.apache.fineract.portfolio.business.employer.data.EmployerData;
-import org.apache.fineract.portfolio.business.employer.service.EmployerReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
+import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductApprovalData;
+import org.apache.fineract.portfolio.loanproduct.business.service.LoanProductApprovalReadPlatformService;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -66,15 +63,11 @@ import org.springframework.stereotype.Component;
 public class LoanProductApprovalApiResource {
 
     private final PlatformSecurityContext securityContext;
-    private final ToApiJsonSerializer<EmployerData> jsonSerializer;
-    private final EmployerReadPlatformService readPlatformService;
+    private final ToApiJsonSerializer<LoanProductApprovalData> jsonSerializer;
+    private final LoanProductApprovalReadPlatformService readPlatformService;
     private final PortfolioCommandSourceWritePlatformService commandWritePlatformService;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PlatformSecurityContext context;
-
-    private boolean is(final String commandParam, final String commandValue) {
-        return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
-    }
 
     @GET
     @Path("template")
@@ -89,12 +82,12 @@ public class LoanProductApprovalApiResource {
         )})
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
-        this.context.authenticatedUser().validateHasReadPermission(EmployerApiResourceConstants.RESOURCENAME);
+        this.context.authenticatedUser().validateHasReadPermission(LoanProductApprovalApiResourceConstants.RESOURCENAME);
 
-        EmployerData employerData = this.readPlatformService.retrieveTemplate();
+        final LoanProductApprovalData loanProductApprovalData = this.readPlatformService.retrieveTemplate();
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.jsonSerializer.serialize(settings, employerData, EmployerApiResourceConstants.RESPONSE_TEMPLATE_PARAMETERS);
+        return this.jsonSerializer.serialize(settings, loanProductApprovalData, LoanProductApprovalApiResourceConstants.RESPONSE_TEMPLATE_PARAMETERS);
     }
 
     @GET
@@ -107,20 +100,17 @@ public class LoanProductApprovalApiResource {
         // EmployerApiResourceSwagger.GetEmployersResponse.class)))
         )})
     public String getAllEmployers(@Context final UriInfo uriInfo,
-            @QueryParam("supervisorId") @Parameter(description = "supervisorId") final Long supervisorId,
-            @QueryParam("industryId") @Parameter(description = "industryId") final Long industryId,
-            @QueryParam("classificationId") @Parameter(description = "classificationId") final Long classificationId,
+            @QueryParam("productId") @Parameter(description = "productId") final Long productId,
             @QueryParam("name") @Parameter(description = "name") final String name,
-            @QueryParam("active") @Parameter(description = "active") Boolean active,
             @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
             @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
-            @DefaultValue("me.id") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @DefaultValue("lpa.id") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
             @DefaultValue("desc") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
             @DefaultValue("en") @QueryParam("locale") final String locale,
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
-        this.securityContext.authenticatedUser().validateHasReadPermission(EmployerApiResourceConstants.RESOURCENAME);
+        this.securityContext.authenticatedUser().validateHasReadPermission(LoanProductApprovalApiResourceConstants.RESOURCENAME);
 
         LocalDate fromDate = null;
         if (startPeriod != null) {
@@ -131,44 +121,38 @@ public class LoanProductApprovalApiResource {
             toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
         }
 
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forEmployer(active, offset, limit, orderBy, sortOrder,
-                supervisorId, fromDate, toDate, name, industryId, classificationId);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forLoanProductApproval(offset, limit, orderBy, sortOrder,
+                productId, fromDate, toDate, name);
 
-        final Page<EmployerData> employerData = this.readPlatformService.retrieveAll(searchParameters);
+        final Page<LoanProductApprovalData> loanProductApprovalDatas = this.readPlatformService.retrieveAll(searchParameters);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.jsonSerializer.serialize(settings, employerData, EmployerApiResourceConstants.RESPONSE_DATA_PARAMETERS);
+        return this.jsonSerializer.serialize(settings, loanProductApprovalDatas, LoanProductApprovalApiResourceConstants.RESPONSE_DATA_PARAMETERS);
     }
 
     @GET
-    @Path("{employerId}")
+    @Path("{loanProductApprovalId}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Retrieve a Employer", description = "Retrieves a Employer")
+    @Operation(summary = "Retrieve a loan Product Approval", description = "Retrieves a loan Product Approval")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK"
         // , content = @Content(schema = @Schema(implementation =
         // EmployerApiResourceSwagger.GetEmployersEmployerIdResponse.class))
         )})
-    public String retrieveOneEmployer(@PathParam("employerId") @Parameter(description = "employerId") final Long employerId,
+    public String retrieveOneEmployer(@PathParam("loanProductApprovalId") @Parameter(description = "loanProductApprovalId") final Long loanProductApprovalId,
             @Context final UriInfo uriInfo) {
-        this.securityContext.authenticatedUser().validateHasReadPermission(EmployerApiResourceConstants.RESOURCENAME);
-        final EmployerData Employers = this.readPlatformService.retrieveOne(employerId);
+        this.securityContext.authenticatedUser().validateHasReadPermission(LoanProductApprovalApiResourceConstants.RESOURCENAME);
+        final LoanProductApprovalData loanProductApprovalData = this.readPlatformService.retrieveOne(loanProductApprovalId);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.jsonSerializer.serialize(settings, Employers, EmployerApiResourceConstants.RESPONSE_DATA_PARAMETERS);
+        return this.jsonSerializer.serialize(settings, loanProductApprovalData, LoanProductApprovalApiResourceConstants.RESPONSE_DATA_PARAMETERS);
     }
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Create an Employer", description = """
-            Creates a new Employer
-
-            Mandatory Fields: name, code
-
-            Optional Fields: slug, active, parentId, mobileNo, contactPerson, emailAddress, emailExtension
-
-            parentId should be passed when it is a referencing a branch employer details""")
+    @Operation(summary = "Create Loan Product Approval", description = """
+            Creates a new Loan Product Approval""")
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersRequest.class))
     )
@@ -178,60 +162,18 @@ public class LoanProductApprovalApiResource {
         )})
     public String createEmployer(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
-                .createEmployer()//
+                .createLoanProductApproval()//
                 .withJson(apiRequestBodyAsJson) //
                 .build(); //
         final CommandProcessingResult result = this.commandWritePlatformService.logCommandSource(commandRequest);
         return this.jsonSerializer.serialize(result);
     }
 
-    @POST
-    @Path("{employerId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Create an Employer", description = """
-            Creates a new Employer
-
-            Mandatory Fields: name, code
-
-            Optional Fields: slug, active, parentId, mobileNo, contactPerson, emailAddress, emailExtension
-
-            parentId should be passed when it is a referencing a branch employer details""")
-    @RequestBody(required = true
-    // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersRequest.class))
-    )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
-        )})
-    public String actions(@PathParam("employerId") @Parameter(description = "employerId") final Long employerId,
-            @QueryParam("command") @Parameter(description = "command") final String commandParam,
-            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
-
-        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
-
-        CommandProcessingResult result = null;
-        CommandWrapper commandRequest;
-        if (is(commandParam, "activate")) {
-            commandRequest = builder.activateEmployer(employerId).build();
-            result = this.commandWritePlatformService.logCommandSource(commandRequest);
-        } else if (is(commandParam, "close")) {
-            commandRequest = builder.closeEmployer(employerId).build();
-            result = this.commandWritePlatformService.logCommandSource(commandRequest);
-        }
-
-        if (result == null) {
-            throw new UnrecognizedQueryParamException("command", commandParam, new Object[]{"activate", "close"});
-        }
-
-        return this.jsonSerializer.serialize(result);
-    }
-
     @PUT
-    @Path("{employerId}")
+    @Path("{loanProductApprovalId}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Update Employer", description = "Updates an Employer")
+    @Operation(summary = "Update Loan Product Approval", description = "Update Loan Product Approval")
     @RequestBody(required = true
     // ,content = @Content(schema = @Schema(implementation =
     // EmployerApiResourceSwagger.PutEmployersEmployerIdRequest.class))
@@ -241,9 +183,9 @@ public class LoanProductApprovalApiResource {
         // , content = @Content(schema = @Schema(implementation =
         // EmployerApiResourceSwagger.PutEmployersEmployerIdResponse.class))
         )})
-    public String updateEmployer(@PathParam("employerId") @Parameter(description = "employerId") final Long employerId,
+    public String updateEmployer(@PathParam("loanProductApprovalId") @Parameter(description = "loanProductApprovalId") final Long loanProductApprovalId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateEmployer(employerId).withJson(apiRequestBodyAsJson).build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateLoanProductApproval(loanProductApprovalId).withJson(apiRequestBodyAsJson).build();
         final CommandProcessingResult result = this.commandWritePlatformService.logCommandSource(commandRequest);
         return this.jsonSerializer.serialize(result);
     }

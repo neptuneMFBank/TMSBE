@@ -21,6 +21,7 @@ package org.apache.fineract.commands.service;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.infrastructure.accountnumberformat.service.AccountNumberFormatConstants;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
+import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductApprovalApiResourceConstants;
 import org.apache.fineract.portfolio.paymenttype.api.PaymentTypeApiResourceConstants;
 import org.apache.fineract.portfolio.savings.DepositsApiConstants;
 import org.apache.fineract.portfolio.self.pockets.api.PocketApiConstants;
@@ -3627,4 +3628,20 @@ public class CommandWrapperBuilder {
         this.href = "/employers/" + employerId + "?command=close";
         return this;
     }
+    
+    public CommandWrapperBuilder createLoanProductApproval() {
+        this.actionName = "CREATE";
+        this.entityName = LoanProductApprovalApiResourceConstants.RESOURCENAME;
+        this.href = "/loanproducts/approval";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateLoanProductApproval(final Long loanProductApprovalId) {
+        this.actionName = "UPDATE";
+        this.entityName = LoanProductApprovalApiResourceConstants.RESOURCENAME;
+        this.entityId = loanProductApprovalId;
+        this.href = "/loanproducts/approval/" + loanProductApprovalId;
+        return this;
+    }
+
 }

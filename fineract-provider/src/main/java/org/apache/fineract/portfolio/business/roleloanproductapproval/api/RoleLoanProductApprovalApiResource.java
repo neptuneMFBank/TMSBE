@@ -59,7 +59,7 @@ import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiCon
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Path("/employers")
+@Path("/business/config")
 @Component
 @RequiredArgsConstructor
 @Tag(name = "Employer", description = "This defines the employer model")

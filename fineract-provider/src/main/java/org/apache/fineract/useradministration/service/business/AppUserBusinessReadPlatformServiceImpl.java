@@ -68,7 +68,6 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
     }
 
     @Override
-    @Cacheable(value = "users", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat(#root.target.context.authenticatedUser().getOffice().getHierarchy())")
     public Page<AppUserData> retrieveAllUsers(SearchParametersBusiness searchParameters) {
         this.context.authenticatedUser();
         final AppUserMapper mapper = new AppUserMapper(this.roleReadPlatformService, this.staffReadPlatformService);

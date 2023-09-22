@@ -84,7 +84,7 @@ public class UsersBusinessApiResource {
     @GET
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Retrieve all Staff", description = "Retrieve list of Employers")
+    @Operation(summary = "Retrieve all Users", description = "Retrieve list of Userss")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK"
         // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =

@@ -177,6 +177,7 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
             final Long officeId = JdbcSupport.getLong(rs, "officeId");
             final String officeName = rs.getString("officeName");
             final Long staffId = JdbcSupport.getLong(rs, "staffId");
+            final Boolean enabled = rs.getBoolean("enabled");
             final Boolean passwordNeverExpire = rs.getBoolean("passwordNeverExpires");
             final Boolean isSelfServiceUser = rs.getBoolean("isSelfServiceUser");
             final Collection<RoleData> selectedRoles = this.roleReadPlatformService.retrieveAppUserRoles(id);
@@ -187,12 +188,14 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
             } else {
                 linkedStaff = null;
             }
-            return AppUserData.instance(id, username, email, officeId, officeName, firstname, lastname, null, null, selectedRoles,
+            final AppUserData appUserData = AppUserData.instance(id, username, email, officeId, officeName, firstname, lastname, null, null, selectedRoles,
                     linkedStaff, passwordNeverExpire, isSelfServiceUser);
+            appUserData.setActive(enabled);
+            return appUserData;
         }
 
         public String schema() {
-            return " u.id as id, u.username as username, u.firstname as firstname, u.lastname as lastname, u.email as email, u.password_never_expires as passwordNeverExpires, "
+            return " u.enabled as enabled, u.id as id, u.username as username, u.firstname as firstname, u.lastname as lastname, u.email as email, u.password_never_expires as passwordNeverExpires, "
                     + " u.office_id as officeId, o.name as officeName, u.staff_id as staffId, u.is_self_service_user as isSelfServiceUser from m_appuser u "
                     + " join m_office o on o.id = u.office_id where o.hierarchy like ? and u.is_deleted=false order by u.username";
         }

@@ -41,14 +41,14 @@ public final class LoanProductApprovalApiResourceConstants {
     public static final String RANK = "rank";
     public static final String MAXAPPROVALAMOUNT = "maxApprovalAmount";
 
-    public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ID, NAME, LOANPRODUCTDATA, LOANPRODUCTAPPROVALCONFIGDATA));
+    public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(
+            Arrays.asList(ID, NAME, LOANPRODUCTDATA, LOANPRODUCTAPPROVALCONFIGDATA));
 
     public static final Set<String> REQUEST_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(NAME, LOANPRODUCTID, LOANPRODUCTAPPROVALCONFIGDATA));
 
     public static final Set<String> REQUEST_UPDATE_DATA_PARAMETERS = REQUEST_DATA_PARAMETERS;
 
-    public static final Set<String> RESPONSE_TEMPLATE_PARAMETERS = new HashSet<>(
-            Arrays.asList(LOANPRODUCTOPTIONS, ROLEOPTIONS));
+    public static final Set<String> RESPONSE_TEMPLATE_PARAMETERS = new HashSet<>(Arrays.asList(LOANPRODUCTOPTIONS, ROLEOPTIONS));
 
 }

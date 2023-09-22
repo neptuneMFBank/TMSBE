@@ -51,8 +51,7 @@ public class EmployerDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         if (isUpdate) {
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, UPDATE_EMPLOYER_REQUEST_DATA_PARAMETERS);
         } else {

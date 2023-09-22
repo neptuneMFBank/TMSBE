@@ -27,8 +27,9 @@ public final class AppUserBusinessApiConstant {
     private AppUserBusinessApiConstant() {
 
     }
-    public static final Set<String> responseDataParameters = new HashSet<>(Arrays.asList("id", "officeId", "officeName", "username", "firstname",
-            "lastname", "email", "allowedOffices", "availableRoles", "selectedRoles", "staff", "active"));
+
+    public static final Set<String> responseDataParameters = new HashSet<>(Arrays.asList("id", "officeId", "officeName", "username",
+            "firstname", "lastname", "email", "allowedOffices", "availableRoles", "selectedRoles", "staff", "active"));
 
     public static final String resourceNameForPermissions = "USER";
 

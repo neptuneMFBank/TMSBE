@@ -54,28 +54,27 @@ public class ExternalServicesPropertiesCommandFromApiJsonDeserializer {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         switch (externalServiceName) {
             case "Azure":
                 this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.azureSupportedParameters);
-                break;
+            break;
 
             case "S3":
                 this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.s3SupportedParameters);
-                break;
+            break;
 
             case "SMTP":
                 this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.smtpSupportedParameters);
-                break;
+            break;
 
             case "SMS":
                 this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.smsSupportedParameters);
-                break;
+            break;
 
             case "NOTIFICATION":
                 this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.notificationSupportedParameters);
-                break;
+            break;
 
             default:
                 throw new ExternalServiceConfigurationNotFoundException(externalServiceName);
@@ -84,8 +83,7 @@ public class ExternalServicesPropertiesCommandFromApiJsonDeserializer {
     }
 
     public Set<String> getNameKeys(final String json) {
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         Map<String, String> jsonMap = this.fromApiJsonHelper.extractDataMap(typeOfMap, json);
         Set<String> keyNames = jsonMap.keySet();
         return keyNames;

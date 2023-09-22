@@ -36,8 +36,7 @@ public class LoanProductApprovalData implements Serializable {
     private final Collection<LoanProductData> loanProductOptions;
     private final Collection<RoleData> roleOptions;
 
-    public static LoanProductApprovalData template(Collection<LoanProductData> loanProductOptions,
-            Collection<RoleData> roleOptions) {
+    public static LoanProductApprovalData template(Collection<LoanProductData> loanProductOptions, Collection<RoleData> roleOptions) {
         Long id = null;
         String name = null;
         LoanProductData loanProductData = null;
@@ -52,7 +51,8 @@ public class LoanProductApprovalData implements Serializable {
         return new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions);
     }
 
-    public static LoanProductApprovalData lookUpFinal(Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData, LoanProductApprovalData loanProductApprovalData) {
+    public static LoanProductApprovalData lookUpFinal(Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData,
+            LoanProductApprovalData loanProductApprovalData) {
         final Long id = loanProductApprovalData.getId();
         final String name = loanProductApprovalData.getName();
         final LoanProductData loanProductData = loanProductApprovalData.getLoanProductData();
@@ -61,7 +61,9 @@ public class LoanProductApprovalData implements Serializable {
         return new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions);
     }
 
-    public static LoanProductApprovalData instance(Long id, String name, LoanProductData loanProductData, Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData, Collection<LoanProductData> loanProductOptions, Collection<RoleData> roleOptions, LocalDate createdOn, LocalDate modifiedOn) {
+    public static LoanProductApprovalData instance(Long id, String name, LoanProductData loanProductData,
+            Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData, Collection<LoanProductData> loanProductOptions,
+            Collection<RoleData> roleOptions, LocalDate createdOn, LocalDate modifiedOn) {
         return new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions);
     }
 

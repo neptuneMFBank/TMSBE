@@ -93,7 +93,7 @@ public class ImagesApiResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @RequestBody(description = "Upload new client image", content = {
-        @Content(mediaType = MediaType.MULTIPART_FORM_DATA, schema = @Schema(implementation = UploadRequest.class))})
+            @Content(mediaType = MediaType.MULTIPART_FORM_DATA, schema = @Schema(implementation = UploadRequest.class)) })
     public String addNewClientImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId,
             @HeaderParam("Content-Length") final Long fileSize, @FormDataParam("file") final InputStream inputStream,
             @FormDataParam("file") final FormDataContentDisposition fileDetails, @FormDataParam("file") final FormDataBodyPart bodyPart) {
@@ -115,7 +115,7 @@ public class ImagesApiResource {
      * Upload image as a Data URL (essentially a base64 encoded stream)
      */
     @POST
-    @Consumes({MediaType.TEXT_PLAIN, MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.TEXT_PLAIN, MediaType.TEXT_HTML, MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     public String addNewClientImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId,
             final String jsonRequestBody) {
@@ -129,8 +129,8 @@ public class ImagesApiResource {
     }
 
     /**
-     * Returns a images, either as Base64 encoded text/plain or as inline or
-     * attachment with image MIME type as Content-Type.
+     * Returns a images, either as Base64 encoded text/plain or as inline or attachment with image MIME type as
+     * Content-Type.
      */
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
@@ -182,14 +182,14 @@ public class ImagesApiResource {
     }
 
     /**
-     * This method is added only for consistency with other URL patterns and for
-     * maintaining consistency of usage of the HTTP "verb" at the client side
+     * This method is added only for consistency with other URL patterns and for maintaining consistency of usage of the
+     * HTTP "verb" at the client side
      */
     @PUT
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @RequestBody(description = "Update client image", content = {
-        @Content(mediaType = MediaType.MULTIPART_FORM_DATA, schema = @Schema(implementation = UploadRequest.class))})
+            @Content(mediaType = MediaType.MULTIPART_FORM_DATA, schema = @Schema(implementation = UploadRequest.class)) })
     public String updateClientImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId,
             @HeaderParam("Content-Length") final Long fileSize, @FormDataParam("file") final InputStream inputStream,
             @FormDataParam("file") final FormDataContentDisposition fileDetails, @FormDataParam("file") final FormDataBodyPart bodyPart) {
@@ -197,13 +197,13 @@ public class ImagesApiResource {
     }
 
     /**
-     * This method is added only for consistency with other URL patterns and for
-     * maintaining consistency of usage of the HTTP "verb" at the client side
+     * This method is added only for consistency with other URL patterns and for maintaining consistency of usage of the
+     * HTTP "verb" at the client side
      *
      * Upload image as a Data URL (essentially a base64 encoded stream)
      */
     @PUT
-    @Consumes({MediaType.TEXT_PLAIN, MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.TEXT_PLAIN, MediaType.TEXT_HTML, MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     public String updateClientImage(@PathParam("entity") final String entityName, @PathParam("entityId") final Long entityId,
             final String jsonRequestBody) {

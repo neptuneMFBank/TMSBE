@@ -54,9 +54,8 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
 
     @Autowired
     public AppUserBusinessReadPlatformServiceImpl(final PlatformSecurityContext context, final JdbcTemplate jdbcTemplate,
-            final RoleReadPlatformService roleReadPlatformService,
-            final StaffReadPlatformService staffReadPlatformService, final ColumnValidator columnValidator,
-            DatabaseSpecificSQLGenerator sqlGenerator, final PaginationHelper paginationHelper) {
+            final RoleReadPlatformService roleReadPlatformService, final StaffReadPlatformService staffReadPlatformService,
+            final ColumnValidator columnValidator, DatabaseSpecificSQLGenerator sqlGenerator, final PaginationHelper paginationHelper) {
         this.context = context;
         this.roleReadPlatformService = roleReadPlatformService;
         this.jdbcTemplate = jdbcTemplate;
@@ -107,7 +106,7 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
 
     private String buildSqlStringFromUserCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
 
-        //u.username,u.is_self_service_user,u.office_id
+        // u.username,u.is_self_service_user,u.office_id
         final Long officeId = searchParameters.getOfficeId();
         final String username = searchParameters.getUsername();
         final Boolean active = searchParameters.isActive();
@@ -115,23 +114,23 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
 
         String extraCriteria = "";
 
-//        if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
-//            final LocalDate startPeriod = searchParameters.getFromDate();
-//            final LocalDate endPeriod = searchParameters.getToDate();
-//
-//            final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
-//            if (startPeriod != null && endPeriod != null) {
-//                extraCriteria += " and CAST(s.joining_date AS DATE) BETWEEN ? AND ? ";
-//                paramList.add(df.format(startPeriod));
-//                paramList.add(df.format(endPeriod));
-//            } else if (startPeriod != null) {
-//                extraCriteria += " and CAST(s.joining_date AS DATE) >= ? ";
-//                paramList.add(df.format(startPeriod));
-//            } else if (endPeriod != null) {
-//                extraCriteria += " and CAST(s.joining_date AS DATE) <= ? ";
-//                paramList.add(df.format(endPeriod));
-//            }
-//        }
+        // if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
+        // final LocalDate startPeriod = searchParameters.getFromDate();
+        // final LocalDate endPeriod = searchParameters.getToDate();
+        //
+        // final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
+        // if (startPeriod != null && endPeriod != null) {
+        // extraCriteria += " and CAST(s.joining_date AS DATE) BETWEEN ? AND ? ";
+        // paramList.add(df.format(startPeriod));
+        // paramList.add(df.format(endPeriod));
+        // } else if (startPeriod != null) {
+        // extraCriteria += " and CAST(s.joining_date AS DATE) >= ? ";
+        // paramList.add(df.format(startPeriod));
+        // } else if (endPeriod != null) {
+        // extraCriteria += " and CAST(s.joining_date AS DATE) <= ? ";
+        // paramList.add(df.format(endPeriod));
+        // }
+        // }
         if (searchParameters.isOfficeIdPassed()) {
             extraCriteria += " and u.office_id = ? ";
             paramList.add(officeId);
@@ -188,8 +187,8 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
             } else {
                 linkedStaff = null;
             }
-            final AppUserData appUserData = AppUserData.instance(id, username, email, officeId, officeName, firstname, lastname, null, null, selectedRoles,
-                    linkedStaff, passwordNeverExpire, isSelfServiceUser);
+            final AppUserData appUserData = AppUserData.instance(id, username, email, officeId, officeName, firstname, lastname, null, null,
+                    selectedRoles, linkedStaff, passwordNeverExpire, isSelfServiceUser);
             appUserData.setActive(enabled);
             return appUserData;
         }

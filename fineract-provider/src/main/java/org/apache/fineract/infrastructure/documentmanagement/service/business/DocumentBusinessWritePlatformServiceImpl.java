@@ -60,7 +60,8 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
     @Autowired
     public DocumentBusinessWritePlatformServiceImpl(final PlatformSecurityContext context,
             final DocumentBusinessDataValidator fromApiJsonDeserializer, final FromJsonHelper fromApiJsonHelper,
-            final DocumentWritePlatformService documentWritePlatformService, final DocumentReadPlatformService documentReadPlatformService) {
+            final DocumentWritePlatformService documentWritePlatformService,
+            final DocumentReadPlatformService documentReadPlatformService) {
         this.context = context;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.fromApiJsonHelper = fromApiJsonHelper;
@@ -156,10 +157,7 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
             byte[] resizedImageBytes = fileData.getByteSource().read();
             if (resizedImageBytes != null) {
                 final String imageAsBase64Text = documentDataURISuffix + Base64.getMimeEncoder().encodeToString(resizedImageBytes);
-                return new CommandProcessingResultBuilder()
-                        .withEntityId(entityId)
-                        .withResourceIdAsString(imageAsBase64Text)
-                        .build();
+                return new CommandProcessingResultBuilder().withEntityId(entityId).withResourceIdAsString(imageAsBase64Text).build();
             } else {
                 throw new ContentManagementException(fileData.name(), "Document not available.");
             }

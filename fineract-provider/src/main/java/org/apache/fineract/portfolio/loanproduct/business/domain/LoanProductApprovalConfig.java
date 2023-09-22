@@ -45,8 +45,7 @@ public class LoanProductApprovalConfig extends AbstractPersistableCustom {
     @Column(name = "rank", nullable = false)
     private Integer rank;
 
-    protected LoanProductApprovalConfig() {
-    }
+    protected LoanProductApprovalConfig() {}
 
     public static LoanProductApprovalConfig create(Role role, BigDecimal maxApprovalAmount, Integer rank) {
         final LoanProductApproval loanProductApproval = null;

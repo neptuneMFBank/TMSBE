@@ -82,7 +82,8 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
 
         final Long oldLoanProductId = loanProductApproval.getLoanProduct() != null ? loanProductApproval.getLoanProduct().getId() : null;
         if (command.isChangeInLongParameterNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, oldLoanProductId)) {
-            final Long loanProductId = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, element);
+            final Long loanProductId = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID,
+                    element);
             LoanProduct loanProduct;
             if (loanProductId != null) {
                 loanProduct = loanProductRepositoryWrapper.findOneWithNotFoundDetection(loanProductId);
@@ -94,8 +95,7 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
             final Set<LoanProductApprovalConfig> loanProductApprovalConfigNew = setLoanProductApprovalConfig(element);
             final boolean updated = loanProductApproval.update(loanProductApprovalConfigNew);
             if (updated) {
-                final String values
-                        = this.fromApiJsonHelper.toJson(loanProductApprovalConfigNew);
+                final String values = this.fromApiJsonHelper.toJson(loanProductApprovalConfigNew);
                 changes.put(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, values);
             }
         }
@@ -103,7 +103,8 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
             if (!changes.isEmpty()) {
                 this.repositoryWrapper.saveAndFlush(loanProductApproval);
             }
-            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).with(changes).withEntityId(loanProductApprovalId).build();
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).with(changes).withEntityId(loanProductApprovalId)
+                    .build();
 
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
@@ -129,7 +130,8 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
         try {
             LoanProductApproval newLoanProductApproval = LoanProductApproval.create(name, loanProduct, loanProductApprovalConfig);
             this.repositoryWrapper.saveAndFlush(newLoanProductApproval);
-            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(newLoanProductApproval.getId()).build();
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(newLoanProductApproval.getId())
+                    .build();
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
             return CommandProcessingResult.empty();
@@ -144,8 +146,8 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
         try {
             final Set<LoanProductApprovalConfig> loanProductApprovalConfig = new HashSet<>();
             if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element)) {
-                final JsonArray loanProductApprovalConfigArray
-                        = this.fromApiJsonHelper.extractJsonArrayNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
+                final JsonArray loanProductApprovalConfigArray = this.fromApiJsonHelper
+                        .extractJsonArrayNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
                 for (JsonElement jsonElement : loanProductApprovalConfigArray) {
                     final JsonObject jsonObject = jsonElement.getAsJsonObject();
                     final Long roleId = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.ROLEID).getAsLong();
@@ -160,19 +162,18 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
                     Long id = null;
                     if (jsonObject.has(LoanProductApprovalApiResourceConstants.ID)
                             && jsonObject.get(LoanProductApprovalApiResourceConstants.ID).isJsonPrimitive()) {
-                        id = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT)
-                                .getAsLong();
+                        id = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT).getAsLong();
                     }
                     LoanProductApprovalConfig loanProductApprovalConfigJsonObject;
                     if (id != null) {
-                        //update record
-                        loanProductApprovalConfigJsonObject = this.loanProductApprovalConfigRepositoryWrapper.findOneWithNotFoundDetection(id);
+                        // update record
+                        loanProductApprovalConfigJsonObject = this.loanProductApprovalConfigRepositoryWrapper
+                                .findOneWithNotFoundDetection(id);
                         loanProductApprovalConfigJsonObject.setRank(rank);
                         loanProductApprovalConfigJsonObject.setRole(role);
                         loanProductApprovalConfigJsonObject.setMaxApprovalAmount(maxApprovalAmount);
                     } else {
-                        loanProductApprovalConfigJsonObject
-                                = LoanProductApprovalConfig.create(role, maxApprovalAmount, rank);
+                        loanProductApprovalConfigJsonObject = LoanProductApprovalConfig.create(role, maxApprovalAmount, rank);
                     }
                     loanProductApprovalConfig.add(loanProductApprovalConfigJsonObject);
                 }
@@ -180,7 +181,8 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
             return loanProductApprovalConfig;
         } catch (Exception e) {
             log.warn("setLoanProductApprovalConfig: {}", e);
-            throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.config.issue", "Loan product approval config error.", e.getMessage());
+            throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.config.issue", "Loan product approval config error.",
+                    e.getMessage());
         }
     }
 
@@ -194,17 +196,18 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
         String getCause = StringUtils.defaultIfBlank(cause[3], realCause.getMessage());
         if (getCause.contains("name")) {
             final String name = command.stringValueOfParameterNamed(LoanProductApprovalApiResourceConstants.NAME);
-            throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate", "Loan Product Approval with name `" + name + "` already exists",
-                    LoanProductApprovalApiResourceConstants.NAME, name);
+            throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate",
+                    "Loan Product Approval with name `" + name + "` already exists", LoanProductApprovalApiResourceConstants.NAME, name);
         } else if (getCause.contains("loan_product_id")) {
             final String loanProductId = command.stringValueOfParameterNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID);
             throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate",
-                    "Loan Product Approval with product id `" + loanProductId + "` already exists", LoanProductApprovalApiResourceConstants.LOANPRODUCTID, loanProductId);
+                    "Loan Product Approval with product id `" + loanProductId + "` already exists",
+                    LoanProductApprovalApiResourceConstants.LOANPRODUCTID, loanProductId);
         }
 
         logAsErrorUnexpectedDataIntegrityException(dve);
-        throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.unknown.data.integrity.issue", "One or more fields are in conflict.",
-                "Unknown data integrity issue with resource.");
+        throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.unknown.data.integrity.issue",
+                "One or more fields are in conflict.", "Unknown data integrity issue with resource.");
     }
 
     private void logAsErrorUnexpectedDataIntegrityException(final Exception dve) {

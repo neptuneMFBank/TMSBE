@@ -3628,7 +3628,7 @@ public class CommandWrapperBuilder {
         this.href = "/employers/" + employerId + "?command=close";
         return this;
     }
-    
+
     public CommandWrapperBuilder createLoanProductApproval() {
         this.actionName = "CREATE";
         this.entityName = LoanProductApprovalApiResourceConstants.RESOURCENAME;

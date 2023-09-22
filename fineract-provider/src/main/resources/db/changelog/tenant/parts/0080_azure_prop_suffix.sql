@@ -20,4 +20,3 @@
 
 -- INSERT c_external_service_properties
 INSERT into c_external_service_properties (`name`, `value`, `external_service_id`) values('endpointSuffix', '', (select id from c_external_service where name = 'Azure'));
-

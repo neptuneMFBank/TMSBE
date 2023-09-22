@@ -132,7 +132,7 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
         if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
             final LocalDate startPeriod = searchParameters.getFromDate();
             final LocalDate endPeriod = searchParameters.getToDate();
-            
+
             final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
             if (startPeriod != null && endPeriod != null) {
                 extraCriteria += " and CAST(me.created_on_utc AS DATE) BETWEEN ? AND ? ";
@@ -182,7 +182,7 @@ public class EmployerReadPlatformServiceImpl implements EmployerReadPlatformServ
         this.context.authenticatedUser();
         try {
             final String sql = "select " + employerMapper.schema() + " where me.id = ?";
-            return this.jdbcTemplate.queryForObject(sql, employerMapper, new Object[]{employerId});
+            return this.jdbcTemplate.queryForObject(sql, employerMapper, new Object[] { employerId });
         } catch (DataAccessException e) {
             LOG.error("Employer not found: {}", e);
             throw new EmployerNotFoundException(employerId);

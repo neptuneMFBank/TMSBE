@@ -17,12 +17,8 @@
 -- under the License.
 --
 
-CREATE TABLE `m_role_loan_product_approval_config`(
-      `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-      `rlpa_id` BIGINT NOT NULL,
-      `role_id` BIGINT NOT NULL,
-      `max_approval_amount` decimal(19,6) DEFAULT NULL,
-      `rank` INT NOT NULL,
-      CONSTRAINT `config_FK_rlpa` FOREIGN KEY (`rlpa_id`) REFERENCES `m_role_loan_product_approval` (`id`),
-      CONSTRAINT `config_FK_rlpa_role` FOREIGN KEY (`role_id`) REFERENCES `m_role` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- INSERT m_permission
+INSERT INTO `m_permission` (`id`, `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`)
+VALUES
+     (NULL, 'portfolio', 'UPDATE_LOANPRODUCT_APPROVAL_CHECKER', 'LOANPRODUCT_APPROVAL', 'UPDATE_CHECKER', false)

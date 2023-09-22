@@ -80,7 +80,7 @@ public class LoanProductApprovalApiResource {
     @Path("template")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Retrieve Employer Template", description = """
+    @Operation(summary = "Retrieve Loan Product Approval Template", description = """
             """)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK"

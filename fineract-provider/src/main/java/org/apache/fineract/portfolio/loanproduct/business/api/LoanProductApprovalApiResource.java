@@ -16,9 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.business.roleloanproductapproval.api;
+package org.apache.fineract.portfolio.loanproduct.business.api;
 
-import org.apache.fineract.portfolio.business.employer.api.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -53,17 +52,18 @@ import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.business.employer.api.EmployerApiResourceConstants;
 import org.apache.fineract.portfolio.business.employer.data.EmployerData;
 import org.apache.fineract.portfolio.business.employer.service.EmployerReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Path("/business/config")
+@Path("/loanproducts/approval")
 @Component
 @RequiredArgsConstructor
-@Tag(name = "Employer", description = "This defines the employer model")
-public class RoleLoanProductApprovalApiResource {
+@Tag(name = "Loan Product Approval", description = "Loan Product Approval")
+public class LoanProductApprovalApiResource {
 
     private final PlatformSecurityContext securityContext;
     private final ToApiJsonSerializer<EmployerData> jsonSerializer;

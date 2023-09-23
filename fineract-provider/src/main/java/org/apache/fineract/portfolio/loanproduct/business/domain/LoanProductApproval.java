@@ -94,13 +94,13 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
         this.loanProductApprovalConfig = loanProductApprovalConfig;
     }
 
-    public void addLoanProductApprovalConfig(LoanProductApprovalConfig loanProductApprovalConfig) {
-        loanProductApprovalConfig.setLoanProductApproval(this);
+    public void addLoanProductApprovalConfig(LoanProductApprovalConfig singleLoanProductApprovalConfig) {
+        singleLoanProductApprovalConfig.setLoanProductApproval(this);
         if (!CollectionUtils.isEmpty(this.loanProductApprovalConfig)) {
-            final Integer rank = loanProductApprovalConfig.getRank();
+            final Integer rank = singleLoanProductApprovalConfig.getRank();
             final boolean exist = this.loanProductApprovalConfig.stream()
                     .anyMatch(action
-                            -> !Objects.equals(loanProductApprovalConfig.getId(), action.getLoanProductApproval().getId())
+                            -> !Objects.equals(singleLoanProductApprovalConfig.getId(), action.getId())
                     && Objects.equals(action.getRank(), rank));
             if (exist) {
                 throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.config.duplicate",
@@ -108,7 +108,7 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
             }
         }
 
-        this.loanProductApprovalConfig.add(loanProductApprovalConfig);
+        this.loanProductApprovalConfig.add(singleLoanProductApprovalConfig);
     }
 
     public boolean update(Set<LoanProductApprovalConfig> loanProductApprovalConfigNew) {

@@ -178,7 +178,7 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
                 }
             }
             //return loanProductApprovalConfig;
-        } catch (Exception e) {
+        } catch (PlatformDataIntegrityException e) {
             log.warn("setLoanProductApprovalConfig: {}", e);
             throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.config.issue", "Loan product approval config error.",
                     e.getMessage());

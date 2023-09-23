@@ -31,7 +31,7 @@ import org.apache.fineract.useradministration.domain.Role;
 @Table(name = "m_role_loan_product_approval_config")
 public class LoanProductApprovalConfig extends AbstractPersistableCustom {
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "rlpa_id", nullable = false)
     private LoanProductApproval loanProductApproval;
 
@@ -45,7 +45,8 @@ public class LoanProductApprovalConfig extends AbstractPersistableCustom {
     @Column(name = "rank", nullable = false)
     private Integer rank;
 
-    protected LoanProductApprovalConfig() {}
+    protected LoanProductApprovalConfig() {
+    }
 
     public static LoanProductApprovalConfig create(Role role, BigDecimal maxApprovalAmount, Integer rank) {
         final LoanProductApproval loanProductApproval = null;
@@ -85,6 +86,10 @@ public class LoanProductApprovalConfig extends AbstractPersistableCustom {
 
     public void setRank(Integer rank) {
         this.rank = rank;
+    }
+
+    public void setLoanProductApproval(LoanProductApproval loanProductApproval) {
+        this.loanProductApproval = loanProductApproval;
     }
 
 }

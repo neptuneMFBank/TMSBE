@@ -100,7 +100,6 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
         if (loanProductApprovalConfigNew == null) {
             return false;
         }
-        this.loanProductApprovalConfig.clear();
 
         boolean updated = false;
         if (this.loanProductApprovalConfig != null) {

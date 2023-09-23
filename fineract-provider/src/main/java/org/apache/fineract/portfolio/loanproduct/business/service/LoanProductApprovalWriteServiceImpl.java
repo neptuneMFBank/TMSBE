@@ -93,8 +93,8 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
             setLoanProductApprovalConfig(element, loanProductApproval);
             final boolean updated = loanProductApproval.update(loanProductApproval.getLoanProductApprovalConfig());
             if (updated) {
-                final String values = this.fromApiJsonHelper.extractStringNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
-                changes.put(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, values);
+                final JsonArray values = this.fromApiJsonHelper.extractJsonArrayNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
+                changes.put(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, values.toString());
             }
         }
         try {

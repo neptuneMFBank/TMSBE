@@ -202,7 +202,7 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
     @Override
     public Collection<LoanProductApprovalConfigData> retrieveConfig(Long loanProductApprovalId) {
         this.context.authenticatedUser();
-        final String sql = "select " + loanProductApprovalConfigMapper.schema();
+        final String sql = "select " + loanProductApprovalConfigMapper.schema() + " where lpac.rlpa_id = ?";
         return this.jdbcTemplate.query(sql, loanProductApprovalConfigMapper, new Object[]{loanProductApprovalId}); // NOSONAR
     }
 

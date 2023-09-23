@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.client.service.business;
 
+import com.google.gson.JsonObject;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.client.data.ClientData;
@@ -37,4 +38,6 @@ public interface ClientBusinessReadPlatformService {
     ClientData findClient(final String apiRequestBodyAsJson);
 
     KycBusinessData retrieveKycLevel(Long clientId);
+
+    JsonObject retrieveBalance(Long clientId);
 }

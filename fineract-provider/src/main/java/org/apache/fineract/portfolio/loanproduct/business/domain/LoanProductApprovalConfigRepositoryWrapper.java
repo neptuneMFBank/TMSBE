@@ -39,4 +39,14 @@ public class LoanProductApprovalConfigRepositoryWrapper {
                 .orElseThrow(() -> new LoanProductApprovalNotFoundException("Loan product approval config does not exit for id " + id));
     }
 
+    @Transactional(readOnly = true)
+    public LoanProductApprovalConfig findByLoanProductApprovalIdAndRank(final Long loanProductApprovalId, final Integer rank) {
+        return this.repository.findByLoanProductApprovalIdAndRank(loanProductApprovalId, rank);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsByLoanProductApprovalIdAndRank(final Long loanProductApprovalId, final Integer rank) {
+        return this.repository.existsByLoanProductApprovalIdAndRank(loanProductApprovalId, rank);
+    }
+
 }

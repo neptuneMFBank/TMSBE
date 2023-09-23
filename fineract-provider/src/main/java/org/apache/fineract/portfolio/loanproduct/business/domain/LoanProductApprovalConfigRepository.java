@@ -24,4 +24,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface LoanProductApprovalConfigRepository
         extends JpaRepository<LoanProductApprovalConfig, Long>, JpaSpecificationExecutor<LoanProductApprovalConfig> {
 
+    boolean existsByLoanProductApprovalIdAndRank(final Long loanProductApprovalId, final Integer rank);
+
+    LoanProductApprovalConfig findByLoanProductApprovalIdAndRank(final Long loanProductApprovalId, final Integer rank);
+
 }

@@ -19,6 +19,7 @@
 package org.apache.fineract.portfolio.loanproduct.business.domain;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,7 +31,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
+import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
+import org.springframework.util.CollectionUtils;
 
 @Entity
 @Table(name = "m_role_loan_product_approval", uniqueConstraints = {
@@ -93,6 +96,18 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
 
     public void addLoanProductApprovalConfig(LoanProductApprovalConfig loanProductApprovalConfig) {
         loanProductApprovalConfig.setLoanProductApproval(this);
+        if (!CollectionUtils.isEmpty(this.loanProductApprovalConfig)) {
+            final Integer rank = loanProductApprovalConfig.getRank();
+            final boolean exist = this.loanProductApprovalConfig.stream()
+                    .anyMatch(action
+                            -> //      Objects.equals(loanProductApprovalConfig.getLoanProductApproval().getLoanProduct().getId(), action.getLoanProductApproval().getLoanProduct().getId()) && 
+                            Objects.equals(action.getRank(), rank));
+            if (exist) {
+                throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.config.duplicate",
+                        "Loan Product Approval config with index `" + rank + "` already exists");
+            }
+        }
+
         this.loanProductApprovalConfig.add(loanProductApprovalConfig);
     }
 

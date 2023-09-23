@@ -169,6 +169,7 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
                     loanProductApprovalConfigJsonObject.setRank(rank);
                     loanProductApprovalConfigJsonObject.setRole(role);
                     loanProductApprovalConfigJsonObject.setMaxApprovalAmount(maxApprovalAmount);
+
                 } else {
                     loanProductApprovalConfigJsonObject = LoanProductApprovalConfig.create(role, maxApprovalAmount, rank);
                 }

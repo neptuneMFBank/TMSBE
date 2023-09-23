@@ -1129,8 +1129,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     public static final class SavingsActiveSummaryMapper implements RowMapper<JsonObject> {
 
         public String savingsSchema() {
-            return " SUM(CASE WHEN ms.deposit_type_enum=100 THEN COALESCE(ms.available_balance,0) END) availableBalance "
-                    + " SUM(CASE WHEN ms.deposit_type_enum=100 THEN COALESCE(ms.ledger_balance,0) END) ledgerBalance "
+            return " SUM(CASE WHEN ms.deposit_type_enum=100 THEN COALESCE(ms.available_balance,0) END) availableBalance, "
+                    + " SUM(CASE WHEN ms.deposit_type_enum=100 THEN COALESCE(ms.ledger_balance,0) END) ledgerBalance, "
                     + " COUNT(ms.status_enum=300) AS totalCount"
                     + " FROM m_saving_view ms WHERE ms.client_id=?";
         }

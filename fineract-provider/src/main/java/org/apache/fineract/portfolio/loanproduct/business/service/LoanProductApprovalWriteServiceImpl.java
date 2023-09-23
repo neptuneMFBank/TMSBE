@@ -92,10 +92,11 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
             }
         }
         if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element)) {
-            final Set<LoanProductApprovalConfig> loanProductApprovalConfigNew = setLoanProductApprovalConfig(element);
+            setLoanProductApprovalConfig(element, loanProductApproval);
+            final Set<LoanProductApprovalConfig> loanProductApprovalConfigNew = updateLoanProductApprovalConfig(element);
             final boolean updated = loanProductApproval.update(loanProductApprovalConfigNew);
             if (updated) {
-                final String values = this.fromApiJsonHelper.toJson(loanProductApprovalConfigNew);
+                final String values = this.fromApiJsonHelper.extractStringNamed("LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDAT", element);
                 changes.put(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, values);
             }
         }
@@ -126,9 +127,9 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
         final Long loanProductId = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, element);
         final LoanProduct loanProduct = this.loanProductRepositoryWrapper.findOneWithNotFoundDetection(loanProductId);
 
-        Set<LoanProductApprovalConfig> loanProductApprovalConfig = setLoanProductApprovalConfig(element);
         try {
-            LoanProductApproval newLoanProductApproval = LoanProductApproval.create(name, loanProduct, loanProductApprovalConfig);
+            LoanProductApproval newLoanProductApproval = LoanProductApproval.create(name, loanProduct);
+            setLoanProductApprovalConfig(element, newLoanProductApproval);
             this.repositoryWrapper.saveAndFlush(newLoanProductApproval);
             return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(newLoanProductApproval.getId())
                     .build();
@@ -142,7 +143,7 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
         }
     }
 
-    protected Set<LoanProductApprovalConfig> setLoanProductApprovalConfig(final JsonElement element) {
+    protected Set<LoanProductApprovalConfig> updateLoanProductApprovalConfig(final JsonElement element) {
         try {
             final Set<LoanProductApprovalConfig> loanProductApprovalConfig = new HashSet<>();
             if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element)) {
@@ -180,6 +181,51 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
             }
             return loanProductApprovalConfig;
         } catch (Exception e) {
+            log.warn("updateLoanProductApprovalConfig: {}", e);
+            throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.config.issue", "Loan product approval update config error.",
+                    e.getMessage());
+        }
+    }
+
+    protected void setLoanProductApprovalConfig(final JsonElement element, LoanProductApproval newLoanProductApproval) {
+        try {
+            //final Set<LoanProductApprovalConfig> loanProductApprovalConfig = new HashSet<>();
+            if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element)) {
+                final JsonArray loanProductApprovalConfigArray = this.fromApiJsonHelper
+                        .extractJsonArrayNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
+                for (JsonElement jsonElement : loanProductApprovalConfigArray) {
+                    final JsonObject jsonObject = jsonElement.getAsJsonObject();
+                    final Long roleId = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.ROLEID).getAsLong();
+                    final Role role = this.roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException(roleId));
+                    final Integer rank = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.RANK).getAsInt();
+                    BigDecimal maxApprovalAmount = BigDecimal.ZERO;
+                    if (jsonObject.has(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT)
+                            && jsonObject.get(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT).isJsonPrimitive()) {
+                        maxApprovalAmount = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT)
+                                .getAsBigDecimal();
+                    }
+                    Long id = null;
+                    if (jsonObject.has(LoanProductApprovalApiResourceConstants.ID)
+                            && jsonObject.get(LoanProductApprovalApiResourceConstants.ID).isJsonPrimitive()) {
+                        id = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT).getAsLong();
+                    }
+                    LoanProductApprovalConfig loanProductApprovalConfigJsonObject;
+                    if (id != null) {
+                        // update record
+                        loanProductApprovalConfigJsonObject = this.loanProductApprovalConfigRepositoryWrapper
+                                .findOneWithNotFoundDetection(id);
+                        loanProductApprovalConfigJsonObject.setRank(rank);
+                        loanProductApprovalConfigJsonObject.setRole(role);
+                        loanProductApprovalConfigJsonObject.setMaxApprovalAmount(maxApprovalAmount);
+                    } else {
+                        loanProductApprovalConfigJsonObject = LoanProductApprovalConfig.create(role, maxApprovalAmount, rank);
+                    }
+                    //loanProductApprovalConfig.add(loanProductApprovalConfigJsonObject);
+                    newLoanProductApproval.addLoanProductApprovalConfig(loanProductApprovalConfigJsonObject);
+                }
+            }
+            //return loanProductApprovalConfig;
+        } catch (Exception e) {
             log.warn("setLoanProductApprovalConfig: {}", e);
             throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.config.issue", "Loan product approval config error.",
                     e.getMessage());
@@ -192,17 +238,20 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
     private void handleDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve) {
         log.warn("handleDataIntegrityIssues: {} and Exception: {}", realCause.getMessage(), dve.getMessage());
         String[] cause = StringUtils.split(realCause.getMessage(), "'");
-
-        String getCause = StringUtils.defaultIfBlank(cause[3], realCause.getMessage());
-        if (getCause.contains("name")) {
-            final String name = command.stringValueOfParameterNamed(LoanProductApprovalApiResourceConstants.NAME);
-            throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate",
-                    "Loan Product Approval with name `" + name + "` already exists", LoanProductApprovalApiResourceConstants.NAME, name);
-        } else if (getCause.contains("loan_product_id")) {
-            final String loanProductId = command.stringValueOfParameterNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID);
-            throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate",
-                    "Loan Product Approval with product id `" + loanProductId + "` already exists",
-                    LoanProductApprovalApiResourceConstants.LOANPRODUCTID, loanProductId);
+        try {
+            String getCause = StringUtils.defaultIfBlank(cause[3], realCause.getMessage());
+            if (getCause.contains("name")) {
+                final String name = command.stringValueOfParameterNamed(LoanProductApprovalApiResourceConstants.NAME);
+                throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate",
+                        "Loan Product Approval with name `" + name + "` already exists", LoanProductApprovalApiResourceConstants.NAME, name);
+            } else if (getCause.contains("loan_product")) {
+                final String loanProductId = command.stringValueOfParameterNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID);
+                throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate",
+                        "Loan Product Approval with product id `" + loanProductId + "` already exists",
+                        LoanProductApprovalApiResourceConstants.LOANPRODUCTID, loanProductId);
+            }
+        } catch (PlatformDataIntegrityException e) {
+            log.error("handleDataIntegrityIssues LoanProductApprovalErrorOccured: {}", e);
         }
 
         logAsErrorUnexpectedDataIntegrityException(dve);

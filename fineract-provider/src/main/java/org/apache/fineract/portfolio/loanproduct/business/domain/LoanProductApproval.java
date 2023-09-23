@@ -114,9 +114,6 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
             updated = true;
             this.loanProductApprovalConfig = loanProductApprovalConfigNew;
         }
-        for (LoanProductApprovalConfig loanProductApprovalConfig1 : loanProductApprovalConfigNew) {
-            addLoanProductApprovalConfig(loanProductApprovalConfig1);
-        }
         return updated;
     }
 }

@@ -96,7 +96,7 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
             final Set<LoanProductApprovalConfig> loanProductApprovalConfigNew = updateLoanProductApprovalConfig(element);
             final boolean updated = loanProductApproval.update(loanProductApprovalConfigNew);
             if (updated) {
-                final String values = this.fromApiJsonHelper.extractStringNamed("LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDAT", element);
+                final String values = this.fromApiJsonHelper.extractStringNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
                 changes.put(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, values);
             }
         }

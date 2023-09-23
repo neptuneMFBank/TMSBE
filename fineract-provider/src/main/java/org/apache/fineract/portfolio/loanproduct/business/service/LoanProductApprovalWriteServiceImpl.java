@@ -160,7 +160,7 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
                     Long id = null;
                     if (jsonObject.has(LoanProductApprovalApiResourceConstants.ID)
                             && jsonObject.get(LoanProductApprovalApiResourceConstants.ID).isJsonPrimitive()) {
-                        id = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT).getAsLong();
+                        id = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.ID).getAsLong();
                     }
                     LoanProductApprovalConfig loanProductApprovalConfigJsonObject;
                     if (id != null) {
@@ -197,6 +197,11 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
                 final String name = command.stringValueOfParameterNamed(LoanProductApprovalApiResourceConstants.NAME);
                 throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate",
                         "Loan Product Approval with name `" + name + "` already exists", LoanProductApprovalApiResourceConstants.NAME, name);
+            } else if (getCause.contains("rlpa_UNIQUE_rank")) {
+                final String rank = command.stringValueOfParameterNamed(LoanProductApprovalApiResourceConstants.RANK);
+                throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate",
+                        "Loan Product Approval with index `" + rank + "` already exists",
+                        LoanProductApprovalApiResourceConstants.RANK, rank);
             } else if (getCause.contains("loan_product")) {
                 final String loanProductId = command.stringValueOfParameterNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID);
                 throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate",

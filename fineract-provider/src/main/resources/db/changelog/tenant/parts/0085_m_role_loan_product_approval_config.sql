@@ -23,6 +23,7 @@ CREATE TABLE `m_role_loan_product_approval_config`(
       `role_id` BIGINT NOT NULL,
       `max_approval_amount` decimal(19,6) DEFAULT NULL,
       `rank` INT NOT NULL,
+      UNIQUE KEY `rlpa_UNIQUE_rank` (`rlpa_id`,`rank`),
       CONSTRAINT `config_FK_rlpa` FOREIGN KEY (`rlpa_id`) REFERENCES `m_role_loan_product_approval` (`id`),
       CONSTRAINT `config_FK_rlpa_role` FOREIGN KEY (`role_id`) REFERENCES `m_role` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

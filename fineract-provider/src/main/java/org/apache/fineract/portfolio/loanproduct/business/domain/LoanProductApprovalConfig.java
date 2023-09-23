@@ -24,11 +24,13 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.useradministration.domain.Role;
 
 @Entity
-@Table(name = "m_role_loan_product_approval_config")
+@Table(name = "m_role_loan_product_approval_config", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"rlpa_id", "rank"}, name = "rlpa_UNIQUE_rank")})
 public class LoanProductApprovalConfig extends AbstractPersistableCustom {
 
     @ManyToOne(optional = false)

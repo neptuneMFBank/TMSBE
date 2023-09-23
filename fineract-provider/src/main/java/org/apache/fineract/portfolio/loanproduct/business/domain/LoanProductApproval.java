@@ -100,8 +100,8 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
             final Integer rank = loanProductApprovalConfig.getRank();
             final boolean exist = this.loanProductApprovalConfig.stream()
                     .anyMatch(action
-                            -> //      Objects.equals(loanProductApprovalConfig.getLoanProductApproval().getLoanProduct().getId(), action.getLoanProductApproval().getLoanProduct().getId()) && 
-                            Objects.equals(action.getRank(), rank));
+                            -> !Objects.equals(loanProductApprovalConfig.getId(), action.getLoanProductApproval().getId())
+                    && Objects.equals(action.getRank(), rank));
             if (exist) {
                 throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.config.duplicate",
                         "Loan Product Approval config with index `" + rank + "` already exists");

@@ -89,15 +89,15 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
                 loanProductApproval.setLoanProduct(loanProduct);
             }
         }
-        if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element)) {
-            setLoanProductApprovalConfig(element, loanProductApproval);
-            final boolean updated = loanProductApproval.update(loanProductApproval.getLoanProductApprovalConfig());
-            if (updated) {
-                final JsonArray values = this.fromApiJsonHelper.extractJsonArrayNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
-                changes.put(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, values.toString());
-            }
-        }
         try {
+            if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element)) {
+                setLoanProductApprovalConfig(element, loanProductApproval);
+                final boolean updated = loanProductApproval.update(loanProductApproval.getLoanProductApprovalConfig());
+                if (updated) {
+                    final JsonArray values = this.fromApiJsonHelper.extractJsonArrayNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
+                    changes.put(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, values.toString());
+                }
+            }
             if (!changes.isEmpty()) {
                 this.repositoryWrapper.saveAndFlush(loanProductApproval);
             }
@@ -141,47 +141,40 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
     }
 
     protected void setLoanProductApprovalConfig(final JsonElement element, LoanProductApproval newLoanProductApproval) {
-        try {
-            //final Set<LoanProductApprovalConfig> loanProductApprovalConfig = new HashSet<>();
-            if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element)) {
-                final JsonArray loanProductApprovalConfigArray = this.fromApiJsonHelper
-                        .extractJsonArrayNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
-                for (JsonElement jsonElement : loanProductApprovalConfigArray) {
-                    final JsonObject jsonObject = jsonElement.getAsJsonObject();
-                    final Long roleId = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.ROLEID).getAsLong();
-                    final Role role = this.roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException(roleId));
-                    final Integer rank = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.RANK).getAsInt();
-                    BigDecimal maxApprovalAmount = BigDecimal.ZERO;
-                    if (jsonObject.has(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT)
-                            && jsonObject.get(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT).isJsonPrimitive()) {
-                        maxApprovalAmount = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT)
-                                .getAsBigDecimal();
-                    }
-                    Long id = null;
-                    if (jsonObject.has(LoanProductApprovalApiResourceConstants.ID)
-                            && jsonObject.get(LoanProductApprovalApiResourceConstants.ID).isJsonPrimitive()) {
-                        id = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.ID).getAsLong();
-                    }
-                    LoanProductApprovalConfig loanProductApprovalConfigJsonObject;
-                    if (id != null) {
-                        // update record
-                        loanProductApprovalConfigJsonObject = this.loanProductApprovalConfigRepositoryWrapper
-                                .findOneWithNotFoundDetection(id);
-                        loanProductApprovalConfigJsonObject.setRank(rank);
-                        loanProductApprovalConfigJsonObject.setRole(role);
-                        loanProductApprovalConfigJsonObject.setMaxApprovalAmount(maxApprovalAmount);
-                    } else {
-                        loanProductApprovalConfigJsonObject = LoanProductApprovalConfig.create(role, maxApprovalAmount, rank);
-                    }
-                    //loanProductApprovalConfig.add(loanProductApprovalConfigJsonObject);
-                    newLoanProductApproval.addLoanProductApprovalConfig(loanProductApprovalConfigJsonObject);
+        //final Set<LoanProductApprovalConfig> loanProductApprovalConfig = new HashSet<>();
+        if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element)) {
+            final JsonArray loanProductApprovalConfigArray = this.fromApiJsonHelper
+                    .extractJsonArrayNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
+            for (JsonElement jsonElement : loanProductApprovalConfigArray) {
+                final JsonObject jsonObject = jsonElement.getAsJsonObject();
+                final Long roleId = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.ROLEID).getAsLong();
+                final Role role = this.roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException(roleId));
+                final Integer rank = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.RANK).getAsInt();
+                BigDecimal maxApprovalAmount = BigDecimal.ZERO;
+                if (jsonObject.has(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT)
+                        && jsonObject.get(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT).isJsonPrimitive()) {
+                    maxApprovalAmount = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT)
+                            .getAsBigDecimal();
                 }
+                Long id = null;
+                if (jsonObject.has(LoanProductApprovalApiResourceConstants.ID)
+                        && jsonObject.get(LoanProductApprovalApiResourceConstants.ID).isJsonPrimitive()) {
+                    id = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.ID).getAsLong();
+                }
+                LoanProductApprovalConfig loanProductApprovalConfigJsonObject;
+                if (id != null) {
+                    // update record
+                    loanProductApprovalConfigJsonObject = this.loanProductApprovalConfigRepositoryWrapper
+                            .findOneWithNotFoundDetection(id);
+                    loanProductApprovalConfigJsonObject.setRank(rank);
+                    loanProductApprovalConfigJsonObject.setRole(role);
+                    loanProductApprovalConfigJsonObject.setMaxApprovalAmount(maxApprovalAmount);
+                } else {
+                    loanProductApprovalConfigJsonObject = LoanProductApprovalConfig.create(role, maxApprovalAmount, rank);
+                }
+                //loanProductApprovalConfig.add(loanProductApprovalConfigJsonObject);
+                newLoanProductApproval.addLoanProductApprovalConfig(loanProductApprovalConfigJsonObject);
             }
-            //return loanProductApprovalConfig;
-        } catch (Exception e) {
-            log.warn("setLoanProductApprovalConfig: {}", e);
-            throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.config.issue", "Loan product approval config error.",
-                    e.getMessage());
         }
     }
 

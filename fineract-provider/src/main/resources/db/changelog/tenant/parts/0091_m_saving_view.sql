@@ -21,12 +21,16 @@
 CREATE OR REPLACE VIEW m_saving_view AS
 SELECT
     msa.id AS id,
+    msa.external_id,
     msp.id product_id,
     msp.name product_name,
     mc.id AS client_id,
     mc.display_name,
+    mc.office_id,
+    o.name office_name,
     msa.account_no,
     msa.activatedon_date,
+    msa.submittedon_date,
     msa.deposit_type_enum,
     msa.status_enum AS status_enum,
     MAX(msat.transaction_date) last_transaction_date,
@@ -36,5 +40,6 @@ SELECT
     FROM m_savings_account msa
 JOIN m_client mc ON mc.id=msa.client_id
 JOIN m_savings_product msp ON msp .id =msa.product_id 
+LEFT JOIN m_office o on o.id = mc.office_id
 LEFT JOIN m_savings_account_transaction msat ON msat.savings_account_id =msa.id 
 GROUP BY msa.id;

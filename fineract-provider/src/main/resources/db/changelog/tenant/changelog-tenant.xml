@@ -106,4 +106,5 @@
     <include file="parts/0089_m_create_checker_loan_product_approval_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0090_m_update_checker_loan_product_approval_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0091_m_saving_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0092_m_read_deposits_permission.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

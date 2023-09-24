@@ -17,7 +17,7 @@
 -- under the License.
 --
 
--- VIEW FOR LOANS
+-- VIEW FOR SAVINGS
 CREATE OR REPLACE VIEW m_saving_view AS
 SELECT
     msa.id AS id,

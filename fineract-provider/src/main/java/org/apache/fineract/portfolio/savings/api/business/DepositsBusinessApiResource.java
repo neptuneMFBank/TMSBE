@@ -73,7 +73,7 @@ public class DepositsBusinessApiResource {
         @ApiResponse(responseCode = "200", description = "OK"
         // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
         )})
-    public String retrieveAll(@Context final UriInfo uriInfo, @QueryParam("bvn") @Parameter(description = "bvn") final String bvn,
+    public String retrieveAll(@Context final UriInfo uriInfo, 
             @QueryParam("productId") @Parameter(description = "productId") final Long productId,
             @QueryParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,

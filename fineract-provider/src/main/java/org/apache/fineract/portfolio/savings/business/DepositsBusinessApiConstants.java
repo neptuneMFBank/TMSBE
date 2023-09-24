@@ -31,27 +31,27 @@ public final class DepositsBusinessApiConstants {
     // Deposit products
     public static final String RESOURCE_NAME = "DEPSOITS";
 
-    protected static final String IDPARAM = "id";
-    protected static final String accountNoPARAM = "accountNo";
-    protected static final String depositTypePARAM = "depositType";
-    protected static final String statusPARAM = "status";
+    private static final String IDPARAM = "id";
+    private static final String accountNoPARAM = "accountNo";
+    private static final String depositTypePARAM = "depositType";
+    private static final String statusPARAM = "status";
 
-    protected static final String clientIdPARAM = "clientId";
-    protected static final String clientNamePARAM = "clientName";
+    private static final String clientIdPARAM = "clientId";
+    private static final String clientNamePARAM = "clientName";
 
-    protected static final String officeIdPARAM = "officeId";
-    protected static final String officeNamePARAM = "officeName";
+    private static final String officeIdPARAM = "officeId";
+    private static final String officeNamePARAM = "officeName";
 
-    protected static final String depositProductIdPARAM = "depositProductId";
-    protected static final String depositProductNamePARAM = "depositProductName";
-    protected static final String availableBalancePARAM = "availableBalance";
-    protected static final String ledgerBalancePARAM = "ledgerBalance";
+    private static final String depositProductIdPARAM = "depositProductId";
+    private static final String depositProductNamePARAM = "depositProductName";
+    private static final String availableBalancePARAM = "availableBalance";
+    private static final String ledgerBalancePARAM = "ledgerBalance";
 
-    protected static final String createdOnPARAM = "createdOn";
-    protected static final String activatedOnPARAM = "activatedOn";
-    protected static final String lastTransactionOnPARAM = "lastTransactionOn";
+    private static final String createdOnPARAM = "createdOn";
+    private static final String activatedOnPARAM = "activatedOn";
+    private static final String lastTransactionOnPARAM = "lastTransactionOn";
 
-    protected static final String externalIdPARAM = "externalId";
+    private static final String externalIdPARAM = "externalId";
 
     public static final Set<String> DEPOSIT_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(IDPARAM, accountNoPARAM, depositTypePARAM, statusPARAM, clientIdPARAM, clientNamePARAM, officeIdPARAM, officeNamePARAM,

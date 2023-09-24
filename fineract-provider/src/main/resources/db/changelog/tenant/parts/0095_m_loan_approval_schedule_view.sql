@@ -17,15 +17,9 @@
 -- under the License.
 --
 
-CREATE TABLE `m_metrics_history`(
-      `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-      `metrics_id` BIGINT NOT NULL,
-      `status_enum` SMALLINT NOT NULL DEFAULT 50,
-      `created_by` BIGINT NOT NULL,
-      `created_on_utc` DATETIME NULL,
-      `last_modified_by` BIGINT NOT NULL,
-      `last_modified_on_utc` DATETIME NULL,
-      CONSTRAINT `metrics_FK_history_id` FOREIGN KEY (`metrics_id`) REFERENCES m_metrics(`id`),
-      CONSTRAINT `rlpa_FK_created_by` FOREIGN KEY (`created_by`) REFERENCES m_appuser(`id`),
-      CONSTRAINT `rlpa_FK_last_modified_by` FOREIGN KEY (`last_modified_by`) REFERENCES m_appuser(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- VIEW FOR LOANS APPROVAL
+CREATE OR REPLACE VIEW m_loan_approval_schedule_view AS
+SELECT
+    ac.loan_id
+    FROM approvalCheck ac
+    WHERE ac.isSentForApproval=0;

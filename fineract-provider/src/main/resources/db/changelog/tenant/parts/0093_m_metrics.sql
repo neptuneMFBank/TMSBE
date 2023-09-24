@@ -20,7 +20,7 @@
 CREATE TABLE `m_metrics`(
       `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
       `assigned_user_id` BIGINT NOT NULL,
-      `status_enum` SMALLINT NOT NULL DEFAULT 100,
+      `status_enum` SMALLINT NOT NULL DEFAULT 50,
       `rank` INT NOT NULL,
       `loan_id` BIGINT NULL,
       `savings_id` BIGINT NULL,

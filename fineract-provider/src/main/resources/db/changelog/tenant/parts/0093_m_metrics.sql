@@ -30,8 +30,8 @@ CREATE TABLE `m_metrics`(
       `last_modified_on_utc` DATETIME NULL,
       UNIQUE KEY `metrics_UNIQUE_rank_loan` (`loan_id`,`rank`),
       UNIQUE KEY `metrics_UNIQUE_rank_saving` (`savings_id`,`rank`),
-      CONSTRAINT `metrics_FK_loan` FOREIGN KEY (`loan_id`) REFERENCES `m_loan` (`id`)
-      CONSTRAINT `metrics_FK_saving` FOREIGN KEY (`savings_id`) REFERENCES `m_savings_account` (`id`)
+      CONSTRAINT `metrics_FK_loan` FOREIGN KEY (`loan_id`) REFERENCES `m_loan` (`id`),
+      CONSTRAINT `metrics_FK_saving` FOREIGN KEY (`savings_id`) REFERENCES `m_savings_account` (`id`),
       CONSTRAINT `metrics_FK_assigned_user` FOREIGN KEY (`assigned_user_id`) REFERENCES m_staff(`id`),
       CONSTRAINT `rlpa_FK_created_by` FOREIGN KEY (`created_by`) REFERENCES m_appuser(`id`),
       CONSTRAINT `rlpa_FK_last_modified_by` FOREIGN KEY (`last_modified_by`) REFERENCES m_appuser(`id`)

@@ -26,6 +26,6 @@ CREATE TABLE `m_metrics_history`(
       `last_modified_by` BIGINT NOT NULL,
       `last_modified_on_utc` DATETIME NULL,
       CONSTRAINT `metrics_FK_history_id` FOREIGN KEY (`metrics_id`) REFERENCES m_metrics(`id`),
-      CONSTRAINT `rlpa_FK_created_by` FOREIGN KEY (`created_by`) REFERENCES m_appuser(`id`),
-      CONSTRAINT `rlpa_FK_last_modified_by` FOREIGN KEY (`last_modified_by`) REFERENCES m_appuser(`id`)
+      CONSTRAINT `metricsh_FK_created_by` FOREIGN KEY (`created_by`) REFERENCES m_appuser(`id`),
+      CONSTRAINT `metricsh_FK_last_modified_by` FOREIGN KEY (`last_modified_by`) REFERENCES m_appuser(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

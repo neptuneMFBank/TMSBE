@@ -107,4 +107,9 @@
     <include file="parts/0090_m_update_checker_loan_product_approval_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0091_m_saving_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0092_m_read_deposits_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0093_m_metrics.sql" relativeToChangelogFile="true" />
+    <include file="parts/0094_m_metrics_history.sql" relativeToChangelogFile="true" />
+    <include file="parts/0095_m_loan_approval_schedule_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0096_m_metrics_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0097_job_queue_loan_approval.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

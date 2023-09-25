@@ -75,12 +75,12 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
         sqlBuilder.append(sqlGenerator.calcFoundRows());
         sqlBuilder.append(mapper.schema());
 
-        sqlBuilder.append(" where u.is_deleted=false and ");
+        sqlBuilder.append(" where u.is_deleted=false ");
 
         if (searchParameters != null) {
             final String extraCriteria = buildSqlStringFromUserCriteria(searchParameters, paramList);
             if (StringUtils.isNotBlank(extraCriteria)) {
-                sqlBuilder.append("(").append(extraCriteria).append(")");
+                sqlBuilder.append(" and (").append(extraCriteria).append(")");
             }
 
             if (searchParameters.isOrderByRequested()) {

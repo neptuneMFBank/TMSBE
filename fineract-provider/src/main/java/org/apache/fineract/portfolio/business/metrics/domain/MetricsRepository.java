@@ -24,6 +24,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface MetricsRepository extends JpaRepository<Metrics, Long>, JpaSpecificationExecutor<Metrics> {
 
+    int countByAssignedUserIdAndStatus(Long assignedUserId, Integer status);
+
     List<Metrics> findByLoanId(Long loanId);
 
     boolean existsByLoanId(Long loanId);

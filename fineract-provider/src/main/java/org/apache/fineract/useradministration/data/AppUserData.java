@@ -187,4 +187,8 @@ public final class AppUserData {
         this.active = active;
     }
 
+    public StaffData getStaff() {
+        return staff;
+    }
+
 }

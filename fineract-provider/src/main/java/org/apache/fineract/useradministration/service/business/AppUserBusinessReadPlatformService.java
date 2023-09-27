@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.useradministration.service.business;
 
+import java.util.Collection;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.useradministration.data.AppUserData;
@@ -25,5 +26,7 @@ import org.apache.fineract.useradministration.data.AppUserData;
 public interface AppUserBusinessReadPlatformService {
 
     Page<AppUserData> retrieveAllUsers(SearchParametersBusiness searchParameters);
+
+    Collection<AppUserData> retrieveActiveAppUsersForRole(Long roleId);
 
 }

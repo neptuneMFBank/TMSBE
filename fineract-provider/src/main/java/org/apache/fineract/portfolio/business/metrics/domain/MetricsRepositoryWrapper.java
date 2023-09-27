@@ -52,6 +52,11 @@ public class MetricsRepositoryWrapper {
     }
 
     @Transactional(readOnly = true)
+    public int countByAssignedUserIdAndStatus(Long assignedUserId, Integer status) {
+        return this.repository.countByAssignedUserIdAndStatus(assignedUserId, status);
+    }
+
+    @Transactional(readOnly = true)
     public List<Metrics> findBySavingsAccountId(final Long savingsAccountId) {
         return this.repository.findBySavingsAccountId(savingsAccountId);
     }

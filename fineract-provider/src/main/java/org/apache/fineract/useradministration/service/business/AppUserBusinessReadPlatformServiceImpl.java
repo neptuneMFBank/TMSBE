@@ -201,4 +201,44 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
 
     }
 
+    @Override
+    public Collection<AppUserData> retrieveActiveAppUsersForRole(Long roleId) {
+        final RetrieveAppUserMapper mapper = new RetrieveAppUserMapper();
+        final String sql = "select " + mapper.schema() + " and ar.role_id=? ";
+
+        return this.jdbcTemplate.query(sql, mapper, roleId);
+    }
+
+    private static final class RetrieveAppUserMapper implements RowMapper<AppUserData> {
+
+        @Override
+        public AppUserData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String username = null;
+            final String firstname = null;
+            final String lastname = null;
+            final String email = null;
+            final Long officeId = null;
+            final String officeName = null;
+            final Boolean passwordNeverExpire = null;
+            final Boolean isSelfServiceUser = null;
+            final Collection<RoleData> selectedRoles = null;
+
+            final Long staffId = JdbcSupport.getLong(rs, "staffId");
+            final StaffData linkedStaff = StaffData.lookup(staffId, null);
+
+            final AppUserData appUserData = AppUserData.instance(id, username, email, officeId, officeName, firstname, lastname, null, null,
+                    selectedRoles, linkedStaff, passwordNeverExpire, isSelfServiceUser);
+            return appUserData;
+        }
+
+        public String schema() {
+            return "  u.id id, u.staff_id staffId from m_appuser u "
+                    + " JOIN m_appuser_role ar ON ar.appuser_id = u.id "
+                    + " JOIN m_staff ms on ms.id = u.staff_id WHERE u.enabled=true AND u.is_deleted=false AND ms.is_active=true ";
+        }
+
+    }
+
 }

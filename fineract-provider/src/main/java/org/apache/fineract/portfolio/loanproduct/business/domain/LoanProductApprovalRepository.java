@@ -18,13 +18,13 @@
  */
 package org.apache.fineract.portfolio.loanproduct.business.domain;
 
-import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface LoanProductApprovalRepository
         extends JpaRepository<LoanProductApproval, Long>, JpaSpecificationExecutor<LoanProductApproval> {
 
-    List<LoanProductApproval> findByLoanProductId(final Long loanProductId);
+    Optional<LoanProductApproval> findByLoanProductId(final Long loanProductId);
 
 }

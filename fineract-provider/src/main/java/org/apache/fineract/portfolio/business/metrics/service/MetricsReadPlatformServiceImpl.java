@@ -383,7 +383,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             return " mm.id, mm.assigned_user_id staffId, ms.display_name staffDisplayName, ms.organisational_role_parent_staff_id, mss.display_name supervisorStaffDisplayName, "
                     + " mm.status_enum statusEnum, mm.loan_id loanId, mm.savings_id savingsId, mm.created_on_utc createdOn, mm.last_modified_on_utc modifiedOn  "
                     + "  from m_metrics mm "
-                    + " LEFT JOIN m_staff ms ON ms.id=me.assigned_user_id"
+                    + " LEFT JOIN m_staff ms ON ms.id=mm.assigned_user_id"
                     + " LEFT JOIN m_staff mss ON mss.id=ms.organisational_role_parent_staff_id";
         }
 

@@ -18,7 +18,6 @@
  */
 package org.apache.fineract.portfolio.loanproduct.business.domain;
 
-import java.util.List;
 import org.apache.fineract.portfolio.loanproduct.business.exception.LoanProductApprovalNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,8 +44,9 @@ public class LoanProductApprovalRepositoryWrapper {
     }
 
     @Transactional(readOnly = true)
-    public List<LoanProductApproval> findByLoanProductId(final Long loanProductId) {
-        return this.repository.findByLoanProductId(loanProductId);
+    public LoanProductApproval findByLoanProductId(final Long loanProductId) {
+        return this.repository.findByLoanProductId(loanProductId)
+                .orElseThrow(() -> new LoanProductApprovalNotFoundException("No approval configured for loan product approval with id :" + loanProductId));
     }
 
 }

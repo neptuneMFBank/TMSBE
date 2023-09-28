@@ -21,18 +21,18 @@ package org.apache.fineract.portfolio.business.metrics.service;
 import java.util.Collection;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.business.employer.data.EmployerData;
+import org.apache.fineract.portfolio.business.metrics.data.MetricsData;
 
 public interface MetricsReadPlatformService {
 
     void queueLoanApprovals();
 
-    Page<EmployerData> retrieveAllLoanMetrics(final SearchParametersBusiness searchParameters);
+    Page<MetricsData> retrieveAllLoanMetrics(final SearchParametersBusiness searchParameters);
 
-    Page<EmployerData> retrieveAllSavingsAccountMetrics(final SearchParametersBusiness searchParameters);
+    Page<MetricsData> retrieveAllSavingsAccountMetrics(final SearchParametersBusiness searchParameters);
 
-    Collection< EmployerData> retrieveSavingsAccountMetrics(final Long savingsAccountId);
+    Collection< MetricsData> retrieveSavingsAccountMetrics(final Long savingsAccountId);
 
-    Collection< EmployerData> retrieveLoanMetrics(final Long loanId);
+    Collection< MetricsData> retrieveLoanMetrics(final Long loanId);
 
 }

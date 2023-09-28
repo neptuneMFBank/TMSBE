@@ -38,7 +38,9 @@ import org.apache.fineract.infrastructure.documentmanagement.contentrepository.C
 import org.apache.fineract.infrastructure.documentmanagement.contentrepository.ContentRepositoryUtils.ImageFileExtension;
 import org.apache.fineract.infrastructure.documentmanagement.contentrepository.ContentRepositoryUtils.ImageMIMEtype;
 import org.apache.fineract.infrastructure.documentmanagement.data.FileData;
+import org.apache.fineract.infrastructure.documentmanagement.domain.DocumentRepository;
 import org.apache.fineract.infrastructure.documentmanagement.exception.ContentManagementException;
+import org.apache.fineract.infrastructure.documentmanagement.exception.DocumentNotFoundException;
 import org.apache.fineract.infrastructure.documentmanagement.serialization.business.DocumentBusinessDataValidator;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentWritePlatformService;
@@ -56,17 +58,19 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
     private final FromJsonHelper fromApiJsonHelper;
     private final DocumentWritePlatformService documentWritePlatformService;
     private final DocumentReadPlatformService documentReadPlatformService;
+    private final DocumentRepository documentRepository;
 
     @Autowired
     public DocumentBusinessWritePlatformServiceImpl(final PlatformSecurityContext context,
             final DocumentBusinessDataValidator fromApiJsonDeserializer, final FromJsonHelper fromApiJsonHelper,
             final DocumentWritePlatformService documentWritePlatformService,
-            final DocumentReadPlatformService documentReadPlatformService) {
+            final DocumentReadPlatformService documentReadPlatformService, final DocumentRepository documentRepository) {
         this.context = context;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.documentWritePlatformService = documentWritePlatformService;
         this.documentReadPlatformService = documentReadPlatformService;
+        this.documentRepository = documentRepository;
     }
 
     @Override
@@ -191,5 +195,52 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
             fileDataURISuffix = ContentRepositoryUtils.ImageDataURIsuffix.XLSX.getValue();
         }
         return fileDataURISuffix;
+    }
+
+    @Override
+    public CommandProcessingResult updateBase64Document(final Long documentId, final String entityType, final Long entityId, final String apiRequestBodyAsJson) {
+        this.context.authenticatedUser();
+        this.fromApiJsonDeserializer.validateForCreate(entityType, entityId, apiRequestBodyAsJson);
+        final JsonElement jsonElement = this.fromApiJsonHelper.parse(apiRequestBodyAsJson);
+
+        this.documentRepository.findById(documentId)
+                .orElseThrow(() -> new DocumentNotFoundException(entityType,
+                entityId, documentId));
+
+        try {
+            final String location = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.locationParam, jsonElement);
+            final String name = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.nameParam, jsonElement);
+            final String description = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.descriptionParam, jsonElement);
+            final InputStream inputStream = new ByteArrayInputStream(Base64.getMimeDecoder().decode(location));
+            String fileName = GeneralConstants.generateUniqueId();
+            String attachmentType;
+            final String type = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.typeParam, jsonElement);
+            if (StringUtils.equalsIgnoreCase(type, "gif")) {
+                fileName = StringUtils.appendIfMissing(fileName, ImageFileExtension.GIF.getValue());
+                attachmentType = ImageMIMEtype.GIF.getValue();
+            } else if (StringUtils.equalsIgnoreCase(type, "jpeg")) {
+                fileName = StringUtils.appendIfMissing(fileName, ImageFileExtension.JPEG.getValue());
+                attachmentType = ImageMIMEtype.JPEG.getValue();
+            } else if (StringUtils.equalsIgnoreCase(type, "jpg")) {
+                fileName = StringUtils.appendIfMissing(fileName, ImageFileExtension.JPG.getValue());
+                attachmentType = ImageMIMEtype.JPEG.getValue();
+            } else if (StringUtils.equalsIgnoreCase(type, "png")) {
+                fileName = StringUtils.appendIfMissing(fileName, ImageFileExtension.PNG.getValue());
+                attachmentType = ImageMIMEtype.PNG.getValue();
+            } else if (StringUtils.equalsIgnoreCase(type, "pdf")) {
+                fileName = StringUtils.appendIfMissing(fileName, ImageFileExtension.PDF.getValue());
+                attachmentType = ImageMIMEtype.PDF.getValue();
+            } else {
+                throw new ContentManagementException(name, "fileType not supported");
+            }
+
+            DocumentCommand documentCommand = new DocumentCommand(null, documentId, entityType, entityId, name, fileName, null, attachmentType,
+                    description, null);
+            return this.documentWritePlatformService.updateDocument(documentCommand, inputStream);
+
+        } catch (ContentManagementException e) {
+            log.warn("updateBase64Document Error: {}", e);
+            throw new PlatformDataIntegrityException("error.document.base64.update", "Invalid update on documents uploaded");
+        }
     }
 }

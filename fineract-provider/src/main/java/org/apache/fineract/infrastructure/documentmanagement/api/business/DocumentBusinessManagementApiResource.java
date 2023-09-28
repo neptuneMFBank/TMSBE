@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -80,8 +81,8 @@ public class DocumentBusinessManagementApiResource {
 
     @POST
     @Path("base64")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create a Base64 Document", description = """
             Note: A document is created using Base64 upload
 
@@ -102,10 +103,11 @@ public class DocumentBusinessManagementApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = ""
-    // , content = @Content(schema = @Schema(implementation =
-    // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = ""
+        // , content = @Content(schema = @Schema(implementation =
+        // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))
+        )})
     public String createBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
 
@@ -118,17 +120,18 @@ public class DocumentBusinessManagementApiResource {
 
     @POST
     @Path("bulk-base64")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create a Bulk Base64 Document", description = "")
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation =
     // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = ""
-    // , content = @Content(schema = @Schema(implementation =
-    // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = ""
+        // , content = @Content(schema = @Schema(implementation =
+        // DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))
+        )})
     public String createBulkBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
 
@@ -141,17 +144,39 @@ public class DocumentBusinessManagementApiResource {
 
     @GET
     @Path("{documentId}/attachment")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve Avatar", description = "")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetAllClientIdResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetAllClientIdResponse.class))
+        )})
     public String retrieveAttachment(@PathParam("documentId") @Parameter(description = "documentId") final Long documentId,
             @PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId) {
         this.context.authenticatedUser().validateHasReadPermission(this.systemEntityType);
         final CommandProcessingResult result = this.documentWritePlatformService.retrieveAttachment(entityType, entityId, documentId);
         return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @PUT
+    @Path("{documentId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Update a Document", description = """
+                                                            Note: A document is updated using a Json
+                                                            """)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Update Document"
+        //, content = @Content(schema = @Schema(implementation = DocumentManagementApiResourceSwagger.PutEntityTypeEntityIdDocumentsResponse.class))
+        )})
+    public String updateDocument(@PathParam("documentId") @Parameter(description = "documentId") final Long documentId,
+            @PathParam("entityType") @Parameter(description = "entityType") final String entityType,
+            @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
+
+        final CommandProcessingResult documentIdentifier = this.documentWritePlatformService.updateBase64Document(documentId, entityType, entityId,
+                apiRequestBodyAsJson);
+
+        return this.toApiJsonSerializer.serialize(documentIdentifier);
     }
 }

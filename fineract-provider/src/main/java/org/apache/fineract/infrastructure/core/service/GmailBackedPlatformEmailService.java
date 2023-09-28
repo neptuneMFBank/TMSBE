@@ -19,6 +19,7 @@
 package org.apache.fineract.infrastructure.core.service;
 
 import java.util.Properties;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.configuration.data.SMTPCredentialsData;
 import org.apache.fineract.infrastructure.configuration.service.ExternalServicesPropertiesReadPlatformService;
 import org.apache.fineract.infrastructure.core.domain.EmailDetail;
@@ -87,7 +88,11 @@ public class GmailBackedPlatformEmailService implements PlatformEmailService {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(smtpCredentialsData.getFromEmail()); // same email address used for the authentication
-            message.setTo(emailDetails.getAddress());
+            if (StringUtils.isNotBlank(emailDetails.getAddress())) {
+                message.setTo(emailDetails.getAddress());
+            } else {
+                message.setTo(emailDetails.getBusinessAddresses());
+            }
             message.setSubject(emailDetails.getSubject());
             message.setText(emailDetails.getBody());
             mailSender.send(message);

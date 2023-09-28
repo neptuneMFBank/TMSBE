@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -31,9 +32,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.fineract.infrastructure.campaigns.email.data.EmailConfigurationValidator;
 import org.apache.fineract.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
+import org.apache.fineract.infrastructure.core.domain.EmailDetail;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
+import org.apache.fineract.infrastructure.core.service.GmailBackedPlatformEmailService;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.PaginationHelper;
 import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
@@ -88,6 +92,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     private final LoanProductApprovalReadPlatformService loanProductApprovalReadPlatformService;
     private final AppUserBusinessReadPlatformService appUserBusinessReadPlatformService;
     private final StaffRepositoryWrapper staffRepositoryWrapper;
+    private final GmailBackedPlatformEmailService gmailBackedPlatformEmailService;
+    private final EmailConfigurationValidator emailConfigurationValidator;
+
+    private static final Long SUPER_USER_SERVICE_ROLE = 1L;
 
     @Override
     @Transactional
@@ -138,6 +146,13 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
         if (CollectionUtils.isEmpty(loanProductApprovalConfigDatas)) {
             // send a mail
             log.warn("No loan approval set for loan product {} with id {}", loanProduct.getName(), loanProductId);
+
+            List<String> businessAddresses = getBusinessAddresses();
+            if (!CollectionUtils.isEmpty(businessAddresses)) {
+                final String subject = "Configuration Setup";
+                final String body = String.format("No loan approval process configured for loan product `%s` ", loanProduct.getName());
+                notificationToAdmin(businessAddresses, subject, body);
+            }
         } else {
             int nextRank = 0;
             for (LoanProductApprovalConfigData loanProductApprovalConfigData : loanProductApprovalConfigDatas) {
@@ -153,6 +168,13 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                     if (CollectionUtils.isEmpty(appUserDatas)) {
                         //send a mail informing no user_staff assigned to role
                         log.warn("No user/staff assigned to role {} with id {} on loan approval loan product onfig", roleData.getName(), roleId);
+
+                        List<String> businessAddresses = getBusinessAddresses();
+                        if (!CollectionUtils.isEmpty(businessAddresses)) {
+                            final String subject = "Configuration Setup";
+                            final String body = String.format("No user/staff assigned to role `%s` ", roleData.getName());
+                            notificationToAdmin(businessAddresses, subject, body);
+                        }
                     } else {
                         try {
                             final Staff staff = setAssingmentLoanApprovalCheck(appUserDatas);
@@ -172,6 +194,12 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             }
         }
 
+    }
+
+    protected void notificationToAdmin(List<String> businessAddresses, final String subject, final String body) {
+        String[] businessAddressesArray = businessAddresses.stream().toArray(String[]::new);
+        final EmailDetail emailDetail = new EmailDetail(subject, body, businessAddressesArray, null);
+        gmailBackedPlatformEmailService.sendDefinedEmail(emailDetail);
     }
 
     private Staff setAssingmentLoanApprovalCheck(final Collection<AppUserData> appUserDatas) {
@@ -211,6 +239,29 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
         return temp;
 
+    }
+
+    private List<String> getBusinessAddresses() {
+        final Long roleAdminId = SUPER_USER_SERVICE_ROLE;
+        List<String> businessAddresses = new ArrayList<>();
+        Collection<AppUserData> appUserDatas = this.appUserBusinessReadPlatformService.retrieveActiveAppUsersForRole(roleAdminId);
+        if (!CollectionUtils.isEmpty(appUserDatas)) {
+            for (AppUserData appUserData : appUserDatas) {
+                String address = appUserData.username();
+                if (emailConfigurationValidator.isValidEmail(address)) {
+                    businessAddresses.add(address);
+                } else {
+                    address = appUserData.getEmail();
+                    if (emailConfigurationValidator.isValidEmail(address)) {
+                        businessAddresses.add(address);
+                    }
+                }
+            }
+            return businessAddresses;
+        } else {
+            log.warn("No user available in Super User Role, Loan Approval metrics cannot be set.");
+            return null;
+        }
     }
 
     private static final class MetricsMapper implements RowMapper<MetricsData> {

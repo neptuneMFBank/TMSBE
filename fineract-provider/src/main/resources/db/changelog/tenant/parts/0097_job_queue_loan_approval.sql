@@ -17,5 +17,5 @@
 -- under the License.
 --
 
-INSERT INTO `job` (`id`, `name`, `display_name`, `cron_expression`, `create_time`, `task_priority`, `group_name`, `previous_run_start_time`, `next_run_time`, `job_key`, `initializing_errorlog`, `is_active`, `currently_running`, `updates_allowed`, `scheduler_group`, `is_misfired`) 
-VALUES (NULL, 'Queue Loan Approval Checks', 'Queue Loan Approval Checks', '0 1 0 1/1 * ? *', '2015-06-03 02:57:00', 5, NULL, NULL, '2017-02-25 00:01:00', 'Queue Loan Approval ChecksJobDetail1 _ DEFAULT', NULL, 1, 0, 1, 0, 0)
+INSERT INTO `job` (`id`, `name`, `display_name`, `cron_expression`, `create_time`, `task_priority`, `group_name`, `previous_run_start_time`, `next_run_time`, `job_key`, `initializing_errorlog`, `is_active`, `currently_running`, `updates_allowed`, `scheduler_group`, `is_misfired`, `node_id`) 
+VALUES (NULL, 'Queue Loan Approval Checks', 'Queue Loan Approval Checks', '0 0/5 * * * ?', curdate(), 5, NULL, NULL, '2017-02-25 00:01:00', 'Queue Loan Approval ChecksJobDetail1 _ DEFAULT', NULL, 1, 0, 1, 0, 0,1)

@@ -22,6 +22,7 @@ import org.apache.fineract.useradministration.exception.UserNotFoundException;
 import org.apache.fineract.useradministration.service.AppUserConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AppUserRepositoryWrapper {
@@ -59,5 +60,11 @@ public class AppUserRepositoryWrapper {
 
     public AppUser findOneWithNotFoundDetection(final Long id) {
         return this.appUserRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+    }
+
+    @Transactional(readOnly = true)
+    public AppUser findFirstByStaffId(final Long staffId) {
+        return this.appUserRepository.findFirstByStaffId(staffId).orElse(null);
+        //.orElseThrow(() -> new UserNotFoundException("User with staffId " + staffId + " does not exits.", staffId));
     }
 }

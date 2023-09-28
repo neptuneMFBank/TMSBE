@@ -20,6 +20,8 @@ package org.apache.fineract.infrastructure.jobs.service;
 
 public enum JobName {
 //Added Business Lofgic start here
+    REMINDER_LOAN_APPROVAL_CHECKS(
+            "Reminder Loan Approval Checks"),
     QUEUE_LOAN_APPROVAL_CHECKS(
             "Queue Loan Approval Checks"),
     //Added Business Lofgic end here

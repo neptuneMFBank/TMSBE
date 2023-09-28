@@ -58,7 +58,8 @@ public final class ClientIdentifierBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, CLIENT_IDENTIFIER_BUSINESS_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
 

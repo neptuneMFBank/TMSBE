@@ -31,6 +31,7 @@ import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -68,7 +69,7 @@ public class ClientIdentifiersBusinessApiResource {
     private final ClientIdentifierBusinessWritePlatformService clientIdentifierBusinessWritePlatformService;
 
     @Autowired
-    public ClientIdentifiersBusinessApiResource(final PlatformSecurityContext context, 
+    public ClientIdentifiersBusinessApiResource(final PlatformSecurityContext context,
             final DefaultToApiJsonSerializer<ClientIdentifierBusinessData> toApiJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService,
@@ -124,5 +125,32 @@ public class ClientIdentifiersBusinessApiResource {
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, clientIdentifiers, CLIENT_IDENTIFIER_DATA_PARAMETERS);
+    }
+
+    @PUT
+    @Path("{identifierId}/{clientDocumentId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Update an Identifier for a Client", description = """
+            Mandatory Fields
+            documentKey, documentTypeId, location, type """)
+    @RequestBody(required = true
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientIdentifiersApiResourceSwagger.PostClientsClientIdIdentifiersRequest.class))
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientIdentifiersApiResourceSwagger.PostClientsClientIdIdentifiersResponse.class))
+        )})
+    public String updateClientIdentifier(
+            @PathParam("identifierId") @Parameter(description = "identifierId") final Long clientIdentifierId,
+            @PathParam("clientDocumentId") @Parameter(description = "clientDocumentId") final Long clientDocumentId,
+            @PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandProcessingResult documentIdentifier = this.clientIdentifierBusinessWritePlatformService.updateClientIdentifier(clientId, clientIdentifierId, clientDocumentId, apiRequestBodyAsJson);
+
+        return this.toApiJsonSerializer.serialize(documentIdentifier);
     }
 }

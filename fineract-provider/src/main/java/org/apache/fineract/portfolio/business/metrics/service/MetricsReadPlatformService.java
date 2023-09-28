@@ -27,6 +27,8 @@ public interface MetricsReadPlatformService {
 
     void queueLoanApprovals();
 
+    void reminderLoanApprovals();
+
     Page<MetricsData> retrieveAll(final SearchParametersBusiness searchParameters);
 
     Collection< MetricsData> retrieveSavingsAccountMetrics(final Long savingsAccountId);

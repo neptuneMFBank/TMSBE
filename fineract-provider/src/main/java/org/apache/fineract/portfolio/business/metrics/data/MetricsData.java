@@ -50,4 +50,36 @@ public class MetricsData implements Serializable {
         this.modifiedOn = modifiedOn;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public Long getLoanId() {
+        return loanId;
+    }
+
+    public Long getSavingsId() {
+        return savingsId;
+    }
+
+    public EnumOptionData getStatus() {
+        return status;
+    }
+
+    public StaffData getStaffData() {
+        return staffData;
+    }
+
+    public StaffData getSupervisorStaffData() {
+        return supervisorStaffData;
+    }
+
+    public LocalDate getCreatedOn() {
+        return createdOn;
+    }
+
+    public LocalDate getModifiedOn() {
+        return modifiedOn;
+    }
+
 }

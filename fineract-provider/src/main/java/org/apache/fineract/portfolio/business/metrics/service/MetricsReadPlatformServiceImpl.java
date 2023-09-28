@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.campaigns.email.data.EmailConfigurationValidator;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
@@ -59,6 +60,7 @@ import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistory;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistoryRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.exception.MetricsNotFoundException;
+import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductApprovalConfigData;
@@ -67,6 +69,8 @@ import org.apache.fineract.portfolio.loanproduct.business.service.LoanProductApp
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.apache.fineract.useradministration.data.AppUserData;
 import org.apache.fineract.useradministration.data.RoleData;
+import org.apache.fineract.useradministration.domain.AppUser;
+import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
 import org.apache.fineract.useradministration.service.business.AppUserBusinessReadPlatformService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -93,8 +97,54 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     private final StaffRepositoryWrapper staffRepositoryWrapper;
     private final GmailBackedPlatformEmailService gmailBackedPlatformEmailService;
     private final EmailConfigurationValidator emailConfigurationValidator;
+    private final AppUserRepositoryWrapper appUserRepositoryWrapper;
 
     private static final Long SUPER_USER_SERVICE_ROLE = 1L;
+
+    @Override
+    @Transactional
+    @CronTarget(jobName = JobName.REMINDER_LOAN_APPROVAL_CHECKS)
+    public void reminderLoanApprovals() {
+
+        final String sql = "select " + metricsMapper.schema() + " WHERE mm.loan_id IS NOT NULL AND mm.status_enum=100 AND mm.created_on_utc >= DATE_SUB(NOW(), INTERVAL 24 HOUR) ";
+        Collection<MetricsData> metricsDatas = this.jdbcTemplate.query(sql, metricsMapper);
+        if (!CollectionUtils.isEmpty(metricsDatas)) {
+            List<String> notifybusinessUsers = new ArrayList<>();
+            String clientName = null;
+            String mobileNo = null;
+            String loanProductName = null;
+            Long loanId = null;
+            for (MetricsData metricsData : metricsDatas) {
+                loanId = metricsData.getLoanId();
+                final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
+                final Client client = loan.getClient();
+                clientName = client.getDisplayName();
+                mobileNo = client.mobileNo();
+                final LoanProduct loanProduct = loan.getLoanProduct();
+                loanProductName = loanProduct.getName();
+
+                final StaffData staff = metricsData.getStaffData();
+                final Long staffId = staff.getId();
+                final AppUser appUser = this.appUserRepositoryWrapper.findFirstByStaffId(staffId);
+                if (ObjectUtils.isNotEmpty(appUser)) {
+                    getEmailAddress(appUser, notifybusinessUsers);
+                }
+                final StaffData organisationalRoleParentStaff = metricsData.getSupervisorStaffData();
+                final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();
+                final AppUser appUserSupervisor = this.appUserRepositoryWrapper.findFirstByStaffId(organisationalRoleParentStaffId);
+                if (ObjectUtils.isNotEmpty(appUserSupervisor)) {
+                    //set email of approval supervisor
+                    getEmailAddress(appUserSupervisor, notifybusinessUsers);
+                }
+            }
+
+            if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
+                final String subject = String.format("Notification of Pending Loan `%s` Approval", loanId);
+                final String body = String.format("%s with mobile %s have a loan (`%s`) pending approval.", clientName, mobileNo, loanProductName);
+                notificationToUsers(notifybusinessUsers, subject, body);
+            }
+        }
+    }
 
     @Override
     @Transactional
@@ -161,7 +211,11 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
     private void createLoanMetrics(Long loanApprovalScheduleId) {
         final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanApprovalScheduleId);
+        final Client client = loan.getClient();
+        final String clientName = client.getDisplayName();
+        final String mobileNo = client.mobileNo();
         final LoanProduct loanProduct = loan.getLoanProduct();
+        final String loanProductName = loanProduct.getName();
         final Long loanProductId = loanProduct.getId();
         final LoanProductApprovalData loanProductApprovalData
                 = this.loanProductApprovalReadPlatformService.retrieveOneViaLoanProduct(loanProductId);
@@ -177,9 +231,11 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             if (!CollectionUtils.isEmpty(businessAddresses)) {
                 final String subject = "Configuration Setup";
                 final String body = String.format("No loan approval process configured for loan product `%s` ", loanProduct.getName());
-                notificationToAdmin(businessAddresses, subject, body);
+                notificationToUsers(businessAddresses, subject, body);
             }
         } else {
+            List<String> notifybusinessUsers = new ArrayList<>();
+
             int nextRank = 0;
             for (LoanProductApprovalConfigData loanProductApprovalConfigData : loanProductApprovalConfigDatas) {
                 int rank = nextRank++;
@@ -199,11 +255,23 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                         if (!CollectionUtils.isEmpty(businessAddresses)) {
                             final String subject = "Configuration Setup";
                             final String body = String.format("No user/staff assigned to role `%s` ", roleData.getName());
-                            notificationToAdmin(businessAddresses, subject, body);
+                            notificationToUsers(businessAddresses, subject, body);
                         }
                     } else {
                         try {
                             final Staff staff = setAssingmentLoanApprovalCheck(appUserDatas);
+                            final Long staffId = staff.getId();
+                            final AppUser appUser = this.appUserRepositoryWrapper.findFirstByStaffId(staffId);
+                            if (ObjectUtils.isNotEmpty(appUser)) {
+                                getEmailAddress(appUser, notifybusinessUsers);
+                            }
+                            final Staff organisationalRoleParentStaff = staff.getOrganisationalRoleParentStaff();
+                            final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();
+                            final AppUser appUserSupervisor = this.appUserRepositoryWrapper.findFirstByStaffId(organisationalRoleParentStaffId);
+                            if (ObjectUtils.isNotEmpty(appUserSupervisor)) {
+                                //set email of approval supervisor
+                                getEmailAddress(appUserSupervisor, notifybusinessUsers);
+                            }
                             final Metrics metrics = Metrics.createLoanMetrics(staff, status, rank, loan);
                             this.metricsRepositoryWrapper.saveAndFlush(metrics);
                             final Long metricsId = metrics.getId();
@@ -218,11 +286,31 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                     }
                 }
             }
+            if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
+                final String subject = String.format("Notification on new Loan `%s` Awaiting Approval", loanApprovalScheduleId);
+                final String body = String.format("%s with mobile %s have a loan (`%s`) pending approval.", clientName, mobileNo, loanProductName);
+                notificationToUsers(notifybusinessUsers, subject, body);
+            }
         }
 
     }
 
-    protected void notificationToAdmin(List<String> businessAddresses, final String subject, final String body) {
+    protected void getEmailAddress(final AppUser appUser, List<String> businessAddresses) {
+        if (ObjectUtils.isNotEmpty(appUser)) {
+            //set email of approval
+            String address = appUser.getUsername();
+            if (emailConfigurationValidator.isValidEmail(address)) {
+                businessAddresses.add(address);
+            } else {
+                address = appUser.getEmail();
+                if (emailConfigurationValidator.isValidEmail(address)) {
+                    businessAddresses.add(address);
+                }
+            }
+        }
+    }
+
+    protected void notificationToUsers(List<String> businessAddresses, final String subject, final String body) {
         String[] businessAddressesArray = businessAddresses.stream().toArray(String[]::new);
         final EmailDetail emailDetail = new EmailDetail(subject, body, businessAddressesArray, null);
         gmailBackedPlatformEmailService.sendDefinedEmail(emailDetail);
@@ -255,7 +343,6 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             staff = this.staffRepositoryWrapper.findOneWithNotFoundDetection(key);
         }
         return staff;
-
     }
 
     public static HashMap<Long, Integer> sortByValue(HashMap<Long, Integer> hm) {

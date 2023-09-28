@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,11 +33,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.campaigns.email.data.EmailConfigurationValidator;
-import org.apache.fineract.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.EmailDetail;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
+import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.GmailBackedPlatformEmailService;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.PaginationHelper;
@@ -50,7 +52,6 @@ import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
-import org.apache.fineract.portfolio.address.service.business.AddressBusinessReadPlatformService;
 import org.apache.fineract.portfolio.business.metrics.data.LoanApprovalStatus;
 import org.apache.fineract.portfolio.business.metrics.data.MetricsData;
 import org.apache.fineract.portfolio.business.metrics.domain.Metrics;
@@ -82,8 +83,6 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     private final PlatformSecurityContext context;
     private final PaginationHelper paginationHelper;
     private final ColumnValidator columnValidator;
-    private final AddressBusinessReadPlatformService addressReadPlatformService;
-    private final CodeValueReadPlatformService codeValueReadPlatformService;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
     private final MetricsMapper metricsMapper = new MetricsMapper();
     private final LoanRepositoryWrapper loanRepositoryWrapper;
@@ -112,18 +111,45 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     }
 
     @Override
-    public Page<MetricsData> retrieveAllLoanMetrics(SearchParametersBusiness searchParameters) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    public Page<MetricsData> retrieveAll(SearchParametersBusiness searchParameters) {
+        this.context.authenticatedUser();
+        List<Object> paramList = new ArrayList<>();
+        final StringBuilder sqlBuilder = new StringBuilder(200);
+        sqlBuilder.append("select ");
+        sqlBuilder.append(sqlGenerator.calcFoundRows());
+        sqlBuilder.append(metricsMapper.schema());
 
-    @Override
-    public Page<MetricsData> retrieveAllSavingsAccountMetrics(SearchParametersBusiness searchParameters) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (searchParameters != null) {
+            final String extraCriteria = buildSqlStringFromMetricsCriteria(searchParameters, paramList);
+            if (StringUtils.isNotBlank(extraCriteria)) {
+                sqlBuilder.append(" where (").append(extraCriteria).append(")");
+            }
+
+            if (searchParameters.isOrderByRequested()) {
+                sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
+                this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getOrderBy());
+                if (searchParameters.isSortOrderProvided()) {
+                    sqlBuilder.append(' ').append(searchParameters.getSortOrder());
+                    this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getSortOrder());
+                }
+            }
+
+            if (searchParameters.isLimited()) {
+                sqlBuilder.append(" limit ").append(searchParameters.getLimit());
+                if (searchParameters.isOffset()) {
+                    sqlBuilder.append(" offset ").append(searchParameters.getOffset());
+                }
+            }
+        }
+
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.metricsMapper);
     }
 
     @Override
     public Collection<MetricsData> retrieveSavingsAccountMetrics(Long savingsAccountId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.context.authenticatedUser();
+        final String sql = "select " + metricsMapper.schema() + " WHERE mm.savings_id = ? ORDER BY mm.rank ASC ";
+        return this.jdbcTemplate.query(sql, metricsMapper, savingsAccountId);
     }
 
     @Override
@@ -305,6 +331,65 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             return MetricsData.instance(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn);
         }
 
+    }
+
+    private String buildSqlStringFromMetricsCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
+
+        final Long staffId = searchParameters.getStaffId();
+        final Long staffSupervisorId = searchParameters.getStaffSupervisorId();
+        final Long loanId = searchParameters.getLoanId();
+        final Long savingsId = searchParameters.getSavingsId();
+        final Integer statusId = searchParameters.getStatusId();
+
+        String extraCriteria = "";
+
+        if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
+            final LocalDate startPeriod = searchParameters.getFromDate();
+            final LocalDate endPeriod = searchParameters.getToDate();
+
+            final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
+            if (startPeriod != null && endPeriod != null) {
+                extraCriteria += " and CAST(mm.created_on_utc AS DATE) BETWEEN ? AND ? ";
+                paramList.add(df.format(startPeriod));
+                paramList.add(df.format(endPeriod));
+            } else if (startPeriod != null) {
+                extraCriteria += " and CAST(mm.created_on_utc AS DATE) >= ? ";
+                paramList.add(df.format(startPeriod));
+            } else if (endPeriod != null) {
+                extraCriteria += " and CAST(mm.created_on_utc AS DATE) <= ? ";
+                paramList.add(df.format(endPeriod));
+            }
+        }
+
+        if (searchParameters.isStaffSupervisorIdPassed()) {
+            extraCriteria += " and ms.organisational_role_parent_staff_id = ? ";
+            paramList.add(staffSupervisorId);
+        }
+
+        if (searchParameters.isStaffIdPassed()) {
+            extraCriteria += " and mm.assigned_user_id = ? ";
+            paramList.add(staffId);
+        }
+
+        if (searchParameters.isStatusIdPassed()) {
+            extraCriteria += " and mm.status_enum = ? ";
+            paramList.add(statusId);
+        }
+
+        if (searchParameters.isLoanIdPassed()) {
+            extraCriteria += " and mm.loan_id = ? ";
+            paramList.add(loanId);
+        }
+
+        if (searchParameters.isSavingsIdPassed()) {
+            extraCriteria += " and mm.savings_id = ? ";
+            paramList.add(savingsId);
+        }
+
+        if (StringUtils.isNotBlank(extraCriteria)) {
+            extraCriteria = extraCriteria.substring(4);
+        }
+        return extraCriteria;
     }
 
 }

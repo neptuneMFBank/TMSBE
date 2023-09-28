@@ -17,5 +17,8 @@
 -- under the License.
 --
 
-INSERT INTO `job` (`id`, `name`, `display_name`, `cron_expression`, `create_time`, `task_priority`, `group_name`, `previous_run_start_time`, `next_run_time`, `job_key`, `initializing_errorlog`, `is_active`, `currently_running`, `updates_allowed`, `scheduler_group`, `is_misfired`, `node_id`) 
-VALUES (NULL, 'Queue Loan Approval Checks', 'Queue Loan Approval Checks', '0 0/5 * * * ?', curdate(), 5, NULL, NULL, '2017-02-25 00:01:00', 'Queue Loan Approval ChecksJobDetail1 _ DEFAULT', NULL, 1, 0, 1, 0, 0,1)
+
+-- INSERT m_permission
+INSERT INTO `m_permission` (`id`, `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`)
+VALUES
+     (NULL, 'portfolio', 'REJECT_METRICS', 'METRICS', 'REJECT', false)

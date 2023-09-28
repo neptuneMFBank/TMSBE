@@ -18,19 +18,14 @@
  */
 package org.apache.fineract.portfolio.business.metrics.service;
 
-import java.util.Collection;
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.business.metrics.data.MetricsData;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
-public interface MetricsReadPlatformService {
+public interface MetricsWriteService {
 
-    void queueLoanApprovals();
+    CommandProcessingResult approveMetrics(Long metricsId, JsonCommand command);
 
-    Page<MetricsData> retrieveAll(final SearchParametersBusiness searchParameters);
+    CommandProcessingResult undoMetrics(Long metricsId, JsonCommand command);
 
-    Collection< MetricsData> retrieveSavingsAccountMetrics(final Long savingsAccountId);
-
-    Collection< MetricsData> retrieveLoanMetrics(final Long loanId);
-
+    CommandProcessingResult rejectMetrics(Long metricsId, JsonCommand command);
 }

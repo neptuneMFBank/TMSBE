@@ -36,7 +36,7 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long>, JpaSpec
 
     Collection<AppUser> findByOfficeId(Long officeId);
 
-    @Query(nativeQuery = true, value = "SELECT * FROM m_appuser ma WHERE ma.staff_id=:staffId")
+    @Query(nativeQuery = true, value = "SELECT * FROM m_appuser ma WHERE ma.staff_id=:staffId LIMIT 1")
     Optional<AppUser> findFirstByStaffId(@Param("staffId") Long staffId);
 
 }

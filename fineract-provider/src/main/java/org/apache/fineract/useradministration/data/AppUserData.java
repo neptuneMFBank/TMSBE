@@ -191,4 +191,8 @@ public final class AppUserData {
         return staff;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
 }

@@ -21,6 +21,8 @@ package org.apache.fineract.portfolio.business.metrics.api;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.fineract.portfolio.client.api.ClientApiConstants;
+import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
 
 public final class MetricsApiResourceConstants {
 
@@ -37,9 +39,14 @@ public final class MetricsApiResourceConstants {
     public static final String SUPERVISOR_STAFF_DATA = "supervisorStaffData";
     public static final String CREATED_ON = "createdOn";
     public static final String MODIFIED_ON = "modifiedOn";
+    public static final String CLIENT_DATA = "clientData";
+    public static final String LOAN_OFFICER_DATA = "loanOfficerData";
 
     public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ID, LOAN_ID, SAVINGS_ID, STATUS,
             STAFF_DATA, SUPERVISOR_STAFF_DATA, CREATED_ON,
-            MODIFIED_ON));
+            MODIFIED_ON, CLIENT_DATA, LOAN_OFFICER_DATA));
+
+    public static final Set<String> LOAN_ACTION_DATA_PARAMETERS = new HashSet<>(Arrays.asList(LoanApiConstants.noteParamName,
+            LOAN_ID, ClientApiConstants.staffIdParamName));
 
 }

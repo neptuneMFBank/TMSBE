@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.organisation.staff.data.StaffData;
+import org.apache.fineract.portfolio.client.data.ClientData;
 
 @SuppressWarnings("unused")
 public class MetricsData implements Serializable {
@@ -30,16 +31,18 @@ public class MetricsData implements Serializable {
     private final Long loanId;
     private final Long savingsId;
     private final EnumOptionData status;
+    private final ClientData clientData;
+    private final StaffData loanOfficerData;
     private final StaffData staffData;
     private final StaffData supervisorStaffData;
     private final LocalDate createdOn;
     private final LocalDate modifiedOn;
 
-    public static MetricsData instance(Long id, Long loanId, final Long savingsId, EnumOptionData status, StaffData staffData, StaffData supervisorStaffData, LocalDate createdOn, LocalDate modifiedOn) {
-        return new MetricsData(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn);
+    public static MetricsData instance(Long id, Long loanId, final Long savingsId, EnumOptionData status, StaffData staffData, StaffData supervisorStaffData, LocalDate createdOn, LocalDate modifiedOn, final ClientData clientData, final StaffData loanOfficerData) {
+        return new MetricsData(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData, loanOfficerData);
     }
 
-    public MetricsData(Long id, Long loanId, Long savingsId, EnumOptionData status, StaffData staffData, StaffData supervisorStaffData, LocalDate createdOn, LocalDate modifiedOn) {
+    public MetricsData(Long id, Long loanId, Long savingsId, EnumOptionData status, StaffData staffData, StaffData supervisorStaffData, LocalDate createdOn, LocalDate modifiedOn, ClientData clientData, StaffData loanOfficerData) {
         this.id = id;
         this.loanId = loanId;
         this.savingsId = savingsId;
@@ -48,6 +51,8 @@ public class MetricsData implements Serializable {
         this.supervisorStaffData = supervisorStaffData;
         this.createdOn = createdOn;
         this.modifiedOn = modifiedOn;
+        this.clientData = clientData;
+        this.loanOfficerData = loanOfficerData;
     }
 
     public Long getId() {
@@ -80,6 +85,14 @@ public class MetricsData implements Serializable {
 
     public LocalDate getModifiedOn() {
         return modifiedOn;
+    }
+
+    public ClientData getClientData() {
+        return clientData;
+    }
+
+    public StaffData getLoanOfficerData() {
+        return loanOfficerData;
     }
 
 }

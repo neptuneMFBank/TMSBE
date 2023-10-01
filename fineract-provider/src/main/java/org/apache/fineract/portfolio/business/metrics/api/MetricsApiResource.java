@@ -20,6 +20,7 @@ package org.apache.fineract.portfolio.business.metrics.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +28,9 @@ import java.time.LocalDate;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -36,8 +39,12 @@ import javax.ws.rs.core.UriInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.accounting.journalentry.api.DateParam;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.infrastructure.core.exception.UnrecognizedQueryParamException;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.service.Page;
@@ -46,6 +53,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.portfolio.business.metrics.data.MetricsData;
 import org.apache.fineract.portfolio.business.metrics.service.MetricsReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.is;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -105,4 +113,45 @@ public class MetricsApiResource {
         return this.jsonSerializer.serialize(settings, employerData, MetricsApiResourceConstants.RESPONSE_DATA_PARAMETERS);
     }
 
+    @POST
+    @Path("loan/{metricsId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Actions on Loan Approval", description = """
+            """)
+    @RequestBody(required = true
+    // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersRequest.class))
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
+        )})
+    public String actions(@PathParam("metricsId") @Parameter(description = "metricsId") final Long metricsId,
+            @QueryParam("command") @Parameter(description = "command") final String commandParam,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
+
+        CommandProcessingResult result = null;
+        CommandWrapper commandRequest;
+        if (is(commandParam, "approve")) {
+            commandRequest = builder.approveLoanMetrics(metricsId).build();
+            result = this.commandWritePlatformService.logCommandSource(commandRequest);
+        } else if (is(commandParam, "undo")) {
+            commandRequest = builder.undoLoanMetrics(metricsId).build();
+            result = this.commandWritePlatformService.logCommandSource(commandRequest);
+        } else if (is(commandParam, "reject")) {
+            commandRequest = builder.rejectLoanMetrics(metricsId).build();
+            result = this.commandWritePlatformService.logCommandSource(commandRequest);
+        } else if (is(commandParam, "assign")) {
+            commandRequest = builder.assignLoanMetrics(metricsId).build();
+            result = this.commandWritePlatformService.logCommandSource(commandRequest);
+        }
+
+        if (result == null) {
+            throw new UnrecognizedQueryParamException("command", commandParam, new Object[]{"approve", "undo", "reject", "assign"});
+        }
+
+        return this.jsonSerializer.serialize(result);
+    }
 }

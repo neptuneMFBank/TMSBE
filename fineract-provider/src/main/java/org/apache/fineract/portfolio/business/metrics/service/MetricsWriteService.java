@@ -23,9 +23,11 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
 public interface MetricsWriteService {
 
-    CommandProcessingResult approveMetrics(Long metricsId, JsonCommand command);
+    CommandProcessingResult approveLoanMetrics(Long metricsId, JsonCommand command);
 
-    CommandProcessingResult undoMetrics(Long metricsId, JsonCommand command);
+    CommandProcessingResult undoLoanMetrics(Long metricsId, JsonCommand command);
 
-    CommandProcessingResult rejectMetrics(Long metricsId, JsonCommand command);
+    CommandProcessingResult rejectLoanMetrics(Long metricsId, JsonCommand command);
+
+    CommandProcessingResult assignLoanMetrics(Long metricsId, JsonCommand command);
 }

@@ -60,6 +60,7 @@ import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistory;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistoryRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.exception.MetricsNotFoundException;
+import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
@@ -381,8 +382,13 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
         public String schema() {
             return " mm.id, mm.assigned_user_id staffId, ms.display_name staffDisplayName, ms.organisational_role_parent_staff_id, mss.display_name supervisorStaffDisplayName, "
-                    + " mm.status_enum statusEnum, mm.loan_id loanId, mm.savings_id savingsId, mm.created_on_utc createdOn, mm.last_modified_on_utc modifiedOn  "
+                    + " mm.status_enum statusEnum, mm.loan_id loanId, mm.savings_id savingsId, mm.created_on_utc createdOn, mm.last_modified_on_utc modifiedOn, "
+                    + " mlv.loan_officer_id as loanOfficerId, msl.display_name as loanOfficerName, "
+                    + " mlv.client_id as loanClientId, mcv.display_name as loanClientName "
                     + "  from m_metrics mm "
+                    + " LEFT JOIN m_loan_view mlv ON mlv.id=mm.loan_id"
+                    + " LEFT JOIN m_staff msl ON msl.id=mlv.loan_officer_id"
+                    + " LEFT JOIN m_client_view mcv ON mcv.id=mlv.client_id"
                     + " LEFT JOIN m_staff ms ON ms.id=mm.assigned_user_id"
                     + " LEFT JOIN m_staff mss ON mss.id=ms.organisational_role_parent_staff_id";
         }
@@ -393,6 +399,19 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             final Long savingsId = rs.getLong("savingsId");
             final Long id = rs.getLong("id");
 
+            ClientData clientData = null;
+            final Long loanClientId = JdbcSupport.getLong(rs, "loanClientId");
+            if (loanClientId > 0) {
+                final String loanClientName = rs.getString("loanClientName");
+                clientData = ClientData.instance(id, loanClientName);
+            }
+
+            StaffData loanOfficerData = null;
+            final Long loanOfficerId = JdbcSupport.getLong(rs, "loanOfficerId");
+            if (loanClientId > 0) {
+                final String loanOfficerName = rs.getString("loanOfficerName");
+                loanOfficerData = StaffData.lookup(loanOfficerId, loanOfficerName);
+            }
             final Integer statusEnum = JdbcSupport.getInteger(rs, "statusEnum");
             final EnumOptionData status = LoanApprovalStatus.status(statusEnum);
 
@@ -415,7 +434,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             final LocalDateTime modifiedOnTime = JdbcSupport.getLocalDateTime(rs, "modifiedOn");
             final LocalDate modifiedOn = modifiedOnTime != null ? modifiedOnTime.toLocalDate() : null;
 
-            return MetricsData.instance(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn);
+            return MetricsData.instance(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData, loanOfficerData);
         }
 
     }

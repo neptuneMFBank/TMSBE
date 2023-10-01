@@ -20,6 +20,7 @@ package org.apache.fineract.commands.service;
 
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.infrastructure.accountnumberformat.service.AccountNumberFormatConstants;
+import org.apache.fineract.portfolio.business.metrics.api.MetricsApiResourceConstants;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductApprovalApiResourceConstants;
 import org.apache.fineract.portfolio.paymenttype.api.PaymentTypeApiResourceConstants;
@@ -3644,4 +3645,35 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder approveLoanMetrics(final Long metricsId) {
+        this.actionName = "APPROVE_LOAN";
+        this.entityName = MetricsApiResourceConstants.RESOURCENAME;
+        this.entityId = metricsId;
+        this.href = "/metrics/loan/" + metricsId + "?command=approve";
+        return this;
+    }
+
+    public CommandWrapperBuilder undoLoanMetrics(final Long metricsId) {
+        this.actionName = "UNDO_LOAN";
+        this.entityName = MetricsApiResourceConstants.RESOURCENAME;
+        this.entityId = metricsId;
+        this.href = "/metrics/loan/" + metricsId + "?command=undo";
+        return this;
+    }
+
+    public CommandWrapperBuilder rejectLoanMetrics(final Long metricsId) {
+        this.actionName = "REJECT_LOAN";
+        this.entityName = MetricsApiResourceConstants.RESOURCENAME;
+        this.entityId = metricsId;
+        this.href = "/metrics/loan/" + metricsId + "?command=reject";
+        return this;
+    }
+
+    public CommandWrapperBuilder assignLoanMetrics(final Long metricsId) {
+        this.actionName = "ASSIGN_LOAN";
+        this.entityId = metricsId;
+        this.entityName = MetricsApiResourceConstants.RESOURCENAME;
+        this.href = "/metrics/loan/" + metricsId + "?command=assign";
+        return this;
+    }
 }

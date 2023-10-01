@@ -88,7 +88,7 @@ public class EmployerDataValidator {
 
         if (this.fromApiJsonHelper.parameterExists(EmployerApiResourceConstants.RCNUMBER, element)) {
             final String RCNUMBER = this.fromApiJsonHelper.extractStringNamed(EmployerApiResourceConstants.RCNUMBER, element);
-            baseDataValidator.reset().parameter(EmployerApiResourceConstants.RCNUMBER).value(RCNUMBER).notBlank().longGreaterThanZero();
+            baseDataValidator.reset().parameter(EmployerApiResourceConstants.RCNUMBER).value(RCNUMBER).notBlank();
         }
 
         if (this.fromApiJsonHelper.parameterExists(EmployerApiResourceConstants.STATEID, element)) {

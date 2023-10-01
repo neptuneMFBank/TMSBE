@@ -113,8 +113,8 @@
     <include file="parts/0096_m_metrics_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0097_job_queue_loan_approval.sql" relativeToChangelogFile="true" />
     <include file="parts/0098_m_read_metrics_permission.sql" relativeToChangelogFile="true" />
-    <include file="parts/0099_m_approve_metrics_permission.sql" relativeToChangelogFile="true" />
-    <include file="parts/0100_m_undo_metrics_permission.sql" relativeToChangelogFile="true" />
-    <include file="parts/0101_m_reject_metrics_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0099_m_approve_loan_metrics_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0100_m_undo_loan_metrics_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0101_m_reject_loan_metrics_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0102_job_reminder_loan_approval.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

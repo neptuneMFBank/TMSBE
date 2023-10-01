@@ -19,13 +19,17 @@
 package org.apache.fineract.portfolio.business.metrics.service;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
@@ -41,8 +45,10 @@ import org.apache.fineract.portfolio.business.metrics.domain.Metrics;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsRepositoryWrapper;
 import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
+import org.apache.fineract.portfolio.loanaccount.api.LoansApiResource;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanStatus;
 import org.apache.fineract.portfolio.note.domain.Note;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -65,6 +71,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     private final LoanRepositoryWrapper loanRepositoryWrapper;
     private final NoteRepository noteRepository;
     private final MetricsRepositoryWrapper metricsRepositoryWrapper;
+    private final LoansApiResource loansApiResource;
 
 
     /*
@@ -108,8 +115,51 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         approvalUndoRejectFirstProcess(command, element);
 
         final Loan loan = metrics.getLoan();
+        final Integer rank = metrics.getRank();
+        if (rank==0) {
+            //perform first approval
+            
+//            JsonObject apiRequestBodyAsJson = new JsonObject();
+//            // final String commandParam = "disburseToSavingsToBank";
+//            // apiRequestBodyAsJson.addProperty("sendToBank", true);
+//            // apiRequestBodyAsJson.addProperty("sendToBank", false);
+//            apiRequestBodyAsJson.addProperty("transactionAmount", loan.getApprovedPrincipal());
+//            apiRequestBodyAsJson.addProperty("note", "Auto Queue by Nx360 Robot");
+//            apiRequestBodyAsJson.addProperty("actualDisbursementDate", today.toString());
+//            apiRequestBodyAsJson.addProperty("locale", "en");
+//            apiRequestBodyAsJson.addProperty("dateFormat", "yyyy-MM-dd");
+//            CommandWrapper commandRequest;
+//            CommandWrapperBuilder builder;
+//            apiRequestBodyAsJson.addProperty("paymentTypeId", 9);
+//            apiRequestBodyAsJson.addProperty("accountNumber", String.valueOf(loan.getClientId()));
+//            apiRequestBodyAsJson.addProperty("receiptNumber", loan.getClient().getDisplayName());
+//
+//            if (BooleanUtils.isTrue(businessDisburse)) {
+//                // default to Money Transfer
+//                builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson.toString());
+//            }
+        }
+        final Integer status = loan.status().getValue();
         final List<Metrics> metricses = this.metricsRepositoryWrapper.findByLoanId(loanId);
-        if (CollectionUtils.isEmpty(metricses)) {
+        final Long totalCount = metricses.stream().count();
+        final List<Metrics> metricsesAhead = metricses
+                .stream()
+                .filter(action
+                        -> Objects.equals(action.getStatus(), LoanApprovalStatus.QUEUE.getValue())
+                && action.getRank() > rank)
+                .toList();
+        final Long totalAheadCount = metricsesAhead.stream().count();
+
+        if (totalCount == 1) {
+            //perform approve and disburse
+        } else {
+            if (Objects.equals(status, LoanStatus.SUBMITTED_AND_PENDING_APPROVAL.getValue())) {
+
+            } else if (Objects.equals(status, LoanStatus.APPROVED.getValue())) {
+
+            } else {
+                throw new PlatformDataIntegrityException("error.loan.metrics", "Loan status is invalid for approval.");
+            }
 
         }
 
@@ -223,6 +273,15 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 .withCommandId(command.commandId()) //
                 .withEntityId(metricsId)
                 .build();
+    }
+
+    private void UpdateLoanStatus(final Loan loan, final Integer status) {
+        if (status < 300) {
+            loan.setLoanStatus(status);
+            this.loanRepositoryWrapper.saveAndFlush(loan);
+        } else {
+            log.warn("Dev check, cannot update loanId {} with status >= 300", loan.getId());
+        }
     }
 
 }

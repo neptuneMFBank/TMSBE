@@ -157,6 +157,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             }
 
         }
+        UpdateLoanStatus(loan, status);
 
         try {
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {

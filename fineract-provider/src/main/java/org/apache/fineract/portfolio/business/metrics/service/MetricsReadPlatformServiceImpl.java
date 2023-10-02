@@ -291,13 +291,16 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                     }
                 }
             }
+            //update dataTable loan approvalCheck
+            String loanApprovalCheckSql = "UPDATE approvalCheck ac SET ac.isSentForApproval=1 WHERE ac.loan_id=?";
+            jdbcTemplate.update(loanApprovalCheckSql, loanApprovalScheduleId);
+
             if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
                 final String subject = String.format("Notification on new Loan `%s` Awaiting Approval", loanApprovalScheduleId);
                 final String body = String.format("%s with mobile %s have a loan (`%s`) pending approval.", clientName, mobileNo, loanProductName);
                 notificationToUsers(notifybusinessUsers, subject, body);
             }
         }
-
     }
 
     protected void getEmailAddress(final AppUser appUser, List<String> businessAddresses) {

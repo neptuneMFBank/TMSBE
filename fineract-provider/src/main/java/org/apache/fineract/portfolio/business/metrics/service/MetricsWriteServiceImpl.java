@@ -33,7 +33,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
-import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
@@ -43,7 +42,6 @@ import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
-import org.apache.fineract.organisation.staff.exception.StaffNotFoundException;
 import org.apache.fineract.portfolio.business.metrics.api.MetricsApiResourceConstants;
 import org.apache.fineract.portfolio.business.metrics.data.LoanApprovalStatus;
 import org.apache.fineract.portfolio.business.metrics.data.MetricsDataValidator;
@@ -52,7 +50,6 @@ import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistory;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistoryRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.exception.MetricsNotFoundException;
-import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.portfolio.collectionsheet.CollectionSheetConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
@@ -73,10 +70,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MetricsWriteServiceImpl implements MetricsWriteService {
 
-    private final MetricsRepositoryWrapper repositoryWrapper;
-    private final CodeValueRepositoryWrapper codeValueRepository;
     private final MetricsDataValidator fromApiJsonDeserializer;
-    private final ClientRepositoryWrapper clientRepositoryWrapper;
     private final FromJsonHelper fromApiJsonHelper;
     private final StaffRepositoryWrapper staffRepositoryWrapper;
     private final PlatformSecurityContext context;
@@ -85,7 +79,6 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     private final MetricsRepositoryWrapper metricsRepositoryWrapper;
     private final MetricsHistoryRepositoryWrapper metricsHistoryRepositoryWrapper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
-    private final String commandApprove = "approve";
 
 
     /*

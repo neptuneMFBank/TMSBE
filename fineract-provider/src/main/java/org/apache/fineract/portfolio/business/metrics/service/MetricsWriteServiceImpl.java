@@ -383,12 +383,15 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             final Loan loan = metrics.getLoan();
             final Staff oldStaff = metrics.getAssignedUser();
             final Staff newStaff = this.staffRepositoryWrapper.findOneWithNotFoundDetection(staffId);
+            if (!Objects.equals(oldStaff.getId(), newStaff.getId())) {
 
-            saveNoteMetrics("Reassign loan from " + oldStaff.displayName() + "to a new approval officer" + newStaff.displayName(), loan);
+                saveNoteMetrics("Reassign loan from " + oldStaff.displayName() + "to a new approval officer" + newStaff.displayName(), loan);
 
-            metrics.setAssignedUser(newStaff);
-            this.metricsRepositoryWrapper.saveAndFlush(metrics);
-            saveMetricsHistory(metrics, LoanApprovalStatus.REASSIGNED.getValue());
+                metrics.setAssignedUser(newStaff);
+                this.metricsRepositoryWrapper.saveAndFlush(metrics);
+                saveMetricsHistory(metrics, LoanApprovalStatus.REASSIGNED.getValue());
+
+            }
 
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);

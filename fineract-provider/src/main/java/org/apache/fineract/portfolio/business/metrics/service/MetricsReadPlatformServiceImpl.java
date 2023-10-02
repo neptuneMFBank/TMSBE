@@ -131,11 +131,13 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                     getEmailAddress(appUser, notifybusinessUsers);
                 }
                 final StaffData organisationalRoleParentStaff = metricsData.getSupervisorStaffData();
-                final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();
-                final AppUser appUserSupervisor = this.appUserRepositoryWrapper.findFirstByStaffId(organisationalRoleParentStaffId);
-                if (ObjectUtils.isNotEmpty(appUserSupervisor)) {
-                    //set email of approval supervisor
-                    getEmailAddress(appUserSupervisor, notifybusinessUsers);
+                if (ObjectUtils.isNotEmpty(organisationalRoleParentStaff)) {
+                    final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();
+                    final AppUser appUserSupervisor = this.appUserRepositoryWrapper.findFirstByStaffId(organisationalRoleParentStaffId);
+                    if (ObjectUtils.isNotEmpty(appUserSupervisor)) {
+                        //set email of approval supervisor
+                        getEmailAddress(appUserSupervisor, notifybusinessUsers);
+                    }
                 }
             }
 
@@ -267,11 +269,13 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                                 getEmailAddress(appUser, notifybusinessUsers);
                             }
                             final Staff organisationalRoleParentStaff = staff.getOrganisationalRoleParentStaff();
-                            final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();
-                            final AppUser appUserSupervisor = this.appUserRepositoryWrapper.findFirstByStaffId(organisationalRoleParentStaffId);
-                            if (ObjectUtils.isNotEmpty(appUserSupervisor)) {
-                                //set email of approval supervisor
-                                getEmailAddress(appUserSupervisor, notifybusinessUsers);
+                            if (ObjectUtils.isNotEmpty(organisationalRoleParentStaff)) {
+                                final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();
+                                final AppUser appUserSupervisor = this.appUserRepositoryWrapper.findFirstByStaffId(organisationalRoleParentStaffId);
+                                if (ObjectUtils.isNotEmpty(appUserSupervisor)) {
+                                    //set email of approval supervisor
+                                    getEmailAddress(appUserSupervisor, notifybusinessUsers);
+                                }
                             }
                             final Metrics metrics = Metrics.createLoanMetrics(staff, status, rank, loan);
                             this.metricsRepositoryWrapper.saveAndFlush(metrics);
@@ -287,13 +291,16 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                     }
                 }
             }
+            //update dataTable loan approvalCheck
+            String loanApprovalCheckSql = "UPDATE approvalCheck ac SET ac.isSentForApproval=1 WHERE ac.loan_id=?";
+            jdbcTemplate.update(loanApprovalCheckSql, loanApprovalScheduleId);
+
             if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
                 final String subject = String.format("Notification on new Loan `%s` Awaiting Approval", loanApprovalScheduleId);
                 final String body = String.format("%s with mobile %s have a loan (`%s`) pending approval.", clientName, mobileNo, loanProductName);
                 notificationToUsers(notifybusinessUsers, subject, body);
             }
         }
-
     }
 
     protected void getEmailAddress(final AppUser appUser, List<String> businessAddresses) {

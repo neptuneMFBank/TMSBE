@@ -33,6 +33,7 @@ import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidati
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.portfolio.business.metrics.api.MetricsApiResourceConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
+import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +48,7 @@ public class MetricsDataValidator {
         this.fromApiJsonHelper = fromApiJsonHelper;
     }
 
-    public void validateForApprovalUndoReject(final String json) {
+    public void validateForLoanApprovalUndoReject(final String json) {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
@@ -65,13 +66,17 @@ public class MetricsDataValidator {
         final String note = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
         baseDataValidator.reset().parameter(LoanApiConstants.noteParamName).value(note).notBlank();
 
+        if (this.fromApiJsonHelper.parameterExists(SavingsApiConstants.paymentTypeIdParamName, element)) {
+            final Long paymentTypeId = this.fromApiJsonHelper.extractLongNamed(SavingsApiConstants.paymentTypeIdParamName, element);
+            baseDataValidator.reset().parameter(SavingsApiConstants.paymentTypeIdParamName).value(paymentTypeId).notBlank().integerGreaterThanZero();
+        }
         final Long loanId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.LOAN_ID, element);
         baseDataValidator.reset().parameter(MetricsApiResourceConstants.LOAN_ID).value(loanId).notBlank().integerGreaterThanZero();
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }
 
-    public void validateForAssign(final String json) {
+    public void validateForLoanAssign(final String json) {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
@@ -86,9 +91,8 @@ public class MetricsDataValidator {
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
                 .resource(MetricsApiResourceConstants.RESOURCENAME);
 
-        final String note = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
-        baseDataValidator.reset().parameter(LoanApiConstants.noteParamName).value(note).notBlank();
-
+//        final String note = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
+//        baseDataValidator.reset().parameter(LoanApiConstants.noteParamName).value(note).notBlank();
         final Long loanId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.LOAN_ID, element);
         baseDataValidator.reset().parameter(MetricsApiResourceConstants.LOAN_ID).value(loanId).notBlank().integerGreaterThanZero();
 

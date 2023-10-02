@@ -44,6 +44,8 @@ import org.slf4j.LoggerFactory;
 public class GeneralConstants {
 
     private static final Logger LOG = LoggerFactory.getLogger(GeneralConstants.class);
+    public static String  LOCALE_EN_DEFAULT="en";
+    public static String DATEFORMET_DEFAULT ="yyyy-MM-dd";
 
     public static String removeSpecialCharacters(final String value) {
         String newValue = value.trim().toLowerCase();

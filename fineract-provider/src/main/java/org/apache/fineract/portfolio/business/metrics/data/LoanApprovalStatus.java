@@ -40,7 +40,8 @@ public enum LoanApprovalStatus {
     PENDING(100, "pending"), //
     UNDO(150, "undo"), //
     APPROVED(200, "approved"), //
-    REJECTED(500, "rejected");
+    REJECTED(500, "rejected"), //
+    REASSIGNED(800, "reassigned");
 
     private final Integer value;
     private final String code;
@@ -83,6 +84,8 @@ public enum LoanApprovalStatus {
                     repaymentFrequencyType = LoanApprovalStatus.APPROVED;
                 case 500 ->
                     repaymentFrequencyType = LoanApprovalStatus.REJECTED;
+                case 800 ->
+                    repaymentFrequencyType = LoanApprovalStatus.REASSIGNED;
             }
         }
         return repaymentFrequencyType;
@@ -108,6 +111,10 @@ public enum LoanApprovalStatus {
         return LoanApprovalStatus.REJECTED.getValue().equals(this.value);
     }
 
+    public boolean isReAssigned() {
+        return LoanApprovalStatus.REASSIGNED.getValue().equals(this.value);
+    }
+
     public static EnumOptionData status(final Integer statusId) {
         return status(LoanApprovalStatus.fromInt(statusId));
     }
@@ -128,6 +135,8 @@ public enum LoanApprovalStatus {
                 optionData = new EnumOptionData(LoanApprovalStatus.REJECTED.getValue().longValue(), LoanApprovalStatus.REJECTED.getCode(), "Rejected");
             case APPROVED ->
                 optionData = new EnumOptionData(LoanApprovalStatus.APPROVED.getValue().longValue(), LoanApprovalStatus.APPROVED.getCode(), "Approved");
+            case REASSIGNED ->
+                optionData = new EnumOptionData(LoanApprovalStatus.APPROVED.getValue().longValue(), LoanApprovalStatus.REASSIGNED.getCode(), "ReAssigned");
         }
 
         return optionData;

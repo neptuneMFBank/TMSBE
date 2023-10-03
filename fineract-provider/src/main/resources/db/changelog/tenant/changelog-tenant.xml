@@ -117,4 +117,6 @@
     <include file="parts/0100_m_undo_loan_metrics_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0101_m_reject_loan_metrics_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0102_job_reminder_loan_approval.sql" relativeToChangelogFile="true" />
+    <include file="parts/0103_m_assign_loan_metrics_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0104_client_without_reconciliation_view.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

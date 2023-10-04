@@ -90,6 +90,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     private final ColumnValidator columnValidator;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
     private final MetricsMapper metricsMapper = new MetricsMapper();
+    private final MetricsLoanViewMapper metricsLoanViewMapper = new MetricsLoanViewMapper();
     private final LoanRepositoryWrapper loanRepositoryWrapper;
     private final MetricsRepositoryWrapper metricsRepositoryWrapper;
     private final MetricsHistoryRepositoryWrapper metricsHistoryRepositoryWrapper;
@@ -170,7 +171,8 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append("select ");
         sqlBuilder.append(sqlGenerator.calcFoundRows());
-        sqlBuilder.append(metricsMapper.schema());
+        sqlBuilder.append(metricsLoanViewMapper.schema());
+        //sqlBuilder.append(metricsMapper.schema());
 
         if (searchParameters != null) {
             final String extraCriteria = buildSqlStringFromMetricsCriteria(searchParameters, paramList);
@@ -195,7 +197,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             }
         }
 
-        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.metricsMapper);
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.metricsLoanViewMapper);
     }
 
     @Override
@@ -475,7 +477,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
         }
 
         if (searchParameters.isStaffSupervisorIdPassed()) {
-            extraCriteria += " and ms.organisational_role_parent_staff_id = ? ";
+            extraCriteria += " and mm.organisational_role_parent_staff_id = ? ";
             paramList.add(staffSupervisorId);
         }
 
@@ -503,6 +505,64 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             extraCriteria = extraCriteria.substring(4);
         }
         return extraCriteria;
+    }
+
+    private static final class MetricsLoanViewMapper implements RowMapper<MetricsData> {
+
+        public String schema() {
+            return " mm.id, '100' statusEnum, mm.loan_id loanId, mm.assigned_user_id staffId, mm.savings_id savingsId, mm.staff_display_name staffDisplayName, "
+                    + " mm.organisational_role_parent_staff_id, mm.organisational_role_parent_staff_display_name supervisorStaffDisplayName, mm.created_on_utc createdOn, "
+                    + " mlv.loan_officer_id as loanOfficerId, msl.display_name as loanOfficerName, "
+                    + " mlv.client_id as loanClientId, mcv.display_name as loanClientName "
+                    + " FROM m_metrics_view mm "
+                    + " LEFT JOIN m_loan_view mlv ON mlv.id=mm.loan_id"
+                    + " LEFT JOIN m_staff msl ON msl.id=mlv.loan_officer_id"
+                    + " LEFT JOIN m_client_view mcv ON mcv.id=mlv.client_id";
+        }
+
+        @Override
+        public MetricsData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+            final Long loanId = rs.getLong("loanId");
+            final Long savingsId = rs.getLong("savingsId");
+            final Long id = rs.getLong("id");
+
+            ClientData clientData = null;
+            final Long loanClientId = JdbcSupport.getLong(rs, "loanClientId");
+            if (loanClientId > 0) {
+                final String loanClientName = rs.getString("loanClientName");
+                clientData = ClientData.instance(id, loanClientName);
+            }
+
+            StaffData loanOfficerData = null;
+            final Long loanOfficerId = JdbcSupport.getLong(rs, "loanOfficerId");
+            if (loanClientId > 0) {
+                final String loanOfficerName = rs.getString("loanOfficerName");
+                loanOfficerData = StaffData.lookup(loanOfficerId, loanOfficerName);
+            }
+            final Integer statusEnum = JdbcSupport.getInteger(rs, "statusEnum");
+            final EnumOptionData status = LoanApprovalStatus.status(statusEnum);
+
+            StaffData staffData = null;
+            Long staffId = rs.getLong("staffId");
+            if (staffId > 0) {
+                final String staffDisplayName = rs.getString("staffDisplayName");
+                staffData = StaffData.lookup(staffId, staffDisplayName);
+            }
+            StaffData supervisorStaffData = null;
+            final Long organisationalRoleParentStaffId = rs.getLong("organisational_role_parent_staff_id");
+            if (organisationalRoleParentStaffId > 0) {
+                final String organisationalRoleParentStaffDisplayName = rs.getString("supervisorStaffDisplayName");
+                supervisorStaffData = StaffData.lookup(organisationalRoleParentStaffId, organisationalRoleParentStaffDisplayName);
+            }
+
+            final LocalDateTime createdOnTime = JdbcSupport.getLocalDateTime(rs, "createdOn");
+            final LocalDate createdOn = createdOnTime != null ? createdOnTime.toLocalDate() : null;
+
+            final LocalDate modifiedOn = null;
+
+            return MetricsData.instance(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData, loanOfficerData);
+        }
+
     }
 
 }

@@ -68,6 +68,7 @@ import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductApprov
 import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductApprovalData;
 import org.apache.fineract.portfolio.loanproduct.business.service.LoanProductApprovalReadPlatformService;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
+import org.apache.fineract.simplifytech.data.GeneralConstants;
 import org.apache.fineract.useradministration.data.AppUserData;
 import org.apache.fineract.useradministration.data.RoleData;
 import org.apache.fineract.useradministration.domain.AppUser;
@@ -245,9 +246,16 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             for (LoanProductApprovalConfigData loanProductApprovalConfigData : loanProductApprovalConfigDatas) {
                 int rank = nextRank++;
                 int status = rank == 0 ? LoanApprovalStatus.PENDING.getValue() : LoanApprovalStatus.QUEUE.getValue();
-                if (loanProductApprovalConfigData.getMaxApprovalAmount() == null
-                        || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
-                        || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal()) >= 0) {
+
+                //isWithinRange
+                final BigDecimal value = loan.getProposedPrincipal();
+                final BigDecimal minApprovalAmount = loanProductApprovalConfigData.getMinApprovalAmount() == null ? BigDecimal.ZERO : loanProductApprovalConfigData.getMinApprovalAmount();
+                final BigDecimal maxApprovalAmount = loanProductApprovalConfigData.getMaxApprovalAmount() == null ? BigDecimal.ZERO : loanProductApprovalConfigData.getMaxApprovalAmount();
+                final boolean isWithinRange = GeneralConstants.isWithinRange(value, minApprovalAmount, maxApprovalAmount);
+                if ( //loanProductApprovalConfigData.getMaxApprovalAmount() == null
+                        //|| loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
+                        //|| loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal()) >= 0
+                        isWithinRange) {
                     // create loan movement approval if this condition is met
                     final RoleData roleData = loanProductApprovalConfigData.getRoleData();
                     final Long roleId = roleData.getId();

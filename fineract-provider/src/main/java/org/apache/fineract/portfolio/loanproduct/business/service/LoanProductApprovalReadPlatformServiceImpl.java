@@ -228,7 +228,7 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
     private static final class LoanProductApprovalConfigMapper implements RowMapper<LoanProductApprovalConfigData> {
 
         public String schema() {
-            return " lpac.id, lpac.role_id roleId, mr.name as roleName, lpac.max_approval_amount maxApprovalAmount, lpac.rank "
+            return " lpac.id, lpac.role_id roleId, mr.name as roleName, lpac.min_approval_amount minApprovalAmount, lpac.max_approval_amount maxApprovalAmount, lpac.rank "
                     + " from m_role_loan_product_approval_config lpac " + " JOIN m_role mr ON mr.id=lpac.role_id ";
         }
 
@@ -238,9 +238,10 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
             final Long roleId = rs.getLong("roleId");
             final String roleName = rs.getString("roleName");
             final RoleData roleData = new RoleData(roleId, roleName, null, null);
+            final BigDecimal minApprovalAmount = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "minApprovalAmount");
             final BigDecimal maxApprovalAmount = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "maxApprovalAmount");
             final Integer rank = JdbcSupport.getIntegerDefaultToNullIfZero(rs, "rank");
-            return LoanProductApprovalConfigData.instance(id, roleData, maxApprovalAmount, rank);
+            return LoanProductApprovalConfigData.instance(id, roleData, minApprovalAmount, maxApprovalAmount, rank);
         }
 
     }

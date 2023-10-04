@@ -150,6 +150,12 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
                 final Long roleId = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.ROLEID).getAsLong();
                 final Role role = this.roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException(roleId));
                 final Integer rank = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.RANK).getAsInt();
+                BigDecimal minApprovalAmount = BigDecimal.ZERO;
+                if (jsonObject.has(LoanProductApprovalApiResourceConstants.MINAPPROVALAMOUNT)
+                        && jsonObject.get(LoanProductApprovalApiResourceConstants.MINAPPROVALAMOUNT).isJsonPrimitive()) {
+                    minApprovalAmount = jsonObject.getAsJsonPrimitive(LoanProductApprovalApiResourceConstants.MINAPPROVALAMOUNT)
+                            .getAsBigDecimal();
+                }
                 BigDecimal maxApprovalAmount = BigDecimal.ZERO;
                 if (jsonObject.has(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT)
                         && jsonObject.get(LoanProductApprovalApiResourceConstants.MAXAPPROVALAMOUNT).isJsonPrimitive()) {
@@ -168,10 +174,11 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
                             .findOneWithNotFoundDetection(id);
                     loanProductApprovalConfigJsonObject.setRank(rank);
                     loanProductApprovalConfigJsonObject.setRole(role);
+                    loanProductApprovalConfigJsonObject.setMinApprovalAmount(minApprovalAmount);
                     loanProductApprovalConfigJsonObject.setMaxApprovalAmount(maxApprovalAmount);
 
                 } else {
-                    loanProductApprovalConfigJsonObject = LoanProductApprovalConfig.create(role, maxApprovalAmount, rank);
+                    loanProductApprovalConfigJsonObject = LoanProductApprovalConfig.create(role, minApprovalAmount, maxApprovalAmount, rank);
                 }
                 //loanProductApprovalConfig.add(loanProductApprovalConfigJsonObject);
                 newLoanProductApproval.addLoanProductApprovalConfig(loanProductApprovalConfigJsonObject);

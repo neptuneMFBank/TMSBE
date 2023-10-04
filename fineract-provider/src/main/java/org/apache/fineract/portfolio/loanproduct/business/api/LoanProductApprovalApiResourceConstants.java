@@ -39,6 +39,7 @@ public final class LoanProductApprovalApiResourceConstants {
 
     public static final String ROLEID = "roleId";
     public static final String RANK = "rank";
+    public static final String MINAPPROVALAMOUNT = "minApprovalAmount";
     public static final String MAXAPPROVALAMOUNT = "maxApprovalAmount";
 
     public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(

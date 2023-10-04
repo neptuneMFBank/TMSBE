@@ -21,6 +21,7 @@ CREATE TABLE `m_role_loan_product_approval_config`(
       `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
       `rlpa_id` BIGINT NOT NULL,
       `role_id` BIGINT NOT NULL,
+      `min_approval_amount` decimal(19,6) DEFAULT NULL,
       `max_approval_amount` decimal(19,6) DEFAULT NULL,
       `rank` INT NOT NULL,
       UNIQUE KEY `rlpa_UNIQUE_rank` (`rlpa_id`,`rank`),

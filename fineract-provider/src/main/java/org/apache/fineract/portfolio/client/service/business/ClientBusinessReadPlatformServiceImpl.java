@@ -322,7 +322,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         sqlBuilder.append(sqlGenerator.calcFoundRows());
         sqlBuilder.append(" ");
         sqlBuilder.append(this.clientMapper.schema());
-        sqlBuilder.append(" where (o.hierarchy like ? or transferToOffice.hierarchy like ?) ");
+        sqlBuilder.append(" where (o.hierarchy like ?) ");
+//        sqlBuilder.append(" where (o.hierarchy like ? or transferToOffice.hierarchy like ?) ");
 
         if (searchParameters != null) {
             if (searchParameters.isSelfUser()) {

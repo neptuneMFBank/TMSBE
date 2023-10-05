@@ -161,13 +161,13 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 pickTheNextMetricApproval.setStatus(LoanApprovalStatus.PENDING.getValue());
                 this.metricsRepositoryWrapper.saveAndFlush(pickTheNextMetricApproval);
                 saveMetricsHistory(pickTheNextMetricApproval, LoanApprovalStatus.PENDING.getValue());
-
-                saveNoteMetrics(noteText, loan);
-
-                metrics.setStatus(LoanApprovalStatus.APPROVED.getValue());
-                this.metricsRepositoryWrapper.saveAndFlush(metrics);
-                saveMetricsHistory(metrics, LoanApprovalStatus.APPROVED.getValue());
             }
+
+            saveNoteMetrics(noteText, loan);
+
+            metrics.setStatus(LoanApprovalStatus.APPROVED.getValue());
+            this.metricsRepositoryWrapper.saveAndFlush(metrics);
+            saveMetricsHistory(metrics, LoanApprovalStatus.APPROVED.getValue());
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
             return CommandProcessingResult.empty();

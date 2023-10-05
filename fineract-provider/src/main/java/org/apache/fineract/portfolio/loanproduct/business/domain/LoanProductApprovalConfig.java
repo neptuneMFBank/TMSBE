@@ -41,6 +41,9 @@ public class LoanProductApprovalConfig extends AbstractPersistableCustom {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
+    @Column(name = "min_approval_amount", scale = 6, precision = 19)
+    private BigDecimal minApprovalAmount;
+
     @Column(name = "max_approval_amount", scale = 6, precision = 19)
     private BigDecimal maxApprovalAmount;
 
@@ -50,15 +53,16 @@ public class LoanProductApprovalConfig extends AbstractPersistableCustom {
     protected LoanProductApprovalConfig() {
     }
 
-    public static LoanProductApprovalConfig create(Role role, BigDecimal maxApprovalAmount, Integer rank) {
+    public static LoanProductApprovalConfig create(Role role, BigDecimal minApprovalAmount, BigDecimal maxApprovalAmount, Integer rank) {
         final LoanProductApproval loanProductApproval = null;
-        return new LoanProductApprovalConfig(loanProductApproval, role, maxApprovalAmount, rank);
+        return new LoanProductApprovalConfig(loanProductApproval, role, minApprovalAmount, maxApprovalAmount, rank);
     }
 
-    public LoanProductApprovalConfig(LoanProductApproval loanProductApproval, Role role, BigDecimal maxApprovalAmount, Integer rank) {
+    public LoanProductApprovalConfig(LoanProductApproval loanProductApproval, Role role, BigDecimal minApprovalAmount, BigDecimal maxApprovalAmount, Integer rank) {
         this.loanProductApproval = loanProductApproval;
         this.role = role;
         this.maxApprovalAmount = maxApprovalAmount;
+        this.minApprovalAmount = minApprovalAmount;
         this.rank = rank;
     }
 
@@ -92,6 +96,14 @@ public class LoanProductApprovalConfig extends AbstractPersistableCustom {
 
     public void setLoanProductApproval(LoanProductApproval loanProductApproval) {
         this.loanProductApproval = loanProductApproval;
+    }
+
+    public BigDecimal getMinApprovalAmount() {
+        return minApprovalAmount;
+    }
+
+    public void setMinApprovalAmount(BigDecimal minApprovalAmount) {
+        this.minApprovalAmount = minApprovalAmount;
     }
 
 }

@@ -17,14 +17,9 @@
 -- under the License.
 --
 
-CREATE TABLE `m_role_loan_product_approval_config`(
-      `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-      `rlpa_id` BIGINT NOT NULL,
-      `role_id` BIGINT NOT NULL,
-      `min_approval_amount` decimal(19,6) DEFAULT NULL,
-      `max_approval_amount` decimal(19,6) DEFAULT NULL,
-      `rank` INT NOT NULL,
-      UNIQUE KEY `rlpa_UNIQUE_rank` (`rlpa_id`,`rank`),
-      CONSTRAINT `config_FK_rlpa` FOREIGN KEY (`rlpa_id`) REFERENCES `m_role_loan_product_approval` (`id`),
-      CONSTRAINT `config_FK_rlpa_role` FOREIGN KEY (`role_id`) REFERENCES `m_role` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE OR REPLACE VIEW client_without_reconciliation_view AS
+SELECT
+    mc.id, '2' using_savings_product_id
+FROM m_client mc
+WHERE mc.status_enum = 300 
+and mc.id NOT IN (SELECT msa.client_id FROM m_savings_account msa WHERE msa.product_id=2);

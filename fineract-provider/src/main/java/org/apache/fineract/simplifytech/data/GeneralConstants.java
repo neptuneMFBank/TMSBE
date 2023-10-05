@@ -44,8 +44,8 @@ import org.slf4j.LoggerFactory;
 public class GeneralConstants {
 
     private static final Logger LOG = LoggerFactory.getLogger(GeneralConstants.class);
-    public static String  LOCALE_EN_DEFAULT="en";
-    public static String DATEFORMET_DEFAULT ="yyyy-MM-dd";
+    public static String LOCALE_EN_DEFAULT = "en";
+    public static String DATEFORMET_DEFAULT = "yyyy-MM-dd";
 
     public static String removeSpecialCharacters(final String value) {
         String newValue = value.trim().toLowerCase();
@@ -190,5 +190,9 @@ public class GeneralConstants {
 
     public static boolean is(final String commandParam, final String commandValue) {
         return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
+    }
+
+    public static boolean isWithinRange(final BigDecimal value, final BigDecimal min, final BigDecimal max) {
+        return value.compareTo(min) >= 0 && value.compareTo(max) <= 0;
     }
 }

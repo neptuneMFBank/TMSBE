@@ -18,12 +18,14 @@
  */
 package org.apache.fineract.organisation.staff.service.business;
 
+import com.google.gson.JsonObject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
@@ -37,13 +39,19 @@ import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.organisation.staff.data.business.StaffBusinessData;
 import org.apache.fineract.organisation.staff.exception.StaffNotFoundException;
+import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.statusParameterName;
+import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformServiceImpl.ClientCountSummaryMapper;
+import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformServiceImpl.LoanActiveSummaryMapper;
+import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformServiceImpl.LoanPrincipalAmountSummaryMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPlatformService {
 
@@ -53,6 +61,9 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
     private final PaginationHelper paginationHelper;
     final StaffMapper rm = new StaffMapper();
     private final DatabaseSpecificSQLGenerator sqlGenerator;
+    private final LoanActiveSummaryMapper loanActiveSummaryMapper = new LoanActiveSummaryMapper();
+    private final LoanPrincipalAmountSummaryMapper loanPrincipalAmountSummaryMapper = new LoanPrincipalAmountSummaryMapper();
+    private final ClientCountSummaryMapper clientCountSummaryMapper = new ClientCountSummaryMapper();
 
     @Autowired
     public StaffBusinessReadPlatformServiceImpl(final PlatformSecurityContext context, final JdbcTemplate jdbcTemplate,
@@ -76,7 +87,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
         try {
             final String sql = "select " + rm.schema() + " where s.id = ? and o.hierarchy like ? ";
 
-            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { staffId, hierarchy }); // NOSONAR
+            return this.jdbcTemplate.queryForObject(sql, rm, new Object[]{staffId, hierarchy}); // NOSONAR
         } catch (final EmptyResultDataAccessException e) {
             throw new StaffNotFoundException(staffId, e);
         }
@@ -174,6 +185,62 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
             extraCriteria = extraCriteria.substring(4);
         }
         return extraCriteria;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public JsonObject retrieveBalance(Long staffId) {
+        this.context.authenticatedUser();
+        final JsonObject jsonObjectBalance = new JsonObject();
+
+        JsonObject jsonObjectClient = new JsonObject();
+        try {
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            sqlBuilder.append("select ");
+            sqlBuilder.append(this.clientCountSummaryMapper.schema());
+            sqlBuilder.append(" WHERE ml.staff_id=? ");
+
+            String sql = sqlBuilder.toString();
+            jsonObjectClient = this.jdbcTemplate.queryForObject(sql, this.clientCountSummaryMapper, staffId);
+            jsonObjectBalance.add("clientAccount", jsonObjectClient);
+        } catch (DataAccessException e) {
+            log.warn("staffRetrieveBalance Loan: {}", e);
+            jsonObjectClient.addProperty(statusParameterName, Boolean.FALSE);
+            jsonObjectBalance.add("clientAccount", jsonObjectClient);
+        }
+
+        JsonObject jsonObjectLoanDIsbursed = new JsonObject();
+        try {
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            sqlBuilder.append("select ");
+            sqlBuilder.append(this.loanPrincipalAmountSummaryMapper.schema());
+            sqlBuilder.append(" WHERE ml.loan_officer_id=? AND ml.loan_status_id=300 ");
+
+            String sql = sqlBuilder.toString();
+            jsonObjectLoanDIsbursed = this.jdbcTemplate.queryForObject(sql, this.loanPrincipalAmountSummaryMapper, staffId);
+            jsonObjectBalance.add("loanDisbursed", jsonObjectLoanDIsbursed);
+        } catch (DataAccessException e) {
+            log.warn("staffRetrieveBalance Loan: {}", e);
+            jsonObjectLoanDIsbursed.addProperty(statusParameterName, Boolean.FALSE);
+            jsonObjectBalance.add("loanDisbursed", jsonObjectLoanDIsbursed);
+        }
+
+        JsonObject jsonObjectLoan = new JsonObject();
+        try {
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            sqlBuilder.append("select ");
+            sqlBuilder.append(this.loanActiveSummaryMapper.schema());
+            sqlBuilder.append(" WHERE ml.loan_officer_id=? ");
+
+            String sql = sqlBuilder.toString();
+            jsonObjectLoan = this.jdbcTemplate.queryForObject(sql, this.loanActiveSummaryMapper, staffId);
+            jsonObjectBalance.add("loanAccount", jsonObjectLoan);
+        } catch (DataAccessException e) {
+            log.warn("staffRetrieveBalance Loan: {}", e);
+            jsonObjectLoan.addProperty(statusParameterName, Boolean.FALSE);
+            jsonObjectBalance.add("loanAccount", jsonObjectLoan);
+        }
+        return jsonObjectBalance;
     }
 
     private static final class StaffMapper implements RowMapper<StaffBusinessData> {

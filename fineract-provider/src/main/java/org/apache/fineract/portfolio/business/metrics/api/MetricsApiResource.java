@@ -90,7 +90,7 @@ public class MetricsApiResource {
             @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
             @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
-            @DefaultValue("mm.rank") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @DefaultValue("mm.id") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
             @DefaultValue("asc") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
             @DefaultValue("en") @QueryParam("locale") final String locale,
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {

@@ -686,7 +686,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
             sqlBuilder.append("from m_client_view c ");
             sqlBuilder.append("join m_office o on o.id = c.office_id ");
-            sqlBuilder.append("left join m_office transferToOffice on transferToOffice.id = c.transfer_to_office_id ");
             sqlBuilder.append("left join m_staff s on s.id = c.staff_id ");
             sqlBuilder.append("left join m_appuser sbu on sbu.id = c.created_by ");
             sqlBuilder.append("left join m_code_value cvclassification on cvclassification.id = c.client_classification_cv_id ");

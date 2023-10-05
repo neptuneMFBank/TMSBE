@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.organisation.staff.api.business;
 
+import com.google.gson.JsonObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -49,6 +50,7 @@ import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
+import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
@@ -69,7 +71,8 @@ import org.springframework.stereotype.Component;
 public class StaffBusinessApiResource {
 
     /**
-     * The set of parameters that are supported in response for {@link StaffData}.
+     * The set of parameters that are supported in response for
+     * {@link StaffData}.
      */
     private final Set<String> responseDataParameters = new HashSet<>(
             Arrays.asList("id", "firstname", "lastname", "displayName", "officeId", "officeName", "isLoanOfficer", "externalId", "mobileNo",
@@ -83,24 +86,26 @@ public class StaffBusinessApiResource {
     private final DefaultToApiJsonSerializer<StaffBusinessData> toApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+    private final ToApiJsonSerializer<JsonObject> staffClientAccountBalanceSummary;
 
     @Autowired
     public StaffBusinessApiResource(final PlatformSecurityContext context, final StaffBusinessReadPlatformService readPlatformService,
             final OfficeReadPlatformService officeReadPlatformService,
             final DefaultToApiJsonSerializer<StaffBusinessData> toApiJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
-            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService, final ToApiJsonSerializer<JsonObject> staffClientAccountBalanceSummary) {
         this.context = context;
         this.readPlatformService = readPlatformService;
         this.officeReadPlatformService = officeReadPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
+        this.staffClientAccountBalanceSummary = staffClientAccountBalanceSummary;
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create a staff member", description = """
             Creates a staff member.
 
@@ -112,9 +117,10 @@ public class StaffBusinessApiResource {
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.PostStaffRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.CreateStaffResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.CreateStaffResponse.class))
+        )})
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().createStaffBusiness().withJson(apiRequestBodyAsJson).build();
@@ -125,13 +131,14 @@ public class StaffBusinessApiResource {
     }
 
     @GET
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve all Staff", description = "Retrieve list of Employers")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
-    // EmployerApiResourceSwagger.GetEmployersResponse.class)))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+        // EmployerApiResourceSwagger.GetEmployersResponse.class)))
+        )})
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("supervisorId") @Parameter(description = "supervisorId") final Long supervisorId,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
@@ -168,13 +175,14 @@ public class StaffBusinessApiResource {
 
     @GET
     @Path("{staffId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve a Staff Member", description = "Returns the details of a Staff Member.\n" + "\n" + "Example Requests:\n"
             + "\n" + "staff/1")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.RetrieveOneResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.RetrieveOneResponse.class))
+        )})
     public String retrieveOne(@PathParam("staffId") @Parameter(description = "staffId") final Long staffId,
             @Context final UriInfo uriInfo) {
 
@@ -192,15 +200,16 @@ public class StaffBusinessApiResource {
 
     @PUT
     @Path("{staffId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Update a Staff Member", description = "Updates the details of a staff member.")
     @RequestBody(required = true// , content = @Content(schema = @Schema(implementation =
     // StaffApiResourceSwagger.PutStaffRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.UpdateStaffResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.UpdateStaffResponse.class))
+        )})
     public String update(@PathParam("staffId") @Parameter(description = "staffId") final Long staffId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -210,5 +219,24 @@ public class StaffBusinessApiResource {
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
         return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @GET
+    @Path("{staffId}/balance")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve client accounts balance", description = "")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        ),
+        @ApiResponse(responseCode = "400", description = "Bad Request")})
+    public String retrieveAssociatedAccounts(@PathParam("staffId") @Parameter(description = "staffId") final Long staffId,
+            @Context final UriInfo uriInfo) {
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+        final JsonObject retrieveBalance = this.readPlatformService.retrieveBalance(staffId);
+        final Set<String> STAFF_CLIENT_BALANCE_DATA_PARAMETERS = new HashSet<>(
+                Arrays.asList("clientAccount", "loanDisbursed", "loanAccount"));
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.staffClientAccountBalanceSummary.serialize(settings, retrieveBalance, STAFF_CLIENT_BALANCE_DATA_PARAMETERS);
     }
 }

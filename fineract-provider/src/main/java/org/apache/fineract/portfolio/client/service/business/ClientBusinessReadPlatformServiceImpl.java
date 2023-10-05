@@ -316,7 +316,10 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         // this.context.validateAccessRights(searchParameters.getHierarchy());
         // underHierarchySearchString = searchParameters.getHierarchy() + "%";
         // }
-        List<Object> paramList = new ArrayList<>(Arrays.asList(underHierarchySearchString, underHierarchySearchString));
+        List<Object> paramList = new ArrayList<>(Arrays.asList(underHierarchySearchString
+        //, underHierarchySearchString
+        )
+        );
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append("select ");
         sqlBuilder.append(sqlGenerator.calcFoundRows());

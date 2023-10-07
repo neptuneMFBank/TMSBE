@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -48,6 +49,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.fineract.accounting.journalentry.api.DateParam;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
@@ -68,6 +70,7 @@ import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.dataqueries.api.DataTableApiConstant;
 import org.apache.fineract.infrastructure.dataqueries.service.EntityDatatableChecksReadService;
+import org.apache.fineract.infrastructure.documentmanagement.service.business.DocumentBusinessWritePlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.organisation.staff.data.StaffData;
@@ -78,6 +81,9 @@ import org.apache.fineract.portfolio.account.service.AccountAssociationsReadPlat
 import org.apache.fineract.portfolio.account.service.PortfolioAccountReadPlatformService;
 import org.apache.fineract.portfolio.accountdetails.data.LoanAccountSummaryData;
 import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
+import org.apache.fineract.portfolio.address.data.AddressData;
+import org.apache.fineract.portfolio.address.data.ClientAddressData;
+import org.apache.fineract.portfolio.address.service.AddressReadPlatformServiceImpl;
 import org.apache.fineract.portfolio.business.metrics.data.MetricsData;
 import org.apache.fineract.portfolio.business.metrics.service.MetricsReadPlatformService;
 import org.apache.fineract.portfolio.calendar.data.CalendarData;
@@ -86,6 +92,8 @@ import org.apache.fineract.portfolio.calendar.service.CalendarReadPlatformServic
 import org.apache.fineract.portfolio.charge.data.ChargeData;
 import org.apache.fineract.portfolio.charge.domain.ChargeTimeType;
 import org.apache.fineract.portfolio.charge.service.ChargeReadPlatformService;
+import org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessData;
+import org.apache.fineract.portfolio.client.service.business.ClientIdentifierBusinessReadPlatformService;
 import org.apache.fineract.portfolio.collateralmanagement.data.LoanCollateralResponseData;
 import org.apache.fineract.portfolio.collateralmanagement.service.LoanCollateralManagementReadPlatformService;
 import org.apache.fineract.portfolio.floatingrates.data.InterestRatePeriodData;
@@ -105,6 +113,7 @@ import org.apache.fineract.portfolio.loanaccount.data.LoanTransactionData;
 import org.apache.fineract.portfolio.loanaccount.data.PaidInAdvanceData;
 import org.apache.fineract.portfolio.loanaccount.data.RepaymentScheduleRelatedLoanData;
 import org.apache.fineract.portfolio.loanaccount.data.business.LoanBusinessAccountData;
+import org.apache.fineract.portfolio.loanaccount.data.business.LoanBusinessDocData;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanTermVariationType;
 import org.apache.fineract.portfolio.loanaccount.guarantor.data.GuarantorData;
 import org.apache.fineract.portfolio.loanaccount.guarantor.service.GuarantorReadPlatformService;
@@ -121,6 +130,7 @@ import org.apache.fineract.portfolio.loanproduct.data.TransactionProcessingStrat
 import org.apache.fineract.portfolio.loanproduct.domain.InterestMethod;
 import org.apache.fineract.portfolio.loanproduct.service.LoanDropdownReadPlatformService;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
+import org.apache.fineract.portfolio.loanproduct.service.business.LoanProductBusinessReadPlatformService;
 import org.apache.fineract.portfolio.note.data.NoteData;
 import org.apache.fineract.portfolio.note.domain.NoteType;
 import org.apache.fineract.portfolio.note.service.NoteReadPlatformService;
@@ -138,6 +148,8 @@ import org.springframework.util.CollectionUtils;
 @Scope("singleton")
 @Tag(name = "Loans", description = "The API concept of loans models the loan application process and the loan contract/monitoring process.")
 public class LoansBusinessApiResource {
+
+    private final Set<String> loanDataDocParameters = new HashSet<>(Arrays.asList("loanBusinessAccountData", "clientAddressData", "loanProductData", "clientSignature"));
 
     private final Set<String> loanDataParameters = new HashSet<>(Arrays.asList("id", "accountNo", "status", "externalId", "clientId",
             "group", "loanProductId", "loanProductName", "loanProductDescription",
@@ -166,6 +178,7 @@ public class LoansBusinessApiResource {
 
     private final PlatformSecurityContext context;
     private final LoanProductReadPlatformService loanProductReadPlatformService;
+    private final LoanProductBusinessReadPlatformService loanProductBusinessReadPlatformService;
     private final LoanDropdownReadPlatformService dropdownReadPlatformService;
     private final FundReadPlatformService fundReadPlatformService;
     private final ChargeReadPlatformService chargeReadPlatformService;
@@ -174,6 +187,7 @@ public class LoansBusinessApiResource {
     private final GuarantorReadPlatformService guarantorReadPlatformService;
     private final CodeValueReadPlatformService codeValueReadPlatformService;
     private final GroupReadPlatformService groupReadPlatformService;
+    private final DefaultToApiJsonSerializer<LoanBusinessDocData> toApiDocJsonSerializer;
     private final DefaultToApiJsonSerializer<LoanBusinessAccountData> toApiJsonSerializer;
     private final DefaultToApiJsonSerializer<LoanApprovalData> loanApprovalDataToApiJsonSerializer;
     private final DefaultToApiJsonSerializer<LoanScheduleData> loanScheduleToApiJsonSerializer;
@@ -200,6 +214,9 @@ public class LoansBusinessApiResource {
     private final LoanReadPlatformService loanReadPlatformService;
     private final LoansApiResource loansApiResource;
     private final MetricsReadPlatformService metricsReadPlatformService;
+    private final AddressReadPlatformServiceImpl readPlatformService;
+    private final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService;
+    private final DocumentBusinessWritePlatformService documentWritePlatformService;
 
     public LoansBusinessApiResource(final PlatformSecurityContext context,
             final LoanProductReadPlatformService loanProductReadPlatformService,
@@ -227,7 +244,8 @@ public class LoansBusinessApiResource {
             final LoanCollateralManagementReadPlatformService loanCollateralManagementReadPlatformService,
             final LoanBusinessReadPlatformService loanBusinessReadPlatformService,
             final DefaultToApiJsonSerializer<String> calculateLoanScheduleToApiJsonSerializer, final LoansApiResource loansApiResource,
-            final LoanReadPlatformService loanReadPlatformService, final MetricsReadPlatformService metricsReadPlatformService) {
+            final LoanReadPlatformService loanReadPlatformService, final MetricsReadPlatformService metricsReadPlatformService, final LoanProductBusinessReadPlatformService loanProductBusinessReadPlatformService,
+            final DefaultToApiJsonSerializer<LoanBusinessDocData> toApiDocJsonSerializer, final AddressReadPlatformServiceImpl readPlatformService, final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService, final DocumentBusinessWritePlatformService documentWritePlatformService) {
         this.context = context;
         this.loanProductReadPlatformService = loanProductReadPlatformService;
         this.dropdownReadPlatformService = dropdownReadPlatformService;
@@ -263,6 +281,11 @@ public class LoansBusinessApiResource {
         this.loansApiResource = loansApiResource;
         this.loanReadPlatformService = loanReadPlatformService;
         this.metricsReadPlatformService = metricsReadPlatformService;
+        this.loanProductBusinessReadPlatformService = loanProductBusinessReadPlatformService;
+        this.toApiDocJsonSerializer = toApiDocJsonSerializer;
+        this.readPlatformService = readPlatformService;
+        this.clientIdentifierBusinessReadPlatformService = clientIdentifierBusinessReadPlatformService;
+        this.documentWritePlatformService = documentWritePlatformService;
     }
 
     /*
@@ -697,4 +720,58 @@ public class LoansBusinessApiResource {
 
         return this.toApiJsonSerializer.serialize(result);
     }
+
+    @GET
+    @Path("{loanId}/doc")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve a Loan Doc", description = "")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))
+        )})
+    public String retrieveLoanDoc(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
+            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
+            @DefaultValue("all") @QueryParam("associations") @Parameter(in = ParameterIn.QUERY, name = "associations", description = "Loan object relations to be included in the response", required = false, examples = {
+        @ExampleObject(value = "all"),
+        @ExampleObject(value = "repaymentSchedule,transactions")}) final String associations,
+            @QueryParam("exclude") @Parameter(in = ParameterIn.QUERY, name = "exclude", description = "Optional Loan object relation list to be filtered in the response", required = false, example = "guarantors,futureSchedule") final String exclude,
+            @QueryParam("fields") @Parameter(in = ParameterIn.QUERY, name = "fields", description = "Optional Loan attribute list to be in the response", required = false, example = "id,principal,annualInterestRate") final String fields,
+            @Context final UriInfo uriInfo) {
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final String retrieveLoan = this.retrieveLoan(loanId, staffInSelectedOfficeOnly, associations, exclude, fields, uriInfo);
+        final LoanBusinessAccountData loanBasicDetails = this.fromJsonHelper.fromJson(retrieveLoan, LoanBusinessAccountData.class);
+        loanBasicDetails.setLoanOfficerOptions(null);
+        loanBasicDetails.setMetricsData(null);
+
+        final Long loanProductId = loanBasicDetails.loanProductId();
+        final LoanProductData loanProductData = this.loanProductBusinessReadPlatformService.retrieveLoanProductData(loanProductId);
+
+        final Long clientId = loanBasicDetails.getClientId();
+        final Integer homeAddress = 15;
+        final Collection<AddressData> addressDatas = this.readPlatformService.retrieveAddressbyTypeAndStatus(clientId, homeAddress, "true");
+        final AddressData clientAddressData = addressDatas.stream().findFirst().orElse(null);
+
+        final Collection<ClientIdentifierBusinessData> clientIdentifiers = this.clientIdentifierBusinessReadPlatformService
+                .retrieveClientIdentifiers(clientId);
+        final Long documentTypeSignatureId = 1104L;
+        final ClientIdentifierBusinessData clientIdentifierBusinessData
+                = clientIdentifiers.stream().filter(predicate -> predicate.getDocumentType() != null
+                && Objects.equals(predicate.getDocumentType().getId(), documentTypeSignatureId))
+                        .findFirst().orElse(null);
+
+        String clientSignature = null;
+        if (ObjectUtils.isNotEmpty(clientIdentifierBusinessData)) {
+            final Long entityId = clientIdentifierBusinessData.getId();
+            final Long attachmentId = clientIdentifierBusinessData.getAttachmentId();
+            final CommandProcessingResult result = this.documentWritePlatformService.retrieveAttachment("client_identifiers", entityId, attachmentId);
+            clientSignature = result.getResourceIdentifier();
+        }
+
+        final LoanBusinessDocData loanBusinessDocData = new LoanBusinessDocData(loanBasicDetails, clientAddressData, loanProductData, clientSignature);
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiDocJsonSerializer.serialize(settings, loanBusinessDocData, this.loanDataDocParameters);
+    }
+
 }

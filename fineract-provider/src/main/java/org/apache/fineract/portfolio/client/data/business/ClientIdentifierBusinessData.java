@@ -40,7 +40,7 @@ public class ClientIdentifierBusinessData {
 
     public static ClientIdentifierBusinessData template(final ClientIdentifierBusinessData data) {
         return new ClientIdentifierBusinessData(data.id, data.clientId, data.documentType, data.documentKey, data.description, data.status,
-                 data.attachmentId);
+                data.attachmentId);
     }
 
     public ClientIdentifierBusinessData(final Long id, final Long clientId, final CodeValueData documentType, final String documentKey,
@@ -53,4 +53,33 @@ public class ClientIdentifierBusinessData {
         this.description = description;
         this.status = status;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getAttachmentId() {
+        return attachmentId;
+    }
+
+    public Long getClientId() {
+        return clientId;
+    }
+
+    public CodeValueData getDocumentType() {
+        return documentType;
+    }
+
+    public String getDocumentKey() {
+        return documentKey;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
 }

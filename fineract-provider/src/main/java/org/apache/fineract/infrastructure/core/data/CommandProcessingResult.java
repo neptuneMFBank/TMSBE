@@ -24,7 +24,8 @@ import java.util.Map;
 import lombok.ToString;
 
 /**
- * Represents the successful result of an REST API call that results in processing a command.
+ * Represents the successful result of an REST API call that results in
+ * processing a command.
  */
 @ToString
 public class CommandProcessingResult implements Serializable {
@@ -40,7 +41,7 @@ public class CommandProcessingResult implements Serializable {
     private final String transactionId;
     private final Map<String, Object> changes;
     private final Map<String, Object> creditBureauReportData;
-    private final String resourceIdentifier;
+    private String resourceIdentifier;
     private final Long productId;
     private final Long gsimId;
     private final Long glimId;
@@ -247,4 +248,9 @@ public class CommandProcessingResult implements Serializable {
     public Long getSubResourceId() {
         return subResourceId;
     }
+
+    public String getResourceIdentifier() {
+        return resourceIdentifier;
+    }
+
 }

@@ -215,10 +215,18 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         apiRequestBodyAsJson.addProperty(LoanApiConstants.localeParameterName, LOCALE_EN_DEFAULT);
         apiRequestBodyAsJson.addProperty(LoanApiConstants.dateFormatParameterName, DATEFORMET_DEFAULT);
         apiRequestBodyAsJson.addProperty(LoanApiConstants.noteParameterName, noteText);
-        apiRequestBodyAsJson.addProperty(SavingsApiConstants.paymentTypeIdParamName, paymentTypeId);
         apiRequestBodyAsJson.addProperty(SavingsApiConstants.transactionAmountParamName, loan.getApprovedPrincipal());
+
+        if (paymentTypeId != null) {
+            apiRequestBodyAsJson.addProperty(SavingsApiConstants.paymentTypeIdParamName, paymentTypeId);
+        }
         final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson.toString());
-        final CommandWrapper commandRequest = builder.disburseLoanApplication(loanId).build();
+        CommandWrapper commandRequest;
+        if (paymentTypeId != null) {
+            commandRequest = builder.disburseLoanApplication(loanId).build();
+        } else {
+            commandRequest = builder.disburseLoanToSavingsApplication(loanId).build();
+        }
         this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
     }
 

@@ -131,10 +131,10 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
 
                     final JsonObject activateReconciliationSavings = new JsonObject();
                     activateReconciliationSavings.addProperty("activatedOnDate", clientActivationLocalDate.toString());
-                    approveReconciliationSavings.addProperty("locale", GeneralConstants.LOCALE_EN_DEFAULT);
-                    approveReconciliationSavings.addProperty("dateFormat", GeneralConstants.DATEFORMET_DEFAULT);
+                    activateReconciliationSavings.addProperty("locale", GeneralConstants.LOCALE_EN_DEFAULT);
+                    activateReconciliationSavings.addProperty("dateFormat", GeneralConstants.DATEFORMET_DEFAULT);
                     final CommandWrapper commandRequestActivate = new CommandWrapperBuilder().savingsAccountActivation(resultReconciliationSavings)
-                            .withJson(approveReconciliationSavings.toString()).build();
+                            .withJson(activateReconciliationSavings.toString()).build();
                     this.commandsSourceWritePlatformService.logCommandSource(commandRequestActivate);
 
                     //update client to have this account as default savings account

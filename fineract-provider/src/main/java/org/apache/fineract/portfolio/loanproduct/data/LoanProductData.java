@@ -303,6 +303,7 @@ public class LoanProductData implements Serializable {
     }
 
     public static LoanProductData lookup(final Long id, final String name, final String shortName, final String description) {
+        final Boolean multiDisburseLoan = null;
         final CurrencyData currency = null;
         final BigDecimal principal = null;
         final BigDecimal minPrincipal = null;

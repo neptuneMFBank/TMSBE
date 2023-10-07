@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.account.api;
+package org.apache.fineract.portfolio.account.api.business;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -24,25 +24,20 @@ import java.util.Set;
 import org.apache.fineract.portfolio.account.AccountDetailConstants;
 import org.apache.fineract.portfolio.account.data.AccountTransferData;
 
-public final class AccountTransfersApiConstants {
+public final class AccountTransfersBusinessApiConstants {
 
-    private AccountTransfersApiConstants() {
+    private AccountTransfersBusinessApiConstants() {
 
     }
 
     public static final String ACCOUNT_TRANSFER_RESOURCE_NAME = "accounttransfer";
 
-    // transaction parameters
-    public static final String transferDateParamName = "transferDate";
-    public static final String transferAmountParamName = "transferAmount";
-    public static final String transferDescriptionParamName = "transferDescription";
-    public static final String currencyParamName = "currency";
+    public static final String toAccountTypeParamName = "toAccountType";
+    public static final String fromAccountIdParamName = "fromAccountId";
+    public static final String keyParam = "key";
+    public static final String valueParam = "value";
+    public static final String localeParamName = "locale";
 
-    /**
-     * These parameters will match the class level parameters of
-     * {@link AccountTransferData}. Where possible, we try to get response
-     * parameters to match those of request parameters.
-     */
-    public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(AccountDetailConstants.idParamName, transferDescriptionParamName, currencyParamName));
+    public static final Set<String> SINGLE_TEMPLATE_DATA_PARAMETERS = new HashSet<>(
+            Arrays.asList(toAccountTypeParamName, fromAccountIdParamName, keyParam, valueParam, localeParamName));
 }

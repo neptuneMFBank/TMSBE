@@ -80,12 +80,12 @@ public final class AccountTransfersBusinessDataValidator {
 
         final String fromAccountIdParam = AccountTransfersBusinessApiConstants.fromAccountIdParamName;
         final Long fromAccountId = this.fromApiJsonHelper.extractLongNamed(fromAccountIdParam, element);
-        baseDataValidator.reset().parameter(valueParam).value(fromAccountId).notNull().longGreaterThanZero();
+        baseDataValidator.reset().parameter(fromAccountIdParam).value(fromAccountId).notNull().longGreaterThanZero();
 
         final String toAccountTypeParam = AccountTransfersBusinessApiConstants.toAccountTypeParamName;
         if (this.fromApiJsonHelper.parameterExists(toAccountTypeParam, element)) {
             final Long toAccountType = this.fromApiJsonHelper.extractLongNamed(toAccountTypeParam, element);
-            baseDataValidator.reset().parameter(valueParam).value(toAccountType).notNull().isOneOfTheseValues(PortfolioAccountType.LOAN.getValue(), PortfolioAccountType.SAVINGS.getValue());
+            baseDataValidator.reset().parameter(toAccountTypeParam).value(toAccountType).notNull().isOneOfTheseValues(PortfolioAccountType.LOAN.getValue(), PortfolioAccountType.SAVINGS.getValue());
         }
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);

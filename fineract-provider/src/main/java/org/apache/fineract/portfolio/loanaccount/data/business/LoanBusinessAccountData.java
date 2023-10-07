@@ -157,7 +157,7 @@ public final class LoanBusinessAccountData {
     private final LoanScheduleData originalSchedule;
     // template
     private final Collection<LoanProductData> productOptions;
-    private final Collection<StaffData> loanOfficerOptions;
+    private Collection<StaffData> loanOfficerOptions;
     private final Collection<CodeValueData> loanPurposeOptions;
     private final Collection<FundData> fundOptions;
     private final Collection<EnumOptionData> termFrequencyTypeOptions;
@@ -2002,6 +2002,10 @@ public final class LoanBusinessAccountData {
 
     public void setMetricsData(Collection<MetricsData> metricsData) {
         this.metricsData = metricsData;
+    }
+
+    public void setLoanOfficerOptions(Collection<StaffData> loanOfficerOptions) {
+        this.loanOfficerOptions = loanOfficerOptions;
     }
 
 }

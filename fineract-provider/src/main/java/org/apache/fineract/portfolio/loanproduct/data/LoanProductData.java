@@ -302,6 +302,105 @@ public class LoanProductData implements Serializable {
 
     }
 
+    public static LoanProductData lookup(final Long id, final String name, final String shortName, final String description) {
+        final CurrencyData currency = null;
+        final BigDecimal principal = null;
+        final BigDecimal minPrincipal = null;
+        final BigDecimal maxPrincipal = null;
+        final BigDecimal tolerance = null;
+        final Integer numberOfRepayments = null;
+        final Integer minNumberOfRepayments = null;
+        final Integer maxNumberOfRepayments = null;
+        final Integer repaymentEvery = null;
+        final BigDecimal interestRatePerPeriod = null;
+        final BigDecimal minInterestRatePerPeriod = null;
+        final BigDecimal maxInterestRatePerPeriod = null;
+        final BigDecimal annualInterestRate = null;
+        final boolean isLinkedToFloatingInterestRates = false;
+        final Integer floatingRateId = null;
+        final String floatingRateName = null;
+        final BigDecimal interestRateDifferential = null;
+        final BigDecimal minDifferentialLendingRate = null;
+        final BigDecimal defaultDifferentialLendingRate = null;
+        final BigDecimal maxDifferentialLendingRate = null;
+        final boolean isFloatingInterestRateCalculationAllowed = false;
+        final boolean isVariableInstallmentsAllowed = false;
+        final Integer minimumGap = null;
+        final Integer maximumGap = null;
+        final EnumOptionData repaymentFrequencyType = null;
+        final EnumOptionData interestRateFrequencyType = null;
+        final EnumOptionData amortizationType = null;
+        final EnumOptionData interestType = null;
+        final EnumOptionData interestCalculationPeriodType = null;
+        final Boolean allowPartialPeriodInterestCalcualtion = null;
+        final Long fundId = null;
+        final String fundName = null;
+        final Long transactionProcessingStrategyId = null;
+        final String transactionProcessingStrategyName = null;
+        final Integer graceOnPrincipalPayment = null;
+        final Integer recurringMoratoriumOnPrincipalPeriods = null;
+        final Integer graceOnInterestPayment = null;
+        final Integer graceOnInterestCharged = null;
+        final Integer graceOnArrearsAgeing = null;
+        final Integer overdueDaysForNPA = null;
+        final Collection<ChargeData> charges = null;
+        final Collection<LoanProductBorrowerCycleVariationData> principalVariations = new ArrayList<>(1);
+        final Collection<LoanProductBorrowerCycleVariationData> interestRateVariations = new ArrayList<>(1);
+        final Collection<LoanProductBorrowerCycleVariationData> numberOfRepaymentVariations = new ArrayList<>(1);
+        final EnumOptionData accountingType = null;
+        final boolean includeInBorrowerCycle = false;
+        final boolean useBorrowerCycle = false;
+        final LocalDate startDate = null;
+        final LocalDate closeDate = null;
+        final String status = null;
+        final String externalId = null;
+        final Integer maxTrancheCount = null;
+        final BigDecimal outstandingLoanBalance = null;
+        final Boolean disallowExpectedDisbursements = false;
+        final Boolean allowApprovedDisbursedAmountsOverApplied = false;
+        final String overAppliedCalculationType = null;
+        final Integer overAppliedNumber = null;
+
+        final LoanProductGuaranteeData productGuaranteeData = null;
+        final Boolean holdGuaranteeFunds = false;
+        final BigDecimal principalThresholdForLastInstallment = null;
+        final BigDecimal fixedPrincipalPercentagePerInstallment = null;
+        final boolean accountMovesOutOfNPAOnlyOnArrearsCompletion = false;
+
+        final EnumOptionData daysInMonthType = null;
+        final EnumOptionData daysInYearType = null;
+        final boolean isInterestRecalculationEnabled = false;
+        final LoanProductInterestRecalculationData interestRecalculationData = null;
+        final Integer minimumDaysBetweenDisbursalAndFirstRepayment = null;
+        final boolean canDefineInstallmentAmount = false;
+        final Integer installmentAmountInMultiplesOf = null;
+        final LoanProductConfigurableAttributes loanProductConfigurableAttributes = null;
+        final boolean syncExpectedWithDisbursementDate = false;
+        final boolean canUseForTopup = false;
+        final boolean isEqualAmortization = false;
+        final Collection<RateData> rateOptions = null;
+        final Collection<RateData> rates = null;
+        final boolean isRatesEnabled = false;
+        return new LoanProductData(id, name, shortName, description, currency, principal, minPrincipal, maxPrincipal, tolerance,
+                numberOfRepayments, minNumberOfRepayments, maxNumberOfRepayments, repaymentEvery, interestRatePerPeriod,
+                minInterestRatePerPeriod, maxInterestRatePerPeriod, annualInterestRate, repaymentFrequencyType, interestRateFrequencyType,
+                amortizationType, interestType, interestCalculationPeriodType, allowPartialPeriodInterestCalcualtion, fundId, fundName,
+                transactionProcessingStrategyId, transactionProcessingStrategyName, graceOnPrincipalPayment,
+                recurringMoratoriumOnPrincipalPeriods, graceOnInterestPayment, graceOnInterestCharged, charges, accountingType,
+                includeInBorrowerCycle, useBorrowerCycle, startDate, closeDate, status, externalId, principalVariations,
+                interestRateVariations, numberOfRepaymentVariations, multiDisburseLoan, maxTrancheCount, outstandingLoanBalance,
+                disallowExpectedDisbursements, allowApprovedDisbursedAmountsOverApplied, overAppliedCalculationType, overAppliedNumber,
+                graceOnArrearsAgeing, overdueDaysForNPA, daysInMonthType, daysInYearType, isInterestRecalculationEnabled,
+                interestRecalculationData, minimumDaysBetweenDisbursalAndFirstRepayment, holdGuaranteeFunds, productGuaranteeData,
+                principalThresholdForLastInstallment, accountMovesOutOfNPAOnlyOnArrearsCompletion, canDefineInstallmentAmount,
+                installmentAmountInMultiplesOf, loanProductConfigurableAttributes, isLinkedToFloatingInterestRates, floatingRateId,
+                floatingRateName, interestRateDifferential, minDifferentialLendingRate, defaultDifferentialLendingRate,
+                maxDifferentialLendingRate, isFloatingInterestRateCalculationAllowed, isVariableInstallmentsAllowed, minimumGap, maximumGap,
+                syncExpectedWithDisbursementDate, canUseForTopup, isEqualAmortization, rateOptions, rates, isRatesEnabled,
+                fixedPrincipalPercentagePerInstallment);
+
+    }
+
     public static LoanProductData lookupWithCurrency(final Long id, final String name, final CurrencyData currency) {
         final String shortName = null;
         final String description = null;

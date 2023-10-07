@@ -21,8 +21,6 @@ package org.apache.fineract.portfolio.account.api.business;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.fineract.portfolio.account.AccountDetailConstants;
-import org.apache.fineract.portfolio.account.data.AccountTransferData;
 
 public final class AccountTransfersBusinessApiConstants {
 

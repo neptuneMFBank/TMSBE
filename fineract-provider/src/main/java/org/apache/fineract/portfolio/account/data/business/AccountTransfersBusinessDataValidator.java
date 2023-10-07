@@ -84,7 +84,7 @@ public final class AccountTransfersBusinessDataValidator {
 
         final String toAccountTypeParam = AccountTransfersBusinessApiConstants.toAccountTypeParamName;
         if (this.fromApiJsonHelper.parameterExists(toAccountTypeParam, element)) {
-            final Long toAccountType = this.fromApiJsonHelper.extractLongNamed(toAccountTypeParam, element);
+            final Integer toAccountType = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(toAccountTypeParam, element);
             baseDataValidator.reset().parameter(toAccountTypeParam).value(toAccountType).notNull().isOneOfTheseValues(PortfolioAccountType.LOAN.getValue(), PortfolioAccountType.SAVINGS.getValue());
         }
 

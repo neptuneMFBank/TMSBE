@@ -352,9 +352,10 @@ public interface DepositsBusinessApiTemplate {
             lockinPeriodFrequencyType = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName,
                     apiRequestBodyAsJsonElement);
         } else {
-            final JsonElement lockinPeriodFrequencyTypeElement
-                    = fromApiJsonHelper.extractJsonObjectNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, loanTemplateElement);
-            lockinPeriodFrequencyType = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.idParamName, lockinPeriodFrequencyTypeElement);
+            lockinPeriodFrequencyType = null;
+//            final JsonElement lockinPeriodFrequencyTypeElement
+//                    = fromApiJsonHelper.extractJsonObjectNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, loanTemplateElement);
+//            lockinPeriodFrequencyType = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.idParamName, lockinPeriodFrequencyTypeElement);
         }
         if (lockinPeriodFrequencyType != null) {
             jsonObjectLoan.addProperty(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, lockinPeriodFrequencyType);
@@ -369,15 +370,15 @@ public interface DepositsBusinessApiTemplate {
         if (isCalendarInherited != null) {
             jsonObjectLoan.addProperty(DepositsApiConstants.isCalendarInheritedParamName, isCalendarInherited);
         }
-        Boolean withdrawalFeeForTransfers;
-        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.withdrawalFeeForTransfersParamName, apiRequestBodyAsJsonElement)) {
-            withdrawalFeeForTransfers = fromApiJsonHelper.extractBooleanNamed(SavingsApiConstants.withdrawalFeeForTransfersParamName, apiRequestBodyAsJsonElement);
-        } else {
-            withdrawalFeeForTransfers = fromApiJsonHelper.extractBooleanNamed(SavingsApiConstants.withdrawalFeeForTransfersParamName, loanTemplateElement);
-        }
-        if (withdrawalFeeForTransfers != null) {
-            jsonObjectLoan.addProperty(SavingsApiConstants.withdrawalFeeForTransfersParamName, withdrawalFeeForTransfers);
-        }
+//        Boolean withdrawalFeeForTransfers;
+//        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.withdrawalFeeForTransfersParamName, apiRequestBodyAsJsonElement)) {
+//            withdrawalFeeForTransfers = fromApiJsonHelper.extractBooleanNamed(SavingsApiConstants.withdrawalFeeForTransfersParamName, apiRequestBodyAsJsonElement);
+//        } else {
+//            withdrawalFeeForTransfers = fromApiJsonHelper.extractBooleanNamed(SavingsApiConstants.withdrawalFeeForTransfersParamName, loanTemplateElement);
+//        }
+//        if (withdrawalFeeForTransfers != null) {
+//            jsonObjectLoan.addProperty(SavingsApiConstants.withdrawalFeeForTransfersParamName, withdrawalFeeForTransfers);
+//        }
         // Long linkAccountId;
         // if (fromApiJsonHelper.parameterExists(DepositsApiConstants.linkedAccountParamName, apiRequestBodyAsJsonElement)) {
         //     linkAccountId = fromApiJsonHelper.extractLongNamed(DepositsApiConstants.linkedAccountParamName, apiRequestBodyAsJsonElement);
@@ -838,24 +839,25 @@ public interface DepositsBusinessApiTemplate {
             lockinPeriodFrequencyType = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName,
                     apiRequestBodyAsJsonElement);
         } else {
-            final JsonElement lockinPeriodFrequencyTypeElement
-                    = fromApiJsonHelper.extractJsonObjectNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, loanTemplateElement);
-
-            lockinPeriodFrequencyType = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.idParamName, lockinPeriodFrequencyTypeElement);
+            lockinPeriodFrequencyType = null;
+//            final JsonElement lockinPeriodFrequencyTypeElement
+//                    = fromApiJsonHelper.extractJsonObjectNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, loanTemplateElement);
+//
+//            lockinPeriodFrequencyType = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.idParamName, lockinPeriodFrequencyTypeElement);
         }
         if (lockinPeriodFrequencyType != null) {
             jsonObjectLoan.addProperty(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, lockinPeriodFrequencyType);
         }
 
-        Boolean withdrawalFeeForTransfers;
-        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.withdrawalFeeForTransfersParamName, apiRequestBodyAsJsonElement)) {
-            withdrawalFeeForTransfers = fromApiJsonHelper.extractBooleanNamed(SavingsApiConstants.withdrawalFeeForTransfersParamName, apiRequestBodyAsJsonElement);
-        } else {
-            withdrawalFeeForTransfers = fromApiJsonHelper.extractBooleanNamed(SavingsApiConstants.withdrawalFeeForTransfersParamName, loanTemplateElement);
-        }
-        if (withdrawalFeeForTransfers != null) {
-            jsonObjectLoan.addProperty(SavingsApiConstants.withdrawalFeeForTransfersParamName, withdrawalFeeForTransfers);
-        }
+//        Boolean withdrawalFeeForTransfers;
+//        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.withdrawalFeeForTransfersParamName, apiRequestBodyAsJsonElement)) {
+//            withdrawalFeeForTransfers = fromApiJsonHelper.extractBooleanNamed(SavingsApiConstants.withdrawalFeeForTransfersParamName, apiRequestBodyAsJsonElement);
+//        } else {
+//            withdrawalFeeForTransfers = fromApiJsonHelper.extractBooleanNamed(SavingsApiConstants.withdrawalFeeForTransfersParamName, loanTemplateElement);
+//        }
+//        if (withdrawalFeeForTransfers != null) {
+//            jsonObjectLoan.addProperty(SavingsApiConstants.withdrawalFeeForTransfersParamName, withdrawalFeeForTransfers);
+//        }
         Long linkAccountId;
         if (fromApiJsonHelper.parameterExists(DepositsApiConstants.linkedAccountParamName, apiRequestBodyAsJsonElement)) {
             linkAccountId = fromApiJsonHelper.extractLongNamed(DepositsApiConstants.linkedAccountParamName, apiRequestBodyAsJsonElement);
@@ -924,8 +926,9 @@ public interface DepositsBusinessApiTemplate {
         if (fromApiJsonHelper.parameterExists(DepositsApiConstants.preClosurePenalInterestOnTypeIdParamName, apiRequestBodyAsJsonElement)) {
             preClosurePenalInterestOnTypeId = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.preClosurePenalInterestOnTypeIdParamName, apiRequestBodyAsJsonElement);
         } else {
-            final JsonElement preClosurePenalInterestOnType = fromApiJsonHelper.extractJsonObjectNamed(preClosurePenalInterestOnTypeParamName, loanTemplateElement);
-            preClosurePenalInterestOnTypeId = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.idParamName, preClosurePenalInterestOnType);
+            preClosurePenalInterestOnTypeId=null;
+            //final JsonElement preClosurePenalInterestOnType = fromApiJsonHelper.extractJsonObjectNamed(preClosurePenalInterestOnTypeParamName, loanTemplateElement);
+            //preClosurePenalInterestOnTypeId = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.idParamName, preClosurePenalInterestOnType);
         }
         if (preClosurePenalInterestOnTypeId != null) {
             jsonObjectLoan.addProperty(DepositsApiConstants.preClosurePenalInterestOnTypeIdParamName, preClosurePenalInterestOnTypeId);

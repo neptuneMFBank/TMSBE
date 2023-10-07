@@ -82,7 +82,6 @@ import org.apache.fineract.portfolio.account.service.PortfolioAccountReadPlatfor
 import org.apache.fineract.portfolio.accountdetails.data.LoanAccountSummaryData;
 import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
 import org.apache.fineract.portfolio.address.data.AddressData;
-import org.apache.fineract.portfolio.address.data.ClientAddressData;
 import org.apache.fineract.portfolio.address.service.AddressReadPlatformServiceImpl;
 import org.apache.fineract.portfolio.business.metrics.data.MetricsData;
 import org.apache.fineract.portfolio.business.metrics.service.MetricsReadPlatformService;

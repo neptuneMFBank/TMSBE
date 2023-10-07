@@ -24,6 +24,8 @@ import org.apache.fineract.portfolio.savings.data.business.DepositAccountBusines
 
 public interface DepositsBusinessReadPlatformService {
 
+    void createReconciliationWalletMissingForClient();
+
     Page<DepositAccountBusinessData> retrieveAll(final SearchParametersBusiness searchParameters);
 
     DepositAccountBusinessData retrieveBalance(final String accountNo);

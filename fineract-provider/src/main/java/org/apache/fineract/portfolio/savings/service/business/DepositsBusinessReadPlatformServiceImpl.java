@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.portfolio.savings.service.business;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,10 +27,15 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
+import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
@@ -36,17 +43,23 @@ import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.PaginationHelper;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
+import org.apache.fineract.infrastructure.jobs.annotation.CronTarget;
+import org.apache.fineract.infrastructure.jobs.service.JobName;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
+import org.apache.fineract.portfolio.client.api.ClientApiConstants;
+import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountStatusEnumData;
 import org.apache.fineract.portfolio.savings.data.business.DepositAccountBusinessData;
 import org.apache.fineract.portfolio.savings.exception.DepositAccountNotFoundException;
 import org.apache.fineract.portfolio.savings.service.SavingsEnumerations;
+import org.apache.fineract.simplifytech.data.GeneralConstants;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Service
@@ -59,8 +72,83 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
     private final PaginationHelper paginationHelper;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
     private final DepositViewMapper depositViewMapper = new DepositViewMapper();
+    private final ReconciliationWalletSummaryMapper reconciliationWalletSummaryMapper = new ReconciliationWalletSummaryMapper();
+    private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
 
     private final ColumnValidator columnValidator;
+
+    @Override
+    @CronTarget(jobName = JobName.CREATE_RECONCILIATION_WALLET)
+    public void createReconciliationWalletMissingForClient() {
+        //create reconciliation wallet missing and update it as client default savings account
+        log.info("createReconciliationWalletMissingForClient start");
+
+        final String sql = "select " + this.reconciliationWalletSummaryMapper.schema();
+        Collection<JsonObject> reconciliationWalletSummaryJson = this.jdbcTemplate.query(sql, this.reconciliationWalletSummaryMapper);
+        if (!CollectionUtils.isEmpty(reconciliationWalletSummaryJson)) {
+            for (JsonElement element : reconciliationWalletSummaryJson) {
+                if (element.isJsonObject()) {
+                    final JsonObject jsonObject = element.getAsJsonObject();
+                    final Long id = jsonObject.get(ClientApiConstants.idParamName).getAsLong();
+                    log.info("createReconciliationWalletMissingForClient clientId: {}", id);
+                    final Long productId = jsonObject.get(SavingsApiConstants.productIdParamName).getAsLong();
+
+                    final JsonObject createReconciliationSavings = new JsonObject();
+
+                    createReconciliationSavings.addProperty("productId", productId);
+                    createReconciliationSavings.addProperty("clientId", id);
+                    createReconciliationSavings.addProperty("nominalAnnualInterestRate", 0);
+                    createReconciliationSavings.addProperty("withdrawalFeeForTransfers", false);
+                    createReconciliationSavings.addProperty("allowOverdraft", true);
+                    createReconciliationSavings.addProperty("overdraftLimit", 5000000);
+                    createReconciliationSavings.addProperty("enforceMinRequiredBalance", false);
+                    createReconciliationSavings.addProperty("withHoldTax", false);
+                    createReconciliationSavings.addProperty("interestCompoundingPeriodType", 1);
+                    createReconciliationSavings.addProperty("interestPostingPeriodType", 4);
+                    createReconciliationSavings.addProperty("interestCalculationType", 1);
+                    createReconciliationSavings.addProperty("interestCalculationDaysInYearType", 365);
+
+                    final LocalDate clientActivationLocalDate = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
+                    createReconciliationSavings.addProperty("submittedOnDate", clientActivationLocalDate.toString());
+                    createReconciliationSavings.addProperty("locale", GeneralConstants.LOCALE_EN_DEFAULT);
+                    createReconciliationSavings.addProperty("dateFormat", GeneralConstants.DATEFORMET_DEFAULT);
+                    createReconciliationSavings.addProperty("monthDayFormat", GeneralConstants.DATEFORMAT_MONTHDAY_DEFAULT);
+
+                    final CommandWrapper commandRequest = new CommandWrapperBuilder().createSavingsAccount()
+                            .withJson(createReconciliationSavings.toString()).build();
+                    final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+                    final Long resultReconciliationSavings = result.resourceId();
+
+                    //Approve Reconciliation Wallet
+                    final JsonObject approveReconciliationSavings = new JsonObject();
+                    approveReconciliationSavings.addProperty("approvedOnDate", clientActivationLocalDate.toString());
+                    approveReconciliationSavings.addProperty("note", "System Approved");
+                    approveReconciliationSavings.addProperty("locale", GeneralConstants.LOCALE_EN_DEFAULT);
+                    approveReconciliationSavings.addProperty("dateFormat", GeneralConstants.DATEFORMET_DEFAULT);
+                    final CommandWrapper commandRequestApprove = new CommandWrapperBuilder()
+                            .approveSavingsAccountApplication(resultReconciliationSavings).withJson(approveReconciliationSavings.toString()).build();
+                    this.commandsSourceWritePlatformService.logCommandSource(commandRequestApprove);
+
+                    final JsonObject activateReconciliationSavings = new JsonObject();
+                    activateReconciliationSavings.addProperty("activatedOnDate", clientActivationLocalDate.toString());
+                    approveReconciliationSavings.addProperty("locale", GeneralConstants.LOCALE_EN_DEFAULT);
+                    approveReconciliationSavings.addProperty("dateFormat", GeneralConstants.DATEFORMET_DEFAULT);
+                    final CommandWrapper commandRequestActivate = new CommandWrapperBuilder().savingsAccountActivation(resultReconciliationSavings)
+                            .withJson(approveReconciliationSavings.toString()).build();
+                    this.commandsSourceWritePlatformService.logCommandSource(commandRequestActivate);
+
+                    //update client to have this account as default savings account
+                    final JsonObject updateSavingsAccount = new JsonObject();
+                    updateSavingsAccount.addProperty("savingsAccountId", resultReconciliationSavings);
+
+                    final CommandWrapper commandRequestUpdateAccount = new CommandWrapperBuilder().updateClientSavingsAccount(id).withJson(updateSavingsAccount.toString())
+                            .build();
+                    this.commandsSourceWritePlatformService.logCommandSource(commandRequestUpdateAccount);
+                }
+            }
+        }
+        log.info("createReconciliationWalletMissingForClient end");
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -267,6 +355,24 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
 
         }
 
+    }
+
+    public static final class ReconciliationWalletSummaryMapper implements RowMapper<JsonObject> {
+
+        public String schema() {
+            return " cwrv.id, cwrv.using_savings_product_id usingSavingsProductId FROM client_without_reconciliation_view cwrv ";
+        }
+
+        @Override
+        public JsonObject mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+            final Long id = rs.getLong("id");
+            final Long usingSavingsProductId = rs.getLong("usingSavingsProductId");
+
+            final JsonObject reconciliationWallet = new JsonObject();
+            reconciliationWallet.addProperty(ClientApiConstants.idParamName, id);
+            reconciliationWallet.addProperty(SavingsApiConstants.productIdParamName, usingSavingsProductId);
+            return reconciliationWallet;
+        }
     }
 
 }

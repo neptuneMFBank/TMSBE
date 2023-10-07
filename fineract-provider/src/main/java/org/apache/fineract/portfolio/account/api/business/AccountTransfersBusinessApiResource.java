@@ -31,8 +31,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-import org.apache.fineract.commands.domain.CommandWrapper;
-import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
@@ -42,6 +40,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants;
 import org.apache.fineract.portfolio.account.data.AccountTransferData;
 import org.apache.fineract.portfolio.account.service.business.AccountTransfersBusinessReadPlatformService;
+import org.apache.fineract.portfolio.account.service.business.AccountTransfersBusinessWritePlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -57,18 +56,20 @@ public class AccountTransfersBusinessApiResource {
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final AccountTransfersBusinessReadPlatformService accountTransfersReadPlatformService;
+    private final AccountTransfersBusinessWritePlatformService accountTransfersBusinessWritePlatformService;
 
     @Autowired
     public AccountTransfersBusinessApiResource(final PlatformSecurityContext context,
             final DefaultToApiJsonSerializer<AccountTransferData> toApiJsonSerializer,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
             final ApiRequestParameterHelper apiRequestParameterHelper,
-            final AccountTransfersBusinessReadPlatformService accountTransfersReadPlatformService) {
+            final AccountTransfersBusinessReadPlatformService accountTransfersReadPlatformService, final AccountTransfersBusinessWritePlatformService accountTransfersBusinessWritePlatformService) {
         this.context = context;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.accountTransfersReadPlatformService = accountTransfersReadPlatformService;
+        this.accountTransfersBusinessWritePlatformService = accountTransfersBusinessWritePlatformService;
     }
 
     @POST
@@ -115,9 +116,8 @@ public class AccountTransfersBusinessApiResource {
     )
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().createAccountTransfer().withJson(apiRequestBodyAsJson).build();
-
-        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        final CommandProcessingResult result
+                = this.accountTransfersBusinessWritePlatformService.create(apiRequestBodyAsJson);
 
         return this.toApiJsonSerializer.serialize(result);
     }

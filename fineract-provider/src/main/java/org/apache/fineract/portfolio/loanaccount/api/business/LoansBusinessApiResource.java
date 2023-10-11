@@ -787,11 +787,8 @@ public class LoansBusinessApiResource {
 
             final Collection<ClientIdentifierBusinessData> clientIdentifiers = this.clientIdentifierBusinessReadPlatformService
                     .retrieveClientIdentifiers(clientId);
-            final String clientIdentifiersInfo = this.toApiJsonSerializer.serialize(clientIdentifiers);
-            log.info("clientIdentifiersInfo: {}", clientIdentifiersInfo);
 
             final Long documentTypeSignatureId = clientSignatureId;//1104L;
-            log.info("clientIdentifierBusinessData: {}", documentTypeSignatureId);
             final ClientIdentifierBusinessData clientIdentifierBusinessData
                     = clientIdentifiers.stream().filter(predicate -> predicate.getDocumentType() != null
                     && Objects.equals(predicate.getDocumentType().getId(), documentTypeSignatureId))
@@ -799,9 +796,7 @@ public class LoansBusinessApiResource {
 
             if (ObjectUtils.isNotEmpty(clientIdentifierBusinessData)) {
                 final Long entityId = clientIdentifierBusinessData.getId();
-                log.info("clientIdentifierBusinessData-entityId: {}", entityId);
                 final Long attachmentId = clientIdentifierBusinessData.getAttachmentId();
-                log.info("clientIdentifierBusinessData-attachmentId: {}", attachmentId);
                 final CommandProcessingResult result = this.documentWritePlatformService.retrieveAttachment("client_identifiers", entityId, attachmentId);
                 final String clientSignature = result.getResourceIdentifier();
                 if (StringUtils.isNotBlank(clientSignature)) {

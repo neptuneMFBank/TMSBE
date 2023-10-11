@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.portfolio.loanaccount.api.business;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import static org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations.interestType;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,6 +52,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.journalentry.api.DateParam;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
@@ -93,6 +96,8 @@ import org.apache.fineract.portfolio.charge.domain.ChargeTimeType;
 import org.apache.fineract.portfolio.charge.service.ChargeReadPlatformService;
 import org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessData;
 import org.apache.fineract.portfolio.client.service.business.ClientIdentifierBusinessReadPlatformService;
+import org.apache.fineract.portfolio.collateral.data.CollateralData;
+import org.apache.fineract.portfolio.collateral.service.CollateralReadPlatformService;
 import org.apache.fineract.portfolio.collateralmanagement.data.LoanCollateralResponseData;
 import org.apache.fineract.portfolio.collateralmanagement.service.LoanCollateralManagementReadPlatformService;
 import org.apache.fineract.portfolio.floatingrates.data.InterestRatePeriodData;
@@ -137,7 +142,10 @@ import org.apache.fineract.portfolio.rate.data.RateData;
 import org.apache.fineract.portfolio.rate.service.RateReadService;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
+import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.CLIENT_SIGNATURE_ID;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -171,7 +179,7 @@ public class LoansBusinessApiResource {
             LoanApiConstants.topupAmount, LoanApiConstants.clientActiveLoanOptions, LoanApiConstants.datatables,
             LoanProductConstants.RATES_PARAM_NAME, LoanApiConstants.MULTIDISBURSE_DETAILS_PARAMNAME,
             LoanApiConstants.EMI_AMOUNT_VARIATIONS_PARAMNAME, LoanApiConstants.COLLECTION_PARAMNAME,
-            LoanBusinessApiConstants.activationChannelIdParam, LoanBusinessApiConstants.activationChannelNameParam, LoanBusinessApiConstants.metricsDataParam));
+            LoanBusinessApiConstants.activationChannelIdParam, LoanBusinessApiConstants.activationChannelNameParam, LoanBusinessApiConstants.metricsDataParam, "collateralOld"));
 
     private final String resourceNameForPermissions = "LOAN";
 
@@ -216,6 +224,8 @@ public class LoansBusinessApiResource {
     private final AddressReadPlatformServiceImpl readPlatformService;
     private final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService;
     private final DocumentBusinessWritePlatformService documentWritePlatformService;
+    private final Long clientSignatureId;
+    private final CollateralReadPlatformService loanCollateralReadPlatformService;
 
     public LoansBusinessApiResource(final PlatformSecurityContext context,
             final LoanProductReadPlatformService loanProductReadPlatformService,
@@ -244,7 +254,7 @@ public class LoansBusinessApiResource {
             final LoanBusinessReadPlatformService loanBusinessReadPlatformService,
             final DefaultToApiJsonSerializer<String> calculateLoanScheduleToApiJsonSerializer, final LoansApiResource loansApiResource,
             final LoanReadPlatformService loanReadPlatformService, final MetricsReadPlatformService metricsReadPlatformService, final LoanProductBusinessReadPlatformService loanProductBusinessReadPlatformService,
-            final DefaultToApiJsonSerializer<LoanBusinessDocData> toApiDocJsonSerializer, final AddressReadPlatformServiceImpl readPlatformService, final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService, final DocumentBusinessWritePlatformService documentWritePlatformService) {
+            final CollateralReadPlatformService loanCollateralReadPlatformService, final ApplicationContext contextApplication, final DefaultToApiJsonSerializer<LoanBusinessDocData> toApiDocJsonSerializer, final AddressReadPlatformServiceImpl readPlatformService, final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService, final DocumentBusinessWritePlatformService documentWritePlatformService) {
         this.context = context;
         this.loanProductReadPlatformService = loanProductReadPlatformService;
         this.dropdownReadPlatformService = dropdownReadPlatformService;
@@ -285,6 +295,9 @@ public class LoansBusinessApiResource {
         this.readPlatformService = readPlatformService;
         this.clientIdentifierBusinessReadPlatformService = clientIdentifierBusinessReadPlatformService;
         this.documentWritePlatformService = documentWritePlatformService;
+        Environment environment = contextApplication.getEnvironment();
+        this.clientSignatureId = Long.valueOf(environment.getProperty(CLIENT_SIGNATURE_ID));
+        this.loanCollateralReadPlatformService = loanCollateralReadPlatformService;
     }
 
     /*
@@ -390,6 +403,8 @@ public class LoansBusinessApiResource {
         Collection<LoanCollateralManagementData> loanCollateralManagementData = new ArrayList<>();
         CollectionData collectionData = CollectionData.template();
 
+        Collection<CollateralData> collateral = null;
+
         final Set<String> mandatoryResponseParameters = new HashSet<>();
         final Set<String> associationParameters = ApiParameterHelper.extractAssociationsForResponseIfProvided(uriInfo.getQueryParameters());
         if (!associationParameters.isEmpty()) {
@@ -470,6 +485,11 @@ public class LoansBusinessApiResource {
                 }
                 if (CollectionUtils.isEmpty(loanCollateralManagements)) {
                     loanCollateralManagements = null;
+                }
+
+                collateral = this.loanCollateralReadPlatformService.retrieveCollaterals(loanId);
+                if (CollectionUtils.isEmpty(collateral)) {
+                    collateral = null;
                 }
             }
 
@@ -601,6 +621,7 @@ public class LoansBusinessApiResource {
                 loanCollateralOptions, calendarOptions, notes, accountLinkingOptions, linkedAccount, disbursementData, emiAmountVariations,
                 overdueCharges, paidInAdvanceTemplate, interestRatesPeriods, clientActiveLoanOptions, rates, isRatesEnabled,
                 collectionData);
+        loanAccount.setCollateralOld(collateral);
 
         final Collection<MetricsData> metricsData = this.metricsReadPlatformService.retrieveLoanMetrics(loanId);
         if (!CollectionUtils.isEmpty(metricsData)) {
@@ -739,38 +760,54 @@ public class LoansBusinessApiResource {
             @Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
+        final JsonObject jsonObject = new JsonObject();
+
         final String retrieveLoan = this.retrieveLoan(loanId, staffInSelectedOfficeOnly, associations, exclude, fields, uriInfo);
-        final LoanBusinessAccountData loanBasicDetails = this.fromJsonHelper.fromJson(retrieveLoan, LoanBusinessAccountData.class);
-        loanBasicDetails.setLoanOfficerOptions(null);
-        loanBasicDetails.setMetricsData(null);
+        if (StringUtils.isNotBlank(retrieveLoan)) {
+            final JsonElement retrieveLoanElement = this.fromJsonHelper.parse(retrieveLoan);
+            final JsonObject jsonLoanInfo = retrieveLoanElement.getAsJsonObject();
+            if (fromJsonHelper.parameterExists(LoanBusinessApiConstants.metricsDataParam, retrieveLoanElement)) {
+                jsonLoanInfo.remove(LoanBusinessApiConstants.metricsDataParam);
+            }
+            jsonObject.add("loan", jsonLoanInfo);
 
-        final Long loanProductId = loanBasicDetails.loanProductId();
-        final LoanProductData loanProductData = this.loanProductBusinessReadPlatformService.retrieveLoanProductData(loanProductId);
+            final Long loanProductId = this.fromJsonHelper.extractLongNamed(LoanApiConstants.productIdParameterName, retrieveLoanElement);
+            final LoanProductData loanProductData = this.loanProductBusinessReadPlatformService.retrieveLoanProductData(loanProductId);
+            final String loanProductDataInfo = this.toApiJsonSerializer.serialize(loanProductData);
+            final JsonElement loanProductInfo = this.fromJsonHelper.parse(loanProductDataInfo);
+            jsonObject.add("loanProduct", loanProductInfo);
 
-        final Long clientId = loanBasicDetails.getClientId();
-        final Integer homeAddress = 15;
-        final Collection<AddressData> addressDatas = this.readPlatformService.retrieveAddressbyTypeAndStatus(clientId, homeAddress, "true");
-        final AddressData clientAddressData = addressDatas.stream().findFirst().orElse(null);
+            final Long clientId = this.fromJsonHelper.extractLongNamed(LoanApiConstants.clientIdParameterName, retrieveLoanElement);
+            final Integer homeAddress = 15;
+            final Collection<AddressData> addressDatas = this.readPlatformService.retrieveAddressbyTypeAndStatus(clientId, homeAddress, "true");
+            final AddressData clientAddressData = addressDatas.stream().findFirst().orElse(null);
+            final String clientAddressDataInfo = this.toApiJsonSerializer.serialize(clientAddressData);
+            final JsonElement clientAddressInfo = this.fromJsonHelper.parse(clientAddressDataInfo);
+            jsonObject.add("clientAddressData", clientAddressInfo);
 
-        final Collection<ClientIdentifierBusinessData> clientIdentifiers = this.clientIdentifierBusinessReadPlatformService
-                .retrieveClientIdentifiers(clientId);
-        final Long documentTypeSignatureId = 1104L;
-        final ClientIdentifierBusinessData clientIdentifierBusinessData
-                = clientIdentifiers.stream().filter(predicate -> predicate.getDocumentType() != null
-                && Objects.equals(predicate.getDocumentType().getId(), documentTypeSignatureId))
-                        .findFirst().orElse(null);
+            final Collection<ClientIdentifierBusinessData> clientIdentifiers = this.clientIdentifierBusinessReadPlatformService
+                    .retrieveClientIdentifiers(clientId);
+            final Long documentTypeSignatureId = clientSignatureId;//1104L;
+            final ClientIdentifierBusinessData clientIdentifierBusinessData
+                    = clientIdentifiers.stream().filter(predicate -> predicate.getDocumentType() != null
+                    && Objects.equals(predicate.getDocumentType().getId(), documentTypeSignatureId))
+                            .findFirst().orElse(null);
 
-        String clientSignature = null;
-        if (ObjectUtils.isNotEmpty(clientIdentifierBusinessData)) {
-            final Long entityId = clientIdentifierBusinessData.getId();
-            final Long attachmentId = clientIdentifierBusinessData.getAttachmentId();
-            final CommandProcessingResult result = this.documentWritePlatformService.retrieveAttachment("client_identifiers", entityId, attachmentId);
-            clientSignature = result.getResourceIdentifier();
+            if (ObjectUtils.isNotEmpty(clientIdentifierBusinessData)) {
+                final Long entityId = clientIdentifierBusinessData.getId();
+                final Long attachmentId = clientIdentifierBusinessData.getAttachmentId();
+                final CommandProcessingResult result = this.documentWritePlatformService.retrieveAttachment("client_identifiers", entityId, attachmentId);
+                final String clientSignature = result.getResourceIdentifier();
+                if (StringUtils.isNotBlank(clientSignature)) {
+                    jsonObject.addProperty("clientSignature", clientSignature);
+                }
+            }
+
         }
 
-        final LoanBusinessDocData loanBusinessDocData = new LoanBusinessDocData(loanBasicDetails, clientAddressData, loanProductData, clientSignature);
-        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.toApiDocJsonSerializer.serialize(settings, loanBusinessDocData, this.loanDataDocParameters);
+        //final LoanBusinessDocData loanBusinessDocData = new LoanBusinessDocData(loanBasicDetails, clientAddressData, loanProductData, clientSignature);
+//        return this.toApiDocJsonSerializer.serialize(settings, loanBusinessDocData, this.loanDataDocParameters);
+        return this.toApiDocJsonSerializer.serialize(jsonObject);
     }
 
 }

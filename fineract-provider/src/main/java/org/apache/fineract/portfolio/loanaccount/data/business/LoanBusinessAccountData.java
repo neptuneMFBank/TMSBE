@@ -38,6 +38,7 @@ import org.apache.fineract.portfolio.accountdetails.data.LoanAccountSummaryData;
 import org.apache.fineract.portfolio.business.metrics.data.MetricsData;
 import org.apache.fineract.portfolio.calendar.data.CalendarData;
 import org.apache.fineract.portfolio.charge.data.ChargeData;
+import org.apache.fineract.portfolio.collateral.data.CollateralData;
 import org.apache.fineract.portfolio.common.domain.PeriodFrequencyType;
 import org.apache.fineract.portfolio.floatingrates.data.InterestRatePeriodData;
 import org.apache.fineract.portfolio.fund.data.FundData;
@@ -150,6 +151,7 @@ public final class LoanBusinessAccountData {
     private final Collection<LoanTransactionData> transactions;
     private final Collection<LoanChargeData> charges;
     private final Collection<LoanCollateralManagementData> collateral;
+    private Collection<CollateralData> collateralOld;
     private final Collection<GuarantorData> guarantors;
     private final CalendarData meeting;
     private final Collection<NoteData> notes;
@@ -2006,6 +2008,14 @@ public final class LoanBusinessAccountData {
 
     public void setLoanOfficerOptions(Collection<StaffData> loanOfficerOptions) {
         this.loanOfficerOptions = loanOfficerOptions;
+    }
+
+    public Collection<CollateralData> getCollateralOld() {
+        return collateralOld;
+    }
+
+    public void setCollateralOld(Collection<CollateralData> collateralOld) {
+        this.collateralOld = collateralOld;
     }
 
 }

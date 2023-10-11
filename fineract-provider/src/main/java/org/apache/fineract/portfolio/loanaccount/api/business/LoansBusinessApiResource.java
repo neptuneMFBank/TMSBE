@@ -771,7 +771,7 @@ public class LoansBusinessApiResource {
             }
             jsonObject.add("loan", jsonLoanInfo);
 
-            final Long loanProductId = this.fromJsonHelper.extractLongNamed(LoanApiConstants.productIdParameterName, retrieveLoanElement);
+            final Long loanProductId = this.fromJsonHelper.extractLongNamed("loanProductId", retrieveLoanElement);
             final LoanProductData loanProductData = this.loanProductBusinessReadPlatformService.retrieveLoanProductData(loanProductId);
             final String loanProductDataInfo = this.toApiJsonSerializer.serialize(loanProductData);
             final JsonElement loanProductInfo = this.fromJsonHelper.parse(loanProductDataInfo);

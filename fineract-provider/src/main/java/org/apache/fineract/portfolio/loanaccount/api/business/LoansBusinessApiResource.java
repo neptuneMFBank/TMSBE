@@ -794,8 +794,11 @@ public class LoansBusinessApiResource {
                             .findFirst().orElse(null);
 
             if (ObjectUtils.isNotEmpty(clientIdentifierBusinessData)) {
+                log.info("clientIdentifierBusinessData: {}", documentTypeSignatureId);
                 final Long entityId = clientIdentifierBusinessData.getId();
+                log.info("clientIdentifierBusinessData-entityId: {}", entityId);
                 final Long attachmentId = clientIdentifierBusinessData.getAttachmentId();
+                log.info("clientIdentifierBusinessData-attachmentId: {}", attachmentId);
                 final CommandProcessingResult result = this.documentWritePlatformService.retrieveAttachment("client_identifiers", entityId, attachmentId);
                 final String clientSignature = result.getResourceIdentifier();
                 if (StringUtils.isNotBlank(clientSignature)) {

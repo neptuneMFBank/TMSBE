@@ -22,17 +22,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessData;
 import org.apache.fineract.portfolio.client.domain.ClientIdentifierStatus;
+import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ClientIdentifierBusinessReadPlatformServiceImpl implements ClientIdentifierBusinessReadPlatformService {
@@ -43,22 +42,17 @@ public class ClientIdentifierBusinessReadPlatformServiceImpl implements ClientId
     @Override
     public Collection<ClientIdentifierBusinessData> retrieveClientIdentifiers(final Long clientId) {
 
-        this.context.authenticatedUser();
-//        final AppUser currentUser = this.context.authenticatedUser();
-        //final String hierarchy = currentUser.getOffice().getHierarchy();
-        //final String hierarchySearchString = hierarchy + "%";
-        //log.info("retrieveClientIdentifiers-hierarchySearchString: {}-{}", hierarchySearchString, clientId);
+        final AppUser currentUser = this.context.authenticatedUser();
+        final String hierarchy = currentUser.getOffice().getHierarchy();
+        final String hierarchySearchString = hierarchy + "%";
 
         final ClientIdentityMapper rm = new ClientIdentityMapper();
 
         String sql = "select " + rm.schema();
 
         sql += " order by ci.id";
-        log.info("retrieveClientIdentifiers-sql: {}", sql);
 
-        return this.jdbcTemplate.query(sql, rm, clientId
-        //, hierarchySearchString
-        ); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, clientId, hierarchySearchString); // NOSONAR
     }
 
     private static final class ClientIdentityMapper implements RowMapper<ClientIdentifierBusinessData> {
@@ -72,8 +66,7 @@ public class ClientIdentifierBusinessReadPlatformServiceImpl implements ClientId
                     + " from m_client_identifier ci, m_client c, m_office o, m_code_value cv, m_document md "
                     + " where ci.client_id=c.id and c.office_id=o.id and ci.document_type_id=cv.id "
                     + " and md.parent_entity_id=ci.id AND md.parent_entity_type='client_identifiers' "
-                    + " and ci.client_id = ? ";
-//                    + " and ci.client_id = ? and o.hierarchy like ? ";
+                    + " and ci.client_id = ? and o.hierarchy like ? ";
         }
 
         @Override

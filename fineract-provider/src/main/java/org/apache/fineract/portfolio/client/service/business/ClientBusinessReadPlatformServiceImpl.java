@@ -473,7 +473,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             }
             sqlBuilder.append(key);
             sqlBuilder.append("=");
+            sqlBuilder.append("'");
             sqlBuilder.append(value);
+            sqlBuilder.append("'");
             String sql = sqlBuilder.toString();
             log.info("findClient: {}", sql);
 

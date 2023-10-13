@@ -604,8 +604,7 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
              * different entities would end up being stored in the same table.
              *
              * Ex: Centers are a specific type of group, add abstractions for
-             * the same
-             **
+             * the same *
              */
             final String actualAppTableName = mapToActualAppTable(apptableName);
 
@@ -1428,6 +1427,11 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
         if (appTable.equalsIgnoreCase("m_product_loan") || appTable.equalsIgnoreCase("m_savings_product")) {
             scopedSQL = "select null as officeId, null as groupId, null as clientId, null as savingsId, null as loanId, p.id as entityId from "
                     + appTable + " as p WHERE p.id = " + appTableId;
+        }
+        if (appTable.equalsIgnoreCase("m_staff")) {
+            scopedSQL = "select o.id as officeId, null as groupId, null as clientId, null as savingsId, null as loanId, s.id as entityId from m_staff s "
+                    + " join m_office o on o.id = s.office_id and o.hierarchy like '" + currentUser.getOffice().getHierarchy() + "%'"
+                    + " where s.id = " + appTableId;
         }
 
         if (scopedSQL == null) {

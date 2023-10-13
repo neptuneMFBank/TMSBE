@@ -137,6 +137,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
         final String name = searchParameters.getName();
         final Long isOrganisationalRoleEnumIdPassed = searchParameters.getOrganisationalRoleEnumId();
         final Boolean active = searchParameters.isActive();
+        final Boolean isSupervisor = searchParameters.getIsSupervisor();
 
         String extraCriteria = "";
 
@@ -158,6 +159,10 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
             }
         }
 
+        if (searchParameters.isSupervisorPassed()) {
+            extraCriteria += " and so.isSupervisor = ? ";
+            paramList.add(isSupervisor);
+        }
         if (searchParameters.isOfficeIdPassed()) {
             extraCriteria += " and s.office_id = ? ";
             paramList.add(officeId);
@@ -248,10 +253,11 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
         public String schema() {
             return " s.id as id,s.office_id as officeId, o.name as officeName, s.firstname as firstname, s.lastname as lastname,"
                     + " s.display_name as displayName, s.is_loan_officer as isLoanOfficer, s.external_id as externalId, s.mobile_no as mobileNo,"
-                    + " s.is_active as isActive, s.joining_date as joiningDate, "
+                    + " s.is_active as isActive, s.joining_date as joiningDate, so.isSupervisor, "
                     + " s.organisational_role_parent_staff_id organisationalRoleParentStaff, ms.display_name organisationalRoleParentStaffName, s.organisational_role_enum organisationalRoleType, mcv.code_value organisationalRoleTypeName "
                     + " from m_staff s " + " join m_office o on o.id = s.office_id "
                     + " left join m_staff ms on ms.id=s.organisational_role_parent_staff_id "
+                    + " left join staffOther so on so.staff_id=s.id "
                     + " left join m_code_value mcv on mcv.id=s.organisational_role_enum ";
         }
 
@@ -268,6 +274,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
             final String externalId = rs.getString("externalId");
             final String mobileNo = rs.getString("mobileNo");
             final boolean isActive = rs.getBoolean("isActive");
+            final boolean isSupervisor = rs.getBoolean("isSupervisor");
             final LocalDate joiningDate = JdbcSupport.getLocalDate(rs, "joiningDate");
 
             StaffData supervisorStaffData = null;
@@ -285,7 +292,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
             }
 
             return StaffBusinessData.instance(id, firstname, lastname, displayName, officeId, officeName, isLoanOfficer, externalId,
-                    mobileNo, isActive, joiningDate, organisationalRoleTypeData, supervisorStaffData);
+                    mobileNo, isActive, joiningDate, organisationalRoleTypeData, supervisorStaffData, isSupervisor);
         }
     }
 

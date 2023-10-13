@@ -76,7 +76,7 @@ public class StaffBusinessApiResource {
      */
     private final Set<String> responseDataParameters = new HashSet<>(
             Arrays.asList("id", "firstname", "lastname", "displayName", "officeId", "officeName", "isLoanOfficer", "externalId", "mobileNo",
-                    "allowedOffices", "isActive", "joiningDate", "organisationalRoleType", "organisationalRoleParentStaff"));
+                    "allowedOffices", "isActive", "joiningDate", "organisationalRoleType", "organisationalRoleParentStaff", "isSupervisor"));
 
     private final String resourceNameForPermissions = "STAFF";
 
@@ -145,6 +145,7 @@ public class StaffBusinessApiResource {
             @QueryParam("organisationalRoleEnumId") @Parameter(description = "organisationalRoleEnumId") final Long organisationalRoleEnumId,
             @QueryParam("name") @Parameter(description = "name") final String name,
             @QueryParam("active") @Parameter(description = "active") Boolean active,
+            @QueryParam("isSupervisor") @Parameter(description = "isSupervisor") Boolean isSupervisor,
             @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
@@ -165,7 +166,7 @@ public class StaffBusinessApiResource {
         }
 
         final SearchParametersBusiness searchParameters = SearchParametersBusiness.forStaff(active, offset, limit, orderBy, sortOrder,
-                supervisorId, fromDate, toDate, name, organisationalRoleEnumId, officeId);
+                supervisorId, fromDate, toDate, name, organisationalRoleEnumId, officeId, isSupervisor);
 
         final Page<StaffBusinessData> employerData = this.readPlatformService.retrieveAll(searchParameters);
 
@@ -177,8 +178,12 @@ public class StaffBusinessApiResource {
     @Path("{staffId}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Retrieve a Staff Member", description = "Returns the details of a Staff Member.\n" + "\n" + "Example Requests:\n"
-            + "\n" + "staff/1")
+    @Operation(summary = "Retrieve a Staff Member", description = """
+                                                                  Returns the details of a Staff Member.
+                                                                  
+                                                                  Example Requests:
+                                                                  
+                                                                  staff/1""")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK"
         // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.RetrieveOneResponse.class))

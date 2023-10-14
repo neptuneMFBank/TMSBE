@@ -926,7 +926,7 @@ public interface DepositsBusinessApiTemplate {
         if (fromApiJsonHelper.parameterExists(DepositsApiConstants.preClosurePenalInterestOnTypeIdParamName, apiRequestBodyAsJsonElement)) {
             preClosurePenalInterestOnTypeId = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.preClosurePenalInterestOnTypeIdParamName, apiRequestBodyAsJsonElement);
         } else {
-            preClosurePenalInterestOnTypeId=null;
+            preClosurePenalInterestOnTypeId = null;
             //final JsonElement preClosurePenalInterestOnType = fromApiJsonHelper.extractJsonObjectNamed(preClosurePenalInterestOnTypeParamName, loanTemplateElement);
             //preClosurePenalInterestOnTypeId = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.idParamName, preClosurePenalInterestOnType);
         }
@@ -1248,11 +1248,11 @@ public interface DepositsBusinessApiTemplate {
         if (withdrawalFeeForTransfers != null) {
             jsonObjectLoan.addProperty(SavingsApiConstants.withdrawalFeeForTransfersParamName, withdrawalFeeForTransfers);
         }
-        Boolean overdraftLimit;
+        BigDecimal overdraftLimit;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.overdraftLimitParamName, apiRequestBodyAsJsonElement)) {
-            overdraftLimit = fromApiJsonHelper.extractBooleanNamed(SavingsApiConstants.overdraftLimitParamName, apiRequestBodyAsJsonElement);
+            overdraftLimit = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.overdraftLimitParamName, apiRequestBodyAsJsonElement);
         } else {
-            overdraftLimit = fromApiJsonHelper.extractBooleanNamed(SavingsApiConstants.overdraftLimitParamName, loanTemplateElement);
+            overdraftLimit = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.overdraftLimitParamName, loanTemplateElement);
         }
         if (overdraftLimit != null) {
             jsonObjectLoan.addProperty(SavingsApiConstants.overdraftLimitParamName, overdraftLimit);

@@ -429,9 +429,9 @@ public interface DepositsBusinessApiTemplate {
         }
         BigDecimal overdraftLimit;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.overdraftLimitParamName, apiRequestBodyAsJsonElement)) {
-            overdraftLimit = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.overdraftLimitParamName, apiRequestBodyAsJsonElement);
+            overdraftLimit = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.overdraftLimitParamName, apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            overdraftLimit = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.overdraftLimitParamName, loanTemplateElement);
+            overdraftLimit = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.overdraftLimitParamName, loanTemplateElement, localeFormat);
         }
         if (overdraftLimit != null) {
             jsonObjectLoan.addProperty(SavingsApiConstants.overdraftLimitParamName, overdraftLimit);
@@ -953,9 +953,9 @@ public interface DepositsBusinessApiTemplate {
         }
         BigDecimal overdraftLimit;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.overdraftLimitParamName, apiRequestBodyAsJsonElement)) {
-            overdraftLimit = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.overdraftLimitParamName, apiRequestBodyAsJsonElement);
+            overdraftLimit = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.overdraftLimitParamName, apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            overdraftLimit = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.overdraftLimitParamName, loanTemplateElement);
+            overdraftLimit = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.overdraftLimitParamName, loanTemplateElement, localeFormat);
         }
         if (overdraftLimit != null) {
             jsonObjectLoan.addProperty(SavingsApiConstants.overdraftLimitParamName, overdraftLimit);
@@ -1250,9 +1250,9 @@ public interface DepositsBusinessApiTemplate {
         }
         BigDecimal overdraftLimit;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.overdraftLimitParamName, apiRequestBodyAsJsonElement)) {
-            overdraftLimit = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.overdraftLimitParamName, apiRequestBodyAsJsonElement);
+            overdraftLimit = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.overdraftLimitParamName, apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            overdraftLimit = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.overdraftLimitParamName, loanTemplateElement);
+            overdraftLimit = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.overdraftLimitParamName, loanTemplateElement, localeFormat);
         }
         if (overdraftLimit != null) {
             jsonObjectLoan.addProperty(SavingsApiConstants.overdraftLimitParamName, overdraftLimit);

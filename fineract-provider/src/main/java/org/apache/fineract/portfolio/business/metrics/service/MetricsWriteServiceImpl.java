@@ -210,6 +210,9 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     protected void loanDisbursal(final Loan loan, final String noteText, final LocalDate today, final Integer paymentTypeId) {
         final Long loanId = loan.getId();
         //perform first approval
+        //future checks=> check if tokenization is set, Repayment Method Done 
+        //future checks=> check if laf is set 
+
         JsonObject apiRequestBodyAsJson = new JsonObject();
         apiRequestBodyAsJson.addProperty(CollectionSheetConstants.actualDisbursementDateParamName, today.toString());
         apiRequestBodyAsJson.addProperty(LoanApiConstants.localeParameterName, LOCALE_EN_DEFAULT);

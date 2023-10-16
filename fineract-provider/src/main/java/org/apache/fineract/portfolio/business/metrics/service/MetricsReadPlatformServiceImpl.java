@@ -253,9 +253,9 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                 final BigDecimal value = loan.getProposedPrincipal();
                 log.warn("createLoanMetrics value: {}", value);
                 final BigDecimal minApprovalAmount = loanProductApprovalConfigData.getMinApprovalAmount() == null ? BigDecimal.ZERO : loanProductApprovalConfigData.getMinApprovalAmount();
-                log.warn("createLoanMetrics minApprovalAmount: {}", value);
+                log.warn("createLoanMetrics minApprovalAmount: {}", minApprovalAmount);
                 final BigDecimal maxApprovalAmount = loanProductApprovalConfigData.getMaxApprovalAmount() == null ? BigDecimal.ZERO : loanProductApprovalConfigData.getMaxApprovalAmount();
-                log.warn("createLoanMetrics maxApprovalAmount: {}", value);
+                log.warn("createLoanMetrics maxApprovalAmount: {}", maxApprovalAmount);
                 final boolean isWithinRange = GeneralConstants.isWithinRange(value, minApprovalAmount, maxApprovalAmount);
                 if ( //loanProductApprovalConfigData.getMaxApprovalAmount() == null
                         //|| loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0

@@ -216,6 +216,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     }
 
     private void createLoanMetrics(Long loanApprovalScheduleId) {
+        boolean updateLoan = false;
         final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanApprovalScheduleId);
         final Client client = loan.getClient();
         final String clientName = client.getDisplayName();
@@ -225,6 +226,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
         final Long loanProductId = loanProduct.getId();
         final LoanProductApprovalData loanProductApprovalData
                 = this.loanProductApprovalReadPlatformService.retrieveOneViaLoanProduct(loanProductId);
+        log.warn("createLoanMetrics loanProductApprovalData {}", loanProductApprovalData.getId());
 
         final Collection<LoanProductApprovalConfigData> loanProductApprovalConfigDatas
                 = loanProductApprovalData.getLoanProductApprovalConfigData();
@@ -249,8 +251,11 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
                 //isWithinRange
                 final BigDecimal value = loan.getProposedPrincipal();
+                log.warn("createLoanMetrics value: {}", value);
                 final BigDecimal minApprovalAmount = loanProductApprovalConfigData.getMinApprovalAmount() == null ? BigDecimal.ZERO : loanProductApprovalConfigData.getMinApprovalAmount();
+                log.warn("createLoanMetrics minApprovalAmount: {}", value);
                 final BigDecimal maxApprovalAmount = loanProductApprovalConfigData.getMaxApprovalAmount() == null ? BigDecimal.ZERO : loanProductApprovalConfigData.getMaxApprovalAmount();
+                log.warn("createLoanMetrics maxApprovalAmount: {}", value);
                 final boolean isWithinRange = GeneralConstants.isWithinRange(value, minApprovalAmount, maxApprovalAmount);
                 if ( //loanProductApprovalConfigData.getMaxApprovalAmount() == null
                         //|| loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
@@ -293,22 +298,25 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                             if (metricsId != null) {
                                 final MetricsHistory metricsHistory = MetricsHistory.instance(metrics, status);
                                 this.metricsHistoryRepositoryWrapper.saveAndFlush(metricsHistory);
-
                             }
+                            updateLoan = true;
                         } catch (Exception e) {
                             throw new MetricsNotFoundException("createLoanMetricsAssigningFailed: " + e);
                         }
                     }
+                } else {
+                    log.warn("Not withIn range for loanId: {}", loanApprovalScheduleId);
                 }
             }
-            //update dataTable loan approvalCheck
-            String loanApprovalCheckSql = "UPDATE approvalCheck ac SET ac.isSentForApproval=1 WHERE ac.loan_id=?";
-            jdbcTemplate.update(loanApprovalCheckSql, loanApprovalScheduleId);
-
-            if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
-                final String subject = String.format("Notification on new Loan `%s` Awaiting Approval", loanApprovalScheduleId);
-                final String body = String.format("%s with mobile %s have a loan (`%s`) pending approval.", clientName, mobileNo, loanProductName);
-                notificationToUsers(notifybusinessUsers, subject, body);
+            if (updateLoan) {
+                //update dataTable loan approvalCheck
+                String loanApprovalCheckSql = "UPDATE approvalCheck ac SET ac.isSentForApproval=1 WHERE ac.loan_id=?";
+                jdbcTemplate.update(loanApprovalCheckSql, loanApprovalScheduleId);
+                if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
+                    final String subject = String.format("Notification on new Loan `%s` Awaiting Approval", loanApprovalScheduleId);
+                    final String body = String.format("%s with mobile %s have a loan (`%s`) pending approval.", clientName, mobileNo, loanProductName);
+                    notificationToUsers(notifybusinessUsers, subject, body);
+                }
             }
         }
     }

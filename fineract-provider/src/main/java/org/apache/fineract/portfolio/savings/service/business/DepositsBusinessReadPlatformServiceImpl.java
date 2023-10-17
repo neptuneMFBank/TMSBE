@@ -199,7 +199,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
     private String buildSqlStringFromDepositCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
         final Long productId = searchParameters.getProductId();
         final Long clientId = searchParameters.getClientId();
-        final Integer depositTypeId = searchParameters.getStatusId();
+        final Integer depositTypeId = searchParameters.getDepositTypeId();
         final Integer statusId = searchParameters.getStatusId();
         final Long officeId = searchParameters.getOfficeId();
         final String externalId = searchParameters.getExternalId();

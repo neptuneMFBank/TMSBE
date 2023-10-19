@@ -440,12 +440,12 @@ public interface LoanBusinessApiConstants {
         }
         jsonObjectLoan.addProperty(allowPartialPeriodInterestCalcualtionParameterName, allowPartialPeriodInterestCalcualtion);
 
-        BigDecimal inArrearsTolerance;
+        Integer inArrearsTolerance;
         if (fromApiJsonHelper.parameterExists(LoanApiConstants.inArrearsToleranceParameterName, apiRequestBodyAsJsonElement)) {
-            inArrearsTolerance = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.inArrearsToleranceParameterName,
+            inArrearsTolerance = fromApiJsonHelper.extractIntegerSansLocaleNamed(LoanApiConstants.inArrearsToleranceParameterName,
                     apiRequestBodyAsJsonElement);
         } else {
-            inArrearsTolerance = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.inArrearsToleranceParameterName,
+            inArrearsTolerance = fromApiJsonHelper.extractIntegerSansLocaleNamed(LoanApiConstants.inArrearsToleranceParameterName,
                     loanTemplateElement);
         }
         jsonObjectLoan.addProperty(LoanApiConstants.inArrearsToleranceParameterName, inArrearsTolerance);

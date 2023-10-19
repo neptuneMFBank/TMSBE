@@ -81,12 +81,17 @@ public class ImageBusinessWritePlatformServiceJpaRepositoryImpl implements Image
         final String avatarBase64 = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.avatarBase64Param, jsonElement);
         log.info("saveOrUpdateImage_avatarBase64: {}", jsonRequestBody);
         final Base64EncodedImage base64EncodedImage = ContentRepositoryUtils.extractImageFromDataURL(avatarBase64);
-        Object owner = deletePreviousImage(entityName, entityId);
+        try {
+            Object owner = deletePreviousImage(entityName, entityId);
 
-        final ContentRepository contenRepository = this.contentRepositoryFactory.getRepository();
-        final String imageLocation = contenRepository.saveImage(base64EncodedImage, entityId, "image");
+            final ContentRepository contenRepository = this.contentRepositoryFactory.getRepository();
+            final String imageLocation = contenRepository.saveImage(base64EncodedImage, entityId, "image");
+            return updateImage(owner, imageLocation, contenRepository.getStorageType());
 
-        return updateImage(owner, imageLocation, contenRepository.getStorageType());
+        } catch (Exception e) {
+            log.error("saveOrUpdateImage: {}", e);
+            throw new ContentManagementException(entityName, "Image upload not successful");
+        }
     }
 
     /**

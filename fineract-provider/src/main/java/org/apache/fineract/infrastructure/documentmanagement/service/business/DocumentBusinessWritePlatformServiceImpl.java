@@ -127,7 +127,7 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
             loanLafSigned(entityType, entityId, newDocumentId, name, description);
             return new CommandProcessingResult(newDocumentId);
 
-        } catch (ContentManagementException e) {
+        } catch (Exception e) {
             log.warn("createBase64Document Error: {}", e);
             throw new PlatformDataIntegrityException("error.document.base64.upload", "Invalid documents uploaded");
         }
@@ -256,7 +256,7 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
                     description, null);
             return this.documentWritePlatformService.updateDocument(documentCommand, inputStream);
 
-        } catch (ContentManagementException e) {
+        } catch (Exception e) {
             log.warn("updateBase64Document Error: {}", e);
             throw new PlatformDataIntegrityException("error.document.base64.update", "Invalid update on documents uploaded");
         }

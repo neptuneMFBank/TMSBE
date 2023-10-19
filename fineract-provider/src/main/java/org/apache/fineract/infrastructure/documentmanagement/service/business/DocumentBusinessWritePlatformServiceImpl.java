@@ -25,13 +25,21 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
+import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.apache.fineract.infrastructure.dataqueries.data.GenericResultsetData;
+import org.apache.fineract.infrastructure.dataqueries.data.ResultsetRowData;
+import org.apache.fineract.infrastructure.dataqueries.service.ReadWriteNonCoreDataService;
 import org.apache.fineract.infrastructure.documentmanagement.api.business.DocumentConfigApiConstants;
 import org.apache.fineract.infrastructure.documentmanagement.command.DocumentCommand;
 import org.apache.fineract.infrastructure.documentmanagement.contentrepository.ContentRepositoryUtils;
@@ -44,10 +52,13 @@ import org.apache.fineract.infrastructure.documentmanagement.exception.DocumentN
 import org.apache.fineract.infrastructure.documentmanagement.serialization.business.DocumentBusinessDataValidator;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentWritePlatformService;
+import org.apache.fineract.infrastructure.documentmanagement.service.DocumentWritePlatformServiceJpaRepositoryImpl.DocumentManagementEntity;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.apache.fineract.simplifytech.data.GeneralConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Service
@@ -59,18 +70,23 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
     private final DocumentWritePlatformService documentWritePlatformService;
     private final DocumentReadPlatformService documentReadPlatformService;
     private final DocumentRepository documentRepository;
+    private final ReadWriteNonCoreDataService readWriteNonCoreDataService;
+    JsonObject jsonObjectApprovalCheck;
+    private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
 
     @Autowired
     public DocumentBusinessWritePlatformServiceImpl(final PlatformSecurityContext context,
             final DocumentBusinessDataValidator fromApiJsonDeserializer, final FromJsonHelper fromApiJsonHelper,
             final DocumentWritePlatformService documentWritePlatformService,
-            final DocumentReadPlatformService documentReadPlatformService, final DocumentRepository documentRepository) {
+            final DocumentReadPlatformService documentReadPlatformService, final DocumentRepository documentRepository, final ReadWriteNonCoreDataService readWriteNonCoreDataService, final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.documentWritePlatformService = documentWritePlatformService;
         this.documentReadPlatformService = documentReadPlatformService;
         this.documentRepository = documentRepository;
+        this.readWriteNonCoreDataService = readWriteNonCoreDataService;
+        this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
     }
 
     @Override
@@ -108,6 +124,7 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
             DocumentCommand documentCommand = new DocumentCommand(null, null, entityType, entityId, name, fileName, null, attachmentType,
                     description, null);
             Long newDocumentId = this.documentWritePlatformService.createDocument(documentCommand, inputStream);
+            loanLafSigned(entityType, entityId, newDocumentId, name, description);
             return new CommandProcessingResult(newDocumentId);
 
         } catch (ContentManagementException e) {
@@ -234,6 +251,7 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
                 throw new ContentManagementException(name, "fileType not supported");
             }
 
+            loanLafSigned(entityType, entityId, documentId, name, description);
             DocumentCommand documentCommand = new DocumentCommand(null, documentId, entityType, entityId, name, fileName, null, attachmentType,
                     description, null);
             return this.documentWritePlatformService.updateDocument(documentCommand, inputStream);
@@ -241,6 +259,97 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
         } catch (ContentManagementException e) {
             log.warn("updateBase64Document Error: {}", e);
             throw new PlatformDataIntegrityException("error.document.base64.update", "Invalid update on documents uploaded");
+        }
+    }
+
+    private void loanLafSigned(final String entityType, final Long entityId, final Long newDocumentId, final String name, final String description) {
+        if (StringUtils.equalsIgnoreCase(entityType, DocumentManagementEntity.LOANS.name())) {
+            //update for loan LAF document
+            if (StringUtils.containsIgnoreCase(name, "LAF") || StringUtils.containsIgnoreCase(description, "LAF")) {
+                jsonObjectApprovalCheck = new JsonObject();
+                //check if approvalCheck is created then perform an update else create new
+                try {
+                    boolean updateLafApprovalCheck = false;
+
+                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isLafSignedParam, newDocumentId);
+                    jsonObjectApprovalCheck.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
+                    jsonObjectApprovalCheck.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
+                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isSentForApprovalParam, "");
+                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.internalTransferParam, "");
+                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.clientBankIdParam, "");
+                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.netPayParam, "");
+                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.defaultPaymentMethodIdParam, "");
+
+                    final GenericResultsetData results = this.readWriteNonCoreDataService.retrieveDataTableGenericResultSet(DocumentConfigApiConstants.approvalCheckParam, entityId,
+                            null, null);
+                    if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
+                        updateLafApprovalCheck = true;
+
+                        final List<ResultsetRowData> data = results.getData();
+                        data.stream().forEach(res -> {
+                            try {
+//                                final Object objectLoanId = res.getRow().get(0);
+//                                if (ObjectUtils.isNotEmpty(objectLoanId)) {
+//                                    final Long loan_id = Long.valueOf(StringUtils.defaultIfBlank(String.valueOf(objectLoanId), null));
+//                                    approvalCheckRequest.setLoan_id(loan_id);
+//                                }
+                                final Object objectSentForApproval = res.getRow().get(1);
+                                if (ObjectUtils.isNotEmpty(objectSentForApproval)) {
+                                    final String isSentForApproval = StringUtils.defaultIfBlank(String.valueOf(objectSentForApproval), "");
+                                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isSentForApprovalParam, isSentForApproval);
+                                }
+                                final Object objectInternalTransfer = res.getRow().get(2);
+                                if (ObjectUtils.isNotEmpty(objectInternalTransfer)) {
+                                    final String internalTransfer = StringUtils.defaultIfBlank(String.valueOf(objectInternalTransfer), "");
+                                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.internalTransferParam, internalTransfer);
+                                }
+                                final Object objectClientBankId = res.getRow().get(3);
+                                if (ObjectUtils.isNotEmpty(objectClientBankId)) {
+                                    final String clientBankId = StringUtils.defaultIfBlank(String.valueOf(objectClientBankId), "");
+                                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.clientBankIdParam, clientBankId);
+                                }
+                                final Object objectNetPay = res.getRow().get(4);
+                                if (ObjectUtils.isNotEmpty(objectNetPay)) {
+                                    final String netPay = StringUtils.defaultIfBlank(String.valueOf(objectNetPay), "");
+                                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.netPayParam, netPay);
+                                }
+                                final Object objectDefaultPaymentMethodId = res.getRow().get(5);
+                                if (ObjectUtils.isNotEmpty(objectDefaultPaymentMethodId)) {
+                                    final String defaultPaymentMethodId = StringUtils.defaultIfBlank(String.valueOf(objectDefaultPaymentMethodId), "");
+                                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.defaultPaymentMethodIdParam, defaultPaymentMethodId);
+                                }
+//                                final Object objectIsLafSigned = res.getRow().get(6);
+//                                if (ObjectUtils.isNotEmpty(objectIsLafSigned)) {
+//                                    final String isLafSigned = StringUtils.defaultIfBlank(String.valueOf(objectIsLafSigned), "");
+//                                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isLafSignedParam, isLafSigned);
+//                                }
+                            } catch (Exception e) {
+                                log.warn("error.approvalCheckRequest: {}", e.getMessage());
+                            }
+                        });
+                    }
+                    final String apiRequestBodyAsJson = jsonObjectApprovalCheck.toString();
+
+                    CommandWrapper commandRequest;
+                    if (updateLafApprovalCheck) {
+                        //update approvalCheck
+                        commandRequest = new CommandWrapperBuilder() //
+                                .updateDatatable(DocumentConfigApiConstants.approvalCheckParam, entityId, null) //
+                                .withJson(apiRequestBodyAsJson) //
+                                .build();
+                    } else {
+                        //create approvalCheck
+                        commandRequest = new CommandWrapperBuilder() //
+                                .createDatatable(DocumentConfigApiConstants.approvalCheckParam, entityId, null) //
+                                .withJson(apiRequestBodyAsJson) //
+                                .build();
+                    }
+                    this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+                } catch (Exception e) {
+                    log.warn("updateLoanLafSigned not saved due to {}", e);
+                }
+            }
         }
     }
 }

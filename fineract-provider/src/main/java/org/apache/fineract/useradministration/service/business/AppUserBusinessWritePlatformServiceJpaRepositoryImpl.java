@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.useradministration.service.business;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -70,7 +71,8 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
     @Transactional
     @Override
     public CommandProcessingResult enableUser(Long userId) {
-        this.context.authenticatedUser();
+        final AppUser appUser = this.context.authenticatedUser();
+        rejectActionOnSelfUser(appUser, userId);
         final AppUser userToUpdate = this.appUserRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
         try {
@@ -87,7 +89,8 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
     @Transactional
     @Override
     public CommandProcessingResult disableUser(Long userId) {
-        this.context.authenticatedUser();
+        final AppUser appUser = this.context.authenticatedUser();
+        rejectActionOnSelfUser(appUser, userId);
         final AppUser userToUpdate = this.appUserRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
         try {
@@ -98,6 +101,12 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
             log.warn("disableUser: {}", e);
             throw new PlatformDataIntegrityException("error.msg.unknown.data.integrity.issue",
                     "User not Disabled.");
+        }
+    }
+
+    protected void rejectActionOnSelfUser(final AppUser appUser, Long userId) throws UserNotFoundException {
+        if (Objects.equals(appUser.getId(), userId) && appUser.isSelfServiceUser() == false) {
+            throw new UserNotFoundException("User cannot perform action on self.", userId);
         }
     }
 

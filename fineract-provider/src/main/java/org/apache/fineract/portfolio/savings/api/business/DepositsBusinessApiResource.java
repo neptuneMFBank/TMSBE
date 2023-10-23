@@ -94,6 +94,8 @@ public class DepositsBusinessApiResource {
         // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
         )})
     public String retrieveAll(@Context final UriInfo uriInfo,
+            @QueryParam("accountWithBalance") @Parameter(description = "accountWithBalance") final Boolean accountWithBalance,
+            @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
             @QueryParam("productId") @Parameter(description = "productId") final Long productId,
             @QueryParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
@@ -121,7 +123,8 @@ public class DepositsBusinessApiResource {
             toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
         }
 
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forDeposit(offset, limit, orderBy, sortOrder, productId, fromDate, toDate, depositTypeId, accountNo, officeId, statusId, externalId, clientId);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forDeposit(offset, limit, orderBy, sortOrder,
+                productId, fromDate, toDate, depositTypeId, accountNo, officeId, statusId, externalId, clientId, displayName, accountWithBalance);
 
         final Page<DepositAccountBusinessData> clientData = this.depositsBusinessReadPlatformService.retrieveAll(searchParameters);
 
@@ -274,4 +277,5 @@ public class DepositsBusinessApiResource {
     private boolean is(final String commandParam, final String commandValue) {
         return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
     }
+
 }

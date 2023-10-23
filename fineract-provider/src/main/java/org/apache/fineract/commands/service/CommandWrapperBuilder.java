@@ -3513,6 +3513,22 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder disableUser(Long userId) {
+        this.actionName = "DISABLE";
+        this.entityName = "USER";
+        this.entityId = userId;
+        this.href = "/users/business/" + userId + "/disbale";
+        return this;
+    }
+
+    public CommandWrapperBuilder enableUser(Long userId) {
+        this.actionName = "ENABLE";
+        this.entityName = "USER";
+        this.entityId = userId;
+        this.href = "/users/business/" + userId + "/enable";
+        return this;
+    }
+
     public CommandWrapperBuilder updateUserInfo(final Long userId) {
         this.actionName = "UPDATE_INFO";
         this.entityName = "USER";

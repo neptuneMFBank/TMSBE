@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
@@ -204,6 +205,8 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
         final Long officeId = searchParameters.getOfficeId();
         final String externalId = searchParameters.getExternalId();
         final String accountNo = searchParameters.getAccountNo();
+        final String displayName = searchParameters.getName();
+        final Boolean accountWithBalance = searchParameters.isOrphansOnly();
 
         String extraCriteria = "";
 
@@ -224,6 +227,10 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
             }
         }
 
+        if (searchParameters.isOrphansOnlyPassed() && BooleanUtils.isTrue(accountWithBalance)) {
+            extraCriteria += " AND ms.ledger_balance > 0 ";
+        }
+
         if (searchParameters.isClientIdPassed()) {
             paramList.add(clientId);
             extraCriteria += " and ms.client_id = ? ";
@@ -237,7 +244,12 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
             extraCriteria += " and ms.deposit_type_enum = ? ";
         }
 
-        if (externalId != null) {
+        if (searchParameters.isNamePassed()) {
+            paramList.add("%" + displayName + "%");
+            extraCriteria += " and ms.display_name like ? ";
+        }
+
+        if (searchParameters.isExternalIdPassed()) {
             paramList.add("%" + externalId + "%");
             extraCriteria += " and ms.external_id like ? ";
         }

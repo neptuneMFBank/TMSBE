@@ -123,14 +123,13 @@ public final class SearchParametersBusiness {
 
     public static SearchParametersBusiness forDeposit(final Integer offset, final Integer limit, final String orderBy,
             final String sortOrder, final Long productId, final LocalDate fromDate, final LocalDate toDate,
-            final Integer depositTypeId, final String accountNo, final Long officeId, final Integer statusId, final String externalId, final Long clientId) {
+            final Integer depositTypeId, final String accountNo, final Long officeId, final Integer statusId, final String externalId,
+            final Long clientId, final String displayName, final Boolean orphansOnly) {
         final Long classificationId = null;
         final Boolean active = null;
         final Long organisationalRoleEnumId = null;
         final Long staffId = null;
         final Long industryId = null;
-        final String displayName = null;
-        final Boolean orphansOnly = null;
         final String email = null;
         final String mobile = null;
         final Integer legalFormId = null;
@@ -927,5 +926,9 @@ public final class SearchParametersBusiness {
 
     public boolean isSupervisorPassed() {
         return isSupervisor != null;
+    }
+
+    public boolean isOrphansOnlyPassed() {
+        return orphansOnly != null;
     }
 }

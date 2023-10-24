@@ -123,4 +123,5 @@
     <include file="parts/0106_m_agreement_form_code.sql" relativeToChangelogFile="true" />
     <include file="parts/0107_enable_user_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0108_disable_user_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0109_payment_detail_receipt_unique.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

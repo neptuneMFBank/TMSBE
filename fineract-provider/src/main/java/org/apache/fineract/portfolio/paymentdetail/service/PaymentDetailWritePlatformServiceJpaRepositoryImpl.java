@@ -19,7 +19,10 @@
 package org.apache.fineract.portfolio.paymentdetail.service;
 
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.portfolio.paymentdetail.PaymentDetailConstants;
 import org.apache.fineract.portfolio.paymentdetail.domain.PaymentDetail;
 import org.apache.fineract.portfolio.paymentdetail.domain.PaymentDetailRepository;
@@ -29,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class PaymentDetailWritePlatformServiceJpaRepositoryImpl implements PaymentDetailWritePlatformService {
 
@@ -70,5 +74,25 @@ public class PaymentDetailWritePlatformServiceJpaRepositoryImpl implements Payme
             return persistPaymentDetail(paymentDetail);
         }
         return paymentDetail;
+    }
+
+    private void handleDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve) {
+        log.warn("PaymentDetail handleDataIntegrityIssues: {} and Exception: {}", realCause.getMessage(), dve.getMessage());
+        String[] cause = StringUtils.split(realCause.getMessage(), "'");
+
+        String getCause = StringUtils.defaultIfBlank(cause[3], realCause.getMessage());
+        if (getCause.contains("receipt_number")) {
+            final String receiptNumber = command.stringValueOfParameterNamed(PaymentDetailConstants.receiptNumberParamName);
+            throw new PlatformDataIntegrityException("error.msg.payment.detail.duplicate", "Receipt number `" + receiptNumber + "` already exists",
+                    PaymentDetailConstants.receiptNumberParamName, receiptNumber);
+        }
+
+        logAsErrorUnexpectedDataIntegrityException(dve);
+        throw new PlatformDataIntegrityException("error.msg.employer.unknown.data.integrity.issue", "One or more fields are in conflict.",
+                "Unknown data integrity issue with resource.");
+    }
+
+    private void logAsErrorUnexpectedDataIntegrityException(final Exception dve) {
+        log.error("EmployerErrorOccured: {}", dve);
     }
 }

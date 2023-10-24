@@ -20,4 +20,4 @@
 
 -- INSERT m_payment_detail
 ALTER TABLE m_payment_detail
-ADD CONSTRAINT payment_detail_UQ_receipt_number UNIQUE(receipt_number);
+ADD CONSTRAINT payment_UQ_receipt_number UNIQUE(receipt_number);

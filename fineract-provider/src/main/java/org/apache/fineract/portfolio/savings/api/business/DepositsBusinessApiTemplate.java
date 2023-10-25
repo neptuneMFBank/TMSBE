@@ -410,11 +410,11 @@ public interface DepositsBusinessApiTemplate {
         if (preClosurePenalInterestOnTypeId != null) {
             jsonObjectLoan.addProperty(DepositsApiConstants.preClosurePenalInterestOnTypeIdParamName, preClosurePenalInterestOnTypeId);
         }
-        Integer preClosurePenalInterest;
+        BigDecimal preClosurePenalInterest;
         if (fromApiJsonHelper.parameterExists(DepositsApiConstants.preClosurePenalInterestParamName, apiRequestBodyAsJsonElement)) {
-            preClosurePenalInterest = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.preClosurePenalInterestParamName, apiRequestBodyAsJsonElement);
+            preClosurePenalInterest = fromApiJsonHelper.extractBigDecimalNamed(DepositsApiConstants.preClosurePenalInterestParamName, apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            preClosurePenalInterest = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.preClosurePenalInterestParamName, loanTemplateElement);
+            preClosurePenalInterest = fromApiJsonHelper.extractBigDecimalNamed(DepositsApiConstants.preClosurePenalInterestParamName, loanTemplateElement, localeFormat);
         }
         if (preClosurePenalInterest != null) {
             jsonObjectLoan.addProperty(DepositsApiConstants.preClosurePenalInterestParamName, preClosurePenalInterest);

@@ -138,11 +138,11 @@ public interface DepositsBusinessApiTemplate {
 
         BigDecimal maxDepositTerm;
         if (fromApiJsonHelper.parameterExists(DepositsApiConstants.maxDepositTermParamName, apiRequestBodyAsJsonElement)) {
-            maxDepositTerm = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(DepositsApiConstants.maxDepositTermParamName,
-                    apiRequestBodyAsJsonElement);
+            maxDepositTerm = fromApiJsonHelper.extractBigDecimalNamed(DepositsApiConstants.maxDepositTermParamName,
+                    apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            maxDepositTerm = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(DepositsApiConstants.maxDepositTermParamName,
-                    loanTemplateElement);
+            maxDepositTerm = fromApiJsonHelper.extractBigDecimalNamed(DepositsApiConstants.maxDepositTermParamName,
+                    loanTemplateElement, localeFormat);
         }
         jsonObjectLoan.addProperty(DepositsApiConstants.maxDepositTermParamName, maxDepositTerm);
 
@@ -657,11 +657,11 @@ public interface DepositsBusinessApiTemplate {
 
         BigDecimal maxDepositTerm;
         if (fromApiJsonHelper.parameterExists(DepositsApiConstants.maxDepositTermParamName, apiRequestBodyAsJsonElement)) {
-            maxDepositTerm = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(DepositsApiConstants.maxDepositTermParamName,
-                    apiRequestBodyAsJsonElement);
+            maxDepositTerm = fromApiJsonHelper.extractBigDecimalNamed(DepositsApiConstants.maxDepositTermParamName,
+                    apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            maxDepositTerm = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(DepositsApiConstants.maxDepositTermParamName,
-                    loanTemplateElement);
+            maxDepositTerm = fromApiJsonHelper.extractBigDecimalNamed(DepositsApiConstants.maxDepositTermParamName,
+                    loanTemplateElement, localeFormat);
         }
         jsonObjectLoan.addProperty(DepositsApiConstants.maxDepositTermParamName, maxDepositTerm);
 

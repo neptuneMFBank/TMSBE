@@ -3496,6 +3496,15 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder submitLoanApproval(final Long loanId) {
+        this.actionName = "SUBMIT_APPROVAL";
+        this.entityName = "LOAN";
+        this.entityId = loanId;
+        this.loanId = loanId;
+        this.href = "/loans/business/" + loanId;
+        return this;
+    }
+
     public CommandWrapperBuilder updateLoanBusinessApplication(final Long loanId) {
         this.actionName = "UPDATE_BUSINESS";
         this.entityName = "LOAN";

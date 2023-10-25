@@ -811,4 +811,25 @@ public class LoansBusinessApiResource {
         return this.toApiDocJsonSerializer.serialize(jsonObject);
     }
 
+    @POST
+    @Path("{loanId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Send Loan for Approval", description = "")
+    @RequestBody(required = true
+    // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansRequest.class))
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        )})
+    public String submitLoanApproval(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().submitLoanApproval(loanId).withJson(apiRequestBodyAsJson)
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
 }

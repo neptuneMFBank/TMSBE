@@ -16,16 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanaccount.service.business;
+package org.apache.fineract.portfolio.loanaccount.handler.business;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.fineract.commands.annotation.CommandType;
+import org.apache.fineract.commands.handler.NewCommandSourceHandler;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.portfolio.loanaccount.service.business.LoanBusinessApplicationWritePlatformService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface LoanBusinessApplicationWritePlatformService {
+@Service
+@RequiredArgsConstructor
+@CommandType(entity = "LOAN", action = "SUBMIT_APPROVAL")
+public class SubmitLoanApprovalBusinessCommandHandler implements NewCommandSourceHandler {
 
-    CommandProcessingResult submitApplication(JsonCommand command);
+    private final LoanBusinessApplicationWritePlatformService writePlatformService;
 
-    CommandProcessingResult modifyApplication(final Long loanId, JsonCommand command);
-
-    CommandProcessingResult submitLoanApproval(final Long loanId, JsonCommand command);
+    @Transactional
+    @Override
+    public CommandProcessingResult processCommand(final JsonCommand command) {
+        return this.writePlatformService.submitLoanApproval(command.getLoanId(), command);
+    }
 }

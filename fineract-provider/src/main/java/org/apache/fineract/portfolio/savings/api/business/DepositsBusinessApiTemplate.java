@@ -191,26 +191,28 @@ public interface DepositsBusinessApiTemplate {
         if (depositPeriod != null) {
             jsonObjectLoan.addProperty(DepositsApiConstants.depositPeriodParamName, depositPeriod);
         }
-        Integer recurringFrequency;
+        Integer recurringFrequency = null;
         if (fromApiJsonHelper.parameterExists(DepositsApiConstants.recurringFrequencyParamName, apiRequestBodyAsJsonElement)) {
             recurringFrequency = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.recurringFrequencyParamName,
                     apiRequestBodyAsJsonElement);
-        } else {
-            recurringFrequency = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.recurringFrequencyParamName,
-                    loanTemplateElement);
         }
+//        else {
+//            recurringFrequency = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.recurringFrequencyParamName,
+//                    loanTemplateElement);
+//        }
         if (recurringFrequency != null) {
             jsonObjectLoan.addProperty(DepositsApiConstants.recurringFrequencyParamName, recurringFrequency);
         }
-        Integer recurringFrequencyType;
+        Integer recurringFrequencyType = null;
         if (fromApiJsonHelper.parameterExists(DepositsApiConstants.recurringFrequencyTypeParamName, apiRequestBodyAsJsonElement)) {
-            recurringFrequencyType = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.recurringFrequencyTypeParamName,
-                    apiRequestBodyAsJsonElement);
-        } else {
-            final JsonElement recurringFrequencyTypeId = fromApiJsonHelper.extractJsonObjectNamed(DepositsApiConstants.recurringFrequencyTypeParamName, loanTemplateElement);
-            recurringFrequencyType = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.idParamName,
-                    recurringFrequencyTypeId);
+            recurringFrequencyType = fromApiJsonHelper.extractIntegerNamed(DepositsApiConstants.recurringFrequencyTypeParamName,
+                    apiRequestBodyAsJsonElement, localeFormat);
         }
+//        else {
+//            final JsonElement recurringFrequencyTypeId = fromApiJsonHelper.extractJsonObjectNamed(DepositsApiConstants.recurringFrequencyTypeParamName, loanTemplateElement);
+//            recurringFrequencyType = fromApiJsonHelper.extractIntegerNamed(DepositsApiConstants.idParamName,
+//                    recurringFrequencyTypeId, localeFormat);
+//        }
         if (recurringFrequencyType != null) {
             jsonObjectLoan.addProperty(DepositsApiConstants.recurringFrequencyTypeParamName, recurringFrequencyType);
         }
@@ -228,21 +230,21 @@ public interface DepositsBusinessApiTemplate {
 
         BigDecimal minDepositTerm;
         if (fromApiJsonHelper.parameterExists(DepositsApiConstants.minDepositTermParamName, apiRequestBodyAsJsonElement)) {
-            minDepositTerm = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(DepositsApiConstants.minDepositTermParamName,
-                    apiRequestBodyAsJsonElement);
+            minDepositTerm = fromApiJsonHelper.extractBigDecimalNamed(DepositsApiConstants.minDepositTermParamName,
+                    apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            minDepositTerm = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(DepositsApiConstants.minDepositTermParamName,
-                    loanTemplateElement);
+            minDepositTerm = fromApiJsonHelper.extractBigDecimalNamed(DepositsApiConstants.minDepositTermParamName,
+                    loanTemplateElement, localeFormat);
         }
         jsonObjectLoan.addProperty(DepositsApiConstants.minDepositTermParamName, minDepositTerm);
 
         BigDecimal nominalAnnualInterestRate;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.nominalAnnualInterestRateParamName, apiRequestBodyAsJsonElement)) {
-            nominalAnnualInterestRate = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.nominalAnnualInterestRateParamName,
-                    apiRequestBodyAsJsonElement);
+            nominalAnnualInterestRate = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.nominalAnnualInterestRateParamName,
+                    apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            nominalAnnualInterestRate = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.nominalAnnualInterestRateParamName,
-                    loanTemplateElement);
+            nominalAnnualInterestRate = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.nominalAnnualInterestRateParamName,
+                    loanTemplateElement, localeFormat);
         }
         jsonObjectLoan.addProperty(SavingsApiConstants.nominalAnnualInterestRateParamName, nominalAnnualInterestRate);
 
@@ -259,11 +261,11 @@ public interface DepositsBusinessApiTemplate {
         }
         BigDecimal nominalAnnualInterestRateOverdraft;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName, apiRequestBodyAsJsonElement)) {
-            nominalAnnualInterestRateOverdraft = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName,
-                    apiRequestBodyAsJsonElement);
+            nominalAnnualInterestRateOverdraft = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName,
+                    apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            nominalAnnualInterestRateOverdraft = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName,
-                    loanTemplateElement);
+            nominalAnnualInterestRateOverdraft = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName,
+                    loanTemplateElement, localeFormat);
         }
         if (nominalAnnualInterestRateOverdraft != null) {
             jsonObjectLoan.addProperty(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName, nominalAnnualInterestRateOverdraft);
@@ -689,21 +691,21 @@ public interface DepositsBusinessApiTemplate {
 
         BigDecimal minDepositTerm;
         if (fromApiJsonHelper.parameterExists(DepositsApiConstants.minDepositTermParamName, apiRequestBodyAsJsonElement)) {
-            minDepositTerm = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(DepositsApiConstants.minDepositTermParamName,
-                    apiRequestBodyAsJsonElement);
+            minDepositTerm = fromApiJsonHelper.extractBigDecimalNamed(DepositsApiConstants.minDepositTermParamName,
+                    apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            minDepositTerm = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(DepositsApiConstants.minDepositTermParamName,
-                    loanTemplateElement);
+            minDepositTerm = fromApiJsonHelper.extractBigDecimalNamed(DepositsApiConstants.minDepositTermParamName,
+                    loanTemplateElement, localeFormat);
         }
         jsonObjectLoan.addProperty(DepositsApiConstants.minDepositTermParamName, minDepositTerm);
 
         BigDecimal nominalAnnualInterestRate;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.nominalAnnualInterestRateParamName, apiRequestBodyAsJsonElement)) {
-            nominalAnnualInterestRate = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.nominalAnnualInterestRateParamName,
-                    apiRequestBodyAsJsonElement);
+            nominalAnnualInterestRate = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.nominalAnnualInterestRateParamName,
+                    apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            nominalAnnualInterestRate = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.nominalAnnualInterestRateParamName,
-                    loanTemplateElement);
+            nominalAnnualInterestRate = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.nominalAnnualInterestRateParamName,
+                    loanTemplateElement, localeFormat);
         }
         jsonObjectLoan.addProperty(SavingsApiConstants.nominalAnnualInterestRateParamName, nominalAnnualInterestRate);
 
@@ -720,11 +722,11 @@ public interface DepositsBusinessApiTemplate {
         }
         BigDecimal nominalAnnualInterestRateOverdraft;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName, apiRequestBodyAsJsonElement)) {
-            nominalAnnualInterestRateOverdraft = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName,
-                    apiRequestBodyAsJsonElement);
+            nominalAnnualInterestRateOverdraft = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName,
+                    apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            nominalAnnualInterestRateOverdraft = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName,
-                    loanTemplateElement);
+            nominalAnnualInterestRateOverdraft = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName,
+                    loanTemplateElement, localeFormat);
         }
         if (nominalAnnualInterestRateOverdraft != null) {
             jsonObjectLoan.addProperty(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName, nominalAnnualInterestRateOverdraft);
@@ -1134,11 +1136,11 @@ public interface DepositsBusinessApiTemplate {
 
         BigDecimal nominalAnnualInterestRate;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.nominalAnnualInterestRateParamName, apiRequestBodyAsJsonElement)) {
-            nominalAnnualInterestRate = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.nominalAnnualInterestRateParamName,
-                    apiRequestBodyAsJsonElement);
+            nominalAnnualInterestRate = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.nominalAnnualInterestRateParamName,
+                    apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            nominalAnnualInterestRate = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.nominalAnnualInterestRateParamName,
-                    loanTemplateElement);
+            nominalAnnualInterestRate = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.nominalAnnualInterestRateParamName,
+                    loanTemplateElement, localeFormat);
         }
         jsonObjectLoan.addProperty(SavingsApiConstants.nominalAnnualInterestRateParamName, nominalAnnualInterestRate);
 
@@ -1155,11 +1157,11 @@ public interface DepositsBusinessApiTemplate {
         }
         BigDecimal nominalAnnualInterestRateOverdraft;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName, apiRequestBodyAsJsonElement)) {
-            nominalAnnualInterestRateOverdraft = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName,
-                    apiRequestBodyAsJsonElement);
+            nominalAnnualInterestRateOverdraft = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName,
+                    apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            nominalAnnualInterestRateOverdraft = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName,
-                    loanTemplateElement);
+            nominalAnnualInterestRateOverdraft = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName,
+                    loanTemplateElement, localeFormat);
         }
         if (nominalAnnualInterestRateOverdraft != null) {
             jsonObjectLoan.addProperty(SavingsApiConstants.nominalAnnualInterestRateOverdraftParamName, nominalAnnualInterestRateOverdraft);

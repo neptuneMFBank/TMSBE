@@ -1574,7 +1574,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isLafSignedParam, "");
             jsonObjectApprovalCheck.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
             jsonObjectApprovalCheck.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
-            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isSentForApprovalParam, "");
+            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isSentForApprovalParam, false);
             jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.internalTransferParam, "");
             jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.clientBankIdParam, "");
             jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.netPayParam, "");

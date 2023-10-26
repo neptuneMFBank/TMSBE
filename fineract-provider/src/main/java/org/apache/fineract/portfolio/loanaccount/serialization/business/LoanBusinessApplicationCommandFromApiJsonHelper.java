@@ -27,10 +27,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
@@ -39,8 +41,10 @@ import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.exception.UnsupportedParameterException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.apache.fineract.infrastructure.documentmanagement.api.business.DocumentConfigApiConstants;
 import org.apache.fineract.portfolio.accountdetails.domain.AccountType;
 import org.apache.fineract.portfolio.calendar.service.CalendarUtils;
+import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConstants;
 import org.apache.fineract.portfolio.collateralmanagement.domain.ClientCollateralManagement;
 import org.apache.fineract.portfolio.collateralmanagement.domain.ClientCollateralManagementRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
@@ -57,12 +61,16 @@ import org.apache.fineract.portfolio.loanproduct.domain.InterestMethod;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.apache.fineract.portfolio.loanproduct.exception.EqualAmortizationUnsupportedFeatureException;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
+import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.PAYMENT_TYPE_CHEQUE;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
 public final class LoanBusinessApplicationCommandFromApiJsonHelper {
 
+    final Set<String> supportedParametersSubmitLoanApproval = new HashSet<>(Arrays.asList(ClientBusinessApiConstants.paymentTypeIdParamName, DocumentConfigApiConstants.locationParam));
     /**
      * The parameters supported for this command.
      */
@@ -102,14 +110,17 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
     private final FromJsonHelper fromApiJsonHelper;
     private final CalculateLoanScheduleQueryFromApiJsonHelper apiJsonHelper;
     private final ClientCollateralManagementRepositoryWrapper clientCollateralManagementRepositoryWrapper;
+    private final Long paymentTypeChequeId;
 
     @Autowired
     public LoanBusinessApplicationCommandFromApiJsonHelper(final FromJsonHelper fromApiJsonHelper,
             final CalculateLoanScheduleQueryFromApiJsonHelper apiJsonHelper,
-            final ClientCollateralManagementRepositoryWrapper clientCollateralManagementRepositoryWrapper) {
+            final ApplicationContext applicationContext, final ClientCollateralManagementRepositoryWrapper clientCollateralManagementRepositoryWrapper) {
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.apiJsonHelper = apiJsonHelper;
         this.clientCollateralManagementRepositoryWrapper = clientCollateralManagementRepositoryWrapper;
+        Environment environment = applicationContext.getEnvironment();
+        this.paymentTypeChequeId = Long.valueOf(environment.getProperty(PAYMENT_TYPE_CHEQUE));
     }
 
     public void validateForCreate(final String json, final boolean isMeetingMandatoryForJLGLoans, final LoanProduct loanProduct) {
@@ -117,7 +128,8 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -417,7 +429,8 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
             final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(topLevelJsonElement);
 
             if (topLevelJsonElement.get(chargesParameterName).isJsonArray()) {
-                final Type arrayObjectParameterTypeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+                final Type arrayObjectParameterTypeOfMap = new TypeToken<Map<String, Object>>() {
+                }.getType();
                 final Set<String> supportedParameters = new HashSet<>(
                         Arrays.asList("id", "chargeId", "amount", "chargeTimeType", "chargeCalculationType", "dueDate"));
 
@@ -443,8 +456,9 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
         }
 
         /**
-         * TODO: Add collaterals for other loan accounts if needed. For now it's only applicable for individual
-         * accounts. (loanType.isJLG() || loanType.isGLIM())
+         * TODO: Add collaterals for other loan accounts if needed. For now it's
+         * only applicable for individual accounts. (loanType.isJLG() ||
+         * loanType.isGLIM())
          */
         if (!StringUtils.isBlank(loanTypeStr)) {
             final AccountType loanType = AccountType.fromName(loanTypeStr);
@@ -457,7 +471,8 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
                     final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(topLevelJsonElement);
                     if (topLevelJsonElement.get("collateral").isJsonArray()) {
 
-                        final Type collateralParameterTypeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+                        final Type collateralParameterTypeOfMap = new TypeToken<Map<String, Object>>() {
+                        }.getType();
                         final Set<String> supportedParameters = new HashSet<>(Arrays.asList("clientCollateralId", "quantity"));
                         final JsonArray array = topLevelJsonElement.get("collateral").getAsJsonArray();
                         for (int i = 1; i <= array.size(); i++) {
@@ -547,7 +562,8 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -885,7 +901,8 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
             final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(topLevelJsonElement);
 
             if (topLevelJsonElement.get(chargesParameterName).isJsonArray()) {
-                final Type arrayObjectParameterTypeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+                final Type arrayObjectParameterTypeOfMap = new TypeToken<Map<String, Object>>() {
+                }.getType();
                 final Set<String> supportedParameters = new HashSet<>(
                         Arrays.asList("id", "chargeId", "amount", "chargeTimeType", "chargeCalculationType", "dueDate"));
 
@@ -929,7 +946,8 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
                     final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(topLevelJsonElement);
                     if (topLevelJsonElement.get("collateral").isJsonArray()) {
 
-                        final Type collateralParameterTypeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+                        final Type collateralParameterTypeOfMap = new TypeToken<Map<String, Object>>() {
+                        }.getType();
                         final Set<String> supportedParameters = new HashSet<>(Arrays.asList("id", "clientCollateralId", "quantity"));
                         final JsonArray array = topLevelJsonElement.get("collateral").getAsJsonArray();
                         if (array.size() > 0) {
@@ -1048,7 +1066,8 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
         }
 
         final Set<String> undoSupportedParameters = new HashSet<>(Arrays.asList("note"));
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, undoSupportedParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -1094,8 +1113,9 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
                 numberOfRepayments, repaymentEvery, repaymentEveryType);
 
         /**
-         * For multi-disbursal loans where schedules are auto-generated based on a fixed EMI, ensure the number of
-         * repayments is within the permissible range defined by the loan product
+         * For multi-disbursal loans where schedules are auto-generated based on
+         * a fixed EMI, ensure the number of repayments is within the
+         * permissible range defined by the loan product
          *
          */
         if (loan.getFixedEmiAmount() != null) {
@@ -1108,7 +1128,7 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
                 final ApiParameterError error = ApiParameterError.generalError(
                         "validation.msg.loan.numberOfRepayments.lesser.than.minimumNumberOfRepayments",
                         "The total number of calculated repayments for this loan " + actualNumberOfRepayments
-                                + " is lesser than the allowed minimum of " + minimumNoOfRepayments,
+                        + " is lesser than the allowed minimum of " + minimumNoOfRepayments,
                         actualNumberOfRepayments, minimumNoOfRepayments);
                 dataValidationErrors.add(error);
             }
@@ -1119,7 +1139,7 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
                 final ApiParameterError error = ApiParameterError.generalError(
                         "validation.msg.loan.numberOfRepayments.greater.than.maximumNumberOfRepayments",
                         "The total number of calculated repayments for this loan " + actualNumberOfRepayments
-                                + " is greater than the allowed maximum of " + maximumNoOfRepayments,
+                        + " is greater than the allowed maximum of " + maximumNoOfRepayments,
                         actualNumberOfRepayments, maximumNoOfRepayments);
                 dataValidationErrors.add(error);
             }
@@ -1264,22 +1284,22 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
                         errorcode = "installment." + LoanApiConstants.LOAN_CHARGE_CAN_NOT_BE_ADDED_WITH_PRINCIPAL_CALCULATION_TYPE;
 
                     }
-                break;
+                    break;
                 case PERCENT_OF_AMOUNT_AND_INTEREST:
                     if (loanCharge.isInstalmentFee()) {
                         errorcode = "installment." + LoanApiConstants.LOAN_CHARGE_CAN_NOT_BE_ADDED_WITH_PRINCIPAL_CALCULATION_TYPE;
                     } else if (loanCharge.isSpecifiedDueDate()) {
                         errorcode = "specific." + LoanApiConstants.LOAN_CHARGE_CAN_NOT_BE_ADDED_WITH_INTEREST_CALCULATION_TYPE;
                     }
-                break;
+                    break;
                 case PERCENT_OF_INTEREST:
                     if (loanCharge.isSpecifiedDueDate()) {
                         errorcode = "specific." + LoanApiConstants.LOAN_CHARGE_CAN_NOT_BE_ADDED_WITH_INTEREST_CALCULATION_TYPE;
                     }
-                break;
+                    break;
 
                 default:
-                break;
+                    break;
             }
             if (errorcode != null) {
                 baseDataValidator.reset().parameter("charges").failWithCode(errorcode);
@@ -1356,6 +1376,45 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
                 }
             }
 
+        }
+    }
+
+    public void validateForSubmitLoanApproval(final String json) {
+        if (StringUtils.isBlank(json)) {
+            throw new InvalidJsonException();
+        }
+
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParametersSubmitLoanApproval);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("loanapplication.submit");
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        final String paymentTypeIdParamName = ClientBusinessApiConstants.paymentTypeIdParamName;
+        final Long paymentTypeId = this.fromApiJsonHelper.extractLongNamed(paymentTypeIdParamName, element);
+        baseDataValidator.reset().parameter(paymentTypeIdParamName).value(paymentTypeId).notNull().longGreaterThanZero();
+
+        if (Objects.equals(paymentTypeId, this.paymentTypeChequeId)) {
+
+            final String typeParam = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.typeParam, element);
+            baseDataValidator.reset().parameter(DocumentConfigApiConstants.typeParam).value(typeParam).notBlank();
+
+            String location = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.locationParam, element);
+            if (StringUtils.isNotBlank(location)) {
+                // check base64 is correct
+                try {
+                    Base64.getDecoder().decode(location);
+                } catch (IllegalArgumentException e) {
+                    location = null;
+                }
+            }
+            baseDataValidator.reset().parameter(DocumentConfigApiConstants.locationParam).value(location).notBlank();
+        }
+
+        if (!dataValidationErrors.isEmpty()) {
+            throw new PlatformApiDataValidationException(dataValidationErrors);
         }
     }
 

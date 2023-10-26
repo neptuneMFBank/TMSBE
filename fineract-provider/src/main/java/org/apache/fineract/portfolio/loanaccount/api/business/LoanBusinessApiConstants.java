@@ -38,6 +38,12 @@ import org.apache.fineract.portfolio.loanproduct.LoanProductConstants;
 
 public interface LoanBusinessApiConstants {
 
+    String messageParam = "message";
+    String authParam = "auth";
+    String statusEnumParam = "statusEnum";
+    String dataParam = "data";
+    String loanInstrumentParam = "loanInstrument";
+
     String termFrequencyParameterName = "termFrequency";
     String termPeriodFrequencyTypeParameterName = "termPeriodFrequencyType";
     String allowPartialPeriodInterestCalcualtionParameterName = "allowPartialPeriodInterestCalcualtion";

@@ -70,7 +70,9 @@ import org.springframework.stereotype.Component;
 @Component
 public final class LoanBusinessApplicationCommandFromApiJsonHelper {
 
-    final Set<String> supportedParametersSubmitLoanApproval = new HashSet<>(Arrays.asList(ClientBusinessApiConstants.paymentTypeIdParamName, DocumentConfigApiConstants.locationParam, DocumentConfigApiConstants.typeParam));
+    final Set<String> supportedParametersSubmitLoanApproval = new HashSet<>(Arrays.asList(ClientBusinessApiConstants.paymentTypeIdParamName,
+            DocumentConfigApiConstants.locationParam, DocumentConfigApiConstants.typeParam,
+            LoanBusinessApiConstants.authParam, LoanBusinessApiConstants.dataParam));
     /**
      * The parameters supported for this command.
      */

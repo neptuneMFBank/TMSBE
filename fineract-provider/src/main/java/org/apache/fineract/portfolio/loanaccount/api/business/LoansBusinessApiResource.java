@@ -129,6 +129,8 @@ import org.apache.fineract.portfolio.loanaccount.service.LoanChargeReadPlatformS
 import org.apache.fineract.portfolio.loanaccount.service.LoanReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.service.business.LoanBusinessReadPlatformService;
 import org.apache.fineract.portfolio.loanproduct.LoanProductConstants;
+import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductPaymentTypeConfigData;
+import org.apache.fineract.portfolio.loanproduct.business.service.LoanProductPaymentTypeConfigReadPlatformService;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.data.TransactionProcessingStrategyData;
 import org.apache.fineract.portfolio.loanproduct.domain.InterestMethod;
@@ -179,7 +181,7 @@ public class LoansBusinessApiResource {
             LoanApiConstants.topupAmount, LoanApiConstants.clientActiveLoanOptions, LoanApiConstants.datatables,
             LoanProductConstants.RATES_PARAM_NAME, LoanApiConstants.MULTIDISBURSE_DETAILS_PARAMNAME,
             LoanApiConstants.EMI_AMOUNT_VARIATIONS_PARAMNAME, LoanApiConstants.COLLECTION_PARAMNAME,
-            LoanBusinessApiConstants.activationChannelIdParam, LoanBusinessApiConstants.activationChannelNameParam, LoanBusinessApiConstants.metricsDataParam, "collateralOld"));
+            LoanBusinessApiConstants.activationChannelIdParam, LoanBusinessApiConstants.activationChannelNameParam, LoanBusinessApiConstants.metricsDataParam, "collateralOld", LoanBusinessApiConstants.loanProductPaymentTypeConfigDataParam));
 
     private final String resourceNameForPermissions = "LOAN";
 
@@ -226,6 +228,7 @@ public class LoansBusinessApiResource {
     private final DocumentBusinessWritePlatformService documentWritePlatformService;
     private final Long clientSignatureId;
     private final CollateralReadPlatformService loanCollateralReadPlatformService;
+    private final LoanProductPaymentTypeConfigReadPlatformService loanProductPaymentTypeConfigReadPlatformService;
 
     public LoansBusinessApiResource(final PlatformSecurityContext context,
             final LoanProductReadPlatformService loanProductReadPlatformService,
@@ -254,7 +257,7 @@ public class LoansBusinessApiResource {
             final LoanBusinessReadPlatformService loanBusinessReadPlatformService,
             final DefaultToApiJsonSerializer<String> calculateLoanScheduleToApiJsonSerializer, final LoansApiResource loansApiResource,
             final LoanReadPlatformService loanReadPlatformService, final MetricsReadPlatformService metricsReadPlatformService, final LoanProductBusinessReadPlatformService loanProductBusinessReadPlatformService,
-            final CollateralReadPlatformService loanCollateralReadPlatformService, final ApplicationContext contextApplication, final DefaultToApiJsonSerializer<LoanBusinessDocData> toApiDocJsonSerializer, final AddressReadPlatformServiceImpl readPlatformService, final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService, final DocumentBusinessWritePlatformService documentWritePlatformService) {
+            final LoanProductPaymentTypeConfigReadPlatformService loanProductPaymentTypeConfigReadPlatformService, final CollateralReadPlatformService loanCollateralReadPlatformService, final ApplicationContext contextApplication, final DefaultToApiJsonSerializer<LoanBusinessDocData> toApiDocJsonSerializer, final AddressReadPlatformServiceImpl readPlatformService, final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService, final DocumentBusinessWritePlatformService documentWritePlatformService) {
         this.context = context;
         this.loanProductReadPlatformService = loanProductReadPlatformService;
         this.dropdownReadPlatformService = dropdownReadPlatformService;
@@ -298,6 +301,7 @@ public class LoansBusinessApiResource {
         Environment environment = contextApplication.getEnvironment();
         this.clientSignatureId = Long.valueOf(environment.getProperty(CLIENT_SIGNATURE_ID));
         this.loanCollateralReadPlatformService = loanCollateralReadPlatformService;
+        this.loanProductPaymentTypeConfigReadPlatformService = loanProductPaymentTypeConfigReadPlatformService;
     }
 
     /*
@@ -357,6 +361,7 @@ public class LoansBusinessApiResource {
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
         LoanBusinessAccountData loanBasicDetails = this.loanBusinessReadPlatformService.retrieveOne(loanId);
+        final Long loanProductId = loanBasicDetails.loanProductId();
 
         if (loanBasicDetails.isInterestRecalculationEnabled()) {
             Collection<CalendarData> interestRecalculationCalendarDatas = this.calendarReadPlatformService.retrieveCalendarsByEntity(
@@ -626,6 +631,12 @@ public class LoansBusinessApiResource {
         final Collection<MetricsData> metricsData = this.metricsReadPlatformService.retrieveLoanMetrics(loanId);
         if (!CollectionUtils.isEmpty(metricsData)) {
             loanAccount.setMetricsData(metricsData);
+        }
+        if (loanProductId != null) {
+            final LoanProductPaymentTypeConfigData loanProductPaymentTypeConfigData
+                    = this.loanProductPaymentTypeConfigReadPlatformService.
+                            retrieveOneViaLoanProduct(loanProductId);
+            loanAccount.setLoanProductPaymentTypeConfigData(loanProductPaymentTypeConfigData);
         }
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters(),
                 mandatoryResponseParameters);

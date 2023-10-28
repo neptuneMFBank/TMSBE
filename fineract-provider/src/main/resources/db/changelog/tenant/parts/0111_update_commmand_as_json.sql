@@ -18,7 +18,6 @@
 --
 
 
--- INSERT m_permission
-INSERT INTO `m_permission` (`id`, `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`)
-VALUES
-     (NULL, 'portfolio', 'UPDATE_CONFIG_DOCUMENT', 'DOCUMENT', 'UPDATE_CONFIG', false)
+-- INSERT m_payment_detail
+ALTER TABLE m_portfolio_command_source
+MODIFY COLUMN command_as_json LONGTEXT NOT NULL;

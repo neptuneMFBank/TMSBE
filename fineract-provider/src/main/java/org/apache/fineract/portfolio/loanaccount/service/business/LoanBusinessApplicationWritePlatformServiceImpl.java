@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.Set;
 import javax.persistence.PersistenceException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -145,6 +146,8 @@ import org.apache.fineract.portfolio.loanaccount.service.LoanChargeAssembler;
 import org.apache.fineract.portfolio.loanaccount.service.LoanReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.service.LoanUtilService;
 import org.apache.fineract.portfolio.loanproduct.LoanProductConstants;
+import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductPaymentTypeConfigData;
+import org.apache.fineract.portfolio.loanproduct.business.service.LoanProductPaymentTypeConfigReadPlatformService;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProductRelatedDetail;
@@ -153,10 +156,12 @@ import org.apache.fineract.portfolio.loanproduct.domain.LoanTransactionProcessin
 import org.apache.fineract.portfolio.loanproduct.domain.RecalculationFrequencyType;
 import org.apache.fineract.portfolio.loanproduct.exception.LinkedAccountRequiredException;
 import org.apache.fineract.portfolio.loanproduct.exception.LoanProductNotFoundException;
+import org.apache.fineract.portfolio.loanproduct.exception.business.LoanProductPaymentTypeConfigNotFoundException;
 import org.apache.fineract.portfolio.loanproduct.serialization.LoanProductDataValidator;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
 import org.apache.fineract.portfolio.note.domain.Note;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
+import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
 import org.apache.fineract.portfolio.paymenttype.domain.PaymentType;
 import org.apache.fineract.portfolio.paymenttype.domain.PaymentTypeRepositoryWrapper;
 import org.apache.fineract.portfolio.products.data.business.DocumentProductConfigData;
@@ -244,6 +249,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
 
     private final DocumentBusinessRepositoryWrapper documentBusinessRepositoryWrapper;
     private final DocumentProductConfigReadPlatformService documentProductConfigReadPlatformService;
+    private final LoanProductPaymentTypeConfigReadPlatformService loanProductPaymentTypeConfigReadPlatformService;
 
     @Autowired
     public LoanBusinessApplicationWritePlatformServiceImpl(final PlatformSecurityContext context, final FromJsonHelper fromJsonHelper,
@@ -273,7 +279,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             final LoanProductReadPlatformService loanProductReadPlatformService,
             final LoanCollateralManagementRepository loanCollateralManagementRepository,
             final ClientCollateralManagementRepository clientCollateralManagementRepository,
-            final DocumentProductConfigReadPlatformService documentProductConfigReadPlatformService, final DocumentBusinessRepositoryWrapper documentBusinessRepositoryWrapper, final ReadWriteNonCoreDataService readWriteNonCoreDataService, final DocumentBusinessWritePlatformService documentWritePlatformService, final PaymentTypeRepositoryWrapper paymentTypeRepositoryWrapper, final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService, final ApplicationContext applicationContext, final CodeValueRepositoryWrapper codeValueRepository, final LoanOtherRepositoryWrapper loanOtherRepositoryWrapper) {
+            final LoanProductPaymentTypeConfigReadPlatformService loanProductPaymentTypeConfigReadPlatformService, final DocumentProductConfigReadPlatformService documentProductConfigReadPlatformService, final DocumentBusinessRepositoryWrapper documentBusinessRepositoryWrapper, final ReadWriteNonCoreDataService readWriteNonCoreDataService, final DocumentBusinessWritePlatformService documentWritePlatformService, final PaymentTypeRepositoryWrapper paymentTypeRepositoryWrapper, final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService, final ApplicationContext applicationContext, final CodeValueRepositoryWrapper codeValueRepository, final LoanOtherRepositoryWrapper loanOtherRepositoryWrapper) {
         this.context = context;
         this.fromJsonHelper = fromJsonHelper;
         this.loanApplicationTransitionApiJsonValidator = loanApplicationTransitionApiJsonValidator;
@@ -329,6 +335,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         this.readWriteNonCoreDataService = readWriteNonCoreDataService;
         this.documentBusinessRepositoryWrapper = documentBusinessRepositoryWrapper;
         this.documentProductConfigReadPlatformService = documentProductConfigReadPlatformService;
+        this.loanProductPaymentTypeConfigReadPlatformService = loanProductPaymentTypeConfigReadPlatformService;
     }
 
     private LoanLifecycleStateMachine defaultLoanLifecycleStateMachine() {
@@ -1513,15 +1520,41 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             Long remaining = (loanProductDocumentCount - totalLoanDocumentSaved);
             throw new PlatformDataIntegrityException("error.submit.loan.approval", "System requires " + remaining + " more document(s) before sending for approval.");
         }
-        //validate repayment method is base on loan product repayment configured
-        String message = "Successful";
-        String auth = null;
-        Integer statusEnum = LoanInstrumentStatus.PENDING.getValue();
-        String data = null;
 
         final JsonElement loanApprovalRequest = this.fromJsonHelper.parse(command.json());
         final Long paymentTypeId = this.fromJsonHelper.extractLongNamed(ClientBusinessApiConstants.paymentTypeIdParamName, loanApprovalRequest);
         final PaymentType paymentType = this.paymentTypeRepositoryWrapper.findOneWithNotFoundDetection(paymentTypeId);
+
+        //validate repayment method is base on loan product repayment configured
+        boolean doNotAllowAfterCheckLoanProductPaymentTypeConfig = false;
+        final LoanProductPaymentTypeConfigData loanProductPaymentTypeConfigData
+                = this.loanProductPaymentTypeConfigReadPlatformService.
+                        retrieveOneViaLoanProduct(loanProductId);
+        if (ObjectUtils.isEmpty(loanProductPaymentTypeConfigData)) {
+            if (BooleanUtils.isNotTrue(loanProductPaymentTypeConfigData.getActive())) {
+                throw new LoanProductPaymentTypeConfigNotFoundException("Loan product " + loanProductPaymentTypeConfigData.getLoanProductData().getName() + " with payment type config " + loanProductPaymentTypeConfigData.getName() + " is not active.");
+            }
+            final Collection<PaymentTypeData> paymentTypeDatas = loanProductPaymentTypeConfigData.getPaymentTypes();
+            if (ObjectUtils.isEmpty(paymentTypeDatas)) {
+                doNotAllowAfterCheckLoanProductPaymentTypeConfig
+                        = paymentTypeDatas.stream()
+                                .noneMatch(predicate -> Objects.equals(predicate.getId(), paymentTypeId));
+            } else {
+                throw new LoanProductPaymentTypeConfigNotFoundException("Loan product " + loanProductPaymentTypeConfigData.getLoanProductData().getName() + " with payment type config " + loanProductPaymentTypeConfigData.getName() + " does not have a source payment type configuration.");
+            }
+        } else {
+            log.warn("No configuration for Loan Product Payment Type.");
+        }
+
+        if (doNotAllowAfterCheckLoanProductPaymentTypeConfig) {
+            throw new LoanProductPaymentTypeConfigNotFoundException(
+                    "You have selected a wrong payment type " + paymentType.getPaymentName() + " for this loan.");
+        }
+
+        String message = "Successful";
+        String auth = null;
+        Integer statusEnum = LoanInstrumentStatus.PENDING.getValue();
+        String data = null;
 
         final JsonObject jsonObjectLoanInstrument = new JsonObject();
         jsonObjectLoanInstrument.addProperty(ClientBusinessApiConstants.paymentTypeIdParamName, paymentTypeId);

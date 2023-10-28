@@ -98,7 +98,7 @@ public class LoanProductApprovalApiResource {
     // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
     // EmployerApiResourceSwagger.GetEmployersResponse.class)))
     ) })
-    public String getAllEmployers(@Context final UriInfo uriInfo,
+    public String getAllLoanProductApproval(@Context final UriInfo uriInfo,
             @QueryParam("productId") @Parameter(description = "productId") final Long productId,
             @QueryParam("name") @Parameter(description = "name") final String name,
             @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
@@ -139,7 +139,7 @@ public class LoanProductApprovalApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // EmployerApiResourceSwagger.GetEmployersEmployerIdResponse.class))
     ) })
-    public String retrieveOneEmployer(
+    public String retrieveOneLoanProductApproval(
             @PathParam("loanProductApprovalId") @Parameter(description = "loanProductApprovalId") final Long loanProductApprovalId,
             @Context final UriInfo uriInfo) {
         this.securityContext.authenticatedUser().validateHasReadPermission(LoanProductApprovalApiResourceConstants.RESOURCENAME);
@@ -160,7 +160,7 @@ public class LoanProductApprovalApiResource {
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
     // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
     ) })
-    public String createEmployer(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+    public String createLoanProductApproval(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .createLoanProductApproval()//
                 .withJson(apiRequestBodyAsJson) //
@@ -182,7 +182,7 @@ public class LoanProductApprovalApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // EmployerApiResourceSwagger.PutEmployersEmployerIdResponse.class))
     ) })
-    public String updateEmployer(
+    public String updateLoanProductApproval(
             @PathParam("loanProductApprovalId") @Parameter(description = "loanProductApprovalId") final Long loanProductApprovalId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         final CommandWrapper commandRequest = new CommandWrapperBuilder().updateLoanProductApproval(loanProductApprovalId)

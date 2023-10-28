@@ -177,20 +177,18 @@ public class LoanProductPaymentTypeConfigApiResource {
     }
 
     @GET
-    @Path("{loanProductPaymentId}")
+    @Path("{id}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve a loan Product Payment", description = "Retrieves a loan Product Payment")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // EmployerApiResourceSwagger.GetLoanProductPaymentTypeConfigEmployerIdResponse.class))
         )})
     public String retrieveOne(
-            @PathParam("loanProductPaymentId") @Parameter(description = "loanProductPaymentId") final Long loanProductPaymentId,
+            @PathParam("id") @Parameter(description = "id") final Long id,
             @Context final UriInfo uriInfo) {
         this.securityContext.authenticatedUser().validateHasReadPermission(LoanProductPaymentTypeConfigConstants.RESOURCENAME);
-        final LoanProductPaymentTypeConfigData loanProductPaymentData = this.readPlatformService.retrieveOne(loanProductPaymentId);
+        final LoanProductPaymentTypeConfigData loanProductPaymentData = this.readPlatformService.retrieveOne(id);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.jsonSerializer.serialize(settings, loanProductPaymentData,
                 LoanProductPaymentTypeConfigConstants.RESPONSE_DATA_PARAMETERS);

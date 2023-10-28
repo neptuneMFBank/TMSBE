@@ -60,6 +60,7 @@ import org.apache.fineract.portfolio.loanaccount.data.RepaymentScheduleRelatedLo
 import org.apache.fineract.portfolio.loanaccount.domain.LoanStatus;
 import org.apache.fineract.portfolio.loanaccount.guarantor.data.GuarantorData;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.data.LoanScheduleData;
+import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductPaymentTypeConfigData;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductBorrowerCycleVariationData;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.data.TransactionProcessingStrategyData;
@@ -260,6 +261,7 @@ public final class LoanBusinessAccountData {
     private String activationChannelName;
 
     private Collection<MetricsData> metricsData;
+    private LoanProductPaymentTypeConfigData loanProductPaymentTypeConfigData;
 
     public static LoanBusinessAccountData importInstanceIndividual(EnumOptionData loanTypeEnumOption, Long clientId, Long productId,
             Long loanOfficerId, LocalDate submittedOnDate, Long fundId, BigDecimal principal, Integer numberOfRepayments,
@@ -2016,6 +2018,14 @@ public final class LoanBusinessAccountData {
 
     public void setCollateralOld(Collection<CollateralData> collateralOld) {
         this.collateralOld = collateralOld;
+    }
+
+    public LoanProductPaymentTypeConfigData getLoanProductPaymentTypeConfigData() {
+        return loanProductPaymentTypeConfigData;
+    }
+
+    public void setLoanProductPaymentTypeConfigData(LoanProductPaymentTypeConfigData loanProductPaymentTypeConfigData) {
+        this.loanProductPaymentTypeConfigData = loanProductPaymentTypeConfigData;
     }
 
 }

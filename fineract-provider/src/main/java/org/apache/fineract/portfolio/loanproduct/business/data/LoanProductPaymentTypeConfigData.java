@@ -28,29 +28,42 @@ import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
 @Data
 public class LoanProductPaymentTypeConfigData implements Serializable {
 
-    private boolean active;
-
     private final Long id;
     private final String name;
     private final String description;
     private final Collection<LoanProductData> loanProductOptions;
     private final LoanProductData loanProductData;
     private final Collection<PaymentTypeData> paymentTypeOptions;
+    private final Boolean active;
 
     private Collection<PaymentTypeData> paymentTypes;
+    private PaymentTypeData paymentTypeData;
 
     public static LoanProductPaymentTypeConfigData template(Collection<LoanProductData> loanProductOptions, Collection<PaymentTypeData> paymentTypeOptions) {
         Long id = null;
         String name = null;
         LoanProductData loanProductData = null;
         final String description = null;
-        return new LoanProductPaymentTypeConfigData(id, name, description, loanProductOptions, loanProductData, paymentTypeOptions);
+        final Boolean active = null;
+        return new LoanProductPaymentTypeConfigData(id, name, description, loanProductOptions, loanProductData, paymentTypeOptions, active);
     }
 
-    public static LoanProductPaymentTypeConfigData lookUp(Long id, String name, final String description, LoanProductData loanProductData) {
+    public static LoanProductPaymentTypeConfigData lookUp(Long id, String name,
+            final String description, LoanProductData loanProductData, final Boolean active) {
         Collection<LoanProductData> loanProductOptions = null;
         Collection<PaymentTypeData> paymentTypeOptions = null;
-        return new LoanProductPaymentTypeConfigData(id, name, description, loanProductOptions, loanProductData, paymentTypeOptions);
+        return new LoanProductPaymentTypeConfigData(id, name, description, loanProductOptions, loanProductData, paymentTypeOptions, active);
     }
 
+    public static LoanProductPaymentTypeConfigData lookUpChild(final Long id, final PaymentTypeData paymentTypeData) {
+        Collection<LoanProductData> loanProductOptions = null;
+        Collection<PaymentTypeData> paymentTypeOptions = null;
+        final Boolean active = null;
+        final String name = null;
+        final String description = null;
+        final LoanProductData loanProductData = null;
+        final LoanProductPaymentTypeConfigData childPaymentType = new LoanProductPaymentTypeConfigData(id, name, description, loanProductOptions, loanProductData, paymentTypeOptions, active);
+        childPaymentType.setPaymentTypeData(paymentTypeData);
+        return childPaymentType;
+    }
 }

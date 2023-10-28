@@ -22,6 +22,7 @@ import java.util.Collection;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductPaymentTypeConfigData;
+import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
 
 public interface LoanProductPaymentTypeConfigReadPlatformService {
 
@@ -29,7 +30,7 @@ public interface LoanProductPaymentTypeConfigReadPlatformService {
 
     LoanProductPaymentTypeConfigData retrieveOne(final Long id);
 
-    Collection<LoanProductPaymentTypeConfigData> retrieveConfig(final Long loanProductPaymentId);
+    Collection<PaymentTypeData> retrievePaymentTypeConfig(final Long loanProductPaymentId);
 
     LoanProductPaymentTypeConfigData retrieveOneViaLoanProduct(final Long loanProductId);
 

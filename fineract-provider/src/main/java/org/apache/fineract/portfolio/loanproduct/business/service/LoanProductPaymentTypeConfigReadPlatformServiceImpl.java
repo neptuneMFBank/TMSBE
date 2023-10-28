@@ -18,7 +18,6 @@
  */
 package org.apache.fineract.portfolio.loanproduct.business.service;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -28,8 +27,8 @@ import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.PaginationHelper;
@@ -43,8 +42,6 @@ import org.apache.fineract.portfolio.loanproduct.exception.business.LoanProductP
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
 import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
 import org.apache.fineract.portfolio.paymenttype.service.PaymentTypeReadPlatformService;
-import org.apache.fineract.useradministration.data.RoleData;
-import org.apache.fineract.useradministration.service.RoleReadPlatformService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -68,7 +65,6 @@ public class LoanProductPaymentTypeConfigReadPlatformServiceImpl implements Loan
     private final LoanProductPaymentTypeMapper loanProductPaymentTypeMapper = new LoanProductPaymentTypeMapper();
     private final LoanProductPaymentTypeConfigMapper loanProductPaymentTypeConfigMapper = new LoanProductPaymentTypeConfigMapper();
     private final LoanProductReadPlatformService loanProductReadPlatformService;
-    private final RoleReadPlatformService roleReadPlatformService;
     private final PaymentTypeReadPlatformService paymentTypeReadPlatformService;
 
     @Override
@@ -145,7 +141,7 @@ public class LoanProductPaymentTypeConfigReadPlatformServiceImpl implements Loan
         }
 
         if (searchParameters.isProductIdPassed()) {
-            extraCriteria += " and lpa.loan_product_id = ? ";
+            extraCriteria += " and lpa.product_id = ? ";
             paramList.add(productId);
         }
 
@@ -166,9 +162,8 @@ public class LoanProductPaymentTypeConfigReadPlatformServiceImpl implements Loan
             final String sql = "select " + loanProductPaymentTypeMapper.schema() + " where lpa.id = ?";
             LoanProductPaymentTypeConfigData loanProductPaymentTypeData = this.jdbcTemplate.queryForObject(sql, loanProductPaymentTypeMapper,
                     new Object[]{LoanProductPaymentTypeId});
-            Collection<LoanProductPaymentTypeConfigData> retrieveConfig = retrieveConfig(LoanProductPaymentTypeId);
-            if (!CollectionUtils.isEmpty(retrieveConfig)) {
-                loanProductPaymentTypeData = LoanProductPaymentTypeConfigData.lookUpFinal(retrieveConfig, loanProductPaymentTypeData);
+            if (ObjectUtils.isNotEmpty(loanProductPaymentTypeData)) {
+                fetchPaymentTypeConfig(loanProductPaymentTypeData);
             }
             return loanProductPaymentTypeData;
         } catch (DataAccessException e) {
@@ -181,65 +176,68 @@ public class LoanProductPaymentTypeConfigReadPlatformServiceImpl implements Loan
     public LoanProductPaymentTypeConfigData retrieveOneViaLoanProduct(Long loanProductId) {
         this.context.authenticatedUser();
         try {
-            final String sql = "select " + loanProductPaymentTypeMapper.schema() + " where lpa.loan_product_id = ?";
+            final String sql = "select " + loanProductPaymentTypeMapper.schema() + " where lpa.product_id = ?";
             LoanProductPaymentTypeConfigData loanProductPaymentTypeData = this.jdbcTemplate.queryForObject(sql, loanProductPaymentTypeMapper,
                     new Object[]{loanProductId});
-            if (loanProductPaymentTypeData != null) {
-                Collection<LoanProductPaymentTypeConfigData> retrieveConfig = retrieveConfig(loanProductPaymentTypeData.getId());
-                if (!CollectionUtils.isEmpty(retrieveConfig)) {
-                    loanProductPaymentTypeData = LoanProductPaymentTypeConfigData.lookUpFinal(retrieveConfig, loanProductPaymentTypeData);
-                }
+            if (ObjectUtils.isNotEmpty(loanProductPaymentTypeData)) {
+                fetchPaymentTypeConfig(loanProductPaymentTypeData);
             }
             return loanProductPaymentTypeData;
         } catch (DataAccessException e) {
             LOG.error("retrieveOneViaLoanProduct Payment not found: {}", e);
-            throw new LoanProductPaymentTypeConfigNotFoundException("Loan Product with id " + loanProductId + " does not exist for payment.");
+            return null;
+            //throw new LoanProductPaymentTypeConfigNotFoundException("Loan Product with id " + loanProductId + " does not exist for payment.");
+        }
+    }
+
+    protected void fetchPaymentTypeConfig(LoanProductPaymentTypeConfigData loanProductPaymentTypeData) {
+        Collection<PaymentTypeData> retrievePaymentTypeConfig = retrievePaymentTypeConfig(loanProductPaymentTypeData.getId());
+        if (!CollectionUtils.isEmpty(retrievePaymentTypeConfig)) {
+            loanProductPaymentTypeData.setPaymentTypes(retrievePaymentTypeConfig);
         }
     }
 
     @Override
-    public Collection<LoanProductPaymentTypeConfigData> retrieveConfig(Long LoanProductPaymentTypeId) {
+    public Collection<PaymentTypeData> retrievePaymentTypeConfig(Long LoanProductPaymentTypeId) {
         this.context.authenticatedUser();
-        final String sql = "select " + loanProductPaymentTypeConfigMapper.schema() + " WHERE lpac.rlpa_id = ? ORDER BY lpac.rank ASC ";
+        final String sql = "select " + loanProductPaymentTypeConfigMapper.schema() + " WHERE lpac.m_product_loan_payment_type_config_id = ? ";
         return this.jdbcTemplate.query(sql, loanProductPaymentTypeConfigMapper, new Object[]{LoanProductPaymentTypeId}); // NOSONAR
     }
 
     private static final class LoanProductPaymentTypeMapper implements RowMapper<LoanProductPaymentTypeConfigData> {
 
         public String schema() {
-            return " lpa.id, lpa.name, lpa.loan_product_id loanProductId," + " mpl.name loanProductName "
-                    + " from m_role_loan_product_payment lpa " + " JOIN m_product_loan mpl ON mpl.id=lpa.loan_product_id ";
+            return " lpa.id, lpa.name, lpa.active, lpa.description, lpa.product_id loanProductId, mpl.name loanProductName "
+                    + " from m_product_loan_payment_type_config lpa " + " JOIN m_product_loan mpl ON mpl.id=lpa.product_id ";
         }
 
         @Override
         public LoanProductPaymentTypeConfigData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
             final Long id = rs.getLong("id");
             final String name = rs.getString("name");
+            final String description = rs.getString("description");
+            final Boolean active = rs.getBoolean("active");
             final Long loanProductId = rs.getLong("loanProductId");
             final String loanProductName = rs.getString("loanProductName");
             final LoanProductData loanProductData = LoanProductData.lookup(loanProductId, loanProductName, null);
-            return LoanProductPaymentTypeConfigData.lookUp(id, name, loanProductData);
+            return LoanProductPaymentTypeConfigData.lookUp(id, name, description, loanProductData, active);
         }
 
     }
 
-    private static final class LoanProductPaymentTypeConfigMapper implements RowMapper<LoanProductPaymentTypeConfigData> {
+    private static final class LoanProductPaymentTypeConfigMapper implements RowMapper<PaymentTypeData> {
 
         public String schema() {
-            return " lpac.id, lpac.role_id roleId, mr.name as roleName, lpac.min_payment_amount minPaymentAmount, lpac.max_payment_amount maxPaymentAmount, lpac.rank "
-                    + " from m_role_loan_product_payment_config lpac " + " JOIN m_role mr ON mr.id=lpac.role_id ";
+            return " lpac.payment_type_id paymentTypeId, mp.value paymentTypeName "
+                    + " FROM m_product_loan_payment_type_config_code lpac "
+                    + " JOIN m_payment_type mp ON mp.id=lpac.payment_type_id ";
         }
 
         @Override
-        public LoanProductPaymentTypeConfigData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
-            final Long id = rs.getLong("id");
-            final Long roleId = rs.getLong("roleId");
-            final String roleName = rs.getString("roleName");
-            final RoleData roleData = new RoleData(roleId, roleName, null, null);
-            final BigDecimal minPaymentAmount = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "minPaymentAmount");
-            final BigDecimal maxPaymentAmount = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "maxPaymentAmount");
-            final Integer rank = JdbcSupport.getIntegerDefaultToNullIfZero(rs, "rank");
-            return LoanProductPaymentTypeConfigData.instance(id, roleData, minPaymentAmount, maxPaymentAmount, rank);
+        public PaymentTypeData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+            final Long paymentTypeId = rs.getLong("paymentTypeId");
+            final String paymentTypeName = rs.getString("paymentTypeName");
+            return PaymentTypeData.instance(paymentTypeId, paymentTypeName);
         }
 
     }

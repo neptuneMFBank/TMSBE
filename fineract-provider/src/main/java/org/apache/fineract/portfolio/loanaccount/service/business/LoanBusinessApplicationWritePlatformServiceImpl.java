@@ -1530,12 +1530,12 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         final LoanProductPaymentTypeConfigData loanProductPaymentTypeConfigData
                 = this.loanProductPaymentTypeConfigReadPlatformService.
                         retrieveOneViaLoanProduct(loanProductId);
-        if (!ObjectUtils.isEmpty(loanProductPaymentTypeConfigData)) {
+        if (ObjectUtils.isNotEmpty(loanProductPaymentTypeConfigData)) {
             if (BooleanUtils.isNotTrue(loanProductPaymentTypeConfigData.getActive())) {
                 throw new LoanProductPaymentTypeConfigNotFoundException("Loan product " + loanProductPaymentTypeConfigData.getLoanProductData().getName() + " with payment type config " + loanProductPaymentTypeConfigData.getName() + " is not active.");
             }
             final Collection<PaymentTypeData> paymentTypeDatas = loanProductPaymentTypeConfigData.getPaymentTypes();
-            if (ObjectUtils.isEmpty(paymentTypeDatas)) {
+            if (ObjectUtils.isNotEmpty(paymentTypeDatas)) {
                 doNotAllowAfterCheckLoanProductPaymentTypeConfig
                         = paymentTypeDatas.stream()
                                 .noneMatch(predicate -> Objects.equals(predicate.getId(), paymentTypeId));

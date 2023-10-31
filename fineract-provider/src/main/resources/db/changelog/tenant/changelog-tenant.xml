@@ -131,4 +131,5 @@
     <include file="parts/0114_m_update_document_config_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0115_m_create_product_loan_payment_type_config_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0116_m_product_loan_payment_type_config_code.sql" relativeToChangelogFile="true" />
+    <include file="parts/0117_m_loan_arrears_view.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

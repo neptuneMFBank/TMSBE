@@ -755,4 +755,12 @@ public final class ClientData implements Comparable<ClientData>, Serializable {
         return this.isAddressEnabled;
     }
 
+    public String getMobileNo() {
+        return mobileNo;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
 }

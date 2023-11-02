@@ -94,7 +94,9 @@ import org.apache.fineract.portfolio.calendar.service.CalendarReadPlatformServic
 import org.apache.fineract.portfolio.charge.data.ChargeData;
 import org.apache.fineract.portfolio.charge.domain.ChargeTimeType;
 import org.apache.fineract.portfolio.charge.service.ChargeReadPlatformService;
+import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessData;
+import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
 import org.apache.fineract.portfolio.client.service.business.ClientIdentifierBusinessReadPlatformService;
 import org.apache.fineract.portfolio.collateral.data.CollateralData;
 import org.apache.fineract.portfolio.collateral.service.CollateralReadPlatformService;
@@ -230,6 +232,8 @@ public class LoansBusinessApiResource {
     private final CollateralReadPlatformService loanCollateralReadPlatformService;
     private final LoanProductPaymentTypeConfigReadPlatformService loanProductPaymentTypeConfigReadPlatformService;
 
+    private final ClientReadPlatformService clientReadPlatformService;
+
     public LoansBusinessApiResource(final PlatformSecurityContext context,
             final LoanProductReadPlatformService loanProductReadPlatformService,
             final LoanDropdownReadPlatformService dropdownReadPlatformService, final FundReadPlatformService fundReadPlatformService,
@@ -257,7 +261,7 @@ public class LoansBusinessApiResource {
             final LoanBusinessReadPlatformService loanBusinessReadPlatformService,
             final DefaultToApiJsonSerializer<String> calculateLoanScheduleToApiJsonSerializer, final LoansApiResource loansApiResource,
             final LoanReadPlatformService loanReadPlatformService, final MetricsReadPlatformService metricsReadPlatformService, final LoanProductBusinessReadPlatformService loanProductBusinessReadPlatformService,
-            final LoanProductPaymentTypeConfigReadPlatformService loanProductPaymentTypeConfigReadPlatformService, final CollateralReadPlatformService loanCollateralReadPlatformService, final ApplicationContext contextApplication, final DefaultToApiJsonSerializer<LoanBusinessDocData> toApiDocJsonSerializer, final AddressReadPlatformServiceImpl readPlatformService, final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService, final DocumentBusinessWritePlatformService documentWritePlatformService) {
+            final ClientReadPlatformService clientReadPlatformService, final LoanProductPaymentTypeConfigReadPlatformService loanProductPaymentTypeConfigReadPlatformService, final CollateralReadPlatformService loanCollateralReadPlatformService, final ApplicationContext contextApplication, final DefaultToApiJsonSerializer<LoanBusinessDocData> toApiDocJsonSerializer, final AddressReadPlatformServiceImpl readPlatformService, final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService, final DocumentBusinessWritePlatformService documentWritePlatformService) {
         this.context = context;
         this.loanProductReadPlatformService = loanProductReadPlatformService;
         this.dropdownReadPlatformService = dropdownReadPlatformService;
@@ -302,6 +306,7 @@ public class LoansBusinessApiResource {
         this.clientSignatureId = Long.valueOf(environment.getProperty(CLIENT_SIGNATURE_ID));
         this.loanCollateralReadPlatformService = loanCollateralReadPlatformService;
         this.loanProductPaymentTypeConfigReadPlatformService = loanProductPaymentTypeConfigReadPlatformService;
+        this.clientReadPlatformService = clientReadPlatformService;
     }
 
     /*
@@ -789,12 +794,24 @@ public class LoansBusinessApiResource {
             jsonObject.add("loanProduct", loanProductInfo);
 
             final Long clientId = this.fromJsonHelper.extractLongNamed(LoanApiConstants.clientIdParameterName, retrieveLoanElement);
+            final ClientData clientData = this.clientReadPlatformService.retrieveOne(clientId);
+            final String clientDataInfo = this.toApiJsonSerializer.serialize(clientData);
+            final JsonElement clientInfo = this.fromJsonHelper.parse(clientDataInfo);
+            jsonObject.add("clientInfo", clientInfo);
+
             final Integer homeAddress = 15;
             final Collection<AddressData> addressDatas = this.readPlatformService.retrieveAddressbyTypeAndStatus(clientId, homeAddress, "true");
             final AddressData clientAddressData = addressDatas.stream().findFirst().orElse(null);
             final String clientAddressDataInfo = this.toApiJsonSerializer.serialize(clientAddressData);
             final JsonElement clientAddressInfo = this.fromJsonHelper.parse(clientAddressDataInfo);
             jsonObject.add("clientAddressData", clientAddressInfo);
+
+            final Integer officeAddress = 16;
+            final Collection<AddressData> officeAddressDatas = this.readPlatformService.retrieveAddressbyTypeAndStatus(clientId, officeAddress, "true");
+            final AddressData clientOfficeAddressData = officeAddressDatas.stream().findFirst().orElse(null);
+            final String clientOfficeAddressDataInfo = this.toApiJsonSerializer.serialize(clientOfficeAddressData);
+            final JsonElement clientOfficeAddressInfo = this.fromJsonHelper.parse(clientOfficeAddressDataInfo);
+            jsonObject.add("clientOfficeAddressInfo", clientOfficeAddressInfo);
 
             final Collection<ClientIdentifierBusinessData> clientIdentifiers = this.clientIdentifierBusinessReadPlatformService
                     .retrieveClientIdentifiers(clientId);

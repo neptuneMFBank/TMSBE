@@ -23,7 +23,7 @@ ml.term_frequency, ml.term_period_frequency_enum, ml.total_outstanding_derived, 
 mlaa.principal_overdue_derived, mlaa.interest_overdue_derived, mlaa.fee_charges_overdue_derived, ml.expected_maturedon_date,
 mlaa.penalty_charges_overdue_derived, mlaa.total_overdue_derived, mlaa.overdue_since_date_derived, ml.total_expected_repayment_derived,
 mc.transfer_to_office_id, mc.office_id client_office_id, mc.id client_id, mc.display_name client_display_name, mc.mobile_no, mc.email_address, slk.bvn, slk.nin, slk.alternateMobileNumber, ml.disbursedon_date,
-mg.office_id group_office_id, mg.display_name group_display_name, ml.nominal_interest_rate_per_period, ml.annual_nominal_interest_rate, ml.currency_code, ml.submittedon_date
+mg.office_id group_office_id, mg.id group_id, mg.display_name group_display_name, ml.nominal_interest_rate_per_period, ml.annual_nominal_interest_rate, ml.currency_code, ml.submittedon_date
 FROM m_loan_arrears_aging mlaa
 JOIN m_loan ml ON ml.id=mlaa.loan_id
 JOIN m_product_loan mpl ON mpl.id=ml.product_id

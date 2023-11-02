@@ -18,7 +18,6 @@
  */
 package org.apache.fineract.portfolio.loanaccount.api.business;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -264,8 +263,8 @@ public class LoansArrearsBusinessApiResource {
         // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansResponse.class))
         )})
     public String retrieveAll(@Context final UriInfo uriInfo,
-            @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
-            @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
+            @QueryParam("staffId") @Parameter(description = "staffId") final Long staffId,
+            @QueryParam("productId") @Parameter(description = "productId") final Long productId,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
             @QueryParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
@@ -289,8 +288,7 @@ public class LoansArrearsBusinessApiResource {
             toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
         }
 
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forLoansBusiness(clientId, officeId, externalId,
-                statusId, null, offset, limit, orderBy, sortOrder, null, accountNo, fromDate, toDate);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forLoansArrearsBusiness(productId, clientId, officeId, offset, limit, orderBy, sortOrder, staffId, accountNo, fromDate, toDate);
 
         final Page<LoanBusinessAccountData> loanBasicDetails = this.loanArrearsBusinessReadPlatformService.retrieveAll(searchParameters);
 

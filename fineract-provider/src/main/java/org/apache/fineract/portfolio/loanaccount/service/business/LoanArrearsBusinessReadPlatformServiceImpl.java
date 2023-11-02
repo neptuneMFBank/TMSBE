@@ -205,6 +205,17 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
                 }
             }
 
+            if (searchParameters.isProductIdPassed()) {
+                sqlBuilder.append("and mla.product_id =?");
+                extraCriterias.add(searchParameters.getProductId());
+                arrayPos = arrayPos + 1;
+            }
+            if (searchParameters.isStaffIdPassed()) {
+                sqlBuilder.append("and mla.loan_officer_id =?");
+                extraCriterias.add(searchParameters.getStaffId());
+                arrayPos = arrayPos + 1;
+            }
+
             if (searchParameters.isOfficeIdPassed()) {
                 sqlBuilder.append("and mla.office_id =?");
                 extraCriterias.add(searchParameters.getOfficeId());
@@ -255,7 +266,7 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
         }
 
         public String loanSchema() {
-            return " mla.id, mla.is_topup isTopup, mla.account_no accountNo, mla.product_id loanProductId, mpl.product_name loanProductName, "
+            return " mla.id, mla.is_topup isTopup, mla.account_no accountNo, mla.product_id loanProductId, mla.product_name loanProductName, "
                     + " mla.loan_officer_id loanOfficerId, ms.loan_officer_name loanOfficerName, mla.number_of_repayments numberOfRepayments, mla.total_recovered_derived totalRecovered, "
                     + " mla.term_frequency termFrequency, mla.term_period_frequency_enum termPeriodFrequencyType, mla.total_outstanding_derived totalOutstandingDerived, mla.total_repayment_derived totalRepayment, mla.principal_amount principal,"
                     + " mla.principal_overdue_derived principalOverdue, mla.interest_overdue_derived interestOverdue, mla.fee_charges_overdue_derived feeChargesOverdue, mla.expected_maturedon_date expectedMaturityDate,"
@@ -348,26 +359,22 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
             final Integer termFrequency = JdbcSupport.getInteger(rs, "termFrequency");
             final Integer termPeriodFrequencyTypeInt = JdbcSupport.getInteger(rs, "termPeriodFrequencyType");
             final EnumOptionData termPeriodFrequencyType = LoanEnumerations.termFrequencyType(termPeriodFrequencyTypeInt);
-            
+
             final LoanStatusEnumData status = null;
 
-            
+            // loan summary
+            final BigDecimal principalOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "principalOverdue");
 
-                // loan summary
-                
-                final BigDecimal principalOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "principalOverdue");
+            final BigDecimal interestOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "interestOverdue");
+            final BigDecimal feeChargesOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "feeChargesOverdue");
 
-                
-                final BigDecimal interestOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "interestOverdue");
-                final BigDecimal feeChargesOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "feeChargesOverdue");
+            final BigDecimal penaltyChargesOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "penaltyChargesOverdue");
 
-                final BigDecimal penaltyChargesOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "penaltyChargesOverdue");
+            final BigDecimal totalExpectedRepayment = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalExpectedRepayment");
+            final BigDecimal totalRepayment = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalRepayment");
+            final BigDecimal totalOutstanding = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalOutstanding");
+            final BigDecimal totalRecovered = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalRecovered");
 
-                final BigDecimal totalExpectedRepayment = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalExpectedRepayment");
-                final BigDecimal totalRepayment = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalRepayment");
-                final BigDecimal totalOutstanding = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalOutstanding");
-                final BigDecimal totalRecovered = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalRecovered");
-            
             Boolean inArrears = true;
             final BigDecimal totalOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalOverdue");
 

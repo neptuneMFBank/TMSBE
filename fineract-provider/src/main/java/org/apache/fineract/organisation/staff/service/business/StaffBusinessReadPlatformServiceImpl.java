@@ -203,7 +203,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
             sqlBuilder.append(this.clientCountSummaryMapper.schema());
-            sqlBuilder.append(" WHERE ml.staff_id=? ");
+            sqlBuilder.append(" WHERE mcv.staff_id=? ");
 
             String sql = sqlBuilder.toString();
             jsonObjectClient = this.jdbcTemplate.queryForObject(sql, this.clientCountSummaryMapper, staffId);

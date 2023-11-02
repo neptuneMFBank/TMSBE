@@ -267,7 +267,7 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
 
         public String loanSchema() {
             return " mla.id, mla.is_topup isTopup, mla.account_no accountNo, mla.product_id loanProductId, mla.product_name loanProductName, "
-                    + " mla.loan_officer_id loanOfficerId, ms.loan_officer_name loanOfficerName, mla.number_of_repayments numberOfRepayments, mla.total_recovered_derived totalRecovered, "
+                    + " mla.loan_officer_id loanOfficerId, mla.loan_officer_name loanOfficerName, mla.number_of_repayments numberOfRepayments, mla.total_recovered_derived totalRecovered, "
                     + " mla.term_frequency termFrequency, mla.term_period_frequency_enum termPeriodFrequencyType, mla.total_outstanding_derived totalOutstandingDerived, mla.total_repayment_derived totalRepayment, mla.principal_amount principal,"
                     + " mla.principal_overdue_derived principalOverdue, mla.interest_overdue_derived interestOverdue, mla.fee_charges_overdue_derived feeChargesOverdue, mla.expected_maturedon_date expectedMaturityDate,"
                     + " mla.penalty_charges_overdue_derived penaltyChargesOverdueDerived, mla.total_overdue_derived totalOverdue, mla.overdue_since_date_derived overdueSinceDate, mla.total_expected_repayment_derived totalExpectedRepaymentDerived,"

@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.loanaccount.data.business;
 
+import com.google.gson.JsonObject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -85,7 +86,7 @@ public final class LoanBusinessAccountData {
     // status
     private final LoanStatusEnumData status;
     private final EnumOptionData subStatus;
-
+    private JsonObject clientData;
     // related to
     private final Long clientId;
     private final String clientAccountNo;
@@ -2026,6 +2027,10 @@ public final class LoanBusinessAccountData {
 
     public void setLoanProductPaymentTypeConfigData(LoanProductPaymentTypeConfigData loanProductPaymentTypeConfigData) {
         this.loanProductPaymentTypeConfigData = loanProductPaymentTypeConfigData;
+    }
+
+    public void setClientData(JsonObject clientData) {
+        this.clientData = clientData;
     }
 
 }

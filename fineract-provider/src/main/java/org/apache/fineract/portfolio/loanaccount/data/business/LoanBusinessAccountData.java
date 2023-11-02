@@ -1265,7 +1265,7 @@ public final class LoanBusinessAccountData {
             final EnumOptionData daysInYearType, final boolean isInterestRecalculationEnabled,
             final LoanInterestRecalculationData interestRecalculationData, final Boolean createStandingInstructionAtDisbursement,
             final Boolean isVariableInstallmentsAllowed, Integer minimumGap, Integer maximumGap, final EnumOptionData subStatus,
-            final boolean canUseForTopup, final boolean isTopup, final Long closureLoanId, final String closureLoanAccountNo,
+            final Boolean canUseForTopup, final boolean isTopup, final Long closureLoanId, final String closureLoanAccountNo,
             final BigDecimal topupAmount, final boolean isEqualAmortization, final BigDecimal fixedPrincipalPercentagePerInstallment) {
 
         final LoanScheduleData repaymentSchedule = null;

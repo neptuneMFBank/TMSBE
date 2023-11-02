@@ -172,8 +172,8 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
         // to support senario where loan has group_id only OR client_id will
         // probably require a UNION query
         // but that at present is an edge case
-        sqlBuilder.append(" join m_office o on (o.id = c.office_id or o.id = g.office_id) ");
-        sqlBuilder.append(" left join m_office transferToOffice on transferToOffice.id = c.transfer_to_office_id ");
+        sqlBuilder.append(" join m_office o on (o.id = mla.client_office_id or o.id = mla.group_office_id) ");
+        sqlBuilder.append(" left join m_office transferToOffice on transferToOffice.id = mla.transfer_to_office_id ");
         sqlBuilder.append(" where ( o.hierarchy like ? or transferToOffice.hierarchy like ?)");
 
         int arrayPos = 2;
@@ -189,45 +189,35 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
                 // final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                 final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
                 if (startPeriod != null && endPeriod != null) {
-                    sqlBuilder.append(" and CAST(l.submittedon_date AS DATE) BETWEEN ? AND ? ");
+                    sqlBuilder.append(" and CAST(mla.overdue_since_date_derived AS DATE) BETWEEN ? AND ? ");
                     extraCriterias.add(df.format(startPeriod));
                     arrayPos = arrayPos + 1;
                     extraCriterias.add(df.format(endPeriod));
                     arrayPos = arrayPos + 1;
                 } else if (startPeriod != null) {
-                    sqlBuilder.append(" and CAST(l.submittedon_date AS DATE) >= ? ");
+                    sqlBuilder.append(" and CAST(mla.overdue_since_date_derived AS DATE) >= ? ");
                     extraCriterias.add(df.format(startPeriod));
                     arrayPos = arrayPos + 1;
                 } else if (endPeriod != null) {
-                    sqlBuilder.append(" and CAST(l.submittedon_date AS DATE) <= ? ");
+                    sqlBuilder.append(" and CAST(mla.overdue_since_date_derived AS DATE) <= ? ");
                     extraCriterias.add(df.format(endPeriod));
                     arrayPos = arrayPos + 1;
                 }
             }
 
-            if (searchParameters.isStatusIdPassed()) {
-                sqlBuilder.append(" and l.loan_status_id = ?");
-                extraCriterias.add(searchParameters.getStatusId());
-                arrayPos = arrayPos + 1;
-            }
-            if (searchParameters.isExternalIdPassed()) {
-                sqlBuilder.append(" and l.external_id = ?");
-                extraCriterias.add(searchParameters.getExternalId());
-                arrayPos = arrayPos + 1;
-            }
             if (searchParameters.isOfficeIdPassed()) {
-                sqlBuilder.append("and c.office_id =?");
+                sqlBuilder.append("and mla.office_id =?");
                 extraCriterias.add(searchParameters.getOfficeId());
                 arrayPos = arrayPos + 1;
             }
             if (searchParameters.isClientIdPassed()) {
-                sqlBuilder.append("and l.client_id =?");
+                sqlBuilder.append("and mla.client_id =?");
                 extraCriterias.add(searchParameters.getClientId());
                 arrayPos = arrayPos + 1;
             }
 
             if (searchParameters.isAccountNoPassed()) {
-                sqlBuilder.append(" and l.account_no = ?");
+                sqlBuilder.append(" and mla.account_no = ?");
                 extraCriterias.add(searchParameters.getAccountNo());
                 arrayPos = arrayPos + 1;
             }
@@ -274,7 +264,7 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
                     + " mla.group_id groupId, mla.group_display_name groupName, mla.nominal_interest_rate_per_period interestRatePerPeriod, mla.annual_nominal_interest_rate annualInterestRate, "
                     + " mla.currency_code currencyCode, rc." + sqlGenerator.escape("name")
                     + " as currencyName, rc.display_symbol currencyDisplaySymbol, rc.internationalized_name_code currencyNameCode, "
-                    + " mla.submittedon_date submittedOnDate, l.disbursedon_date actualDisbursementDate,"
+                    + " mla.submittedon_date submittedOnDate, mla.disbursedon_date actualDisbursementDate, mla.client_office_id, mla.group_office_id, mla.transfer_to_office_id "
                     + " FROM m_loan_arrears_view mla "
                     + " join m_currency rc on rc."
                     + sqlGenerator.escape("code") + " = mla.currency_code";

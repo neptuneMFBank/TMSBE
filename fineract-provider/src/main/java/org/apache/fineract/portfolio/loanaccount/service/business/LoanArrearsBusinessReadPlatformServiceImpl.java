@@ -189,17 +189,17 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
                 // final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                 final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
                 if (startPeriod != null && endPeriod != null) {
-                    sqlBuilder.append(" and CAST(l.submittedon_date AS DATE) BETWEEN ? AND ? ");
+                    sqlBuilder.append(" and CAST(l.overdue_since_date_derived AS DATE) BETWEEN ? AND ? ");
                     extraCriterias.add(df.format(startPeriod));
                     arrayPos = arrayPos + 1;
                     extraCriterias.add(df.format(endPeriod));
                     arrayPos = arrayPos + 1;
                 } else if (startPeriod != null) {
-                    sqlBuilder.append(" and CAST(l.submittedon_date AS DATE) >= ? ");
+                    sqlBuilder.append(" and CAST(l.overdue_since_date_derived AS DATE) >= ? ");
                     extraCriterias.add(df.format(startPeriod));
                     arrayPos = arrayPos + 1;
                 } else if (endPeriod != null) {
-                    sqlBuilder.append(" and CAST(l.submittedon_date AS DATE) <= ? ");
+                    sqlBuilder.append(" and CAST(l.overdue_since_date_derived AS DATE) <= ? ");
                     extraCriterias.add(df.format(endPeriod));
                     arrayPos = arrayPos + 1;
                 }

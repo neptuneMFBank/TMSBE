@@ -19,7 +19,7 @@
 
 CREATE OR REPLACE VIEW m_loan_arrears_view AS
 SELECT ml.id, ml.is_topup, ml.account_no, ml.product_id, mpl.name product_name, ml.loan_officer_id, ms.display_name loan_officer_name, ml.number_of_repayments,
-ml.term_frequency, ml.term_period_frequency_enum, ml.total_outstanding_derived, ml.total_repayment_derived, ml.principal_amount,
+ml.term_frequency, ml.term_period_frequency_enum, ml.total_outstanding_derived, ml.total_repayment_derived, ml.principal_amount, ml.total_recovered_derived,
 mlaa.principal_overdue_derived, mlaa.interest_overdue_derived, mlaa.fee_charges_overdue_derived, ml.expected_maturedon_date,
 mlaa.penalty_charges_overdue_derived, mlaa.total_overdue_derived, mlaa.overdue_since_date_derived, ml.total_expected_repayment_derived,
 mc.id client_id, mc.display_name client_display_name, mc.mobile_no, mc.email_address, slk.bvn, slk.nin, slk.alternateMobileNumber, ml.disbursedon_date,

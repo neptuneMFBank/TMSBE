@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.loanaccount.service.business;
 
+import com.google.gson.JsonObject;
 import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.CLIENT_DEFAULT_ID_API;
 
 import java.math.BigDecimal;
@@ -45,10 +46,8 @@ import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.organisation.monetary.domain.ApplicationCurrencyRepositoryWrapper;
 import org.apache.fineract.organisation.staff.service.StaffReadPlatformService;
 import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
-import org.apache.fineract.portfolio.accountdetails.service.AccountEnumerations;
 import org.apache.fineract.portfolio.calendar.service.CalendarReadPlatformService;
 import org.apache.fineract.portfolio.charge.service.ChargeReadPlatformService;
-import org.apache.fineract.portfolio.client.domain.ClientEnumerations;
 import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
 import org.apache.fineract.portfolio.floatingrates.service.FloatingRatesReadPlatformService;
 import org.apache.fineract.portfolio.fund.service.FundReadPlatformService;
@@ -267,16 +266,16 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
 
         public String loanSchema() {
             return " mla.id, mla.is_topup isTopup, mla.account_no accountNo, mla.product_id loanProductId, mpl.product_name loanProductName, "
-                    + " mla.loan_officer_id loanOfficerId, ms.loan_officer_name loanOfficerName, mla.number_of_repayments numberOfRepayments,"
-                    + " mla.term_frequency termFrequency, mla.term_period_frequency_enum termPeriodFrequencyEnum, mla.total_outstanding_derived totalOutstandingDerived, mla.total_repayment_derived totalRepaymentDerived, mla.principal_amount principal,"
-                    + " mla.principal_overdue_derived principalOverdueDerived, mla.interest_overdue_derived interestOverdueDerived, mla.fee_charges_overdue_derived feeChargesOverdueDerived, mla.expected_maturedon_date expectedMaturedonDate,"
+                    + " mla.loan_officer_id loanOfficerId, ms.loan_officer_name loanOfficerName, mla.number_of_repayments numberOfRepayments, mla.total_recovered_derived totalRecovered, "
+                    + " mla.term_frequency termFrequency, mla.term_period_frequency_enum termPeriodFrequencyType, mla.total_outstanding_derived totalOutstandingDerived, mla.total_repayment_derived totalRepayment, mla.principal_amount principal,"
+                    + " mla.principal_overdue_derived principalOverdue, mla.interest_overdue_derived interestOverdue, mla.fee_charges_overdue_derived feeChargesOverdue, mla.expected_maturedon_date expectedMaturityDate,"
                     + " mla.penalty_charges_overdue_derived penaltyChargesOverdueDerived, mla.total_overdue_derived totalOverdue, mla.overdue_since_date_derived overdueSinceDate, mla.total_expected_repayment_derived totalExpectedRepaymentDerived,"
                     + " mla.client_id clientId, mla.client_display_name clientName, mla.mobile_no mobileNo, mla.email_address emailAddress, mla.bvn, mla.nin, mla.alternateMobileNumber,"
                     + " mla.group_id groupId, mla.group_display_name groupName, mla.nominal_interest_rate_per_period interestRatePerPeriod, mla.annual_nominal_interest_rate annualInterestRate, "
                     + " mla.currency_code currencyCode, rc." + sqlGenerator.escape("name")
                     + " as currencyName, rc.display_symbol currencyDisplaySymbol, rc.internationalized_name_code currencyNameCode, "
                     + " mla.submittedon_date submittedOnDate, l.disbursedon_date actualDisbursementDate,"
-                    + " FROM m_loan_arrears_view mla " 
+                    + " FROM m_loan_arrears_view mla "
                     + " join m_currency rc on rc."
                     + sqlGenerator.escape("code") + " = mla.currency_code";
         }
@@ -293,45 +292,54 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
 
             final Long id = rs.getLong("id");
             final String accountNo = rs.getString("accountNo");
-            final String externalId = rs.getString("externalId");
 
             final Long clientId = JdbcSupport.getLong(rs, "clientId");
             final String clientName = rs.getString("clientName");
+            final String mobileNo = rs.getString("mobileNo");
+            final String emailAddress = rs.getString("emailAddress");
+            final String bvn = rs.getString("bvn");
+            final String alternateMobileNumber = rs.getString("alternateMobileNumber");
+            final JsonObject clientData = new JsonObject();
+            clientData.addProperty("clientId", clientId);
+            clientData.addProperty("clientName", clientName);
+            clientData.addProperty("mobileNo", mobileNo);
+            clientData.addProperty("emailAddress", emailAddress);
+            clientData.addProperty("bvn", bvn);
+            clientData.addProperty("alternateMobileNumber", alternateMobileNumber);
 
             final Long groupId = JdbcSupport.getLong(rs, "groupId");
             final String groupName = rs.getString("groupName");
 
-            final Integer loanTypeId = JdbcSupport.getInteger(rs, "loanType");
-            final EnumOptionData loanType = AccountEnumerations.loanType(loanTypeId);
+            final EnumOptionData loanType = null;
 
             final Long loanOfficerId = JdbcSupport.getLong(rs, "loanOfficerId");
             final String loanOfficerName = rs.getString("loanOfficerName");
 
-            final Long loanPurposeId = JdbcSupport.getLong(rs, "loanPurposeId");
-            final String loanPurposeName = rs.getString("loanPurposeName");
+            final Long loanPurposeId = null;
+            final String loanPurposeName = null;
 
             final Long loanProductId = JdbcSupport.getLong(rs, "loanProductId");
             final String loanProductName = rs.getString("loanProductName");
 
             final LocalDate submittedOnDate = JdbcSupport.getLocalDate(rs, "submittedOnDate");
-            final String submittedByUsername = rs.getString("submittedByUsername");
+            final String submittedByUsername = null;
 
-            final LocalDate rejectedOnDate = JdbcSupport.getLocalDate(rs, "rejectedOnDate");
-            final String rejectedByUsername = rs.getString("rejectedByUsername");
+            final LocalDate rejectedOnDate = null;
+            final String rejectedByUsername = null;
 
-            final LocalDate withdrawnOnDate = JdbcSupport.getLocalDate(rs, "withdrawnOnDate");
-            final String withdrawnByUsername = rs.getString("withdrawnByUsername");
+            final LocalDate withdrawnOnDate = null;
+            final String withdrawnByUsername = null;
 
-            final LocalDate approvedOnDate = JdbcSupport.getLocalDate(rs, "approvedOnDate");
-            final String approvedByUsername = rs.getString("approvedByUsername");
+            final LocalDate approvedOnDate = null;
+            final String approvedByUsername = null;
 
             final LocalDate actualDisbursementDate = JdbcSupport.getLocalDate(rs, "actualDisbursementDate");
-            final String disbursedByUsername = rs.getString("disbursedByUsername");
+            final String disbursedByUsername = null;
 
-            final LocalDate closedOnDate = JdbcSupport.getLocalDate(rs, "closedOnDate");
-            final String closedByUsername = rs.getString("closedByUsername");
+            final LocalDate closedOnDate = null;
+            final String closedByUsername = null;
 
-            final LocalDate writtenOffOnDate = JdbcSupport.getLocalDate(rs, "writtenOffOnDate");
+            final LocalDate writtenOffOnDate = null;
 
             final LoanApplicationTimelineData timeline = new LoanApplicationTimelineData(submittedOnDate, submittedByUsername, null, null,
                     rejectedOnDate, rejectedByUsername, null, null, withdrawnOnDate, withdrawnByUsername, null, null, approvedOnDate,
@@ -339,55 +347,66 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
                     closedByUsername, null, null, null, writtenOffOnDate, closedByUsername, null, null);
 
             final BigDecimal principal = rs.getBigDecimal("principal");
-            final BigDecimal approvedPrincipal = rs.getBigDecimal("approvedPrincipal");
-            final BigDecimal proposedPrincipal = rs.getBigDecimal("proposedPrincipal");
-            final BigDecimal netDisbursalAmount = rs.getBigDecimal("netDisbursalAmount");
+            final BigDecimal approvedPrincipal = null;
+            final BigDecimal proposedPrincipal = null;
+            final BigDecimal netDisbursalAmount = null;
 
             final Integer numberOfRepayments = JdbcSupport.getInteger(rs, "numberOfRepayments");
             final BigDecimal interestRatePerPeriod = rs.getBigDecimal("interestRatePerPeriod");
             final BigDecimal annualInterestRate = rs.getBigDecimal("annualInterestRate");
 
             final Integer termFrequency = JdbcSupport.getInteger(rs, "termFrequency");
+            final Integer termPeriodFrequencyTypeInt = JdbcSupport.getInteger(rs, "termPeriodFrequencyType");
+            final EnumOptionData termPeriodFrequencyType = LoanEnumerations.termFrequencyType(termPeriodFrequencyTypeInt);
+            
+            final LoanStatusEnumData status = null;
 
-            final Integer lifeCycleStatusId = JdbcSupport.getInteger(rs, "lifeCycleStatusId");
-            final LoanStatusEnumData status = LoanEnumerations.status(lifeCycleStatusId);
+            
 
-            LoanSummaryData loanSummary = null;
-            Boolean inArrears = false;
-            if (status.id().intValue() >= 300) {
-                final BigDecimal totalOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalOverdue");
+                // loan summary
+                
+                final BigDecimal principalOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "principalOverdue");
 
-                final LocalDate overdueSinceDate = JdbcSupport.getLocalDate(rs, "overdueSinceDate");
-                if (overdueSinceDate != null) {
-                    inArrears = true;
-                }
+                
+                final BigDecimal interestOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "interestOverdue");
+                final BigDecimal feeChargesOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "feeChargesOverdue");
 
-                loanSummary = new LoanSummaryData(currencyData, null, null, null, null, null, null, null, null, null, null, null, null,
-                        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                        totalOverdue, overdueSinceDate, null, null, null);
-            }
+                final BigDecimal penaltyChargesOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "penaltyChargesOverdue");
+
+                final BigDecimal totalExpectedRepayment = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalExpectedRepayment");
+                final BigDecimal totalRepayment = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalRepayment");
+                final BigDecimal totalOutstanding = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalOutstanding");
+                final BigDecimal totalRecovered = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalRecovered");
+            
+            Boolean inArrears = true;
+            final BigDecimal totalOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalOverdue");
+
+            final LocalDate overdueSinceDate = JdbcSupport.getLocalDate(rs, "overdueSinceDate");
+
+            final LoanSummaryData loanSummary = new LoanSummaryData(currencyData, null, null, null, null, principalOverdue, null, null, null, null, null, interestOverdue, null,
+                    null, null, null, null, null, feeChargesOverdue, null, null, null, null, null, penaltyChargesOverdue, totalExpectedRepayment, totalRepayment, null, null, null, null, totalOutstanding,
+                    totalOverdue, overdueSinceDate, null, null, totalRecovered);
 
             GroupGeneralData groupData = null;
             if (groupId != null) {
-                final Integer groupStatusEnum = JdbcSupport.getInteger(rs, "statusEnum");
-                final EnumOptionData groupStatus = ClientEnumerations.status(groupStatusEnum);
-                final LocalDate activationDate = JdbcSupport.getLocalDate(rs, "activationDate");
+                final EnumOptionData groupStatus = null;
+                final LocalDate activationDate = null;
                 groupData = GroupGeneralData.instance(groupId, null, groupName, null, groupStatus, activationDate, null, null, null, null,
                         null, null, null, null, null);
             }
-
-            final Boolean isNPA = rs.getBoolean("isNPA");
-
-            final boolean canUseForTopup = rs.getBoolean("canUseForTopup");
+            final Boolean isNPA = null;
+            final Boolean canUseForTopup = null;
             final boolean isTopup = rs.getBoolean("isTopup");
 
-            return LoanBusinessAccountData.basicLoanDetails(id, accountNo, status, externalId, clientId, null, clientName, null, groupData,
+            final LoanBusinessAccountData loanBusinessAccountData = LoanBusinessAccountData.basicLoanDetails(id, accountNo, status, null, clientId, null, clientName, null, groupData,
                     loanType, loanProductId, loanProductName, null, false, null, null, loanPurposeId, loanPurposeName, loanOfficerId,
                     loanOfficerName, currencyData, proposedPrincipal, principal, approvedPrincipal, netDisbursalAmount, null, null,
-                    termFrequency, null, numberOfRepayments, null, null, null, null, null, null, null, interestRatePerPeriod, null,
+                    termFrequency, termPeriodFrequencyType, numberOfRepayments, null, null, null, null, null, null, null, interestRatePerPeriod, null,
                     annualInterestRate, null, false, null, null, null, null, null, null, null, null, null, timeline, loanSummary, null,
                     null, null, null, null, null, null, null, inArrears, null, isNPA, null, null, false, null, null, null, null, null, null,
                     canUseForTopup, isTopup, null, null, null, false, null);
+            loanBusinessAccountData.setClientData(clientData);
+            return loanBusinessAccountData;
         }
     }
 

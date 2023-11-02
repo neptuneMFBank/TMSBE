@@ -180,7 +180,7 @@ public class LoansArrearsBusinessApiResource {
             "interestRatesPeriods", LoanApiConstants.canUseForTopup, LoanApiConstants.isTopup, LoanApiConstants.loanIdToClose,
             LoanApiConstants.topupAmount, LoanApiConstants.clientActiveLoanOptions, LoanApiConstants.datatables,
             LoanProductConstants.RATES_PARAM_NAME, LoanApiConstants.MULTIDISBURSE_DETAILS_PARAMNAME,
-            LoanApiConstants.EMI_AMOUNT_VARIATIONS_PARAMNAME, LoanApiConstants.COLLECTION_PARAMNAME,
+            LoanApiConstants.EMI_AMOUNT_VARIATIONS_PARAMNAME, LoanApiConstants.COLLECTION_PARAMNAME, "clientData",
             LoanBusinessApiConstants.activationChannelIdParam, LoanBusinessApiConstants.activationChannelNameParam, LoanBusinessApiConstants.metricsDataParam, "collateralOld", LoanBusinessApiConstants.loanProductPaymentTypeConfigDataParam));
 
     private final String resourceNameForPermissions = "LOAN_ARREARS";

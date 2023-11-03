@@ -38,11 +38,15 @@ public class MetricsData implements Serializable {
     private final LocalDate createdOn;
     private final LocalDate modifiedOn;
 
-    public static MetricsData instance(Long id, Long loanId, final Long savingsId, EnumOptionData status, StaffData staffData, StaffData supervisorStaffData, LocalDate createdOn, LocalDate modifiedOn, final ClientData clientData, final StaffData loanOfficerData) {
-        return new MetricsData(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData, loanOfficerData);
+    public static MetricsData instance(Long id, Long loanId, final Long savingsId, EnumOptionData status, StaffData staffData,
+            StaffData supervisorStaffData, LocalDate createdOn, LocalDate modifiedOn, final ClientData clientData,
+            final StaffData loanOfficerData) {
+        return new MetricsData(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData,
+                loanOfficerData);
     }
 
-    public MetricsData(Long id, Long loanId, Long savingsId, EnumOptionData status, StaffData staffData, StaffData supervisorStaffData, LocalDate createdOn, LocalDate modifiedOn, ClientData clientData, StaffData loanOfficerData) {
+    public MetricsData(Long id, Long loanId, Long savingsId, EnumOptionData status, StaffData staffData, StaffData supervisorStaffData,
+            LocalDate createdOn, LocalDate modifiedOn, ClientData clientData, StaffData loanOfficerData) {
         this.id = id;
         this.loanId = loanId;
         this.savingsId = savingsId;

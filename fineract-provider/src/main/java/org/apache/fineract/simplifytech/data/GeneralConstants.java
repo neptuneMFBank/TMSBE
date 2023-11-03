@@ -97,8 +97,8 @@ public class GeneralConstants {
     }
 
     /**
-     * TODO: Need a better implementation with guaranteed uniqueness (but not a
-     * long UUID)...maybe something tied to system clock..
+     * TODO: Need a better implementation with guaranteed uniqueness (but not a long UUID)...maybe something tied to
+     * system clock..
      *
      * @param context
      * @return
@@ -111,22 +111,22 @@ public class GeneralConstants {
     }
 
     public static void main(String[] args) {
-        String[][] inputStrings = new String[][]{
-            // Matches abc at start of term
-            {"Asiata Omodeleola Babalola", "Asiata Omodeleola Babalola"}, // {"Thompson Olakunle Rasak", "Rasak
-        // Olakunle Thompson"},
-        // // ABC in different case than term
-        // {"cecilianwebonyi", "testname2"},
-        // // Matches abc at end of term
-        // {"qwreweqwqw", "testname3"},
-        // // Matches abc in middle
-        // {"dedede", "testname4"},
-        // // Matches abc but not continuous.
-        // {"abxycz", "abc"}, {"axbycz", "abc"},
-        // // Reverse order of abc
-        // {"cbaxyz", "abc"},
-        // // Matches abc but different order.
-        // {"cabxyz", "abc"}
+        String[][] inputStrings = new String[][] {
+                // Matches abc at start of term
+                { "Asiata Omodeleola Babalola", "Asiata Omodeleola Babalola" }, // {"Thompson Olakunle Rasak", "Rasak
+                // Olakunle Thompson"},
+                // // ABC in different case than term
+                // {"cecilianwebonyi", "testname2"},
+                // // Matches abc at end of term
+                // {"qwreweqwqw", "testname3"},
+                // // Matches abc in middle
+                // {"dedede", "testname4"},
+                // // Matches abc but not continuous.
+                // {"abxycz", "abc"}, {"axbycz", "abc"},
+                // // Reverse order of abc
+                // {"cbaxyz", "abc"},
+                // // Matches abc but different order.
+                // {"cabxyz", "abc"}
         };
         for (String[] input : inputStrings) {
             String term = input[0];

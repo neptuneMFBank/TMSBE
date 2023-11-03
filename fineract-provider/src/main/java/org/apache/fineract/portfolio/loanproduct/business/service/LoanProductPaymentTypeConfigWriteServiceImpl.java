@@ -71,15 +71,17 @@ public class LoanProductPaymentTypeConfigWriteServiceImpl implements LoanProduct
             final JsonElement jsonElement = this.fromApiJsonHelper.parse(command.json());
 
             final String name = this.fromApiJsonHelper.extractStringNamed(LoanProductPaymentTypeConfigConstants.NAME, jsonElement);
-            final String description = this.fromApiJsonHelper.extractStringNamed(LoanProductPaymentTypeConfigConstants.description, jsonElement);
+            final String description = this.fromApiJsonHelper.extractStringNamed(LoanProductPaymentTypeConfigConstants.description,
+                    jsonElement);
             final Long productId = this.fromApiJsonHelper.extractLongNamed(LoanApiConstants.productIdParameterName, jsonElement);
             final LoanProduct loanProduct = this.loanProductRepository.findOneWithNotFoundDetection(productId);
 
-            final JsonArray paymentTypeIds = this.fromApiJsonHelper.extractJsonArrayNamed(LoanProductPaymentTypeConfigConstants.paymentTypeIds, jsonElement);
+            final JsonArray paymentTypeIds = this.fromApiJsonHelper
+                    .extractJsonArrayNamed(LoanProductPaymentTypeConfigConstants.paymentTypeIds, jsonElement);
             Set<PaymentType> paymentTypes = savePaymentSet(paymentTypeIds);
 
-            final LoanProductPaymentTypeConfig loanProductPaymentTypeConfig = LoanProductPaymentTypeConfig
-                    .instance(name, loanProduct, description, true);
+            final LoanProductPaymentTypeConfig loanProductPaymentTypeConfig = LoanProductPaymentTypeConfig.instance(name, loanProduct,
+                    description, true);
             if (!paymentTypes.isEmpty()) {
                 loanProductPaymentTypeConfig.setPaymentTypes(paymentTypes);
             }
@@ -104,7 +106,8 @@ public class LoanProductPaymentTypeConfigWriteServiceImpl implements LoanProduct
     public CommandProcessingResult updateLoanProductPaymentTypeConfig(Long loanProductPaymentId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForUpdate(command.json());
-        LoanProductPaymentTypeConfig loanProductPaymentTypeConfig = this.repositoryWrapper.findOneWithNotFoundDetection(loanProductPaymentId);
+        LoanProductPaymentTypeConfig loanProductPaymentTypeConfig = this.repositoryWrapper
+                .findOneWithNotFoundDetection(loanProductPaymentId);
         final JsonElement element = this.fromApiJsonHelper.parse(command.json());
         final Map<String, Object> changes = new LinkedHashMap<>(9);
         if (command.isChangeInStringParameterNamed(LoanProductPaymentTypeConfigConstants.NAME, loanProductPaymentTypeConfig.getName())) {
@@ -113,13 +116,17 @@ public class LoanProductPaymentTypeConfigWriteServiceImpl implements LoanProduct
             loanProductPaymentTypeConfig.setName(name);
         }
 
-        if (command.isChangeInStringParameterNamed(LoanProductPaymentTypeConfigConstants.description, loanProductPaymentTypeConfig.getDescription())) {
-            final String description = this.fromApiJsonHelper.extractStringNamed(LoanProductPaymentTypeConfigConstants.description, element);
+        if (command.isChangeInStringParameterNamed(LoanProductPaymentTypeConfigConstants.description,
+                loanProductPaymentTypeConfig.getDescription())) {
+            final String description = this.fromApiJsonHelper.extractStringNamed(LoanProductPaymentTypeConfigConstants.description,
+                    element);
             changes.put(LoanProductPaymentTypeConfigConstants.description, description);
             loanProductPaymentTypeConfig.setDescription(description);
         }
 
-        final Long oldLoanProductId = loanProductPaymentTypeConfig.getLoanProduct() != null ? loanProductPaymentTypeConfig.getLoanProduct().getId() : null;
+        final Long oldLoanProductId = loanProductPaymentTypeConfig.getLoanProduct() != null
+                ? loanProductPaymentTypeConfig.getLoanProduct().getId()
+                : null;
         if (command.isChangeInLongParameterNamed(LoanApiConstants.productIdParameterName, oldLoanProductId)) {
             final Long loanProductId = this.fromApiJsonHelper.extractLongNamed(LoanApiConstants.productIdParameterName, element);
             LoanProduct loanProduct;
@@ -130,7 +137,8 @@ public class LoanProductPaymentTypeConfigWriteServiceImpl implements LoanProduct
             }
         }
         if (this.fromApiJsonHelper.parameterExists(LoanProductPaymentTypeConfigConstants.paymentTypeIds, element)) {
-            final JsonArray paymentTypeIds = this.fromApiJsonHelper.extractJsonArrayNamed(LoanProductPaymentTypeConfigConstants.paymentTypeIds, element);
+            final JsonArray paymentTypeIds = this.fromApiJsonHelper
+                    .extractJsonArrayNamed(LoanProductPaymentTypeConfigConstants.paymentTypeIds, element);
             Set<PaymentType> paymentTypes = savePaymentSet(paymentTypeIds);
 
             Set<PaymentType> paymentTypesCheck = loanProductPaymentTypeConfig.getPaymentTypes();

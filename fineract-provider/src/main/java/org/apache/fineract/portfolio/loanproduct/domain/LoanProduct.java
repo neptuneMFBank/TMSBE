@@ -64,19 +64,17 @@ import org.apache.fineract.portfolio.loanproduct.exception.LoanProductGeneralRul
 import org.apache.fineract.portfolio.rate.domain.Rate;
 
 /**
- * Loan products allow for categorisation of an organisations loans into
- * something meaningful to them.
+ * Loan products allow for categorisation of an organisations loans into something meaningful to them.
  *
- * They provide a means of simplifying creation/maintenance of loans. They can
- * also allow for product comparison to take place when reporting.
+ * They provide a means of simplifying creation/maintenance of loans. They can also allow for product comparison to take
+ * place when reporting.
  *
  * They allow for constraints to be added at product level.
  */
 @Entity
-@Table(name = "m_product_loan", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"name"}, name = "unq_name"),
-    @UniqueConstraint(columnNames = {"external_id"}, name = "external_id_UNIQUE"),
-    @UniqueConstraint(columnNames = {"short_name"}, name = "unq_short_name")})
+@Table(name = "m_product_loan", uniqueConstraints = { @UniqueConstraint(columnNames = { "name" }, name = "unq_name"),
+        @UniqueConstraint(columnNames = { "external_id" }, name = "external_id_UNIQUE"),
+        @UniqueConstraint(columnNames = { "short_name" }, name = "unq_short_name") })
 public class LoanProduct extends AbstractPersistableCustom {
 
     @ManyToOne
@@ -364,8 +362,8 @@ public class LoanProduct extends AbstractPersistableCustom {
 
         final boolean allowApprovedDisbursedAmountsOverApplied = command
                 .parameterExists(LoanProductConstants.ALLOW_APPROVED_DISBURSED_AMOUNTS_OVER_APPLIED)
-                ? command.booleanPrimitiveValueOfParameterNamed(LoanProductConstants.ALLOW_APPROVED_DISBURSED_AMOUNTS_OVER_APPLIED)
-                : false;
+                        ? command.booleanPrimitiveValueOfParameterNamed(LoanProductConstants.ALLOW_APPROVED_DISBURSED_AMOUNTS_OVER_APPLIED)
+                        : false;
 
         final String overAppliedCalculationType = command
                 .stringValueOfParameterNamedAllowingNull(LoanProductConstants.OVER_APPLIED_CALCULATION_TYPE);
@@ -553,7 +551,7 @@ public class LoanProduct extends AbstractPersistableCustom {
                     }
                     if (jsonObject.has(LoanProductConstants.BORROWER_CYCLE_ID_PARAMETER_NAME)
                             && jsonObject.get(LoanProductConstants.BORROWER_CYCLE_ID_PARAMETER_NAME).isJsonPrimitive() && StringUtils
-                            .isNotBlank(jsonObject.get(LoanProductConstants.BORROWER_CYCLE_ID_PARAMETER_NAME).getAsString())) {
+                                    .isNotBlank(jsonObject.get(LoanProductConstants.BORROWER_CYCLE_ID_PARAMETER_NAME).getAsString())) {
                         id = jsonObject.getAsJsonPrimitive(LoanProductConstants.BORROWER_CYCLE_ID_PARAMETER_NAME).getAsLong();
                     }
                     LoanProductBorrowerCycleVariations borrowerCycleVariations = new LoanProductBorrowerCycleVariations(cycleNumber,
@@ -1391,22 +1389,22 @@ public class LoanProduct extends AbstractPersistableCustom {
                             borrowerCycleVariations.put(LoanProductConstants.MIN_PRINCIPAL, cycleVariation.getMinValue());
                             borrowerCycleVariations.put(LoanProductConstants.MAX_PRINCIPAL, cycleVariation.getMaxValue());
                             principalCycleUsed = cycleVariation.getBorrowerCycleNumber();
-                            break;
+                        break;
                         case INTERESTRATE:
                             borrowerCycleVariations.put(LoanProductConstants.INTEREST_RATE_PER_PERIOD, cycleVariation.getDefaultValue());
                             borrowerCycleVariations.put(LoanProductConstants.MIN_INTEREST_RATE_PER_PERIOD, cycleVariation.getMinValue());
                             borrowerCycleVariations.put(LoanProductConstants.MAX_INTEREST_RATE_PER_PERIOD, cycleVariation.getMaxValue());
                             interestCycleUsed = cycleVariation.getBorrowerCycleNumber();
-                            break;
+                        break;
                         case REPAYMENT:
                             borrowerCycleVariations.put(LoanProductConstants.MAX_INTEREST_RATE_PER_PERIOD,
                                     cycleVariation.getDefaultValue());
                             borrowerCycleVariations.put(LoanProductConstants.MIN_NUMBER_OF_REPAYMENTS, cycleVariation.getMinValue());
                             borrowerCycleVariations.put(LoanProductConstants.MAX_NUMBER_OF_REPAYMENTS, cycleVariation.getMaxValue());
                             repaymentCycleUsed = cycleVariation.getBorrowerCycleNumber();
-                            break;
+                        break;
                         default:
-                            break;
+                        break;
                     }
                 } else if (cycleVariation.getBorrowerCycleNumber() < cycleNumber
                         && cycleVariation.getValueConditionType().equals(LoanProductValueConditionType.GREATERTHAN)) {
@@ -1418,7 +1416,7 @@ public class LoanProduct extends AbstractPersistableCustom {
                                 borrowerCycleVariations.put(LoanProductConstants.MAX_PRINCIPAL, cycleVariation.getMaxValue());
                                 principalCycleUsed = cycleVariation.getBorrowerCycleNumber();
                             }
-                            break;
+                        break;
                         case INTERESTRATE:
                             if (interestCycleUsed < cycleVariation.getBorrowerCycleNumber()) {
                                 borrowerCycleVariations.put(LoanProductConstants.INTEREST_RATE_PER_PERIOD,
@@ -1429,7 +1427,7 @@ public class LoanProduct extends AbstractPersistableCustom {
                                         cycleVariation.getMaxValue());
                                 interestCycleUsed = cycleVariation.getBorrowerCycleNumber();
                             }
-                            break;
+                        break;
                         case REPAYMENT:
                             if (repaymentCycleUsed < cycleVariation.getBorrowerCycleNumber()) {
                                 borrowerCycleVariations.put(LoanProductConstants.MAX_INTEREST_RATE_PER_PERIOD,
@@ -1438,9 +1436,9 @@ public class LoanProduct extends AbstractPersistableCustom {
                                 borrowerCycleVariations.put(LoanProductConstants.MAX_NUMBER_OF_REPAYMENTS, cycleVariation.getMaxValue());
                                 repaymentCycleUsed = cycleVariation.getBorrowerCycleNumber();
                             }
-                            break;
+                        break;
                         default:
-                            break;
+                        break;
                     }
                 }
             }

@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.portfolio.account.data.business;
 
+import static org.apache.fineract.portfolio.account.api.business.AccountTransfersBusinessApiConstants.SINGLE_TEMPLATE_DATA_PARAMETERS;
+
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -33,7 +35,6 @@ import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidati
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.portfolio.account.PortfolioAccountType;
 import org.apache.fineract.portfolio.account.api.business.AccountTransfersBusinessApiConstants;
-import static org.apache.fineract.portfolio.account.api.business.AccountTransfersBusinessApiConstants.SINGLE_TEMPLATE_DATA_PARAMETERS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,8 +54,7 @@ public final class AccountTransfersBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
 
         final Set<String> supportedParameters = SINGLE_TEMPLATE_DATA_PARAMETERS;
 
@@ -85,7 +85,8 @@ public final class AccountTransfersBusinessDataValidator {
         final String toAccountTypeParam = AccountTransfersBusinessApiConstants.toAccountTypeParamName;
         if (this.fromApiJsonHelper.parameterExists(toAccountTypeParam, element)) {
             final Integer toAccountType = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(toAccountTypeParam, element);
-            baseDataValidator.reset().parameter(toAccountTypeParam).value(toAccountType).notNull().isOneOfTheseValues(PortfolioAccountType.LOAN.getValue(), PortfolioAccountType.SAVINGS.getValue());
+            baseDataValidator.reset().parameter(toAccountTypeParam).value(toAccountType).notNull()
+                    .isOneOfTheseValues(PortfolioAccountType.LOAN.getValue(), PortfolioAccountType.SAVINGS.getValue());
         }
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);

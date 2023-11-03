@@ -24,8 +24,7 @@ import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 
 /**
  *
- * People typically use either of the following settings when calculating there
- * interest using the daily method:
+ * People typically use either of the following settings when calculating there interest using the daily method:
  * <ul>
  * <li>Actual or</li>
  * <li>360 or</li>
@@ -74,18 +73,12 @@ public enum LoanApprovalStatus {
         LoanApprovalStatus repaymentFrequencyType = LoanApprovalStatus.INVALID;
         if (type != null) {
             switch (type) {
-                case 50 ->
-                    repaymentFrequencyType = LoanApprovalStatus.QUEUE;
-                case 100 ->
-                    repaymentFrequencyType = LoanApprovalStatus.PENDING;
-                case 150 ->
-                    repaymentFrequencyType = LoanApprovalStatus.UNDO;
-                case 200 ->
-                    repaymentFrequencyType = LoanApprovalStatus.APPROVED;
-                case 500 ->
-                    repaymentFrequencyType = LoanApprovalStatus.REJECTED;
-                case 800 ->
-                    repaymentFrequencyType = LoanApprovalStatus.REASSIGNED;
+                case 50 -> repaymentFrequencyType = LoanApprovalStatus.QUEUE;
+                case 100 -> repaymentFrequencyType = LoanApprovalStatus.PENDING;
+                case 150 -> repaymentFrequencyType = LoanApprovalStatus.UNDO;
+                case 200 -> repaymentFrequencyType = LoanApprovalStatus.APPROVED;
+                case 500 -> repaymentFrequencyType = LoanApprovalStatus.REJECTED;
+                case 800 -> repaymentFrequencyType = LoanApprovalStatus.REASSIGNED;
             }
         }
         return repaymentFrequencyType;
@@ -120,23 +113,23 @@ public enum LoanApprovalStatus {
     }
 
     public static EnumOptionData status(final LoanApprovalStatus status) {
-        EnumOptionData optionData = new EnumOptionData(LoanApprovalStatus.INVALID.getValue().longValue(), LoanApprovalStatus.INVALID.getCode(),
-                "Invalid");
+        EnumOptionData optionData = new EnumOptionData(LoanApprovalStatus.INVALID.getValue().longValue(),
+                LoanApprovalStatus.INVALID.getCode(), "Invalid");
         switch (status) {
-            case INVALID ->
-                optionData = new EnumOptionData(LoanApprovalStatus.INVALID.getValue().longValue(), LoanApprovalStatus.INVALID.getCode(), "Invalid");
-            case PENDING ->
-                optionData = new EnumOptionData(LoanApprovalStatus.PENDING.getValue().longValue(), LoanApprovalStatus.PENDING.getCode(), "Pending");
-            case QUEUE ->
-                optionData = new EnumOptionData(LoanApprovalStatus.QUEUE.getValue().longValue(), LoanApprovalStatus.QUEUE.getCode(), "Queue");
-            case UNDO ->
-                optionData = new EnumOptionData(LoanApprovalStatus.UNDO.getValue().longValue(), LoanApprovalStatus.UNDO.getCode(), "Undo");
-            case REJECTED ->
-                optionData = new EnumOptionData(LoanApprovalStatus.REJECTED.getValue().longValue(), LoanApprovalStatus.REJECTED.getCode(), "Rejected");
-            case APPROVED ->
-                optionData = new EnumOptionData(LoanApprovalStatus.APPROVED.getValue().longValue(), LoanApprovalStatus.APPROVED.getCode(), "Approved");
-            case REASSIGNED ->
-                optionData = new EnumOptionData(LoanApprovalStatus.APPROVED.getValue().longValue(), LoanApprovalStatus.REASSIGNED.getCode(), "ReAssigned");
+            case INVALID -> optionData = new EnumOptionData(LoanApprovalStatus.INVALID.getValue().longValue(),
+                    LoanApprovalStatus.INVALID.getCode(), "Invalid");
+            case PENDING -> optionData = new EnumOptionData(LoanApprovalStatus.PENDING.getValue().longValue(),
+                    LoanApprovalStatus.PENDING.getCode(), "Pending");
+            case QUEUE -> optionData = new EnumOptionData(LoanApprovalStatus.QUEUE.getValue().longValue(),
+                    LoanApprovalStatus.QUEUE.getCode(), "Queue");
+            case UNDO -> optionData = new EnumOptionData(LoanApprovalStatus.UNDO.getValue().longValue(), LoanApprovalStatus.UNDO.getCode(),
+                    "Undo");
+            case REJECTED -> optionData = new EnumOptionData(LoanApprovalStatus.REJECTED.getValue().longValue(),
+                    LoanApprovalStatus.REJECTED.getCode(), "Rejected");
+            case APPROVED -> optionData = new EnumOptionData(LoanApprovalStatus.APPROVED.getValue().longValue(),
+                    LoanApprovalStatus.APPROVED.getCode(), "Approved");
+            case REASSIGNED -> optionData = new EnumOptionData(LoanApprovalStatus.APPROVED.getValue().longValue(),
+                    LoanApprovalStatus.REASSIGNED.getCode(), "ReAssigned");
         }
 
         return optionData;

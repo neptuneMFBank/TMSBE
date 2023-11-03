@@ -95,8 +95,10 @@ public class AccountTransfersBusinessReadPlatformServiceImpl implements AccountT
         this.context.authenticatedUser();
         this.accountTransfersBusinessDataValidator.validateForTemplate(apiRequestBodyAsJson);
         final JsonElement jsonElement = this.fromJsonHelper.parse(apiRequestBodyAsJson);
-        final Long fromAccountId = this.fromJsonHelper.extractLongNamed(AccountTransfersBusinessApiConstants.fromAccountIdParamName, jsonElement);
-        final Integer toAccountType = this.fromJsonHelper.extractIntegerSansLocaleNamed(AccountTransfersBusinessApiConstants.toAccountTypeParamName, jsonElement);
+        final Long fromAccountId = this.fromJsonHelper.extractLongNamed(AccountTransfersBusinessApiConstants.fromAccountIdParamName,
+                jsonElement);
+        final Integer toAccountType = this.fromJsonHelper
+                .extractIntegerSansLocaleNamed(AccountTransfersBusinessApiConstants.toAccountTypeParamName, jsonElement);
         final String key = this.fromJsonHelper.extractStringNamed(AccountTransfersBusinessApiConstants.keyParam, jsonElement);
         final String value = this.fromJsonHelper.extractStringNamed(AccountTransfersBusinessApiConstants.valueParam, jsonElement);
 
@@ -111,15 +113,15 @@ public class AccountTransfersBusinessReadPlatformServiceImpl implements AccountT
 
         final Integer fromAccountType = PortfolioAccountType.SAVINGS.getValue();
         /*
-        final Long fromOfficeId, final Long fromClientId, final Long fromAccountId,
-            final Integer fromAccountType, final Long toOfficeId, final Long toClientId, final Long toAccountId,
-            final Integer toAccountType
+         * final Long fromOfficeId, final Long fromClientId, final Long fromAccountId, final Integer fromAccountType,
+         * final Long toOfficeId, final Long toClientId, final Long toAccountId, final Integer toAccountType
          */
         final EnumOptionData loanAccountType = AccountTransferEnumerations.accountType(PortfolioAccountType.LOAN);
         final EnumOptionData savingsAccountType = AccountTransferEnumerations.accountType(PortfolioAccountType.SAVINGS);
 
         final Integer mostRelevantFromAccountType = fromAccountType;
-        final Collection<EnumOptionData> fromAccountTypeOptions = null;//Arrays.asList(savingsAccountType, loanAccountType);
+        final Collection<EnumOptionData> fromAccountTypeOptions = null;// Arrays.asList(savingsAccountType,
+                                                                       // loanAccountType);
         final Collection<EnumOptionData> toAccountTypeOptions = Arrays.asList(loanAccountType, savingsAccountType);
         final Integer mostRelevantToAccountType = toAccountType;
 
@@ -128,8 +130,8 @@ public class AccountTransfersBusinessReadPlatformServiceImpl implements AccountT
 
         // from settings
         OfficeData fromOffice = null;
-        ClientData fromClient;//= null;
-        PortfolioAccountData fromAccount;//= null;
+        ClientData fromClient;// = null;
+        PortfolioAccountData fromAccount;// = null;
 
         OfficeData toOffice = null;
         ClientData toClient = null;
@@ -139,10 +141,10 @@ public class AccountTransfersBusinessReadPlatformServiceImpl implements AccountT
         Collection<PortfolioAccountData> fromAccountOptions = null;
         Collection<PortfolioAccountData> toAccountOptions = null;
 
-        //Long mostRelevantFromOfficeId = fromOfficeId;
-        Long mostRelevantFromClientId;//= fromClientId;
+        // Long mostRelevantFromOfficeId = fromOfficeId;
+        Long mostRelevantFromClientId;// = fromClientId;
 
-        //Long mostRelevantToOfficeId=null;//= toOfficeId;
+        // Long mostRelevantToOfficeId=null;//= toOfficeId;
         Long mostRelevantToClientId = toClientId;
 
         fromAccount = this.portfolioAccountReadPlatformService.retrieveOne(fromAccountId, fromAccountType);

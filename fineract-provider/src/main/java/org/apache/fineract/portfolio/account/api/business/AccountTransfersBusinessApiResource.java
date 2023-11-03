@@ -63,7 +63,8 @@ public class AccountTransfersBusinessApiResource {
             final DefaultToApiJsonSerializer<AccountTransferData> toApiJsonSerializer,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
             final ApiRequestParameterHelper apiRequestParameterHelper,
-            final AccountTransfersBusinessReadPlatformService accountTransfersReadPlatformService, final AccountTransfersBusinessWritePlatformService accountTransfersBusinessWritePlatformService) {
+            final AccountTransfersBusinessReadPlatformService accountTransfersReadPlatformService,
+            final AccountTransfersBusinessWritePlatformService accountTransfersBusinessWritePlatformService) {
         this.context = context;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
@@ -74,26 +75,31 @@ public class AccountTransfersBusinessApiResource {
 
     @POST
     @Path("savings/template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Account Transfer Template", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        //                    , content = @Content(schema = @Schema(implementation = AccountTransfersApiResourceSwagger.GetAccountTransfersTemplateResponse.class))
-        )})
-    public String templateSavings(
-            @Parameter(hidden = true) final String apiRequestBodyAsJson,
-            @Context final UriInfo uriInfo) {
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // AccountTransfersApiResourceSwagger.GetAccountTransfersTemplateResponse.class))
+    ) })
+    public String templateSavings(@Parameter(hidden = true) final String apiRequestBodyAsJson, @Context final UriInfo uriInfo) {
 
         /*
-            @QueryParam("fromOfficeId") @Parameter(description = "fromOfficeId") final Long fromOfficeId,
-            @QueryParam("fromClientId") @Parameter(description = "fromClientId") final Long fromClientId,
-            @QueryParam("fromAccountId") @Parameter(description = "fromAccountId") final Long fromAccountId,
-            @QueryParam("fromAccountType") @Parameter(description = "fromAccountType") final Integer fromAccountType,
-            @QueryParam("toOfficeId") @Parameter(description = "toOfficeId") final Long toOfficeId,
-            @QueryParam("toClientId") @Parameter(description = "toClientId") final Long toClientId,
-            @QueryParam("toAccountId") @Parameter(description = "toAccountId") final Long toAccountId,
-            @QueryParam("toAccountType") @Parameter(description = "toAccountType") final Integer toAccountType,
+         * @QueryParam("fromOfficeId") @Parameter(description = "fromOfficeId") final Long fromOfficeId,
+         *
+         * @QueryParam("fromClientId") @Parameter(description = "fromClientId") final Long fromClientId,
+         *
+         * @QueryParam("fromAccountId") @Parameter(description = "fromAccountId") final Long fromAccountId,
+         *
+         * @QueryParam("fromAccountType") @Parameter(description = "fromAccountType") final Integer fromAccountType,
+         *
+         * @QueryParam("toOfficeId") @Parameter(description = "toOfficeId") final Long toOfficeId,
+         *
+         * @QueryParam("toClientId") @Parameter(description = "toClientId") final Long toClientId,
+         *
+         * @QueryParam("toAccountId") @Parameter(description = "toAccountId") final Long toAccountId,
+         *
+         * @QueryParam("toAccountType") @Parameter(description = "toAccountType") final Integer toAccountType,
          */
         this.context.authenticatedUser().validateHasReadPermission(AccountTransfersApiConstants.ACCOUNT_TRANSFER_RESOURCE_NAME);
 
@@ -105,19 +111,20 @@ public class AccountTransfersBusinessApiResource {
 
     @POST
     @Path("savings")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create new Transfer", description = "Ability to create new transfer of monetary funds from one savings account to another.")
     @RequestBody(required = true
-    //, content = @Content(schema = @Schema(implementation = AccountTransfersApiResourceSwagger.PostAccountTransfersRequest.class))
+    // , content = @Content(schema = @Schema(implementation =
+    // AccountTransfersApiResourceSwagger.PostAccountTransfersRequest.class))
     )
     @ApiResponse(responseCode = "200", description = "OK"
-    //, content = @Content(schema = @Schema(implementation = AccountTransfersApiResourceSwagger.PostAccountTransfersResponse.class))
+    // , content = @Content(schema = @Schema(implementation =
+    // AccountTransfersApiResourceSwagger.PostAccountTransfersResponse.class))
     )
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
-        final CommandProcessingResult result
-                = this.accountTransfersBusinessWritePlatformService.create(apiRequestBodyAsJson);
+        final CommandProcessingResult result = this.accountTransfersBusinessWritePlatformService.create(apiRequestBodyAsJson);
 
         return this.toApiJsonSerializer.serialize(result);
     }

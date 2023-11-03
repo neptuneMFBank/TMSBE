@@ -36,14 +36,10 @@ public enum LoanInstrumentStatus {
 
         LoanInstrumentStatus enumeration = LoanInstrumentStatus.INVALID;
         switch (statusValue) {
-            case 100 ->
-                enumeration = LoanInstrumentStatus.PENDING;
-            case 200 ->
-                enumeration = LoanInstrumentStatus.APPROVED;
-            case 300 ->
-                enumeration = LoanInstrumentStatus.ACTIVE;
-            case 500 ->
-                enumeration = LoanInstrumentStatus.REJECTED;
+            case 100 -> enumeration = LoanInstrumentStatus.PENDING;
+            case 200 -> enumeration = LoanInstrumentStatus.APPROVED;
+            case 300 -> enumeration = LoanInstrumentStatus.ACTIVE;
+            case 500 -> enumeration = LoanInstrumentStatus.REJECTED;
         }
         return enumeration;
     }

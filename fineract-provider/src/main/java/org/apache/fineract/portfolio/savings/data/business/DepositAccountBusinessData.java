@@ -24,8 +24,7 @@ import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountStatusEnumData;
 
 /**
- * Immutable data object representing abstract for Fixed and Recurring Deposit
- * Accounts Accounts.
+ * Immutable data object representing abstract for Fixed and Recurring Deposit Accounts Accounts.
  */
 public class DepositAccountBusinessData {
 
@@ -68,7 +67,9 @@ public class DepositAccountBusinessData {
         String externalId = null;
         Long officeId = null;
         String officeName = null;
-        return new DepositAccountBusinessData(id, accountNo, depositType, status, clientId, clientName, depositProductId, depositProductName, availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId, officeName);
+        return new DepositAccountBusinessData(id, accountNo, depositType, status, clientId, clientName, depositProductId,
+                depositProductName, availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId,
+                officeName);
     }
 
     public static DepositAccountBusinessData retrieveBalance(final DepositAccountBusinessData depositAccountBusinessData) {
@@ -88,15 +89,24 @@ public class DepositAccountBusinessData {
         String externalId = null;
         Long officeId = null;
         String officeName = null;
-        return new DepositAccountBusinessData(id, accountNo, depositType, status, clientId, clientName, depositProductId, depositProductName, availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId, officeName);
+        return new DepositAccountBusinessData(id, accountNo, depositType, status, clientId, clientName, depositProductId,
+                depositProductName, availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId,
+                officeName);
     }
 
-    public static DepositAccountBusinessData lookUp(Long id, String accountNo, EnumOptionData depositType, SavingsAccountStatusEnumData status, Long clientId, String clientName, Long depositProductId, String depositProductName, BigDecimal availableBalance, BigDecimal ledgerBalance, LocalDate createdOn, LocalDate activatedOn, LocalDate lastTransactionOn, String externalId, Long officeId, String officeName) {
-        return new DepositAccountBusinessData(id, accountNo, depositType, status, clientId, clientName, depositProductId, depositProductName, availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId, officeName);
+    public static DepositAccountBusinessData lookUp(Long id, String accountNo, EnumOptionData depositType,
+            SavingsAccountStatusEnumData status, Long clientId, String clientName, Long depositProductId, String depositProductName,
+            BigDecimal availableBalance, BigDecimal ledgerBalance, LocalDate createdOn, LocalDate activatedOn, LocalDate lastTransactionOn,
+            String externalId, Long officeId, String officeName) {
+        return new DepositAccountBusinessData(id, accountNo, depositType, status, clientId, clientName, depositProductId,
+                depositProductName, availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId,
+                officeName);
     }
 
-    private DepositAccountBusinessData(Long id, String accountNo, EnumOptionData depositType, SavingsAccountStatusEnumData status, Long clientId, String clientName, Long depositProductId, String depositProductName, BigDecimal availableBalance,
-            BigDecimal ledgerBalance, LocalDate createdOn, LocalDate activatedOn, LocalDate lastTransactionOn, String externalId, Long officeId, String officeName) {
+    private DepositAccountBusinessData(Long id, String accountNo, EnumOptionData depositType, SavingsAccountStatusEnumData status,
+            Long clientId, String clientName, Long depositProductId, String depositProductName, BigDecimal availableBalance,
+            BigDecimal ledgerBalance, LocalDate createdOn, LocalDate activatedOn, LocalDate lastTransactionOn, String externalId,
+            Long officeId, String officeName) {
         this.id = id;
         this.officeId = officeId;
         this.officeName = officeName;

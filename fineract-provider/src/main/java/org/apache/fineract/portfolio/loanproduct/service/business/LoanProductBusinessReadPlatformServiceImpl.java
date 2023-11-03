@@ -63,7 +63,7 @@ public class LoanProductBusinessReadPlatformServiceImpl implements LoanProductBu
             final LoanProductLookupMapper rm = new LoanProductLookupMapper();
             final String sql = "select " + rm.schema() + " where lp.id = ?";
 
-            return this.jdbcTemplate.queryForObject(sql, rm, new Object[]{loanProductId}); // NOSONAR
+            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { loanProductId }); // NOSONAR
 
         } catch (final EmptyResultDataAccessException e) {
             throw new LoanProductNotFoundException(loanProductId, e);

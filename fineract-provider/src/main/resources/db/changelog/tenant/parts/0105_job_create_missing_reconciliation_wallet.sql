@@ -17,5 +17,5 @@
 -- under the License.
 --
 
-INSERT INTO `job` (`id`, `name`, `display_name`, `cron_expression`, `create_time`, `task_priority`, `group_name`, `previous_run_start_time`, `next_run_time`, `job_key`, `initializing_errorlog`, `is_active`, `currently_running`, `updates_allowed`, `scheduler_group`, `is_misfired`, `node_id`) 
+INSERT INTO `job` (`id`, `name`, `display_name`, `cron_expression`, `create_time`, `task_priority`, `group_name`, `previous_run_start_time`, `next_run_time`, `job_key`, `initializing_errorlog`, `is_active`, `currently_running`, `updates_allowed`, `scheduler_group`, `is_misfired`, `node_id`)
 VALUES (NULL, 'Create Reconciliation Wallet', 'Create Reconciliation Wallet', '0 0/5 * * * ?', curdate(), 5, NULL, NULL, '2017-02-25 00:01:00', 'Create Reconciliation WalletJobDetail1 _ DEFAULT', NULL, 1, 0, 1, 0, 0,1)

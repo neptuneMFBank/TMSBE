@@ -31,8 +31,8 @@ public interface MetricsReadPlatformService {
 
     Page<MetricsData> retrieveAll(final SearchParametersBusiness searchParameters);
 
-    Collection< MetricsData> retrieveSavingsAccountMetrics(final Long savingsAccountId);
+    Collection<MetricsData> retrieveSavingsAccountMetrics(final Long savingsAccountId);
 
-    Collection< MetricsData> retrieveLoanMetrics(final Long loanId);
+    Collection<MetricsData> retrieveLoanMetrics(final Long loanId);
 
 }

@@ -127,7 +127,7 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
 
     @Override
     public List<DatatableData> retrieveDatatableNames(final String appTable) {
-        Object[] params = new Object[]{this.context.authenticatedUser().getId()};
+        Object[] params = new Object[] { this.context.authenticatedUser().getId() };
         // PERMITTED datatables
         String sql = "select application_table_name, registered_table_name, entity_subtype " + " from x_registered_table " + " where exists"
                 + " (select 'f'" + " from m_appuser_role ur " + " join m_role r on r.id = ur.role_id"
@@ -136,7 +136,7 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
                 + "('READ_', registered_table_name))) ";
         if (appTable != null) {
             sql = sql + " and application_table_name like ? ";
-            params = new Object[]{this.context.authenticatedUser().getId(), appTable};
+            params = new Object[] { this.context.authenticatedUser().getId(), appTable };
         }
         sql = sql + " order by application_table_name, registered_table_name";
 
@@ -169,7 +169,7 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
 
         DatatableData datatableData = null;
 
-        final SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, new Object[]{this.context.authenticatedUser().getId(), datatable}); // NOSONAR
+        final SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, new Object[] { this.context.authenticatedUser().getId(), datatable }); // NOSONAR
         if (rowSet.next()) {
             final String appTableName = rowSet.getString("application_table_name");
             final String registeredDatatableName = rowSet.getString("registered_table_name");
@@ -383,8 +383,7 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
 
             final boolean multiRow = isMultirowDatatable(columnHeaders);
 
-            final Type typeOfMap = new TypeToken<Map<String, String>>() {
-            }.getType();
+            final Type typeOfMap = new TypeToken<Map<String, String>>() {}.getType();
             final Map<String, String> dataParams = this.fromJsonHelper.extractDataMap(typeOfMap, json);
 
             final String sql = getAddSql(columnHeaders, dataTableName, getFKField(appTable), appTableId, dataParams);
@@ -408,13 +407,13 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
             if (realCause.getMessage().contains("Duplicate entry") || cause.getMessage().contains("Duplicate entry")) {
                 throw new PlatformDataIntegrityException(
                         "error.msg.datatable.entry.duplicate", "An entry already exists for datatable `" + dataTableName
-                        + "` and application table with identifier `" + appTableId + "`.",
+                                + "` and application table with identifier `" + appTableId + "`.",
                         "dataTableName", dataTableName, appTableId, dve);
             } else if (realCause.getMessage().contains("doesn't have a default value")
                     || cause.getMessage().contains("doesn't have a default value")) {
                 throw new PlatformDataIntegrityException(
                         "error.msg.datatable.no.value.provided.for.required.fields", "No values provided for the datatable `"
-                        + dataTableName + "` and application table with identifier `" + appTableId + "`.",
+                                + dataTableName + "` and application table with identifier `" + appTableId + "`.",
                         "dataTableName", dataTableName, appTableId, dve);
             }
 
@@ -426,12 +425,12 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
             if (cause.getMessage().contains("Duplicate entry")) {
                 throw new PlatformDataIntegrityException(
                         "error.msg.datatable.entry.duplicate", "An entry already exists for datatable `" + dataTableName
-                        + "` and application table with identifier `" + appTableId + "`.",
+                                + "` and application table with identifier `" + appTableId + "`.",
                         "dataTableName", dataTableName, appTableId, e);
             } else if (cause.getMessage().contains("doesn't have a default value")) {
                 throw new PlatformDataIntegrityException(
                         "error.msg.datatable.no.value.provided.for.required.fields", "No values provided for the datatable `"
-                        + dataTableName + "` and application table with identifier `" + appTableId + "`.",
+                                + dataTableName + "` and application table with identifier `" + appTableId + "`.",
                         "dataTableName", dataTableName, appTableId, e);
             }
 
@@ -450,8 +449,7 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
 
             final List<ResultsetColumnHeaderData> columnHeaders = this.genericDataService.fillResultsetColumnHeaders(dataTableName);
 
-            final Type typeOfMap = new TypeToken<Map<String, String>>() {
-            }.getType();
+            final Type typeOfMap = new TypeToken<Map<String, String>>() {}.getType();
             final Map<String, String> dataParams = this.fromJsonHelper.extractDataMap(typeOfMap, command.json());
 
             final String sql = getAddSqlWithScore(columnHeaders, dataTableName, getFKField(appTable), appTableId, dataParams);
@@ -466,7 +464,7 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
             if (realCause.getMessage().contains("Duplicate entry") || cause.getMessage().contains("Duplicate entry")) {
                 throw new PlatformDataIntegrityException(
                         "error.msg.datatable.entry.duplicate", "An entry already exists for datatable `" + dataTableName
-                        + "` and application table with identifier `" + appTableId + "`.",
+                                + "` and application table with identifier `" + appTableId + "`.",
                         "dataTableName", dataTableName, appTableId, dve);
             }
 
@@ -478,7 +476,7 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
             if (cause.getMessage().contains("Duplicate entry")) {
                 throw new PlatformDataIntegrityException(
                         "error.msg.datatable.entry.duplicate", "An entry already exists for datatable `" + dataTableName
-                        + "` and application table with identifier `" + appTableId + "`.",
+                                + "` and application table with identifier `" + appTableId + "`.",
                         "dataTableName", dataTableName, appTableId, dve);
             }
 
@@ -491,14 +489,14 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
     private boolean isRegisteredDataTable(final String name) {
         // PERMITTED datatables
         final String sql = "select (CASE WHEN exists (select 1 from x_registered_table where registered_table_name = ?) THEN 'true' ELSE 'false' END)";
-        final String isRegisteredDataTable = this.jdbcTemplate.queryForObject(sql, String.class, new Object[]{name});
+        final String isRegisteredDataTable = this.jdbcTemplate.queryForObject(sql, String.class, new Object[] { name });
         return Boolean.valueOf(isRegisteredDataTable);
     }
 
     private void assertDataTableExists(final String datatableName) {
         final String sql = "select (CASE WHEN exists (select 1 from information_schema.tables where table_schema = "
                 + sqlGenerator.currentSchema() + " and table_name = ?) THEN 'true' ELSE 'false' END)";
-        final String dataTableExistsString = this.jdbcTemplate.queryForObject(sql, String.class, new Object[]{datatableName}); // NOSONAR
+        final String dataTableExistsString = this.jdbcTemplate.queryForObject(sql, String.class, new Object[] { datatableName }); // NOSONAR
         final boolean dataTableExists = Boolean.valueOf(dataTableExistsString);
         if (!dataTableExists) {
             throw new PlatformDataIntegrityException("error.msg.invalid.datatable", "Invalid Data Table: " + datatableName, "name",
@@ -599,12 +597,10 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
             Boolean multiRow = this.fromJsonHelper.extractBooleanNamed("multiRow", element);
 
             /**
-             * *
-             * In cases of tables storing hierarchical entities (like m_group),
-             * different entities would end up being stored in the same table.
+             * * In cases of tables storing hierarchical entities (like m_group), different entities would end up being
+             * stored in the same table.
              *
-             * Ex: Centers are a specific type of group, add abstractions for
-             * the same *
+             * Ex: Centers are a specific type of group, add abstractions for the same *
              */
             final String actualAppTableName = mapToActualAppTable(apptableName);
 
@@ -912,13 +908,14 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
     }
 
     /**
-     * Update data table, set column value to empty string where current value
-     * is NULL. Run update SQL only if the "mandatory" property is set to true
+     * Update data table, set column value to empty string where current value is NULL. Run update SQL only if the
+     * "mandatory" property is set to true
      *
-     * @param datatableName Name of data table
-     * @param column JSON encoded array of column properties
-     * @see
-     * <a href="https://mifosforge.jira.com/browse/MIFOSX-1145">MIFOSX-1145</a>
+     * @param datatableName
+     *            Name of data table
+     * @param column
+     *            JSON encoded array of column properties
+     * @see <a href="https://mifosforge.jira.com/browse/MIFOSX-1145">MIFOSX-1145</a>
      *
      */
     private void removeNullValuesFromStringColumn(final String datatableName, final JsonObject column,
@@ -965,7 +962,7 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
 
             if (!StringUtils.isBlank(entitySubType)) {
                 jdbcTemplate.update("update x_registered_table SET entity_subtype=? WHERE registered_table_name = ?", // NOSONAR
-                        new Object[]{entitySubType, datatableName});
+                        new Object[] { entitySubType, datatableName });
             }
 
             if (!StringUtils.isBlank(apptableName)) {
@@ -1216,8 +1213,7 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
                     "Application table: " + dataTableName + " Foreign key id: " + appTableId);
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, String>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, String>>() {}.getType();
         final Map<String, String> dataParams = this.fromJsonHelper.extractDataMap(typeOfMap, command.json());
 
         String pkName = "id"; // 1:M datatable
@@ -1511,7 +1507,7 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
 
         String applicationTableName = "";
 
-        final SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, new Object[]{datatable}); // NOSONAR
+        final SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, new Object[] { datatable }); // NOSONAR
         if (rowSet.next()) {
             applicationTableName = rowSet.getString("application_table_name");
         } else {
@@ -1582,8 +1578,7 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
     }
 
     /**
-     * This method is used special for ppi cases Where the score need to be
-     * computed
+     * This method is used special for ppi cases Where the score need to be computed
      *
      * @param columnHeaders
      * @param datatable
@@ -1868,7 +1863,7 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
                     final ApiParameterError error = ApiParameterError
                             .parameterError(
                                     "validation.msg.invalid.boolean.format", "The parameter " + columnHeader.getColumnName()
-                                    + " has value: " + paramValue + " which is invalid boolean value.",
+                                            + " has value: " + paramValue + " which is invalid boolean value.",
                                     columnHeader.getColumnName(), paramValue);
                     final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
                     dataValidationErrors.add(error);

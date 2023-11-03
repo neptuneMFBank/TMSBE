@@ -18,6 +18,9 @@
  */
 package org.apache.fineract.portfolio.business.metrics.service;
 
+import static org.apache.fineract.simplifytech.data.GeneralConstants.DATEFORMET_DEFAULT;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.LOCALE_EN_DEFAULT;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -59,8 +62,6 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanStatus;
 import org.apache.fineract.portfolio.note.domain.Note;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
-import static org.apache.fineract.simplifytech.data.GeneralConstants.DATEFORMET_DEFAULT;
-import static org.apache.fineract.simplifytech.data.GeneralConstants.LOCALE_EN_DEFAULT;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
@@ -80,28 +81,30 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     private final MetricsHistoryRepositoryWrapper metricsHistoryRepositoryWrapper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
 
-
     /*
      * Guaranteed to throw an exception no matter what the data integrity issue is.
      */
     private void handleDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve) {
         log.warn("handleDataIntegrityIssues: {} and Exception: {}", realCause.getMessage(), dve.getMessage());
-        //String[] cause = StringUtils.split(realCause.getMessage(), "'");
+        // String[] cause = StringUtils.split(realCause.getMessage(), "'");
 
-//        String getCause = StringUtils.defaultIfBlank(cause[3], realCause.getMessage());
-//        if (getCause.contains("name")) {
-//            final String name = command.stringValueOfParameterNamed(MetricsApiResourceConstants.NAME);
-//            throw new PlatformDataIntegrityException("error.msg.metrics.duplicate", "Metrics with name `" + name + "` already exists",
-//                    MetricsApiResourceConstants.NAME, name);
-//        } else if (getCause.contains("external_id")) {
-//            final String externalId = command.stringValueOfParameterNamed(MetricsApiResourceConstants.EXTERNALID);
-//            throw new PlatformDataIntegrityException("error.msg.metrics.duplicate",
-//                    "Metrics with externalId `" + externalId + "` already exists", MetricsApiResourceConstants.EXTERNALID, externalId);
-//        } else if (getCause.contains("rc_number")) {
-//            final String rcNumber = command.stringValueOfParameterNamed(MetricsApiResourceConstants.RCNUMBER);
-//            throw new PlatformDataIntegrityException("error.msg.metrics.duplicate.mobileNo",
-//                    "Metrics with registration `" + rcNumber + "` already exists", MetricsApiResourceConstants.RCNUMBER, rcNumber);
-//        }
+        // String getCause = StringUtils.defaultIfBlank(cause[3], realCause.getMessage());
+        // if (getCause.contains("name")) {
+        // final String name = command.stringValueOfParameterNamed(MetricsApiResourceConstants.NAME);
+        // throw new PlatformDataIntegrityException("error.msg.metrics.duplicate", "Metrics with name `" + name + "`
+        // already exists",
+        // MetricsApiResourceConstants.NAME, name);
+        // } else if (getCause.contains("external_id")) {
+        // final String externalId = command.stringValueOfParameterNamed(MetricsApiResourceConstants.EXTERNALID);
+        // throw new PlatformDataIntegrityException("error.msg.metrics.duplicate",
+        // "Metrics with externalId `" + externalId + "` already exists", MetricsApiResourceConstants.EXTERNALID,
+        // externalId);
+        // } else if (getCause.contains("rc_number")) {
+        // final String rcNumber = command.stringValueOfParameterNamed(MetricsApiResourceConstants.RCNUMBER);
+        // throw new PlatformDataIntegrityException("error.msg.metrics.duplicate.mobileNo",
+        // "Metrics with registration `" + rcNumber + "` already exists", MetricsApiResourceConstants.RCNUMBER,
+        // rcNumber);
+        // }
         logAsErrorUnexpectedDataIntegrityException(dve);
         throw new PlatformDataIntegrityException("error.msg.metrics.unknown.data.integrity.issue", "One or more fields are in conflict.",
                 "Unknown data integrity issue with resource.");
@@ -123,7 +126,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         final Long loanId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.LOAN_ID, element);
         this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
         final String noteText = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
-        final Integer paymentTypeId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.paymentTypeIdParamName, element);
+        final Integer paymentTypeId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.paymentTypeIdParamName,
+                element);
 
         metricsLoanStateCheck(metrics, loanId);
         try {
@@ -132,31 +136,26 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             if (rank == 0) {
                 loanSubmittedPendingApproval(loan, noteText, today);
             }
-            //final Integer status = loan.status().getValue();
+            // final Integer status = loan.status().getValue();
             final List<Metrics> metricses = this.metricsRepositoryWrapper.findByLoanId(loanId);
-            //final Long totalCount = metricses.stream().count();
+            // final Long totalCount = metricses.stream().count();
 
-//            if (totalCount == 1) {
-//                log.info("first loanDisbursal");
-//                //perform approve and disburse
-//                loanDisbursal(loan, noteText, today, loanId, paymentTypeId);
-//            } else {
-            //order stream by getRank asc and pick the first
-            final List<Metrics> metricsesAhead = metricses
-                    .stream()
-                    .filter(action
-                            -> Objects.equals(action.getStatus(), LoanApprovalStatus.QUEUE.getValue())
-                    && action.getRank() > rank)
-                    .sorted(Comparator.comparingInt(Metrics::getRank))
-                    .toList();
+            // if (totalCount == 1) {
+            // log.info("first loanDisbursal");
+            // //perform approve and disburse
+            // loanDisbursal(loan, noteText, today, loanId, paymentTypeId);
+            // } else {
+            // order stream by getRank asc and pick the first
+            final List<Metrics> metricsesAhead = metricses.stream()
+                    .filter(action -> Objects.equals(action.getStatus(), LoanApprovalStatus.QUEUE.getValue()) && action.getRank() > rank)
+                    .sorted(Comparator.comparingInt(Metrics::getRank)).toList();
             final long totalAheadCount = metricsesAhead.stream().count();
             if (totalAheadCount == 0) {
                 log.info("second loanDisbursal");
                 loanDisbursal(loan, noteText, today, paymentTypeId);
             } else {
-                final Metrics pickTheNextMetricApproval = metricsesAhead.stream().findFirst().orElseThrow(()
-                        -> new MetricsNotFoundException("Next approval not found for loan account: {}." + loan.getAccountNumber())
-                );
+                final Metrics pickTheNextMetricApproval = metricsesAhead.stream().findFirst().orElseThrow(
+                        () -> new MetricsNotFoundException("Next approval not found for loan account: {}." + loan.getAccountNumber()));
 
                 pickTheNextMetricApproval.setStatus(LoanApprovalStatus.PENDING.getValue());
                 this.metricsRepositoryWrapper.saveAndFlush(pickTheNextMetricApproval);
@@ -179,20 +178,17 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
 
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
-                .withEntityId(metricsId)
-                .withLoanId(loanId)
-                .build();
+                .withEntityId(metricsId).withLoanId(loanId).build();
     }
 
     protected void saveMetricsHistory(final Metrics metrics, final Integer status) {
-        final MetricsHistory metricsHistory
-                = MetricsHistory.instance(metrics, status);
+        final MetricsHistory metricsHistory = MetricsHistory.instance(metrics, status);
         this.metricsHistoryRepositoryWrapper.saveAndFlush(metricsHistory);
     }
 
     protected void loanSubmittedPendingApproval(final Loan loan, final String noteText, final LocalDate today) {
         final Long loanId = loan.getId();
-//perform first approval
+        // perform first approval
         JsonObject apiRequestBodyAsJson = new JsonObject();
         apiRequestBodyAsJson.addProperty(LoanApiConstants.approvedLoanAmountParameterName, loan.getProposedPrincipal());
         apiRequestBodyAsJson.addProperty(LoanApiConstants.noteParameterName, noteText);
@@ -209,9 +205,9 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
 
     protected void loanDisbursal(final Loan loan, final String noteText, final LocalDate today, final Integer paymentTypeId) {
         final Long loanId = loan.getId();
-        //perform first approval
-        //future checks=> check if tokenization is set, Repayment Method Done 
-        //future checks=> check if laf is set 
+        // perform first approval
+        // future checks=> check if tokenization is set, Repayment Method Done
+        // future checks=> check if laf is set
 
         JsonObject apiRequestBodyAsJson = new JsonObject();
         apiRequestBodyAsJson.addProperty(CollectionSheetConstants.actualDisbursementDateParamName, today.toString());
@@ -235,7 +231,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
 
     protected void loanReject(final Loan loan, final String noteText, final LocalDate today) {
         final Long loanId = loan.getId();
-        //perform first approval
+        // perform first approval
         JsonObject apiRequestBodyAsJson = new JsonObject();
         apiRequestBodyAsJson.addProperty(LoanApiConstants.rejectedOnDateParameterName, today.toString());
         apiRequestBodyAsJson.addProperty(LoanApiConstants.localeParameterName, LOCALE_EN_DEFAULT);
@@ -248,7 +244,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
 
     protected void loanUndo(final Loan loan, final String noteText) {
         final Long loanId = loan.getId();
-        //perform first approval
+        // perform first approval
         JsonObject apiRequestBodyAsJson = new JsonObject();
         apiRequestBodyAsJson.addProperty(LoanApiConstants.noteParameterName, noteText);
         final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson.toString());
@@ -257,17 +253,19 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     }
 
     protected void metricsLoanStateCheck(final Metrics metrics, final Long loanId) throws PlatformDataIntegrityException {
-        if (!Objects.equals(metrics.getStatus(), LoanApprovalStatus.PENDING.getValue()) || !Objects.equals(loanId, metrics.getLoan().getId())) {
-            throw new PlatformDataIntegrityException("error.loan.metrics", "Approval does not match or loan approval not in pending state.");
+        if (!Objects.equals(metrics.getStatus(), LoanApprovalStatus.PENDING.getValue())
+                || !Objects.equals(loanId, metrics.getLoan().getId())) {
+            throw new PlatformDataIntegrityException("error.loan.metrics",
+                    "Approval does not match or loan approval not in pending state.");
         }
     }
 
-//    protected void approvalUndoRejectFirstProcess(JsonCommand command, final JsonElement element) {
-//        final Long loanId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.LOAN_ID, element);
-//        final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
-//        final String noteText = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
-//        saveNoteMetrics(noteText, loan);
-//    }
+    // protected void approvalUndoRejectFirstProcess(JsonCommand command, final JsonElement element) {
+    // final Long loanId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.LOAN_ID, element);
+    // final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
+    // final String noteText = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
+    // saveNoteMetrics(noteText, loan);
+    // }
     protected void saveNoteMetrics(final String noteText, final Loan loan) {
         if (StringUtils.isNotBlank(noteText)) {
             final Note note = Note.loanNote(loan, noteText);
@@ -290,7 +288,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             final Loan loan = metrics.getLoan();
             final Integer status = loan.status().getValue();
             if (Objects.equals(status, LoanStatus.APPROVED.getValue())) {
-                //call defaul mifos real Undo if loan is in approved state
+                // call defaul mifos real Undo if loan is in approved state
                 loanUndo(loan, noteText);
             }
             final Integer rank = metrics.getRank();
@@ -298,21 +296,16 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 throw new PlatformDataIntegrityException("error.msg.metrics", "Undo not allowed for approval level.");
             }
             final List<Metrics> metricses = this.metricsRepositoryWrapper.findByLoanId(loanId);
-            //order stream by getRank desc but less than current rank and pick the first
-            final List<Metrics> metricsesAhead = metricses
-                    .stream()
-                    .filter(action
-                            -> Objects.equals(action.getStatus(), LoanApprovalStatus.APPROVED.getValue())
-                    && action.getRank() < rank)
-                    .sorted(Comparator.comparingInt(Metrics::getRank).reversed())
-                    .toList();
+            // order stream by getRank desc but less than current rank and pick the first
+            final List<Metrics> metricsesAhead = metricses.stream()
+                    .filter(action -> Objects.equals(action.getStatus(), LoanApprovalStatus.APPROVED.getValue()) && action.getRank() < rank)
+                    .sorted(Comparator.comparingInt(Metrics::getRank).reversed()).toList();
             final long totalUndoCount = metricsesAhead.stream().count();
             if (totalUndoCount == 0) {
                 throw new PlatformDataIntegrityException("error.msg.metrics", "Approval not allowed for undo.");
             } else {
-                final Metrics pickTheLastMetricApproval = metricsesAhead.stream().findFirst().orElseThrow(()
-                        -> new MetricsNotFoundException("Last approval not found for loan account: {}." + loan.getAccountNumber())
-                );
+                final Metrics pickTheLastMetricApproval = metricsesAhead.stream().findFirst().orElseThrow(
+                        () -> new MetricsNotFoundException("Last approval not found for loan account: {}." + loan.getAccountNumber()));
 
                 pickTheLastMetricApproval.setStatus(LoanApprovalStatus.PENDING.getValue());
                 this.metricsRepositoryWrapper.saveAndFlush(pickTheLastMetricApproval);
@@ -334,9 +327,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
-                .withEntityId(metricsId)
-                .withLoanId(loanId)
-                .build();
+                .withEntityId(metricsId).withLoanId(loanId).build();
     }
 
     @Override
@@ -355,7 +346,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             final Loan loan = metrics.getLoan();
             final Integer status = loan.status().getValue();
             if (!Objects.equals(status, LoanStatus.SUBMITTED_AND_PENDING_APPROVAL.getValue())) {
-                //update loan to status for rejection
+                // update loan to status for rejection
                 UpdateLoanStatus(loan, LoanStatus.SUBMITTED_AND_PENDING_APPROVAL.getValue());
             }
             loanReject(loan, noteText, today);
@@ -375,9 +366,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
-                .withEntityId(metricsId)
-                .withLoanId(loanId)
-                .build();
+                .withEntityId(metricsId).withLoanId(loanId).build();
     }
 
     @Override
@@ -396,7 +385,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             final Staff newStaff = this.staffRepositoryWrapper.findOneWithNotFoundDetection(staffId);
             if (!Objects.equals(oldStaff.getId(), newStaff.getId())) {
 
-                saveNoteMetrics("Reassign loan from " + oldStaff.displayName() + "to a new approval officer" + newStaff.displayName(), loan);
+                saveNoteMetrics("Reassign loan from " + oldStaff.displayName() + "to a new approval officer" + newStaff.displayName(),
+                        loan);
 
                 metrics.setAssignedUser(newStaff);
                 this.metricsRepositoryWrapper.saveAndFlush(metrics);
@@ -414,8 +404,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
-                .withEntityId(metricsId)
-                .build();
+                .withEntityId(metricsId).build();
     }
 
     private void UpdateLoanStatus(final Loan loan, final Integer status) {

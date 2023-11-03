@@ -34,7 +34,8 @@ public class UpdateLoanProductPaymentTypeConfigCommandHandler implements NewComm
     private final LoanProductPaymentTypeConfigWriteService loanProductPaymentTypeConfigWriteService;
 
     @Autowired
-    public UpdateLoanProductPaymentTypeConfigCommandHandler(final LoanProductPaymentTypeConfigWriteService loanProductPaymentTypeConfigWriteService) {
+    public UpdateLoanProductPaymentTypeConfigCommandHandler(
+            final LoanProductPaymentTypeConfigWriteService loanProductPaymentTypeConfigWriteService) {
         this.loanProductPaymentTypeConfigWriteService = loanProductPaymentTypeConfigWriteService;
     }
 

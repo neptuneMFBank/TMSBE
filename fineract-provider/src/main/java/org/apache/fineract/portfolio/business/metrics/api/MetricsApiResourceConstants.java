@@ -43,11 +43,10 @@ public final class MetricsApiResourceConstants {
     public static final String CLIENT_DATA = "clientData";
     public static final String LOAN_OFFICER_DATA = "loanOfficerData";
 
-    public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ID, LOAN_ID, SAVINGS_ID, STATUS,
-            STAFF_DATA, SUPERVISOR_STAFF_DATA, CREATED_ON,
-            MODIFIED_ON, CLIENT_DATA, LOAN_OFFICER_DATA));
+    public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ID, LOAN_ID, SAVINGS_ID, STATUS, STAFF_DATA,
+            SUPERVISOR_STAFF_DATA, CREATED_ON, MODIFIED_ON, CLIENT_DATA, LOAN_OFFICER_DATA));
 
-    public static final Set<String> LOAN_ACTION_DATA_PARAMETERS = new HashSet<>(Arrays.asList(LoanApiConstants.noteParamName,
-            LOAN_ID, ClientApiConstants.staffIdParamName, SavingsApiConstants.paymentTypeIdParamName));
+    public static final Set<String> LOAN_ACTION_DATA_PARAMETERS = new HashSet<>(Arrays.asList(LoanApiConstants.noteParamName, LOAN_ID,
+            ClientApiConstants.staffIdParamName, SavingsApiConstants.paymentTypeIdParamName));
 
 }

@@ -495,8 +495,7 @@ public final class LoanBusinessAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only collateral options
-     * for now.
+     * Used to produce a {@link LoanAccountData} with only collateral options for now.
      */
     public static LoanBusinessAccountData collateralTemplate(final Collection<CodeValueData> loanCollateralOptions) {
         final Long id = null;
@@ -642,8 +641,7 @@ public final class LoanBusinessAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only client information
-     * defaulted.
+     * Used to produce a {@link LoanAccountData} with only client information defaulted.
      */
     public static LoanBusinessAccountData clientDefaults(final Long clientId, final String clientAccountNo, final String clientName,
             final Long clientOfficeId, final LocalDate expectedDisbursementDate) {
@@ -821,8 +819,7 @@ public final class LoanBusinessAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only group information
-     * defaulted.
+     * Used to produce a {@link LoanAccountData} with only group information defaulted.
      */
     public static LoanBusinessAccountData groupDefaults(final GroupGeneralData group, final LocalDate expectedDisbursementDate) {
 
@@ -1946,8 +1943,7 @@ public final class LoanBusinessAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only collateral options
-     * for now.
+     * Used to produce a {@link LoanAccountData} with only collateral options for now.
      *
      * @return {@link LoanAccountData} object
      */

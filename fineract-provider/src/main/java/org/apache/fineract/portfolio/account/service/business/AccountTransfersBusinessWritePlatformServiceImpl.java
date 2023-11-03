@@ -18,9 +18,10 @@
  */
 package org.apache.fineract.portfolio.account.service.business;
 
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountTypeParamName;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountTypeParamName;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
@@ -42,8 +43,8 @@ public class AccountTransfersBusinessWritePlatformServiceImpl implements Account
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
 
     @Autowired
-    public AccountTransfersBusinessWritePlatformServiceImpl(
-            final FromJsonHelper fromApiJsonHelper, final PlatformSecurityContext context, final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+    public AccountTransfersBusinessWritePlatformServiceImpl(final FromJsonHelper fromApiJsonHelper, final PlatformSecurityContext context,
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.context = context;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
@@ -61,7 +62,8 @@ public class AccountTransfersBusinessWritePlatformServiceImpl implements Account
             createTransfer.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
         }
 
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().createAccountTransfer().withJson(createTransfer.toString()).build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().createAccountTransfer().withJson(createTransfer.toString())
+                .build();
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         return result;
 

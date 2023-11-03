@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.portfolio.savings.api.business;
 
+import static org.apache.fineract.portfolio.savings.business.DepositsBusinessApiConstants.DEPOSIT_RESPONSE_DATA_PARAMETERS;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -58,7 +60,6 @@ import org.apache.fineract.portfolio.savings.api.FixedDepositAccountsApiResource
 import org.apache.fineract.portfolio.savings.api.RecurringDepositAccountsApiResource;
 import org.apache.fineract.portfolio.savings.api.SavingsAccountsApiResource;
 import org.apache.fineract.portfolio.savings.business.DepositsBusinessApiConstants;
-import static org.apache.fineract.portfolio.savings.business.DepositsBusinessApiConstants.DEPOSIT_RESPONSE_DATA_PARAMETERS;
 import org.apache.fineract.portfolio.savings.data.business.DepositAccountBusinessData;
 import org.apache.fineract.portfolio.savings.service.business.DepositsBusinessReadPlatformService;
 import org.springframework.context.annotation.Scope;
@@ -84,15 +85,14 @@ public class DepositsBusinessApiResource {
     private final FromJsonHelper fromApiJsonHelper;
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Deposits", description = """
-            The list capability of deposits can support pagination and sorting.
-""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-        )})
+                        The list capability of deposits can support pagination and sorting.
+            """)
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+    ) })
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("accountWithBalance") @Parameter(description = "accountWithBalance") final Boolean accountWithBalance,
             @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
@@ -123,8 +123,8 @@ public class DepositsBusinessApiResource {
             toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
         }
 
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forDeposit(offset, limit, orderBy, sortOrder,
-                productId, fromDate, toDate, depositTypeId, accountNo, officeId, statusId, externalId, clientId, displayName, accountWithBalance);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forDeposit(offset, limit, orderBy, sortOrder, productId,
+                fromDate, toDate, depositTypeId, accountNo, officeId, statusId, externalId, clientId, displayName, accountWithBalance);
 
         final Page<DepositAccountBusinessData> clientData = this.depositsBusinessReadPlatformService.retrieveAll(searchParameters);
 
@@ -134,15 +134,14 @@ public class DepositsBusinessApiResource {
 
     @GET
     @Path("{accountNo}/enquiry")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve account enquiry", description = """
             Example Requests:""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+    ) })
     public String retrieveName(@PathParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
             @Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(DepositsBusinessApiConstants.RESOURCE_NAME);
@@ -156,15 +155,14 @@ public class DepositsBusinessApiResource {
 
     @GET
     @Path("{accountNo}/balance")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve account enquiry", description = """
             Example Requests:""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+    ) })
     public String retrieveBalance(@PathParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
             @Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(DepositsBusinessApiConstants.RESOURCE_NAME);
@@ -177,99 +175,105 @@ public class DepositsBusinessApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Submit new savings application", description = """
-                                                                         Submits new savings application
-                                                                         
-                                                                         """)
+            Submits new savings application
+
+            """)
     @RequestBody(required = true
-    //, content = @Content(schema = @Schema(implementation = SavingsAccountsApiResourceSwagger.PostSavingsAccountsRequest.class))
+    // , content = @Content(schema = @Schema(implementation =
+    // SavingsAccountsApiResourceSwagger.PostSavingsAccountsRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        //                , content = @Content(schema = @Schema(implementation = SavingsAccountsApiResourceSwagger.PostSavingsAccountsResponse.class))
-        )})
-    public String submitApplication(@Context final UriInfo uriInfo, @QueryParam("command") final String commandParam, @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // SavingsAccountsApiResourceSwagger.PostSavingsAccountsResponse.class))
+    ) })
+    public String submitApplication(@Context final UriInfo uriInfo, @QueryParam("command") final String commandParam,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         log.info("submitApplication-commandParam {}: {}", commandParam, apiRequestBodyAsJson);
         CommandWrapper commandRequest;
         CommandProcessingResult result = null;
         String templateJson;
         if (is(commandParam, "savings")) {
-            templateJson = DepositsBusinessApiTemplate.savingsTemplateConfig(this.savingsAccountsApiResource, apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
+            templateJson = DepositsBusinessApiTemplate.savingsTemplateConfig(this.savingsAccountsApiResource, apiRequestBodyAsJson,
+                    this.fromApiJsonHelper, true, uriInfo, null);
             log.info("commandParam {}: ", templateJson);
             commandRequest = new CommandWrapperBuilder().createSavingsAccount().withJson(templateJson).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         } else if (is(commandParam, "fixed")) {
-            templateJson = DepositsBusinessApiTemplate.fixedTemplateConfig(this.fixedDepositAccountsApiResource, apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
+            templateJson = DepositsBusinessApiTemplate.fixedTemplateConfig(this.fixedDepositAccountsApiResource, apiRequestBodyAsJson,
+                    this.fromApiJsonHelper, true, uriInfo, null);
             log.info("commandParam {}: ", templateJson);
             commandRequest = new CommandWrapperBuilder().createFixedDepositAccount().withJson(templateJson).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         } else if (is(commandParam, "recurring")) {
-            templateJson = DepositsBusinessApiTemplate.recurringTemplateConfig(this.recurringDepositAccountsApiResource, apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
+            templateJson = DepositsBusinessApiTemplate.recurringTemplateConfig(this.recurringDepositAccountsApiResource,
+                    apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
             log.info("commandParam {}: ", templateJson);
             commandRequest = new CommandWrapperBuilder().createRecurringDepositAccount().withJson(templateJson).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         }
 
         if (result == null) {
-            throw new UnrecognizedQueryParamException("command", commandParam,
-                    new Object[]{"savings", "fixed", "approve", "recurring"});
+            throw new UnrecognizedQueryParamException("command", commandParam, new Object[] { "savings", "fixed", "approve", "recurring" });
         }
         return this.toApiJsonSerializer.serialize(result);
     }
 
     @PUT
     @Path("{accountId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update savings application", description = """
-                                                                         Update savings application
-                                                                         
-                                                                         """)
+            Update savings application
+
+            """)
     @RequestBody(required = true
-    //, content = @Content(schema = @Schema(implementation = SavingsAccountsApiResourceSwagger.PostSavingsAccountsRequest.class))
+    // , content = @Content(schema = @Schema(implementation =
+    // SavingsAccountsApiResourceSwagger.PostSavingsAccountsRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        //                , content = @Content(schema = @Schema(implementation = SavingsAccountsApiResourceSwagger.PostSavingsAccountsResponse.class))
-        )})
-    public String updateApplication(@PathParam("accountId") @Parameter(description = "accountId") final Long accountId, @Context final UriInfo uriInfo, @QueryParam("command") final String commandParam, @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // SavingsAccountsApiResourceSwagger.PostSavingsAccountsResponse.class))
+    ) })
+    public String updateApplication(@PathParam("accountId") @Parameter(description = "accountId") final Long accountId,
+            @Context final UriInfo uriInfo, @QueryParam("command") final String commandParam,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         log.info("updateApplication-commandParam {}: {}", commandParam, apiRequestBodyAsJson);
         CommandWrapper commandRequest;
         CommandProcessingResult result = null;
         String templateJson;
         if (is(commandParam, "savings") || is(commandParam, "updateWithHoldTax")) {
-            templateJson = DepositsBusinessApiTemplate.savingsTemplateConfig(this.savingsAccountsApiResource, apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
+            templateJson = DepositsBusinessApiTemplate.savingsTemplateConfig(this.savingsAccountsApiResource, apiRequestBodyAsJson,
+                    this.fromApiJsonHelper, true, uriInfo, null);
             log.info("updateApplication commandParam {}: ", templateJson);
 
             if (is(commandParam, "updateWithHoldTax")) {
-                commandRequest = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson).updateWithHoldTax(accountId)
-                        .build();
+                commandRequest = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson).updateWithHoldTax(accountId).build();
             } else {
-                commandRequest = new CommandWrapperBuilder().updateSavingsAccount(accountId).withJson(apiRequestBodyAsJson)
-                        .build();
+                commandRequest = new CommandWrapperBuilder().updateSavingsAccount(accountId).withJson(apiRequestBodyAsJson).build();
             }
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         } else if (is(commandParam, "fixed")) {
-            templateJson = DepositsBusinessApiTemplate.fixedTemplateConfig(this.fixedDepositAccountsApiResource, apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
+            templateJson = DepositsBusinessApiTemplate.fixedTemplateConfig(this.fixedDepositAccountsApiResource, apiRequestBodyAsJson,
+                    this.fromApiJsonHelper, true, uriInfo, null);
             log.info("updateApplication commandParam {}: ", templateJson);
-            commandRequest = new CommandWrapperBuilder().updateFixedDepositAccount(accountId)
-                    .withJson(templateJson).build();
+            commandRequest = new CommandWrapperBuilder().updateFixedDepositAccount(accountId).withJson(templateJson).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         } else if (is(commandParam, "recurring")) {
-            templateJson = DepositsBusinessApiTemplate.recurringTemplateConfig(this.recurringDepositAccountsApiResource, apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
+            templateJson = DepositsBusinessApiTemplate.recurringTemplateConfig(this.recurringDepositAccountsApiResource,
+                    apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
             log.info("updateApplication commandParam {}: ", templateJson);
-            commandRequest = new CommandWrapperBuilder().updateRecurringDepositAccount(accountId)
-                    .withJson(templateJson).build();
+            commandRequest = new CommandWrapperBuilder().updateRecurringDepositAccount(accountId).withJson(templateJson).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         }
 
         if (result == null) {
             throw new UnrecognizedQueryParamException("command", commandParam,
-                    new Object[]{"savings", "updateWithHoldTax", "fixed", "approve", "recurring"});
+                    new Object[] { "savings", "updateWithHoldTax", "fixed", "approve", "recurring" });
         }
         return this.toApiJsonSerializer.serialize(result);
     }

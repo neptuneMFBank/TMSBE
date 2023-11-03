@@ -110,7 +110,7 @@ public class AzureContentRepository implements ContentRepository {
             blockBlobClient.delete();
         } catch (Exception e) {
             log.warn("Azure deleteObjectError: ", e);
-            //throw new ContentManagementException(documentPath, e.getMessage());
+            // throw new ContentManagementException(documentPath, e.getMessage());
         }
     }
 

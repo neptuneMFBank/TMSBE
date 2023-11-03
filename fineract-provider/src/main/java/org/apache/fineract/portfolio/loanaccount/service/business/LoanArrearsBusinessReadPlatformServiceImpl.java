@@ -18,9 +18,10 @@
  */
 package org.apache.fineract.portfolio.loanaccount.service.business;
 
-import com.google.gson.JsonObject;
 import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.CLIENT_DEFAULT_ID_API;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,8 +29,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
@@ -69,11 +72,13 @@ import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Service
@@ -107,6 +112,17 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
     private final LoansApiResource loansApiResource;
     private final FromJsonHelper fromJsonHelper;
     private final LoanMapper loanLoanMapper;
+    private final LoanArrearsSummaryMapper loanArrearsSummaryMapper;
+
+    public static String loanProductIdParameterName = "loanProductId";
+    public static String loanProductNameParameterName = "loanProductName";
+    public static String currencyDisplaySymbolParameterName = "currencyDisplaySymbol";
+    public static String totalRepaymentParameterName = "totalRepayment";
+    public static String totalOverdueParameterName = "totalOverdue";
+    public static String totalPrincipalParameterName = "totalPrincipal";
+    public static String totalLoanBalanceParameterName = "totalLoanBalance";
+    public static String totalLoanCountParameterName = "totalLoanCount";
+    public static String statusParameterName = "status";
 
     @Autowired
     public LoanArrearsBusinessReadPlatformServiceImpl(final PlatformSecurityContext context,
@@ -122,7 +138,8 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
             final ConfigurationDomainService configurationDomainService,
             final AccountDetailsReadPlatformService accountDetailsReadPlatformService, final LoanRepositoryWrapper loanRepositoryWrapper,
             final ColumnValidator columnValidator, DatabaseSpecificSQLGenerator sqlGenerator, PaginationHelper paginationHelper,
-            final ApplicationContext applicationContext, final LoansApiResource loansApiResource, final FromJsonHelper fromJsonHelper) {
+            final LoanArrearsSummaryMapper loanArrearsSummaryMapper, final ApplicationContext applicationContext,
+            final LoansApiResource loansApiResource, final FromJsonHelper fromJsonHelper) {
         this.context = context;
         this.loanRepositoryWrapper = loanRepositoryWrapper;
         this.applicationCurrencyRepository = applicationCurrencyRepository;
@@ -151,6 +168,69 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
         this.loansApiResource = loansApiResource;
         this.fromJsonHelper = fromJsonHelper;
         this.loanLoanMapper = new LoanMapper(sqlGenerator);
+        this.loanArrearsSummaryMapper = new LoanArrearsSummaryMapper(sqlGenerator);
+    }
+
+    @Override
+    public JsonObject retrieveLoanArrearsSummary(final SearchParametersBusiness searchParameters) {
+        this.context.authenticatedUser();
+        final JsonObject jsonObjectArrearsSummary = new JsonObject();
+
+        JsonElement jsonElement = null;
+        try {
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            sqlBuilder.append("select ");
+            sqlBuilder.append(this.loanArrearsSummaryMapper.schema());
+
+            List<Object> paramListSummary = new ArrayList<>();
+            if (searchParameters != null) {
+                final String extraCriteria = buildSqlStringFromLoanArrearsSummaryCriteria(searchParameters, paramListSummary);
+                if (StringUtils.isNotBlank(extraCriteria)) {
+                    sqlBuilder.append(" WHERE (").append(extraCriteria).append(")");
+                }
+            }
+            sqlBuilder.append(" GROUP BY mla.product_id ");
+            String sql = sqlBuilder.toString();
+
+            log.info("jsonObjectLoanArrearsSummaryInfo SQL: {}", sql);
+            log.info("jsonObjectLoanArrearsSummaryInfo PARAM: {}", Arrays.toString(paramListSummary.toArray()));
+            final Collection<JsonObject> jsonObjectLoanArrearsSummaryInfo = this.jdbcTemplate.query(sql, this.loanArrearsSummaryMapper, paramListSummary.toArray());
+
+            if (!CollectionUtils.isEmpty(jsonObjectLoanArrearsSummaryInfo)) {
+                final String jsonElementString = this.fromJsonHelper.toJson(jsonObjectLoanArrearsSummaryInfo);
+                jsonElement = this.fromJsonHelper.parse(jsonElementString);
+            }
+            jsonObjectArrearsSummary.add("summaryInfo", jsonElement);
+        } catch (DataAccessException e) {
+            log.warn("jsonObjectLoanArrearsSummaryInfo Error: {}", e);
+            jsonObjectArrearsSummary.add("summaryInfo", jsonElement);
+        }
+
+        JsonObject jsonObjectLoanArrearsSummary = new JsonObject();
+        try {
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            sqlBuilder.append("select ");
+            sqlBuilder.append(this.loanArrearsSummaryMapper.schema());
+
+            List<Object> paramListSummary = new ArrayList<>();
+            if (searchParameters != null) {
+                final String extraCriteria = buildSqlStringFromLoanArrearsSummaryCriteria(searchParameters, paramListSummary);
+                if (StringUtils.isNotBlank(extraCriteria)) {
+                    sqlBuilder.append(" WHERE (").append(extraCriteria).append(")");
+                }
+            }
+            String sql = sqlBuilder.toString();
+            log.info("jsonObjectLoanArrearsSummary SQL: {}", sql);
+            log.info("jsonObjectLoanArrearsSummary PARAM: {}", Arrays.toString(paramListSummary.toArray()));
+            jsonObjectLoanArrearsSummary = this.jdbcTemplate.queryForObject(sql, this.loanArrearsSummaryMapper, paramListSummary.toArray());
+            jsonObjectArrearsSummary.add("summary", jsonObjectLoanArrearsSummary);
+        } catch (DataAccessException e) {
+            log.warn("jsonObjectLoanArrearsSummary Error: {}", e);
+            jsonObjectLoanArrearsSummary.addProperty(statusParameterName, Boolean.FALSE);
+            jsonObjectArrearsSummary.add("summary", jsonObjectLoanArrearsSummary);
+        }
+
+        return jsonObjectArrearsSummary;
     }
 
     @Override
@@ -276,9 +356,8 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
                     + " mla.currency_code currencyCode, rc." + sqlGenerator.escape("name")
                     + " as currencyName, rc.display_symbol currencyDisplaySymbol, rc.internationalized_name_code currencyNameCode, "
                     + " mla.submittedon_date submittedOnDate, mla.disbursedon_date actualDisbursementDate, mla.client_office_id, mla.group_office_id, mla.transfer_to_office_id "
-                    + " FROM m_loan_arrears_view mla "
-                    + " join m_currency rc on rc."
-                    + sqlGenerator.escape("code") + " = mla.currency_code";
+                    + " FROM m_loan_arrears_view mla " + " join m_currency rc on rc." + sqlGenerator.escape("code")
+                    + " = mla.currency_code";
         }
 
         @Override
@@ -380,9 +459,10 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
 
             final LocalDate overdueSinceDate = JdbcSupport.getLocalDate(rs, "overdueSinceDate");
 
-            final LoanSummaryData loanSummary = new LoanSummaryData(currencyData, null, null, null, null, principalOverdue, null, null, null, null, null, interestOverdue, null,
-                    null, null, null, null, null, feeChargesOverdue, null, null, null, null, null, penaltyChargesOverdue, totalExpectedRepayment, totalRepayment, null, null, null, null, totalOutstanding,
-                    totalOverdue, overdueSinceDate, null, null, totalRecovered);
+            final LoanSummaryData loanSummary = new LoanSummaryData(currencyData, null, null, null, null, principalOverdue, null, null,
+                    null, null, null, interestOverdue, null, null, null, null, null, null, feeChargesOverdue, null, null, null, null, null,
+                    penaltyChargesOverdue, totalExpectedRepayment, totalRepayment, null, null, null, null, totalOutstanding, totalOverdue,
+                    overdueSinceDate, null, null, totalRecovered);
 
             GroupGeneralData groupData = null;
             if (groupId != null) {
@@ -395,16 +475,102 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
             final Boolean canUseForTopup = null;
             final boolean isTopup = rs.getBoolean("isTopup");
 
-            final LoanBusinessAccountData loanBusinessAccountData = LoanBusinessAccountData.basicLoanDetails(id, accountNo, status, null, clientId, null, clientName, null, groupData,
-                    loanType, loanProductId, loanProductName, null, false, null, null, loanPurposeId, loanPurposeName, loanOfficerId,
-                    loanOfficerName, currencyData, proposedPrincipal, principal, approvedPrincipal, netDisbursalAmount, null, null,
-                    termFrequency, termPeriodFrequencyType, numberOfRepayments, null, null, null, null, null, null, null, interestRatePerPeriod, null,
-                    annualInterestRate, null, false, null, null, null, null, null, null, null, null, null, timeline, loanSummary, null,
-                    null, null, null, null, null, null, null, inArrears, null, isNPA, null, null, false, null, null, null, null, null, null,
-                    canUseForTopup, isTopup, null, null, null, false, null);
+            final LoanBusinessAccountData loanBusinessAccountData = LoanBusinessAccountData.basicLoanDetails(id, accountNo, status, null,
+                    clientId, null, clientName, null, groupData, loanType, loanProductId, loanProductName, null, false, null, null,
+                    loanPurposeId, loanPurposeName, loanOfficerId, loanOfficerName, currencyData, proposedPrincipal, principal,
+                    approvedPrincipal, netDisbursalAmount, null, null, termFrequency, termPeriodFrequencyType, numberOfRepayments, null,
+                    null, null, null, null, null, null, interestRatePerPeriod, null, annualInterestRate, null, false, null, null, null,
+                    null, null, null, null, null, null, timeline, loanSummary, null, null, null, null, null, null, null, null, inArrears,
+                    null, isNPA, null, null, false, null, null, null, null, null, null, canUseForTopup, isTopup, null, null, null, false,
+                    null);
             loanBusinessAccountData.setClientData(clientData);
             return loanBusinessAccountData;
         }
+    }
+
+    public static final class LoanArrearsSummaryMapper implements RowMapper<JsonObject> {
+
+        private final DatabaseSpecificSQLGenerator sqlGenerator;
+
+        LoanArrearsSummaryMapper(DatabaseSpecificSQLGenerator sqlGenerator) {
+            this.sqlGenerator = sqlGenerator;
+        }
+
+        public String schema() {
+            return " rc.display_symbol currencyDisplaySymbol, SUM(COALESCE(mla.principal_amount,0)) totalPrincipal, "
+                    + " SUM(COALESCE(mla.total_overdue_derived,0)) totalOverdue, SUM(COALESCE(mla.total_repayment_derived,0)) totalRepayment, "
+                    + " mla.product_id loanProductId, mla.product_name loanProductName, " + " COUNT(mla.id) AS totalCount "
+                    + " FROM m_loan_arrears_view mla " + " join m_currency rc on rc." + sqlGenerator.escape("code")
+                    + " = mla.currency_code";
+        }
+
+        @Override
+        public JsonObject mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long loanProductId = JdbcSupport.getLong(rs, "loanProductId");
+            final String loanProductName = rs.getString("loanProductName");
+
+            final String currencyDisplaySymbol = rs.getString("currencyDisplaySymbol");
+
+            final BigDecimal totalRepayment = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalRepayment");
+            final BigDecimal totalOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalOverdue");
+            final BigDecimal totalPrincipal = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalPrincipal");
+            final BigDecimal totalLoanBalance = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "loanBalance");
+            final Long totalLoanCount = rs.getLong("totalCount");
+
+            final JsonObject loanSummary = new JsonObject();
+            loanSummary.addProperty(statusParameterName, Boolean.TRUE);
+            loanSummary.addProperty(loanProductIdParameterName, loanProductId);
+            loanSummary.addProperty(loanProductNameParameterName, loanProductName);
+            loanSummary.addProperty(currencyDisplaySymbolParameterName, currencyDisplaySymbol);
+            loanSummary.addProperty(totalRepaymentParameterName, totalRepayment);
+            loanSummary.addProperty(totalOverdueParameterName, totalOverdue);
+            loanSummary.addProperty(totalPrincipalParameterName, totalPrincipal);
+            loanSummary.addProperty(totalLoanBalanceParameterName, totalLoanBalance);
+            loanSummary.addProperty(totalLoanCountParameterName, totalLoanCount);
+            return loanSummary;
+        }
+    }
+
+    private String buildSqlStringFromLoanArrearsSummaryCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
+        String extraCriteria = "";
+
+        if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
+            final LocalDate startPeriod = searchParameters.getFromDate();
+            final LocalDate endPeriod = searchParameters.getToDate();
+            // final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
+            if (startPeriod != null && endPeriod != null) {
+                extraCriteria += " and CAST(mla.overdue_since_date_derived AS DATE) BETWEEN ? AND ? ";
+                paramList.add(df.format(startPeriod));
+                paramList.add(df.format(endPeriod));
+            } else if (startPeriod != null) {
+                extraCriteria += " and CAST(mla.overdue_since_date_derived AS DATE) >= ? ";
+                paramList.add(df.format(startPeriod));
+            } else if (endPeriod != null) {
+                extraCriteria += " and CAST(mla.overdue_since_date_derived AS DATE) <= ? ";
+                paramList.add(df.format(endPeriod));
+            }
+        }
+
+        if (searchParameters.isProductIdPassed()) {
+            extraCriteria += "and mla.product_id =?";
+            paramList.add(searchParameters.getProductId());
+        }
+        if (searchParameters.isStaffIdPassed()) {
+            extraCriteria += "and mla.loan_officer_id =?";
+            paramList.add(searchParameters.getStaffId());
+        }
+
+        if (searchParameters.isOfficeIdPassed()) {
+            extraCriteria += "and mla.office_id =?";
+            paramList.add(searchParameters.getOfficeId());
+        }
+
+        if (StringUtils.isNotBlank(extraCriteria)) {
+            extraCriteria = extraCriteria.substring(4);
+        }
+        return extraCriteria;
     }
 
 }

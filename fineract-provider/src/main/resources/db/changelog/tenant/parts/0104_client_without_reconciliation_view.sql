@@ -21,5 +21,5 @@ CREATE OR REPLACE VIEW client_without_reconciliation_view AS
 SELECT
     mc.id, '2' using_savings_product_id
 FROM m_client mc
-WHERE mc.status_enum = 300 
+WHERE mc.status_enum = 300
 and mc.id NOT IN (SELECT msa.client_id FROM m_savings_account msa WHERE msa.product_id=2);

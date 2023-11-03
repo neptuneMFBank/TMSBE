@@ -53,8 +53,7 @@ public class LoanProductPaymentTypeConfigDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, CREATE_REQUEST_DATA_PARAMETERS);
 
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -71,15 +70,16 @@ public class LoanProductPaymentTypeConfigDataValidator {
         baseDataValidator.reset().parameter(LoanApiConstants.productIdParameterName).value(productId).notNull().integerGreaterThanZero();
 
         if (this.fromApiJsonHelper.parameterExists(LoanProductPaymentTypeConfigConstants.description, element)) {
-            final String description = this.fromApiJsonHelper.extractStringNamed(LoanProductPaymentTypeConfigConstants.description, element);
+            final String description = this.fromApiJsonHelper.extractStringNamed(LoanProductPaymentTypeConfigConstants.description,
+                    element);
             baseDataValidator.reset().parameter(LoanProductPaymentTypeConfigConstants.description).value(description).notBlank();
         }
 
         if (this.fromApiJsonHelper.parameterExists(LoanProductPaymentTypeConfigConstants.paymentTypeIds, element)) {
             final JsonArray paymentTypeIds = this.fromApiJsonHelper
                     .extractJsonArrayNamed(LoanProductPaymentTypeConfigConstants.paymentTypeIds, element);
-            baseDataValidator.reset().parameter(LoanProductPaymentTypeConfigConstants.paymentTypeIds)
-                    .value(paymentTypeIds).notNull().jsonArrayNotEmpty();
+            baseDataValidator.reset().parameter(LoanProductPaymentTypeConfigConstants.paymentTypeIds).value(paymentTypeIds).notNull()
+                    .jsonArrayNotEmpty();
         }
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
@@ -89,8 +89,7 @@ public class LoanProductPaymentTypeConfigDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, UPDATE_REQUEST_DATA_PARAMETERS);
 
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -106,18 +105,20 @@ public class LoanProductPaymentTypeConfigDataValidator {
         }
         if (this.fromApiJsonHelper.parameterExists(LoanApiConstants.productIdParameterName, element)) {
             final Long productId = this.fromApiJsonHelper.extractLongNamed(LoanApiConstants.productIdParameterName, element);
-            baseDataValidator.reset().parameter(LoanApiConstants.productIdParameterName).value(productId).notNull().integerGreaterThanZero();
+            baseDataValidator.reset().parameter(LoanApiConstants.productIdParameterName).value(productId).notNull()
+                    .integerGreaterThanZero();
         }
         if (this.fromApiJsonHelper.parameterExists(LoanProductPaymentTypeConfigConstants.description, element)) {
-            final String description = this.fromApiJsonHelper.extractStringNamed(LoanProductPaymentTypeConfigConstants.description, element);
+            final String description = this.fromApiJsonHelper.extractStringNamed(LoanProductPaymentTypeConfigConstants.description,
+                    element);
             baseDataValidator.reset().parameter(LoanProductPaymentTypeConfigConstants.description).value(description).notBlank();
         }
 
         if (this.fromApiJsonHelper.parameterExists(LoanProductPaymentTypeConfigConstants.paymentTypeIds, element)) {
             final JsonArray paymentTypeIds = this.fromApiJsonHelper
                     .extractJsonArrayNamed(LoanProductPaymentTypeConfigConstants.paymentTypeIds, element);
-            baseDataValidator.reset().parameter(LoanProductPaymentTypeConfigConstants.paymentTypeIds)
-                    .value(paymentTypeIds).notNull().jsonArrayNotEmpty();
+            baseDataValidator.reset().parameter(LoanProductPaymentTypeConfigConstants.paymentTypeIds).value(paymentTypeIds).notNull()
+                    .jsonArrayNotEmpty();
         }
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);

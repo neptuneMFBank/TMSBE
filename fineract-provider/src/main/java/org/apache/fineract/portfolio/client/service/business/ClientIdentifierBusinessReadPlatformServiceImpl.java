@@ -57,8 +57,7 @@ public class ClientIdentifierBusinessReadPlatformServiceImpl implements ClientId
 
     private static final class ClientIdentityMapper implements RowMapper<ClientIdentifierBusinessData> {
 
-        ClientIdentityMapper() {
-        }
+        ClientIdentityMapper() {}
 
         public String schema() {
             return " md.id attachmentId, ci.id as id, ci.client_id as clientId, ci.document_type_id as documentTypeId, ci.status as status, ci.document_key as documentKey,"

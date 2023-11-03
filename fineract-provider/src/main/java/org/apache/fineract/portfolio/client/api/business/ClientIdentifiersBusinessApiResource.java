@@ -82,8 +82,8 @@ public class ClientIdentifiersBusinessApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create an Identifier for a Client", description = """
             Mandatory Fields
             documentKey, documentTypeId, location, type """)
@@ -91,11 +91,10 @@ public class ClientIdentifiersBusinessApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // ClientIdentifiersApiResourceSwagger.PostClientsClientIdIdentifiersRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientIdentifiersApiResourceSwagger.PostClientsClientIdIdentifiersResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientIdentifiersApiResourceSwagger.PostClientsClientIdIdentifiersResponse.class))
+    ) })
     public String createClientIdentifier(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -106,15 +105,15 @@ public class ClientIdentifiersBusinessApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List all Identifiers for a Client", description = """
-                                                                            Example Requests:
-                                                                            clients/1/identifiers/business""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        //, content = @Content(array = @ArraySchema(schema = @Schema(implementation = ClientIdentifiersApiResourceSwagger.GetClientsClientIdIdentifiersResponse.class)))
-        )})
+            Example Requests:
+            clients/1/identifiers/business""")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+    // ClientIdentifiersApiResourceSwagger.GetClientsClientIdIdentifiersResponse.class)))
+    ) })
     public String retrieveAllClientIdentifiers(@Context final UriInfo uriInfo,
             @PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
 
@@ -129,8 +128,8 @@ public class ClientIdentifiersBusinessApiResource {
 
     @PUT
     @Path("{identifierId}/{clientDocumentId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update an Identifier for a Client", description = """
             Mandatory Fields
             documentKey, documentTypeId, location, type """)
@@ -138,18 +137,17 @@ public class ClientIdentifiersBusinessApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // ClientIdentifiersApiResourceSwagger.PostClientsClientIdIdentifiersRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientIdentifiersApiResourceSwagger.PostClientsClientIdIdentifiersResponse.class))
-        )})
-    public String updateClientIdentifier(
-            @PathParam("identifierId") @Parameter(description = "identifierId") final Long clientIdentifierId,
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientIdentifiersApiResourceSwagger.PostClientsClientIdIdentifiersResponse.class))
+    ) })
+    public String updateClientIdentifier(@PathParam("identifierId") @Parameter(description = "identifierId") final Long clientIdentifierId,
             @PathParam("clientDocumentId") @Parameter(description = "clientDocumentId") final Long clientDocumentId,
             @PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
-        final CommandProcessingResult documentIdentifier = this.clientIdentifierBusinessWritePlatformService.updateClientIdentifier(clientId, clientIdentifierId, clientDocumentId, apiRequestBodyAsJson);
+        final CommandProcessingResult documentIdentifier = this.clientIdentifierBusinessWritePlatformService
+                .updateClientIdentifier(clientId, clientIdentifierId, clientDocumentId, apiRequestBodyAsJson);
 
         return this.toApiJsonSerializer.serialize(documentIdentifier);
     }

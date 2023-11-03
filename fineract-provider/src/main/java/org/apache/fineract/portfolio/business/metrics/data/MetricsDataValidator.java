@@ -53,8 +53,7 @@ public class MetricsDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
 
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, LOAN_ACTION_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -69,7 +68,8 @@ public class MetricsDataValidator {
 
         if (this.fromApiJsonHelper.parameterExists(SavingsApiConstants.paymentTypeIdParamName, element)) {
             final Long paymentTypeId = this.fromApiJsonHelper.extractLongNamed(SavingsApiConstants.paymentTypeIdParamName, element);
-            baseDataValidator.reset().parameter(SavingsApiConstants.paymentTypeIdParamName).value(paymentTypeId).notBlank().integerGreaterThanZero();
+            baseDataValidator.reset().parameter(SavingsApiConstants.paymentTypeIdParamName).value(paymentTypeId).notBlank()
+                    .integerGreaterThanZero();
         }
         final Long loanId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.LOAN_ID, element);
         baseDataValidator.reset().parameter(MetricsApiResourceConstants.LOAN_ID).value(loanId).notBlank().integerGreaterThanZero();
@@ -81,8 +81,7 @@ public class MetricsDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
 
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, LOAN_ACTION_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -92,8 +91,8 @@ public class MetricsDataValidator {
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
                 .resource(MetricsApiResourceConstants.RESOURCENAME);
 
-//        final String note = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
-//        baseDataValidator.reset().parameter(LoanApiConstants.noteParamName).value(note).notBlank();
+        // final String note = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
+        // baseDataValidator.reset().parameter(LoanApiConstants.noteParamName).value(note).notBlank();
         final Long loanId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.LOAN_ID, element);
         baseDataValidator.reset().parameter(MetricsApiResourceConstants.LOAN_ID).value(loanId).notBlank().integerGreaterThanZero();
 

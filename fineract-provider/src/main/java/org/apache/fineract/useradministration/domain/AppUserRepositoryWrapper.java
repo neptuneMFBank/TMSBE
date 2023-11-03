@@ -65,6 +65,6 @@ public class AppUserRepositoryWrapper {
     @Transactional(readOnly = true)
     public AppUser findFirstByStaffId(final Long staffId) {
         return this.appUserRepository.findFirstByStaffId(staffId).orElse(null);
-        //.orElseThrow(() -> new UserNotFoundException("User with staffId " + staffId + " does not exits.", staffId));
+        // .orElseThrow(() -> new UserNotFoundException("User with staffId " + staffId + " does not exits.", staffId));
     }
 }

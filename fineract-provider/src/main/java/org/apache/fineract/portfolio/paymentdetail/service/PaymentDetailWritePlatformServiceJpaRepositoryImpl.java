@@ -94,13 +94,13 @@ public class PaymentDetailWritePlatformServiceJpaRepositoryImpl implements Payme
         String getCause = StringUtils.defaultIfBlank(cause[3], realCause.getMessage());
         if (getCause.contains("receipt_number")) {
             final String receiptNumber = command.stringValueOfParameterNamed(PaymentDetailConstants.receiptNumberParamName);
-            throw new PlatformDataIntegrityException("error.msg.payment.detail.duplicate", "Receipt number `" + receiptNumber + "` already exists",
-                    PaymentDetailConstants.receiptNumberParamName, receiptNumber);
+            throw new PlatformDataIntegrityException("error.msg.payment.detail.duplicate",
+                    "Receipt number `" + receiptNumber + "` already exists", PaymentDetailConstants.receiptNumberParamName, receiptNumber);
         }
 
         logAsErrorUnexpectedDataIntegrityException(dve);
-        throw new PlatformDataIntegrityException("error.msg.payment.detail.unknown.data.integrity.issue", "One or more fields are in conflict.",
-                "Unknown data integrity issue with resource.");
+        throw new PlatformDataIntegrityException("error.msg.payment.detail.unknown.data.integrity.issue",
+                "One or more fields are in conflict.", "Unknown data integrity issue with resource.");
     }
 
     private void logAsErrorUnexpectedDataIntegrityException(final Exception dve) {

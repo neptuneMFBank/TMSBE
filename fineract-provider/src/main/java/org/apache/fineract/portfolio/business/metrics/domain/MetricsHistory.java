@@ -36,12 +36,12 @@ public class MetricsHistory extends AbstractAuditableWithUTCDateTimeCustom {
     @Column(name = "status_enum", nullable = false)
     private Integer status;
 
-    protected MetricsHistory() {
-    }
+    protected MetricsHistory() {}
 
     public MetricsHistory(Metrics metrics, Integer status) {
         this.metrics = metrics;
-        this.status = status;;
+        this.status = status;
+        ;
     }
 
     public static MetricsHistory instance(Metrics metrics, Integer status) {

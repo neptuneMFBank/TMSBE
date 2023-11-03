@@ -234,8 +234,7 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
         }
 
         public String schema() {
-            return "  u.id id, u.staff_id staffId from m_appuser u "
-                    + " JOIN m_appuser_role ar ON ar.appuser_id = u.id "
+            return "  u.id id, u.staff_id staffId from m_appuser u " + " JOIN m_appuser_role ar ON ar.appuser_id = u.id "
                     + " JOIN m_staff ms on ms.id = u.staff_id WHERE u.enabled=true AND u.is_deleted=false AND ms.is_active=true ";
         }
 

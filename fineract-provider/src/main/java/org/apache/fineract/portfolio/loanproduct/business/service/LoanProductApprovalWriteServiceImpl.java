@@ -94,7 +94,8 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
                 setLoanProductApprovalConfig(element, loanProductApproval);
                 final boolean updated = loanProductApproval.update(loanProductApproval.getLoanProductApprovalConfig());
                 if (updated) {
-                    final JsonArray values = this.fromApiJsonHelper.extractJsonArrayNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
+                    final JsonArray values = this.fromApiJsonHelper
+                            .extractJsonArrayNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
                     changes.put(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, values.toString());
                 }
             }
@@ -141,7 +142,7 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
     }
 
     protected void setLoanProductApprovalConfig(final JsonElement element, LoanProductApproval newLoanProductApproval) {
-        //final Set<LoanProductApprovalConfig> loanProductApprovalConfig = new HashSet<>();
+        // final Set<LoanProductApprovalConfig> loanProductApprovalConfig = new HashSet<>();
         if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element)) {
             final JsonArray loanProductApprovalConfigArray = this.fromApiJsonHelper
                     .extractJsonArrayNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTAPPROVALCONFIGDATA, element);
@@ -170,17 +171,17 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
                 LoanProductApprovalConfig loanProductApprovalConfigJsonObject;
                 if (id != null) {
                     // update record
-                    loanProductApprovalConfigJsonObject = this.loanProductApprovalConfigRepositoryWrapper
-                            .findOneWithNotFoundDetection(id);
+                    loanProductApprovalConfigJsonObject = this.loanProductApprovalConfigRepositoryWrapper.findOneWithNotFoundDetection(id);
                     loanProductApprovalConfigJsonObject.setRank(rank);
                     loanProductApprovalConfigJsonObject.setRole(role);
                     loanProductApprovalConfigJsonObject.setMinApprovalAmount(minApprovalAmount);
                     loanProductApprovalConfigJsonObject.setMaxApprovalAmount(maxApprovalAmount);
 
                 } else {
-                    loanProductApprovalConfigJsonObject = LoanProductApprovalConfig.create(role, minApprovalAmount, maxApprovalAmount, rank);
+                    loanProductApprovalConfigJsonObject = LoanProductApprovalConfig.create(role, minApprovalAmount, maxApprovalAmount,
+                            rank);
                 }
-                //loanProductApprovalConfig.add(loanProductApprovalConfigJsonObject);
+                // loanProductApprovalConfig.add(loanProductApprovalConfigJsonObject);
                 newLoanProductApproval.addLoanProductApprovalConfig(loanProductApprovalConfigJsonObject);
             }
         }
@@ -197,12 +198,13 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
             if (getCause.contains("name")) {
                 final String name = command.stringValueOfParameterNamed(LoanProductApprovalApiResourceConstants.NAME);
                 throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate",
-                        "Loan Product Approval with name `" + name + "` already exists", LoanProductApprovalApiResourceConstants.NAME, name);
+                        "Loan Product Approval with name `" + name + "` already exists", LoanProductApprovalApiResourceConstants.NAME,
+                        name);
             } else if (getCause.contains("rlpa_UNIQUE_rank")) {
                 final String rank = command.stringValueOfParameterNamed(LoanProductApprovalApiResourceConstants.RANK);
                 throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate",
-                        "Loan Product Approval with index `" + rank + "` already exists",
-                        LoanProductApprovalApiResourceConstants.RANK, rank);
+                        "Loan Product Approval with index `" + rank + "` already exists", LoanProductApprovalApiResourceConstants.RANK,
+                        rank);
             } else if (getCause.contains("loan_product")) {
                 final String loanProductId = command.stringValueOfParameterNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID);
                 throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate",

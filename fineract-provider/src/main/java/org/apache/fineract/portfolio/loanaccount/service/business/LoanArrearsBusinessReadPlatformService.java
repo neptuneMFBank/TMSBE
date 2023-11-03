@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.loanaccount.service.business;
 
+import com.google.gson.JsonObject;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.loanaccount.data.business.LoanBusinessAccountData;
@@ -25,4 +26,6 @@ import org.apache.fineract.portfolio.loanaccount.data.business.LoanBusinessAccou
 public interface LoanArrearsBusinessReadPlatformService {
 
     Page<LoanBusinessAccountData> retrieveAll(SearchParametersBusiness searchParameters);
+
+    JsonObject retrieveLoanArrearsSummary(SearchParametersBusiness searchParameters);
 }

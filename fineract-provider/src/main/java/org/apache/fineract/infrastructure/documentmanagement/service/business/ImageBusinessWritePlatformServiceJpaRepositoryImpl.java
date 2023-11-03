@@ -79,7 +79,7 @@ public class ImageBusinessWritePlatformServiceJpaRepositoryImpl implements Image
         this.fromApiJsonDeserializer.validateForImage(entityName, entityId, jsonRequestBody);
         final JsonElement jsonElement = this.fromApiJsonHelper.parse(jsonRequestBody);
         final String avatarBase64 = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.avatarBase64Param, jsonElement);
-        //log.info("saveOrUpdateImage_avatarBase64: {}", jsonRequestBody);
+        // log.info("saveOrUpdateImage_avatarBase64: {}", jsonRequestBody);
         final Base64EncodedImage base64EncodedImage = ContentRepositoryUtils.extractImageFromDataURL(avatarBase64);
         try {
             Object owner = deletePreviousImage(entityName, entityId);

@@ -21,4 +21,4 @@
 -- INSERT m_permission
 INSERT INTO `m_permission` (`id`, `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`)
 VALUES
-     (NULL, 'portfolio', 'CREATE_PAYMENT_LOANPRODUCT', 'LOANPRODUCT', 'CREATE_PAYMENT', false);
+     (NULL, 'portfolio', 'READ_LOAN_ARREARS', 'LOAN_ARREARS', 'READ', false)

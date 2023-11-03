@@ -45,8 +45,8 @@ public class LoanProductApprovalRepositoryWrapper {
 
     @Transactional(readOnly = true)
     public LoanProductApproval findByLoanProductId(final Long loanProductId) {
-        return this.repository.findByLoanProductId(loanProductId)
-                .orElseThrow(() -> new LoanProductApprovalNotFoundException("No approval configured for loan product approval with id :" + loanProductId));
+        return this.repository.findByLoanProductId(loanProductId).orElseThrow(() -> new LoanProductApprovalNotFoundException(
+                "No approval configured for loan product approval with id :" + loanProductId));
     }
 
 }

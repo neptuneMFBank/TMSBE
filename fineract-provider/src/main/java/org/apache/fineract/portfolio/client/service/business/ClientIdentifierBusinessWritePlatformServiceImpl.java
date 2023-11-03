@@ -132,7 +132,8 @@ public class ClientIdentifierBusinessWritePlatformServiceImpl implements ClientI
     }
 
     @Override
-    public CommandProcessingResult updateClientIdentifier(Long clientId, Long identifierId, final Long clientDocumentId, String apiRequestBodyAsJson) {
+    public CommandProcessingResult updateClientIdentifier(Long clientId, Long identifierId, final Long clientDocumentId,
+            String apiRequestBodyAsJson) {
 
         this.context.authenticatedUser();
         final String clientIdentifiers = "client_identifiers";
@@ -140,12 +141,10 @@ public class ClientIdentifierBusinessWritePlatformServiceImpl implements ClientI
 
         this.clientRepository.findOneWithNotFoundDetection(clientId);
 
-        this.clientIdentifierRepository.findById(identifierId)
-                .orElseThrow(() -> new ClientIdentifierNotFoundException(identifierId));
+        this.clientIdentifierRepository.findById(identifierId).orElseThrow(() -> new ClientIdentifierNotFoundException(identifierId));
 
         this.documentRepository.findById(clientDocumentId)
-                .orElseThrow(() -> new DocumentNotFoundException(clientIdentifiers,
-                identifierId, clientDocumentId));
+                .orElseThrow(() -> new DocumentNotFoundException(clientIdentifiers, identifierId, clientDocumentId));
 
         final JsonElement jsonElement = this.fromApiJsonHelper.parse(apiRequestBodyAsJson);
 
@@ -168,8 +167,7 @@ public class ClientIdentifierBusinessWritePlatformServiceImpl implements ClientI
         }
         jsonClientIdentifier.addProperty(ClientApiConstants.statusParamName, "Active");
 
-        this.clientIdentifiersApiResource.updateClientIdentifer(clientId, identifierId,
-                jsonClientIdentifier.toString());
+        this.clientIdentifiersApiResource.updateClientIdentifer(clientId, identifierId, jsonClientIdentifier.toString());
         final Long resourceId = identifierId;
 
         final JsonObject jsonClientIdentifierDocument = new JsonObject();
@@ -179,8 +177,8 @@ public class ClientIdentifierBusinessWritePlatformServiceImpl implements ClientI
         // if (StringUtils.isNotBlank(description)) {
         // jsonClientIdentifierDocument.addProperty(descriptionParam, documentTypeId);
         // }
-        this.documentWritePlatformService.updateBase64Document(clientDocumentId, clientIdentifiers,
-                identifierId, jsonClientIdentifierDocument.toString());
+        this.documentWritePlatformService.updateBase64Document(clientDocumentId, clientIdentifiers, identifierId,
+                jsonClientIdentifierDocument.toString());
         final Long subResourceId = clientDocumentId;
 
         return new CommandProcessingResultBuilder() //

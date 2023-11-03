@@ -32,7 +32,8 @@ public final class LoanBusinessDocData {
     private final LoanProductData loanProductData;
     private final String clientSignature;
 
-    public LoanBusinessDocData(LoanBusinessAccountData loanBusinessAccountData, AddressData clientAddressData, LoanProductData loanProductData, String clientSignature) {
+    public LoanBusinessDocData(LoanBusinessAccountData loanBusinessAccountData, AddressData clientAddressData,
+            LoanProductData loanProductData, String clientSignature) {
         this.loanBusinessAccountData = loanBusinessAccountData;
         this.clientAddressData = clientAddressData;
         this.loanProductData = loanProductData;

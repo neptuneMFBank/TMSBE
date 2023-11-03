@@ -61,9 +61,8 @@ import org.springframework.security.core.userdetails.User;
 @Entity
 @Table(name = "m_appuser",
         // uniqueConstraints = @UniqueConstraint(columnNames = { "username" }, name = "username_org")
-        uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"username"}, name = "username_org"),
-            @UniqueConstraint(columnNames = {"email"}, name = "email_org")})
+        uniqueConstraints = { @UniqueConstraint(columnNames = { "username" }, name = "username_org"),
+                @UniqueConstraint(columnNames = { "email" }, name = "email_org") })
 public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     @Column(name = "email", nullable = false, length = 100)
@@ -366,8 +365,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     }
 
     /**
-     * Delete is a <i>soft delete</i>. Updates flag so it wont appear in
-     * query/report results.
+     * Delete is a <i>soft delete</i>. Updates flag so it wont appear in query/report results.
      *
      * Any fields with unique constraints and prepended with id of record.
      */
@@ -550,7 +548,8 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     /**
      * Checks whether the user has a given permission explicitly.
      *
-     * @param permissionCode the permission code to check for.
+     * @param permissionCode
+     *            the permission code to check for.
      * @return whether the user has the specified permission
      */
     public boolean hasSpecificPermissionTo(final String permissionCode) {

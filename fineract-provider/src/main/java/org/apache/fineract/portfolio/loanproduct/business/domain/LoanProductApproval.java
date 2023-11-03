@@ -36,9 +36,8 @@ import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.springframework.util.CollectionUtils;
 
 @Entity
-@Table(name = "m_role_loan_product_approval", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"name"}, name = "rlpa_UNIQUE_name"),
-    @UniqueConstraint(columnNames = {"loan_product_id"}, name = "rlpa_UNIQUE_loan_product")})
+@Table(name = "m_role_loan_product_approval", uniqueConstraints = { @UniqueConstraint(columnNames = { "name" }, name = "rlpa_UNIQUE_name"),
+        @UniqueConstraint(columnNames = { "loan_product_id" }, name = "rlpa_UNIQUE_loan_product") })
 public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom {
 
     @Column(name = "name", nullable = false)
@@ -51,8 +50,7 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "LoanProductApproval", orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<LoanProductApprovalConfig> loanProductApprovalConfig = new HashSet<>();
 
-    protected LoanProductApproval() {
-    }
+    protected LoanProductApproval() {}
 
     private LoanProductApproval(String name, LoanProduct loanProduct, Set<LoanProductApprovalConfig> loanProductApprovalConfig) {
         this.name = name;
@@ -61,7 +59,8 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
     }
 
     public static LoanProductApproval create(String name, LoanProduct loanProduct) {
-        Set<LoanProductApprovalConfig> loanProductApprovalConfig = new HashSet<>();;
+        Set<LoanProductApprovalConfig> loanProductApprovalConfig = new HashSet<>();
+        ;
         return new LoanProductApproval(name, loanProduct, loanProductApprovalConfig);
     }
 
@@ -99,9 +98,8 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
         if (!CollectionUtils.isEmpty(this.loanProductApprovalConfig)) {
             final Integer rank = singleLoanProductApprovalConfig.getRank();
             final boolean exist = this.loanProductApprovalConfig.stream()
-                    .anyMatch(action
-                            -> !Objects.equals(singleLoanProductApprovalConfig.getId(), action.getId())
-                    && Objects.equals(action.getRank(), rank));
+                    .anyMatch(action -> !Objects.equals(singleLoanProductApprovalConfig.getId(), action.getId())
+                            && Objects.equals(action.getRank(), rank));
             if (exist) {
                 throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.config.duplicate",
                         "Loan Product Approval config with index `" + rank + "` already exists");

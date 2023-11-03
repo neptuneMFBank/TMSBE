@@ -18,6 +18,9 @@
  */
 package org.apache.fineract.portfolio.loanaccount.api.business;
 
+import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.CLIENT_SIGNATURE_ID;
+
+import com.google.gson.JsonObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,6 +50,7 @@ import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.dataqueries.service.EntityDatatableChecksReadService;
@@ -85,7 +89,6 @@ import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatform
 import org.apache.fineract.portfolio.loanproduct.service.business.LoanProductBusinessReadPlatformService;
 import org.apache.fineract.portfolio.note.service.NoteReadPlatformService;
 import org.apache.fineract.portfolio.rate.service.RateReadService;
-import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.CLIENT_SIGNATURE_ID;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
@@ -98,7 +101,8 @@ import org.springframework.stereotype.Component;
 @Tag(name = "Loans Arrears", description = "The API concept of loans Arrears models the loan application process and the loan contract/monitoring process.")
 public class LoansArrearsBusinessApiResource {
 
-    private final Set<String> loanDataDocParameters = new HashSet<>(Arrays.asList("loanBusinessAccountData", "clientAddressData", "loanProductData", "clientSignature"));
+    private final Set<String> loanDataDocParameters = new HashSet<>(
+            Arrays.asList("loanBusinessAccountData", "clientAddressData", "loanProductData", "clientSignature"));
 
     private final Set<String> loanDataParameters = new HashSet<>(Arrays.asList("id", "accountNo", "status", "externalId", "clientId",
             "group", "loanProductId", "loanProductName", "loanProductDescription",
@@ -121,7 +125,8 @@ public class LoansArrearsBusinessApiResource {
             LoanApiConstants.topupAmount, LoanApiConstants.clientActiveLoanOptions, LoanApiConstants.datatables,
             LoanProductConstants.RATES_PARAM_NAME, LoanApiConstants.MULTIDISBURSE_DETAILS_PARAMNAME,
             LoanApiConstants.EMI_AMOUNT_VARIATIONS_PARAMNAME, LoanApiConstants.COLLECTION_PARAMNAME, "clientData",
-            LoanBusinessApiConstants.activationChannelIdParam, LoanBusinessApiConstants.activationChannelNameParam, LoanBusinessApiConstants.metricsDataParam, "collateralOld", LoanBusinessApiConstants.loanProductPaymentTypeConfigDataParam));
+            LoanBusinessApiConstants.activationChannelIdParam, LoanBusinessApiConstants.activationChannelNameParam,
+            LoanBusinessApiConstants.metricsDataParam, "collateralOld", LoanBusinessApiConstants.loanProductPaymentTypeConfigDataParam));
 
     private final String resourceNameForPermissions = "LOAN_ARREARS";
 
@@ -137,6 +142,7 @@ public class LoansArrearsBusinessApiResource {
     private final CodeValueReadPlatformService codeValueReadPlatformService;
     private final GroupReadPlatformService groupReadPlatformService;
     private final DefaultToApiJsonSerializer<LoanBusinessDocData> toApiDocJsonSerializer;
+    private final ToApiJsonSerializer<JsonObject> loanArrearsSummarySerializer;
     private final DefaultToApiJsonSerializer<LoanBusinessAccountData> toApiJsonSerializer;
     private final DefaultToApiJsonSerializer<LoanApprovalData> loanApprovalDataToApiJsonSerializer;
     private final DefaultToApiJsonSerializer<LoanScheduleData> loanScheduleToApiJsonSerializer;
@@ -196,8 +202,15 @@ public class LoansArrearsBusinessApiResource {
             final LoanCollateralManagementReadPlatformService loanCollateralManagementReadPlatformService,
             final LoanArrearsBusinessReadPlatformService loanArrearsBusinessReadPlatformService,
             final DefaultToApiJsonSerializer<String> calculateLoanScheduleToApiJsonSerializer, final LoansApiResource loansApiResource,
-            final LoanReadPlatformService loanReadPlatformService, final MetricsReadPlatformService metricsReadPlatformService, final LoanProductBusinessReadPlatformService loanProductBusinessReadPlatformService,
-            final LoanProductPaymentTypeConfigReadPlatformService loanProductPaymentTypeConfigReadPlatformService, final CollateralReadPlatformService loanCollateralReadPlatformService, final ApplicationContext contextApplication, final DefaultToApiJsonSerializer<LoanBusinessDocData> toApiDocJsonSerializer, final AddressReadPlatformServiceImpl readPlatformService, final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService, final DocumentBusinessWritePlatformService documentWritePlatformService) {
+            final LoanReadPlatformService loanReadPlatformService, final MetricsReadPlatformService metricsReadPlatformService,
+            final LoanProductBusinessReadPlatformService loanProductBusinessReadPlatformService,
+            final ToApiJsonSerializer<JsonObject> loanArrearsSummarySerializer,
+            final LoanProductPaymentTypeConfigReadPlatformService loanProductPaymentTypeConfigReadPlatformService,
+            final CollateralReadPlatformService loanCollateralReadPlatformService, final ApplicationContext contextApplication,
+            final DefaultToApiJsonSerializer<LoanBusinessDocData> toApiDocJsonSerializer,
+            final AddressReadPlatformServiceImpl readPlatformService,
+            final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService,
+            final DocumentBusinessWritePlatformService documentWritePlatformService) {
         this.context = context;
         this.loanProductReadPlatformService = loanProductReadPlatformService;
         this.dropdownReadPlatformService = dropdownReadPlatformService;
@@ -242,11 +255,12 @@ public class LoansArrearsBusinessApiResource {
         this.clientSignatureId = Long.valueOf(environment.getProperty(CLIENT_SIGNATURE_ID));
         this.loanCollateralReadPlatformService = loanCollateralReadPlatformService;
         this.loanProductPaymentTypeConfigReadPlatformService = loanProductPaymentTypeConfigReadPlatformService;
+        this.loanArrearsSummarySerializer = loanArrearsSummarySerializer;
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Loans", description = """
             The list capability of loans can support pagination and sorting.
             Example Requests:
@@ -258,12 +272,10 @@ public class LoansArrearsBusinessApiResource {
             loans\\business?offset=10&limit=50
 
             loans\\business?orderBy=accountNo&sortOrder=DESC""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansResponse.class))
-        )})
-    public String retrieveAll(@Context final UriInfo uriInfo,
-            @QueryParam("staffId") @Parameter(description = "staffId") final Long staffId,
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansResponse.class))
+    ) })
+    public String retrieveAll(@Context final UriInfo uriInfo, @QueryParam("staffId") @Parameter(description = "staffId") final Long staffId,
             @QueryParam("productId") @Parameter(description = "productId") final Long productId,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
             @QueryParam("clientId") @Parameter(description = "clientId") final Long clientId,
@@ -288,11 +300,52 @@ public class LoansArrearsBusinessApiResource {
             toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
         }
 
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forLoansArrearsBusiness(productId, clientId, officeId, offset, limit, orderBy, sortOrder, staffId, accountNo, fromDate, toDate);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forLoansArrearsBusiness(productId, clientId, officeId,
+                offset, limit, orderBy, sortOrder, staffId, accountNo, fromDate, toDate);
 
         final Page<LoanBusinessAccountData> loanBasicDetails = this.loanArrearsBusinessReadPlatformService.retrieveAll(searchParameters);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, loanBasicDetails, this.loanDataParameters);
+    }
+
+    @GET
+    @Path("summary")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve loan arrears summary", description = "")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsClientIdAccountsResponse.class))
+    ), @ApiResponse(responseCode = "400", description = "Bad Request") })
+    public String retrieveAssociatedAccounts(@Context final UriInfo uriInfo,
+            @QueryParam("staffId") @Parameter(description = "staffId") final Long staffId,
+            @QueryParam("productId") @Parameter(description = "productId") final Long productId,
+            @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
+            @QueryParam("clientId") @Parameter(description = "clientId") final Long clientId,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
+            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @DefaultValue("en") @QueryParam("locale") final String locale,
+            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+        LocalDate fromDate = null;
+        if (startPeriod != null) {
+            fromDate = startPeriod.getDate(LoanBusinessApiConstants.startPeriodParameterName, dateFormat, locale);
+        }
+        LocalDate toDate = null;
+        if (endPeriod != null) {
+            toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
+        }
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forLoansArrearsBusiness(productId, clientId, officeId,
+                offset, limit, orderBy, sortOrder, staffId, accountNo, fromDate, toDate);
+        final JsonObject retrieveSummary = this.loanArrearsBusinessReadPlatformService.retrieveLoanArrearsSummary(searchParameters);
+        final Set<String> SUMMARY_DATA_PARAMETERS = new HashSet<>(Arrays.asList("summary", "summaryInfo"));
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.loanArrearsSummarySerializer.serialize(settings, retrieveSummary, SUMMARY_DATA_PARAMETERS);
     }
 }

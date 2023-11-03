@@ -33,7 +33,8 @@ public class LoanProductApprovalConfigData implements Serializable {
     private final BigDecimal maxApprovalAmount;
     private final Integer rank;
 
-    public static LoanProductApprovalConfigData instance(Long id, RoleData roleData, BigDecimal minApprovalAmount, BigDecimal maxApprovalAmount, Integer rank) {
+    public static LoanProductApprovalConfigData instance(Long id, RoleData roleData, BigDecimal minApprovalAmount,
+            BigDecimal maxApprovalAmount, Integer rank) {
         return new LoanProductApprovalConfigData(id, roleData, minApprovalAmount, maxApprovalAmount, rank);
     }
 

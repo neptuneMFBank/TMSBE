@@ -71,15 +71,14 @@ public class LoanProductPaymentTypeConfigApiResource {
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Loan Product Payment Template", description = """
             """)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
+    ) })
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(LoanProductPaymentTypeConfigConstants.RESOURCENAME);
@@ -92,17 +91,18 @@ public class LoanProductPaymentTypeConfigApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create Loan Product Payment", description = """
             Creates a new Loan Product Payment""")
     @RequestBody(required = true
-    // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostLoanProductPaymentTypeConfigRequest.class))
+    // , content = @Content(schema = @Schema(implementation =
+    // EmployerApiResourceSwagger.PostLoanProductPaymentTypeConfigRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostLoanProductPaymentTypeConfigResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // EmployerApiResourceSwagger.PostLoanProductPaymentTypeConfigResponse.class))
+    ) })
     public String createLoanProductPaymentTypeConfig(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .createLoanProductPaymentTypeConfig()//
@@ -114,18 +114,17 @@ public class LoanProductPaymentTypeConfigApiResource {
 
     @PUT
     @Path("{loanProductPaymentId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update Loan Product Payment", description = "Update Loan Product Payment")
     @RequestBody(required = true
     // ,content = @Content(schema = @Schema(implementation =
     // EmployerApiResourceSwagger.PutLoanProductPaymentTypeConfigEmployerIdRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // EmployerApiResourceSwagger.PutLoanProductPaymentTypeConfigEmployerIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // EmployerApiResourceSwagger.PutLoanProductPaymentTypeConfigEmployerIdResponse.class))
+    ) })
     public String updateLoanProductPaymentTypeConfig(
             @PathParam("loanProductPaymentId") @Parameter(description = "loanProductPaymentId") final Long loanProductPaymentId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
@@ -136,14 +135,13 @@ public class LoanProductPaymentTypeConfigApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve all LoanProductPaymentTypeConfig", description = "Retrieve list of LoanProductPaymentTypeConfig")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
-        // EmployerApiResourceSwagger.GetLoanProductPaymentTypeConfigResponse.class)))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+    // EmployerApiResourceSwagger.GetLoanProductPaymentTypeConfigResponse.class)))
+    ) })
     public String getAllLoanProductPaymentTypeConfig(@Context final UriInfo uriInfo,
             @QueryParam("productId") @Parameter(description = "productId") final Long productId,
             @QueryParam("name") @Parameter(description = "name") final String name,
@@ -178,15 +176,11 @@ public class LoanProductPaymentTypeConfigApiResource {
 
     @GET
     @Path("{id}")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve a loan Product Payment", description = "Retrieves a loan Product Payment")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
-    public String retrieveOne(
-            @PathParam("id") @Parameter(description = "id") final Long id,
-            @Context final UriInfo uriInfo) {
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String retrieveOne(@PathParam("id") @Parameter(description = "id") final Long id, @Context final UriInfo uriInfo) {
         this.securityContext.authenticatedUser().validateHasReadPermission(LoanProductPaymentTypeConfigConstants.RESOURCENAME);
         final LoanProductPaymentTypeConfigData loanProductPaymentData = this.readPlatformService.retrieveOne(id);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());

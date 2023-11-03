@@ -81,7 +81,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
     @Override
     @CronTarget(jobName = JobName.CREATE_RECONCILIATION_WALLET)
     public void createReconciliationWalletMissingForClient() {
-        //create reconciliation wallet missing and update it as client default savings account
+        // create reconciliation wallet missing and update it as client default savings account
         log.info("createReconciliationWalletMissingForClient start");
 
         final String sql = "select " + this.reconciliationWalletSummaryMapper.schema();
@@ -120,30 +120,32 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
                     final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
                     final Long resultReconciliationSavings = result.resourceId();
 
-                    //Approve Reconciliation Wallet
+                    // Approve Reconciliation Wallet
                     final JsonObject approveReconciliationSavings = new JsonObject();
                     approveReconciliationSavings.addProperty("approvedOnDate", clientActivationLocalDate.toString());
                     approveReconciliationSavings.addProperty("note", "System Approved");
                     approveReconciliationSavings.addProperty("locale", GeneralConstants.LOCALE_EN_DEFAULT);
                     approveReconciliationSavings.addProperty("dateFormat", GeneralConstants.DATEFORMET_DEFAULT);
                     final CommandWrapper commandRequestApprove = new CommandWrapperBuilder()
-                            .approveSavingsAccountApplication(resultReconciliationSavings).withJson(approveReconciliationSavings.toString()).build();
+                            .approveSavingsAccountApplication(resultReconciliationSavings).withJson(approveReconciliationSavings.toString())
+                            .build();
                     this.commandsSourceWritePlatformService.logCommandSource(commandRequestApprove);
 
                     final JsonObject activateReconciliationSavings = new JsonObject();
                     activateReconciliationSavings.addProperty("activatedOnDate", clientActivationLocalDate.toString());
                     activateReconciliationSavings.addProperty("locale", GeneralConstants.LOCALE_EN_DEFAULT);
                     activateReconciliationSavings.addProperty("dateFormat", GeneralConstants.DATEFORMET_DEFAULT);
-                    final CommandWrapper commandRequestActivate = new CommandWrapperBuilder().savingsAccountActivation(resultReconciliationSavings)
-                            .withJson(activateReconciliationSavings.toString()).build();
+                    final CommandWrapper commandRequestActivate = new CommandWrapperBuilder()
+                            .savingsAccountActivation(resultReconciliationSavings).withJson(activateReconciliationSavings.toString())
+                            .build();
                     this.commandsSourceWritePlatformService.logCommandSource(commandRequestActivate);
 
-                    //update client to have this account as default savings account
+                    // update client to have this account as default savings account
                     final JsonObject updateSavingsAccount = new JsonObject();
                     updateSavingsAccount.addProperty("savingsAccountId", resultReconciliationSavings);
 
-                    final CommandWrapper commandRequestUpdateAccount = new CommandWrapperBuilder().updateClientSavingsAccount(id).withJson(updateSavingsAccount.toString())
-                            .build();
+                    final CommandWrapper commandRequestUpdateAccount = new CommandWrapperBuilder().updateClientSavingsAccount(id)
+                            .withJson(updateSavingsAccount.toString()).build();
                     this.commandsSourceWritePlatformService.logCommandSource(commandRequestUpdateAccount);
                 }
             }
@@ -285,7 +287,8 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
 
             String sql = sqlBuilder.toString();
 
-            final DepositAccountBusinessData depositAccountBusinessData = this.jdbcTemplate.queryForObject(sql, this.depositViewMapper, accountNo);
+            final DepositAccountBusinessData depositAccountBusinessData = this.jdbcTemplate.queryForObject(sql, this.depositViewMapper,
+                    accountNo);
             final DepositAccountBusinessData accountBusinessData = DepositAccountBusinessData.retrieveBalance(depositAccountBusinessData);
             return accountBusinessData;
 
@@ -306,7 +309,8 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
 
             String sql = sqlBuilder.toString();
 
-            final DepositAccountBusinessData depositAccountBusinessData = this.jdbcTemplate.queryForObject(sql, this.depositViewMapper, accountNo);
+            final DepositAccountBusinessData depositAccountBusinessData = this.jdbcTemplate.queryForObject(sql, this.depositViewMapper,
+                    accountNo);
             final DepositAccountBusinessData accountBusinessData = DepositAccountBusinessData.retrieveName(depositAccountBusinessData);
             return accountBusinessData;
 
@@ -323,9 +327,12 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
         DepositViewMapper() {
             final StringBuilder sqlBuilder = new StringBuilder(400);
 
-            sqlBuilder.append(" ms.office_id officeId, ms.office_name officeName, ms.id, ms.external_id externalId, ms.account_no accountNo, ms.product_id productId, ms.product_name productName, ms.deposit_type_enum depositType, ");
-            sqlBuilder.append(" ms.client_id clientId, ms.display_name displayName, ms.ledger_balance ledgerBalance, ms.available_balance availableBalance, ");
-            sqlBuilder.append(" ms.submittedon_date createdOn, ms.activatedon_date activatedOn, ms.last_transaction_date lastTransactionOn, ms.status_enum as statusEnum ");
+            sqlBuilder.append(
+                    " ms.office_id officeId, ms.office_name officeName, ms.id, ms.external_id externalId, ms.account_no accountNo, ms.product_id productId, ms.product_name productName, ms.deposit_type_enum depositType, ");
+            sqlBuilder.append(
+                    " ms.client_id clientId, ms.display_name displayName, ms.ledger_balance ledgerBalance, ms.available_balance availableBalance, ");
+            sqlBuilder.append(
+                    " ms.submittedon_date createdOn, ms.activatedon_date activatedOn, ms.last_transaction_date lastTransactionOn, ms.status_enum as statusEnum ");
             sqlBuilder.append(" from m_saving_view ms ");
 
             this.schema = sqlBuilder.toString();
@@ -363,7 +370,8 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
             final LocalDate activatedOn = JdbcSupport.getLocalDate(rs, "activatedOn");
             final LocalDate lastTransactionOn = JdbcSupport.getLocalDate(rs, "lastTransactionOn");
 
-            return DepositAccountBusinessData.lookUp(id, accountNo, depositType, status, clientId, clientName, productId, productName, availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId, officeName);
+            return DepositAccountBusinessData.lookUp(id, accountNo, depositType, status, clientId, clientName, productId, productName,
+                    availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId, officeName);
 
         }
 

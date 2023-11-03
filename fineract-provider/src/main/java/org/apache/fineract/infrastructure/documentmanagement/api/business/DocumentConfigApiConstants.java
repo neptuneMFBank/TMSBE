@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.fineract.portfolio.client.data.ClientData;
 
-@SuppressWarnings({"HideUtilityClassConstructor"})
+@SuppressWarnings({ "HideUtilityClassConstructor" })
 public class DocumentConfigApiConstants {
 
     public static final String approvalCheckParam = "approvalCheck";
@@ -56,9 +56,8 @@ public class DocumentConfigApiConstants {
     public static final String globalEntityTypeParam = "globalEntityType";
 
     /**
-     * These parameters will match the class level parameters of
-     * {@link ClientData}. Where possible, we try to get response parameters to
-     * match those of request parameters.
+     * These parameters will match the class level parameters of {@link ClientData}. Where possible, we try to get
+     * response parameters to match those of request parameters.
      */
     public static final Set<String> DOCUMENT_CONFIG_TEMPLATE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(loanProductDatasParam, clientLegalFormOptionsParam, savingProductOptionsParam, settingsCodeParam));

@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.organisation.staff.service.business;
 
+import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.statusParameterName;
+
 import com.google.gson.JsonObject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,7 +41,6 @@ import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.organisation.staff.data.business.StaffBusinessData;
 import org.apache.fineract.organisation.staff.exception.StaffNotFoundException;
-import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.statusParameterName;
 import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformServiceImpl.ClientCountSummaryMapper;
 import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformServiceImpl.LoanActiveSummaryMapper;
 import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformServiceImpl.LoanPrincipalAmountSummaryMapper;
@@ -87,7 +88,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
         try {
             final String sql = "select " + rm.schema() + " where s.id = ? and o.hierarchy like ? ";
 
-            return this.jdbcTemplate.queryForObject(sql, rm, new Object[]{staffId, hierarchy}); // NOSONAR
+            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { staffId, hierarchy }); // NOSONAR
         } catch (final EmptyResultDataAccessException e) {
             throw new StaffNotFoundException(staffId, e);
         }
@@ -257,8 +258,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
                     + " s.organisational_role_parent_staff_id organisationalRoleParentStaff, ms.display_name organisationalRoleParentStaffName, s.organisational_role_enum organisationalRoleType, mcv.code_value organisationalRoleTypeName "
                     + " from m_staff s " + " join m_office o on o.id = s.office_id "
                     + " left join m_staff ms on ms.id=s.organisational_role_parent_staff_id "
-                    + " left join staffOther so on so.staff_id=s.id "
-                    + " left join m_code_value mcv on mcv.id=s.organisational_role_enum ";
+                    + " left join staffOther so on so.staff_id=s.id " + " left join m_code_value mcv on mcv.id=s.organisational_role_enum ";
         }
 
         @Override

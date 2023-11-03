@@ -47,9 +47,8 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
 
     @Override
     @Transactional
-    @Caching(evict = {
-        @CacheEvict(value = "usersBusiness", allEntries = true),
-        @CacheEvict(value = "usersBusinessPasswordByUsername", allEntries = true)})
+    @Caching(evict = { @CacheEvict(value = "usersBusiness", allEntries = true),
+            @CacheEvict(value = "usersBusinessPasswordByUsername", allEntries = true) })
     public CommandProcessingResult updateUserPassword(final JsonCommand command) {
         final AppUser appUser = this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForUpdatePassword(command.json());
@@ -59,9 +58,8 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
 
     @Override
     @Transactional
-    @Caching(evict = {
-        @CacheEvict(value = "usersBusiness", allEntries = true),
-        @CacheEvict(value = "usersBusinessInfoByUsername", allEntries = true)})
+    @Caching(evict = { @CacheEvict(value = "usersBusiness", allEntries = true),
+            @CacheEvict(value = "usersBusinessInfoByUsername", allEntries = true) })
     public CommandProcessingResult updateUserInfo(final Long userId, final JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForUpdate(command.json());
@@ -81,8 +79,7 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
             return new CommandProcessingResultBuilder().withEntityId(userId).build();
         } catch (final Exception e) {
             log.warn("enableUser: {}", e);
-            throw new PlatformDataIntegrityException("error.msg.unknown.data.integrity.issue",
-                    "User not Enabled.");
+            throw new PlatformDataIntegrityException("error.msg.unknown.data.integrity.issue", "User not Enabled.");
         }
     }
 
@@ -99,8 +96,7 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
             return new CommandProcessingResultBuilder().withEntityId(userId).build();
         } catch (final Exception e) {
             log.warn("disableUser: {}", e);
-            throw new PlatformDataIntegrityException("error.msg.unknown.data.integrity.issue",
-                    "User not Disabled.");
+            throw new PlatformDataIntegrityException("error.msg.unknown.data.integrity.issue", "User not Disabled.");
         }
     }
 

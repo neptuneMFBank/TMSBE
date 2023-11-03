@@ -24,6 +24,7 @@ public interface ClientIdentifierBusinessWritePlatformService {
 
     CommandProcessingResult addClientIdentifier(Long clientId, String apiRequestBodyAsJson);
 
-    CommandProcessingResult updateClientIdentifier(final Long clientId, final Long identifierId, final Long clientDocumentId, String apiRequestBodyAsJson);
+    CommandProcessingResult updateClientIdentifier(final Long clientId, final Long identifierId, final Long clientDocumentId,
+            String apiRequestBodyAsJson);
 
 }

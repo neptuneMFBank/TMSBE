@@ -77,8 +77,9 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
     @Autowired
     public DocumentBusinessWritePlatformServiceImpl(final PlatformSecurityContext context,
             final DocumentBusinessDataValidator fromApiJsonDeserializer, final FromJsonHelper fromApiJsonHelper,
-            final DocumentWritePlatformService documentWritePlatformService,
-            final DocumentReadPlatformService documentReadPlatformService, final DocumentRepository documentRepository, final ReadWriteNonCoreDataService readWriteNonCoreDataService, final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+            final DocumentWritePlatformService documentWritePlatformService, final DocumentReadPlatformService documentReadPlatformService,
+            final DocumentRepository documentRepository, final ReadWriteNonCoreDataService readWriteNonCoreDataService,
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.fromApiJsonHelper = fromApiJsonHelper;
@@ -215,14 +216,13 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
     }
 
     @Override
-    public CommandProcessingResult updateBase64Document(final Long documentId, final String entityType, final Long entityId, final String apiRequestBodyAsJson) {
+    public CommandProcessingResult updateBase64Document(final Long documentId, final String entityType, final Long entityId,
+            final String apiRequestBodyAsJson) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForCreate(entityType, entityId, apiRequestBodyAsJson);
         final JsonElement jsonElement = this.fromApiJsonHelper.parse(apiRequestBodyAsJson);
 
-        this.documentRepository.findById(documentId)
-                .orElseThrow(() -> new DocumentNotFoundException(entityType,
-                entityId, documentId));
+        this.documentRepository.findById(documentId).orElseThrow(() -> new DocumentNotFoundException(entityType, entityId, documentId));
 
         try {
             final String location = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.locationParam, jsonElement);
@@ -252,8 +252,8 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
             }
 
             loanLafSigned(entityType, entityId, documentId, name, description);
-            DocumentCommand documentCommand = new DocumentCommand(null, documentId, entityType, entityId, name, fileName, null, attachmentType,
-                    description, null);
+            DocumentCommand documentCommand = new DocumentCommand(null, documentId, entityType, entityId, name, fileName, null,
+                    attachmentType, description, null);
             return this.documentWritePlatformService.updateDocument(documentCommand, inputStream);
 
         } catch (Exception e) {
@@ -262,12 +262,13 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
         }
     }
 
-    private void loanLafSigned(final String entityType, final Long entityId, final Long newDocumentId, final String name, final String description) {
+    private void loanLafSigned(final String entityType, final Long entityId, final Long newDocumentId, final String name,
+            final String description) {
         if (StringUtils.equalsIgnoreCase(entityType, DocumentManagementEntity.LOANS.name())) {
-            //update for loan LAF document
+            // update for loan LAF document
             if (StringUtils.containsIgnoreCase(name, "LAF") || StringUtils.containsIgnoreCase(description, "LAF")) {
                 jsonObjectApprovalCheck = new JsonObject();
-                //check if approvalCheck is created then perform an update else create new
+                // check if approvalCheck is created then perform an update else create new
                 try {
                     boolean updateLafApprovalCheck = false;
 
@@ -280,23 +281,25 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
                     jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.netPayParam, "");
                     jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.defaultPaymentMethodIdParam, "");
 
-                    final GenericResultsetData results = this.readWriteNonCoreDataService.retrieveDataTableGenericResultSet(DocumentConfigApiConstants.approvalCheckParam, entityId,
-                            null, null);
+                    final GenericResultsetData results = this.readWriteNonCoreDataService
+                            .retrieveDataTableGenericResultSet(DocumentConfigApiConstants.approvalCheckParam, entityId, null, null);
                     if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
                         updateLafApprovalCheck = true;
 
                         final List<ResultsetRowData> data = results.getData();
                         data.stream().forEach(res -> {
                             try {
-//                                final Object objectLoanId = res.getRow().get(0);
-//                                if (ObjectUtils.isNotEmpty(objectLoanId)) {
-//                                    final Long loan_id = Long.valueOf(StringUtils.defaultIfBlank(String.valueOf(objectLoanId), null));
-//                                    approvalCheckRequest.setLoan_id(loan_id);
-//                                }
+                                // final Object objectLoanId = res.getRow().get(0);
+                                // if (ObjectUtils.isNotEmpty(objectLoanId)) {
+                                // final Long loan_id =
+                                // Long.valueOf(StringUtils.defaultIfBlank(String.valueOf(objectLoanId), null));
+                                // approvalCheckRequest.setLoan_id(loan_id);
+                                // }
                                 final Object objectSentForApproval = res.getRow().get(1);
                                 if (ObjectUtils.isNotEmpty(objectSentForApproval)) {
                                     final String isSentForApproval = StringUtils.defaultIfBlank(String.valueOf(objectSentForApproval), "");
-                                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isSentForApprovalParam, isSentForApproval);
+                                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isSentForApprovalParam,
+                                            isSentForApproval);
                                 }
                                 final Object objectInternalTransfer = res.getRow().get(2);
                                 if (ObjectUtils.isNotEmpty(objectInternalTransfer)) {
@@ -315,14 +318,18 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
                                 }
                                 final Object objectDefaultPaymentMethodId = res.getRow().get(5);
                                 if (ObjectUtils.isNotEmpty(objectDefaultPaymentMethodId)) {
-                                    final String defaultPaymentMethodId = StringUtils.defaultIfBlank(String.valueOf(objectDefaultPaymentMethodId), "");
-                                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.defaultPaymentMethodIdParam, defaultPaymentMethodId);
+                                    final String defaultPaymentMethodId = StringUtils
+                                            .defaultIfBlank(String.valueOf(objectDefaultPaymentMethodId), "");
+                                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.defaultPaymentMethodIdParam,
+                                            defaultPaymentMethodId);
                                 }
-//                                final Object objectIsLafSigned = res.getRow().get(6);
-//                                if (ObjectUtils.isNotEmpty(objectIsLafSigned)) {
-//                                    final String isLafSigned = StringUtils.defaultIfBlank(String.valueOf(objectIsLafSigned), "");
-//                                    jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isLafSignedParam, isLafSigned);
-//                                }
+                                // final Object objectIsLafSigned = res.getRow().get(6);
+                                // if (ObjectUtils.isNotEmpty(objectIsLafSigned)) {
+                                // final String isLafSigned =
+                                // StringUtils.defaultIfBlank(String.valueOf(objectIsLafSigned), "");
+                                // jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isLafSignedParam,
+                                // isLafSigned);
+                                // }
                             } catch (Exception e) {
                                 log.warn("error.approvalCheckRequest: {}", e.getMessage());
                             }
@@ -332,13 +339,13 @@ public class DocumentBusinessWritePlatformServiceImpl implements DocumentBusines
 
                     CommandWrapper commandRequest;
                     if (updateLafApprovalCheck) {
-                        //update approvalCheck
+                        // update approvalCheck
                         commandRequest = new CommandWrapperBuilder() //
                                 .updateDatatable(DocumentConfigApiConstants.approvalCheckParam, entityId, null) //
                                 .withJson(apiRequestBodyAsJson) //
                                 .build();
                     } else {
-                        //create approvalCheck
+                        // create approvalCheck
                         commandRequest = new CommandWrapperBuilder() //
                                 .createDatatable(DocumentConfigApiConstants.approvalCheckParam, entityId, null) //
                                 .withJson(apiRequestBodyAsJson) //

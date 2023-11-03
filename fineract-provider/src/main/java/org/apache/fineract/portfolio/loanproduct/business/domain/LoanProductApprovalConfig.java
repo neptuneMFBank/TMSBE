@@ -30,7 +30,7 @@ import org.apache.fineract.useradministration.domain.Role;
 
 @Entity
 @Table(name = "m_role_loan_product_approval_config", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"rlpa_id", "rank"}, name = "rlpa_UNIQUE_rank")})
+        @UniqueConstraint(columnNames = { "rlpa_id", "rank" }, name = "rlpa_UNIQUE_rank") })
 public class LoanProductApprovalConfig extends AbstractPersistableCustom {
 
     @ManyToOne(optional = false)
@@ -50,15 +50,15 @@ public class LoanProductApprovalConfig extends AbstractPersistableCustom {
     @Column(name = "rank", nullable = false)
     private Integer rank;
 
-    protected LoanProductApprovalConfig() {
-    }
+    protected LoanProductApprovalConfig() {}
 
     public static LoanProductApprovalConfig create(Role role, BigDecimal minApprovalAmount, BigDecimal maxApprovalAmount, Integer rank) {
         final LoanProductApproval loanProductApproval = null;
         return new LoanProductApprovalConfig(loanProductApproval, role, minApprovalAmount, maxApprovalAmount, rank);
     }
 
-    public LoanProductApprovalConfig(LoanProductApproval loanProductApproval, Role role, BigDecimal minApprovalAmount, BigDecimal maxApprovalAmount, Integer rank) {
+    public LoanProductApprovalConfig(LoanProductApproval loanProductApproval, Role role, BigDecimal minApprovalAmount,
+            BigDecimal maxApprovalAmount, Integer rank) {
         this.loanProductApproval = loanProductApproval;
         this.role = role;
         this.maxApprovalAmount = maxApprovalAmount;

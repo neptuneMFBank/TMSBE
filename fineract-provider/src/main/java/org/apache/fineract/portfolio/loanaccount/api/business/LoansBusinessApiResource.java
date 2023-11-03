@@ -18,10 +18,11 @@
  */
 package org.apache.fineract.portfolio.loanaccount.api.business;
 
+import static org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations.interestType;
+import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.CLIENT_SIGNATURE_ID;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import static org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations.interestType;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -146,7 +147,6 @@ import org.apache.fineract.portfolio.rate.data.RateData;
 import org.apache.fineract.portfolio.rate.service.RateReadService;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
-import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.CLIENT_SIGNATURE_ID;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
@@ -160,7 +160,8 @@ import org.springframework.util.CollectionUtils;
 @Tag(name = "Loans", description = "The API concept of loans models the loan application process and the loan contract/monitoring process.")
 public class LoansBusinessApiResource {
 
-    private final Set<String> loanDataDocParameters = new HashSet<>(Arrays.asList("loanBusinessAccountData", "clientAddressData", "loanProductData", "clientSignature"));
+    private final Set<String> loanDataDocParameters = new HashSet<>(
+            Arrays.asList("loanBusinessAccountData", "clientAddressData", "loanProductData", "clientSignature"));
 
     private final Set<String> loanDataParameters = new HashSet<>(Arrays.asList("id", "accountNo", "status", "externalId", "clientId",
             "group", "loanProductId", "loanProductName", "loanProductDescription",
@@ -183,7 +184,8 @@ public class LoansBusinessApiResource {
             LoanApiConstants.topupAmount, LoanApiConstants.clientActiveLoanOptions, LoanApiConstants.datatables,
             LoanProductConstants.RATES_PARAM_NAME, LoanApiConstants.MULTIDISBURSE_DETAILS_PARAMNAME,
             LoanApiConstants.EMI_AMOUNT_VARIATIONS_PARAMNAME, LoanApiConstants.COLLECTION_PARAMNAME,
-            LoanBusinessApiConstants.activationChannelIdParam, LoanBusinessApiConstants.activationChannelNameParam, LoanBusinessApiConstants.metricsDataParam, "collateralOld", LoanBusinessApiConstants.loanProductPaymentTypeConfigDataParam));
+            LoanBusinessApiConstants.activationChannelIdParam, LoanBusinessApiConstants.activationChannelNameParam,
+            LoanBusinessApiConstants.metricsDataParam, "collateralOld", LoanBusinessApiConstants.loanProductPaymentTypeConfigDataParam));
 
     private final String resourceNameForPermissions = "LOAN";
 
@@ -260,8 +262,15 @@ public class LoansBusinessApiResource {
             final LoanCollateralManagementReadPlatformService loanCollateralManagementReadPlatformService,
             final LoanBusinessReadPlatformService loanBusinessReadPlatformService,
             final DefaultToApiJsonSerializer<String> calculateLoanScheduleToApiJsonSerializer, final LoansApiResource loansApiResource,
-            final LoanReadPlatformService loanReadPlatformService, final MetricsReadPlatformService metricsReadPlatformService, final LoanProductBusinessReadPlatformService loanProductBusinessReadPlatformService,
-            final ClientReadPlatformService clientReadPlatformService, final LoanProductPaymentTypeConfigReadPlatformService loanProductPaymentTypeConfigReadPlatformService, final CollateralReadPlatformService loanCollateralReadPlatformService, final ApplicationContext contextApplication, final DefaultToApiJsonSerializer<LoanBusinessDocData> toApiDocJsonSerializer, final AddressReadPlatformServiceImpl readPlatformService, final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService, final DocumentBusinessWritePlatformService documentWritePlatformService) {
+            final LoanReadPlatformService loanReadPlatformService, final MetricsReadPlatformService metricsReadPlatformService,
+            final LoanProductBusinessReadPlatformService loanProductBusinessReadPlatformService,
+            final ClientReadPlatformService clientReadPlatformService,
+            final LoanProductPaymentTypeConfigReadPlatformService loanProductPaymentTypeConfigReadPlatformService,
+            final CollateralReadPlatformService loanCollateralReadPlatformService, final ApplicationContext contextApplication,
+            final DefaultToApiJsonSerializer<LoanBusinessDocData> toApiDocJsonSerializer,
+            final AddressReadPlatformServiceImpl readPlatformService,
+            final ClientIdentifierBusinessReadPlatformService clientIdentifierBusinessReadPlatformService,
+            final DocumentBusinessWritePlatformService documentWritePlatformService) {
         this.context = context;
         this.loanProductReadPlatformService = loanProductReadPlatformService;
         this.dropdownReadPlatformService = dropdownReadPlatformService;
@@ -316,16 +325,15 @@ public class LoansBusinessApiResource {
      */
     @POST
     @Path("calculate")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Calculate loan repayment schedule")
     @RequestBody(required = true
     // ,content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // ,content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // ,content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansResponse.class))
+    ) })
     public String calculateLoanScheduleLoanApplication(@Context final UriInfo uriInfo,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
@@ -334,8 +342,8 @@ public class LoansBusinessApiResource {
 
     @GET
     @Path("{loanId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Loan", description = """
             Note: template=true parameter doesn't apply to this resource.Example Requests:
 
@@ -351,15 +359,13 @@ public class LoansBusinessApiResource {
 
 
             loans\\business/1?fields=id,principal,annualInterestRate&associations=repaymentSchedule,transactions""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))
+    ) })
     public String retrieveLoan(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
             @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
             @DefaultValue("all") @QueryParam("associations") @Parameter(in = ParameterIn.QUERY, name = "associations", description = "Loan object relations to be included in the response", required = false, examples = {
-        @ExampleObject(value = "all"),
-        @ExampleObject(value = "repaymentSchedule,transactions")}) final String associations,
+                    @ExampleObject(value = "all"), @ExampleObject(value = "repaymentSchedule,transactions") }) final String associations,
             @QueryParam("exclude") @Parameter(in = ParameterIn.QUERY, name = "exclude", description = "Optional Loan object relation list to be filtered in the response", required = false, example = "guarantors,futureSchedule") final String exclude,
             @QueryParam("fields") @Parameter(in = ParameterIn.QUERY, name = "fields", description = "Optional Loan attribute list to be in the response", required = false, example = "id,principal,annualInterestRate") final String fields,
             @Context final UriInfo uriInfo) {
@@ -574,10 +580,10 @@ public class LoansBusinessApiResource {
             repaymentStrategyOptions = this.dropdownReadPlatformService.retreiveTransactionProcessingStrategies();
             if (product.getMultiDisburseLoan()) {
                 chargeOptions = this.chargeReadPlatformService.retrieveLoanAccountApplicableCharges(loanId,
-                        new ChargeTimeType[]{ChargeTimeType.OVERDUE_INSTALLMENT});
+                        new ChargeTimeType[] { ChargeTimeType.OVERDUE_INSTALLMENT });
             } else {
                 chargeOptions = this.chargeReadPlatformService.retrieveLoanAccountApplicableCharges(loanId,
-                        new ChargeTimeType[]{ChargeTimeType.OVERDUE_INSTALLMENT, ChargeTimeType.TRANCHE_DISBURSEMENT});
+                        new ChargeTimeType[] { ChargeTimeType.OVERDUE_INSTALLMENT, ChargeTimeType.TRANCHE_DISBURSEMENT });
             }
             chargeTemplate = this.loanChargeReadPlatformService.retrieveLoanChargeTemplate();
 
@@ -591,7 +597,7 @@ public class LoansBusinessApiResource {
             if (currencyData != null) {
                 currencyCode = currencyData.code();
             }
-            final long[] accountStatus = {SavingsAccountStatusType.ACTIVE.getValue()};
+            final long[] accountStatus = { SavingsAccountStatusType.ACTIVE.getValue() };
             PortfolioAccountDTO portfolioAccountDTO = new PortfolioAccountDTO(PortfolioAccountType.SAVINGS.getValue(),
                     loanBasicDetails.clientId(), currencyCode, accountStatus, DepositAccountType.SAVINGS_DEPOSIT.getValue());
             accountLinkingOptions = this.portfolioAccountReadPlatformService.retrieveAllForLookup(portfolioAccountDTO);
@@ -638,9 +644,8 @@ public class LoansBusinessApiResource {
             loanAccount.setMetricsData(metricsData);
         }
         if (loanProductId != null) {
-            final LoanProductPaymentTypeConfigData loanProductPaymentTypeConfigData
-                    = this.loanProductPaymentTypeConfigReadPlatformService.
-                            retrieveOneViaLoanProduct(loanProductId);
+            final LoanProductPaymentTypeConfigData loanProductPaymentTypeConfigData = this.loanProductPaymentTypeConfigReadPlatformService
+                    .retrieveOneViaLoanProduct(loanProductId);
             loanAccount.setLoanProductPaymentTypeConfigData(loanProductPaymentTypeConfigData);
         }
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters(),
@@ -649,8 +654,8 @@ public class LoansBusinessApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Loans", description = """
             The list capability of loans can support pagination and sorting.
             Example Requests:
@@ -662,10 +667,9 @@ public class LoansBusinessApiResource {
             loans\\business?offset=10&limit=50
 
             loans\\business?orderBy=accountNo&sortOrder=DESC""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansResponse.class))
+    ) })
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
             @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
@@ -702,8 +706,8 @@ public class LoansBusinessApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Submit a new Loan Application", description = """
             Submits a new loan application
             Mandatory Fields: clientId, productId, principal, loanTermFrequency, loanTermFrequencyType, loanType, numberOfRepayments, repaymentEvery, repaymentFrequencyType, interestRatePerPeriod, amortizationType, interestType, interestCalculationPeriodType, transactionProcessingStrategyId, expectedDisbursementDate, submittedOnDate, loanType
@@ -714,10 +718,9 @@ public class LoansBusinessApiResource {
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansResponse.class))
+    ) })
     public String submitLoanApplication(@Parameter(hidden = true) final String apiRequestBodyAsJson, @Context final UriInfo uriInfo) {
         final String loanTemplateJson = LoanBusinessApiConstants.loanTemplateConfig(this.loansApiResource, apiRequestBodyAsJson,
                 fromJsonHelper, null, true, uriInfo, null);
@@ -732,16 +735,15 @@ public class LoansBusinessApiResource {
 
     @PUT
     @Path("{loanId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Modify a loan application", description = "Loan application can only be modified when in 'Submitted and pending approval' state. Once the application is approved, the details cannot be changed using this method.")
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PutLoansLoanIdRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PutLoansLoanIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PutLoansLoanIdResponse.class))
+    ) })
     public String modifyLoanApplication(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson, @Context final UriInfo uriInfo) {
         log.info("before modifyLoanApplication: {}", apiRequestBodyAsJson);
@@ -759,18 +761,16 @@ public class LoansBusinessApiResource {
 
     @GET
     @Path("{loanId}/doc")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Loan Doc", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))
+    ) })
     public String retrieveLoanDoc(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
             @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
             @DefaultValue("all") @QueryParam("associations") @Parameter(in = ParameterIn.QUERY, name = "associations", description = "Loan object relations to be included in the response", required = false, examples = {
-        @ExampleObject(value = "all"),
-        @ExampleObject(value = "repaymentSchedule,transactions")}) final String associations,
+                    @ExampleObject(value = "all"), @ExampleObject(value = "repaymentSchedule,transactions") }) final String associations,
             @QueryParam("exclude") @Parameter(in = ParameterIn.QUERY, name = "exclude", description = "Optional Loan object relation list to be filtered in the response", required = false, example = "guarantors,futureSchedule") final String exclude,
             @QueryParam("fields") @Parameter(in = ParameterIn.QUERY, name = "fields", description = "Optional Loan attribute list to be in the response", required = false, example = "id,principal,annualInterestRate") final String fields,
             @Context final UriInfo uriInfo) {
@@ -800,14 +800,16 @@ public class LoansBusinessApiResource {
             jsonObject.add("clientInfo", clientInfo);
 
             final Integer homeAddress = 15;
-            final Collection<AddressData> addressDatas = this.readPlatformService.retrieveAddressbyTypeAndStatus(clientId, homeAddress, "true");
+            final Collection<AddressData> addressDatas = this.readPlatformService.retrieveAddressbyTypeAndStatus(clientId, homeAddress,
+                    "true");
             final AddressData clientAddressData = addressDatas.stream().findFirst().orElse(null);
             final String clientAddressDataInfo = this.toApiJsonSerializer.serialize(clientAddressData);
             final JsonElement clientAddressInfo = this.fromJsonHelper.parse(clientAddressDataInfo);
             jsonObject.add("clientAddressData", clientAddressInfo);
 
             final Integer officeAddress = 16;
-            final Collection<AddressData> officeAddressDatas = this.readPlatformService.retrieveAddressbyTypeAndStatus(clientId, officeAddress, "true");
+            final Collection<AddressData> officeAddressDatas = this.readPlatformService.retrieveAddressbyTypeAndStatus(clientId,
+                    officeAddress, "true");
             final AddressData clientOfficeAddressData = officeAddressDatas.stream().findFirst().orElse(null);
             final String clientOfficeAddressDataInfo = this.toApiJsonSerializer.serialize(clientOfficeAddressData);
             final JsonElement clientOfficeAddressInfo = this.fromJsonHelper.parse(clientOfficeAddressDataInfo);
@@ -816,16 +818,17 @@ public class LoansBusinessApiResource {
             final Collection<ClientIdentifierBusinessData> clientIdentifiers = this.clientIdentifierBusinessReadPlatformService
                     .retrieveClientIdentifiers(clientId);
 
-            final Long documentTypeSignatureId = clientSignatureId;//1104L;
-            final ClientIdentifierBusinessData clientIdentifierBusinessData
-                    = clientIdentifiers.stream().filter(predicate -> predicate.getDocumentType() != null
-                    && Objects.equals(predicate.getDocumentType().getId(), documentTypeSignatureId))
-                            .findFirst().orElse(null);
+            final Long documentTypeSignatureId = clientSignatureId;// 1104L;
+            final ClientIdentifierBusinessData clientIdentifierBusinessData = clientIdentifiers.stream()
+                    .filter(predicate -> predicate.getDocumentType() != null
+                            && Objects.equals(predicate.getDocumentType().getId(), documentTypeSignatureId))
+                    .findFirst().orElse(null);
 
             if (ObjectUtils.isNotEmpty(clientIdentifierBusinessData)) {
                 final Long entityId = clientIdentifierBusinessData.getId();
                 final Long attachmentId = clientIdentifierBusinessData.getAttachmentId();
-                final CommandProcessingResult result = this.documentWritePlatformService.retrieveAttachment("client_identifiers", entityId, attachmentId);
+                final CommandProcessingResult result = this.documentWritePlatformService.retrieveAttachment("client_identifiers", entityId,
+                        attachmentId);
                 final String clientSignature = result.getResourceIdentifier();
                 if (StringUtils.isNotBlank(clientSignature)) {
                     jsonObject.addProperty("clientSignature", clientSignature);
@@ -834,27 +837,25 @@ public class LoansBusinessApiResource {
 
         }
 
-        //final LoanBusinessDocData loanBusinessDocData = new LoanBusinessDocData(loanBasicDetails, clientAddressData, loanProductData, clientSignature);
-//        return this.toApiDocJsonSerializer.serialize(settings, loanBusinessDocData, this.loanDataDocParameters);
+        // final LoanBusinessDocData loanBusinessDocData = new LoanBusinessDocData(loanBasicDetails, clientAddressData,
+        // loanProductData, clientSignature);
+        // return this.toApiDocJsonSerializer.serialize(settings, loanBusinessDocData, this.loanDataDocParameters);
         return this.toApiDocJsonSerializer.serialize(jsonObject);
     }
 
     @POST
     @Path("{loanId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Send Loan for Approval", description = "")
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.PostLoansRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String submitLoanApproval(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().submitLoanApproval(loanId).withJson(apiRequestBodyAsJson)
-                .build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().submitLoanApproval(loanId).withJson(apiRequestBodyAsJson).build();
 
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 

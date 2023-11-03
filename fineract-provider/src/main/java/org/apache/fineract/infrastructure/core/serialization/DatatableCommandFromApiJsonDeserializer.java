@@ -56,9 +56,9 @@ public class DatatableCommandFromApiJsonDeserializer {
     private final Set<String> supportedParametersForChangeColumns = new HashSet<>(
             Arrays.asList("name", "newName", "length", "mandatory", "after", "code", "newCode"));
     private final Set<String> supportedParametersForDropColumns = new HashSet<>(Arrays.asList("name"));
-    private final Object[] supportedColumnTypes = {"string", "number", "boolean", "decimal", "date", "datetime", "text", "dropdown"};
-    private final Object[] supportedApptableNames = {"m_loan", "m_savings_account", "m_client", "m_group", "m_center", "m_office",
-        "m_savings_product", "m_product_loan", "m_staff"};
+    private final Object[] supportedColumnTypes = { "string", "number", "boolean", "decimal", "date", "datetime", "text", "dropdown" };
+    private final Object[] supportedApptableNames = { "m_loan", "m_savings_account", "m_client", "m_group", "m_center", "m_office",
+            "m_savings_product", "m_product_loan", "m_staff" };
 
     private final FromJsonHelper fromApiJsonHelper;
 
@@ -107,8 +107,7 @@ public class DatatableCommandFromApiJsonDeserializer {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParametersForCreate);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -167,8 +166,7 @@ public class DatatableCommandFromApiJsonDeserializer {
                     "Provided JSON request body does not have any parameters.");
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParametersForUpdate);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();

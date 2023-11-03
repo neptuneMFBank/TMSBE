@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 @Entity
 @Component
 @Table(name = "m_product_loan_payment_type_config", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"name"}, name = "name_UNIQUE_product_loan_payment_type_config")})
+        @UniqueConstraint(columnNames = { "name" }, name = "name_UNIQUE_product_loan_payment_type_config") })
 public class LoanProductPaymentTypeConfig extends AbstractAuditableWithUTCDateTimeCustom {
 
     @Column(name = "active", nullable = false)
@@ -57,8 +57,7 @@ public class LoanProductPaymentTypeConfig extends AbstractAuditableWithUTCDateTi
     @JoinColumn(name = "product_id", nullable = false)
     private LoanProduct loanProduct;
 
-    protected LoanProductPaymentTypeConfig() {
-    }
+    protected LoanProductPaymentTypeConfig() {}
 
     public static LoanProductPaymentTypeConfig instance(final String name, final LoanProduct loanProduct, final String description,
             final boolean active) {

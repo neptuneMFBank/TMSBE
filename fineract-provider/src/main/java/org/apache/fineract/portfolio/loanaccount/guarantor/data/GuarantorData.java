@@ -154,17 +154,18 @@ public class GuarantorData {
 
     public static GuarantorData mergeClientData(final ClientData clientData, final GuarantorData guarantorData) {
         return new GuarantorData(guarantorData.id, guarantorData.loanId, guarantorData.clientRelationshipType, guarantorData.entityId,
-                guarantorData.guarantorType, clientData.getFirstname(), clientData.getLastname(), clientData.getDateOfBirth(), null, null, null, null, null, null,
-                clientData.getMobileNo(), null, null, clientData.officeName(), clientData.getActivationDate(), clientData.getExternalId(), guarantorData.status,
-                guarantorData.guarantorFundingDetails, null, guarantorData.allowedClientRelationshipTypes,
-                guarantorData.accountLinkingOptions);
+                guarantorData.guarantorType, clientData.getFirstname(), clientData.getLastname(), clientData.getDateOfBirth(), null, null,
+                null, null, null, null, clientData.getMobileNo(), null, null, clientData.officeName(), clientData.getActivationDate(),
+                clientData.getExternalId(), guarantorData.status, guarantorData.guarantorFundingDetails, null,
+                guarantorData.allowedClientRelationshipTypes, guarantorData.accountLinkingOptions);
     }
 
     public static GuarantorData mergeStaffData(final StaffData staffData, final GuarantorData guarantorData) {
         return new GuarantorData(guarantorData.id, guarantorData.loanId, guarantorData.clientRelationshipType, guarantorData.entityId,
                 guarantorData.guarantorType, staffData.getFirstname(), staffData.getLastname(), null, null, null, null, null, null, null,
-                staffData.getMobileNo(), null, null, staffData.getOfficeName(), null, null, guarantorData.status, guarantorData.guarantorFundingDetails, null,
-                guarantorData.allowedClientRelationshipTypes, guarantorData.accountLinkingOptions);
+                staffData.getMobileNo(), null, null, staffData.getOfficeName(), null, null, guarantorData.status,
+                guarantorData.guarantorFundingDetails, null, guarantorData.allowedClientRelationshipTypes,
+                guarantorData.accountLinkingOptions);
     }
 
     public GuarantorData(final Long id, final Long loanId, final CodeValueData clientRelationshipType, final Long entityId,

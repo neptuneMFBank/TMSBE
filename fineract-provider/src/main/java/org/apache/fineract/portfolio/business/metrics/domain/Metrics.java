@@ -31,8 +31,8 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 
 @Entity
 @Table(name = "m_metrics", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"`loan_id", "rank`"}, name = "metrics_UNIQUE_rank_loan"),
-    @UniqueConstraint(columnNames = {"`savings_id", "rank`"}, name = "metrics_UNIQUE_rank_saving"),})
+        @UniqueConstraint(columnNames = { "`loan_id", "rank`" }, name = "metrics_UNIQUE_rank_loan"),
+        @UniqueConstraint(columnNames = { "`savings_id", "rank`" }, name = "metrics_UNIQUE_rank_saving"), })
 public class Metrics extends AbstractAuditableWithUTCDateTimeCustom {
 
     @ManyToOne
@@ -53,8 +53,7 @@ public class Metrics extends AbstractAuditableWithUTCDateTimeCustom {
     @JoinColumn(name = "savings_id")
     private SavingsAccount savingsAccount;
 
-    protected Metrics() {
-    }
+    protected Metrics() {}
 
     public Metrics(Staff assignedUser, Integer status, Integer rank, Loan loan, SavingsAccount savingsAccount) {
         this.assignedUser = assignedUser;

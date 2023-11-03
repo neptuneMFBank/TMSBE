@@ -27,7 +27,7 @@ mg.office_id group_office_id, mg.id group_id, mg.display_name group_display_name
 FROM m_loan_arrears_aging mlaa
 JOIN m_loan ml ON ml.id=mlaa.loan_id
 JOIN m_product_loan mpl ON mpl.id=ml.product_id
-LEFT JOIN m_staff ms ON ms.id=ml.loan_officer_id 
-LEFT JOIN m_client mc ON mc.id=ml.client_id  
-LEFT JOIN m_group mg ON mg.id=ml.group_id 
+LEFT JOIN m_staff ms ON ms.id=ml.loan_officer_id
+LEFT JOIN m_client mc ON mc.id=ml.client_id
+LEFT JOIN m_group mg ON mg.id=ml.group_id
 LEFT JOIN secondLevelKYC slk ON slk.client_id=mc.id;

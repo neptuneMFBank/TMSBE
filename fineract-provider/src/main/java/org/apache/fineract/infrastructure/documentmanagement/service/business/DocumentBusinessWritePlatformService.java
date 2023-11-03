@@ -33,5 +33,6 @@ public interface DocumentBusinessWritePlatformService {
     CommandProcessingResult retrieveAttachment(String entityName, Long entityId, final Long documentId);
 
     @PreAuthorize(value = "hasAnyAuthority('ALL_FUNCTIONS', 'UPDATE_DOCUMENT')")
-    CommandProcessingResult updateBase64Document(final Long documentId, final String entityType, final Long entityId, final String apiRequestBodyAsJson);
+    CommandProcessingResult updateBase64Document(final Long documentId, final String entityType, final Long entityId,
+            final String apiRequestBodyAsJson);
 }

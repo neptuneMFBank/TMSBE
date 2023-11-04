@@ -250,12 +250,6 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
 
     private static final class LoanMapper implements RowMapper<LoanBusinessAccountData> {
 
-        private final DatabaseSpecificSQLGenerator sqlGenerator;
-
-        LoanMapper(DatabaseSpecificSQLGenerator sqlGenerator) {
-            this.sqlGenerator = sqlGenerator;
-        }
-
         public String loanSchema() {
             return " mla.id, mla.is_topup isTopup, mla.account_no accountNo, mla.product_id loanProductId, mla.product_name loanProductName, "
                     + " mla.loan_officer_id loanOfficerId, mla.loan_officer_name loanOfficerName, mla.number_of_repayments numberOfRepayments, mla.total_recovered_derived totalRecovered, "
@@ -264,11 +258,9 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
                     + " mla.penalty_charges_overdue_derived penaltyChargesOverdue, mla.total_overdue_derived totalOverdue, mla.overdue_since_date_derived overdueSinceDate, mla.total_expected_repayment_derived totalExpectedRepayment,"
                     + " mla.client_id clientId, mla.client_display_name clientName, mla.mobile_no mobileNo, mla.email_address emailAddress, mla.bvn, mla.nin, mla.alternateMobileNumber,"
                     + " mla.group_id groupId, mla.group_display_name groupName, mla.nominal_interest_rate_per_period interestRatePerPeriod, mla.annual_nominal_interest_rate annualInterestRate, "
-                    + " mla.currency_code currencyCode, rc." + sqlGenerator.escape("name")
-                    + " as currencyName, rc.display_symbol currencyDisplaySymbol, rc.internationalized_name_code currencyNameCode, "
+                    + " mla.currency_code currencyCode, rc.name as currencyName, rc.display_symbol currencyDisplaySymbol, rc.internationalized_name_code currencyNameCode, "
                     + " mla.submittedon_date submittedOnDate, mla.disbursedon_date actualDisbursementDate, mla.client_office_id, mla.group_office_id, mla.transfer_to_office_id "
-                    + " FROM m_loan_arrears_view mla " + " join m_currency rc on rc." + sqlGenerator.escape("code")
-                    + " = mla.currency_code";
+                    + " FROM m_loan_arrears_view mla " + " join m_currency rc on rc.code = mla.currency_code";
         }
 
         @Override

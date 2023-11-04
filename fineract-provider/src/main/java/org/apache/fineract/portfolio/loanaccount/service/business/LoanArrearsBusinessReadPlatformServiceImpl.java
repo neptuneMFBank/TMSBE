@@ -68,8 +68,8 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
     private final ColumnValidator columnValidator;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
     private final FromJsonHelper fromJsonHelper;
-    private final LoanMapper loanLoanMapper=new LoanMapper();
-    private final LoanArrearsSummaryMapper loanArrearsSummaryMapper=new LoanArrearsSummaryMapper();
+    private final LoanMapper loanLoanMapper = new LoanMapper();
+    private final LoanArrearsSummaryMapper loanArrearsSummaryMapper = new LoanArrearsSummaryMapper();
 
     public static String loanProductIdParameterName = "loanProductId";
     public static String loanProductNameParameterName = "loanProductName";
@@ -80,6 +80,7 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
     public static String totalLoanBalanceParameterName = "totalLoanBalance";
     public static String totalLoanCountParameterName = "totalLoanCount";
     public static String statusParameterName = "status";
+    public static String messageParameterName = "message";
 
     @Transactional(readOnly = true)
     @Override
@@ -114,10 +115,10 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
             jsonObjectArrearsSummary.add("summaryInfo", jsonElement);
         } catch (DataAccessException e) {
             log.warn("jsonObjectLoanArrearsSummaryInfo Error: {}", e);
-            jsonObjectArrearsSummary.add("summaryInfo", jsonElement);
+            //jsonObjectArrearsSummary.add("summaryInfo", jsonElement);
         }
 
-        JsonObject jsonObjectLoanArrearsSummary = new JsonObject();
+        JsonObject jsonObjectLoanArrearsSummary;
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -137,8 +138,9 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
             jsonObjectArrearsSummary.add("summary", jsonObjectLoanArrearsSummary);
         } catch (DataAccessException e) {
             log.warn("jsonObjectLoanArrearsSummary Error: {}", e);
-            jsonObjectLoanArrearsSummary.addProperty(statusParameterName, Boolean.FALSE);
-            jsonObjectArrearsSummary.add("summary", jsonObjectLoanArrearsSummary);
+            //jsonObjectLoanArrearsSummary.addProperty(statusParameterName, Boolean.FALSE);
+            //jsonObjectLoanArrearsSummary.addProperty(messageParameterName, "Empty Data");
+            //jsonObjectArrearsSummary.add("summary", jsonObjectLoanArrearsSummary);
         }
 
         return jsonObjectArrearsSummary;
@@ -412,7 +414,6 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
             final BigDecimal totalRepayment = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalRepayment");
             final BigDecimal totalOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalOverdue");
             final BigDecimal totalPrincipal = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalPrincipal");
-            final BigDecimal totalLoanBalance = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "loanBalance");
             final Long totalLoanCount = rs.getLong("totalCount");
 
             final JsonObject loanSummary = new JsonObject();
@@ -423,7 +424,6 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
             loanSummary.addProperty(totalRepaymentParameterName, totalRepayment);
             loanSummary.addProperty(totalOverdueParameterName, totalOverdue);
             loanSummary.addProperty(totalPrincipalParameterName, totalPrincipal);
-            loanSummary.addProperty(totalLoanBalanceParameterName, totalLoanBalance);
             loanSummary.addProperty(totalLoanCountParameterName, totalLoanCount);
             return loanSummary;
         }

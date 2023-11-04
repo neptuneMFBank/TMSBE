@@ -69,10 +69,8 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
     private final ColumnValidator columnValidator;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
     private final FromJsonHelper fromJsonHelper;
-    @Autowired
-    private final LoanMapper loanLoanMapper;
-    @Autowired
-    private final LoanArrearsSummaryMapper loanArrearsSummaryMapper;
+    private final LoanMapper loanLoanMapper=new LoanMapper();
+    private final LoanArrearsSummaryMapper loanArrearsSummaryMapper=new LoanArrearsSummaryMapper();
 
     public static String loanProductIdParameterName = "loanProductId";
     public static String loanProductNameParameterName = "loanProductName";

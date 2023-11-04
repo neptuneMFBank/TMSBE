@@ -127,18 +127,29 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
     @Autowired
     public LoanArrearsBusinessReadPlatformServiceImpl(final PlatformSecurityContext context,
             final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository,
-            final LoanProductReadPlatformService loanProductReadPlatformService, final ClientReadPlatformService clientReadPlatformService,
-            final GroupReadPlatformService groupReadPlatformService, final LoanDropdownReadPlatformService loanDropdownReadPlatformService,
-            final FundReadPlatformService fundReadPlatformService, final ChargeReadPlatformService chargeReadPlatformService,
-            final CodeValueReadPlatformService codeValueReadPlatformService, final JdbcTemplate jdbcTemplate,
-            final NamedParameterJdbcTemplate namedParameterJdbcTemplate, final CalendarReadPlatformService calendarReadPlatformService,
-            final StaffReadPlatformService staffReadPlatformService, final PaymentTypeReadPlatformService paymentTypeReadPlatformService,
+            final LoanProductReadPlatformService loanProductReadPlatformService,
+            final ClientReadPlatformService clientReadPlatformService,
+            final GroupReadPlatformService groupReadPlatformService,
+            final LoanDropdownReadPlatformService loanDropdownReadPlatformService,
+            final FundReadPlatformService fundReadPlatformService,
+            final ChargeReadPlatformService chargeReadPlatformService,
+            final CodeValueReadPlatformService codeValueReadPlatformService,
+            final JdbcTemplate jdbcTemplate,
+            final NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+            final CalendarReadPlatformService calendarReadPlatformService,
+            final StaffReadPlatformService staffReadPlatformService,
+            final PaymentTypeReadPlatformService paymentTypeReadPlatformService,
             final LoanRepaymentScheduleTransactionProcessorFactory loanRepaymentScheduleTransactionProcessorFactory,
-            final FloatingRatesReadPlatformService floatingRatesReadPlatformService, final LoanUtilService loanUtilService,
+            final FloatingRatesReadPlatformService floatingRatesReadPlatformService,
+            final LoanUtilService loanUtilService,
             final ConfigurationDomainService configurationDomainService,
-            final AccountDetailsReadPlatformService accountDetailsReadPlatformService, final LoanRepositoryWrapper loanRepositoryWrapper,
-            final ColumnValidator columnValidator, DatabaseSpecificSQLGenerator sqlGenerator, PaginationHelper paginationHelper,
-            final LoanArrearsSummaryMapper loanArrearsSummaryMapper, final ApplicationContext applicationContext,
+            final AccountDetailsReadPlatformService accountDetailsReadPlatformService,
+            final LoanRepositoryWrapper loanRepositoryWrapper,
+            final ColumnValidator columnValidator,
+            DatabaseSpecificSQLGenerator sqlGenerator,
+            PaginationHelper paginationHelper,
+            final LoanArrearsSummaryMapper loanArrearsSummaryMapper,
+            final ApplicationContext applicationContext,
             final LoansApiResource loansApiResource, final FromJsonHelper fromJsonHelper) {
         this.context = context;
         this.loanRepositoryWrapper = loanRepositoryWrapper;
@@ -490,18 +501,11 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
 
     public static final class LoanArrearsSummaryMapper implements RowMapper<JsonObject> {
 
-        private final DatabaseSpecificSQLGenerator sqlGenerator;
-
-        LoanArrearsSummaryMapper(DatabaseSpecificSQLGenerator sqlGenerator) {
-            this.sqlGenerator = sqlGenerator;
-        }
-
         public String schema() {
             return " rc.display_symbol currencyDisplaySymbol, SUM(COALESCE(mla.principal_amount,0)) totalPrincipal, "
                     + " SUM(COALESCE(mla.total_overdue_derived,0)) totalOverdue, SUM(COALESCE(mla.total_repayment_derived,0)) totalRepayment, "
                     + " mla.product_id loanProductId, mla.product_name loanProductName, " + " COUNT(mla.id) AS totalCount "
-                    + " FROM m_loan_arrears_view mla " + " join m_currency rc on rc." + sqlGenerator.escape("code")
-                    + " = mla.currency_code";
+                    + " FROM m_loan_arrears_view mla " + " join m_currency rc on rc.code = mla.currency_code";
         }
 
         @Override

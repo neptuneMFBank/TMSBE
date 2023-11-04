@@ -18,8 +18,6 @@
  */
 package org.apache.fineract.portfolio.loanaccount.service.business;
 
-import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.CLIENT_DEFAULT_ID_API;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.math.BigDecimal;
@@ -31,10 +29,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.fineract.infrastructure.codes.service.CodeValueReadPlatformService;
-import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
@@ -46,70 +43,31 @@ import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecific
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
-import org.apache.fineract.organisation.monetary.domain.ApplicationCurrencyRepositoryWrapper;
-import org.apache.fineract.organisation.staff.service.StaffReadPlatformService;
-import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
-import org.apache.fineract.portfolio.calendar.service.CalendarReadPlatformService;
-import org.apache.fineract.portfolio.charge.service.ChargeReadPlatformService;
-import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
-import org.apache.fineract.portfolio.floatingrates.service.FloatingRatesReadPlatformService;
-import org.apache.fineract.portfolio.fund.service.FundReadPlatformService;
 import org.apache.fineract.portfolio.group.data.GroupGeneralData;
-import org.apache.fineract.portfolio.group.service.GroupReadPlatformService;
-import org.apache.fineract.portfolio.loanaccount.api.LoansApiResource;
 import org.apache.fineract.portfolio.loanaccount.data.LoanApplicationTimelineData;
 import org.apache.fineract.portfolio.loanaccount.data.LoanStatusEnumData;
 import org.apache.fineract.portfolio.loanaccount.data.LoanSummaryData;
 import org.apache.fineract.portfolio.loanaccount.data.business.LoanBusinessAccountData;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanRepaymentScheduleTransactionProcessorFactory;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
-import org.apache.fineract.portfolio.loanaccount.service.LoanUtilService;
-import org.apache.fineract.portfolio.loanproduct.service.LoanDropdownReadPlatformService;
 import org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations;
-import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
-import org.apache.fineract.portfolio.paymenttype.service.PaymentTypeReadPlatformService;
 import org.apache.fineract.useradministration.domain.AppUser;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBusinessReadPlatformService {
 
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
-    private final LoanRepositoryWrapper loanRepositoryWrapper;
-    private final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository;
-    private final LoanProductReadPlatformService loanProductReadPlatformService;
-    private final ClientReadPlatformService clientReadPlatformService;
-    private final GroupReadPlatformService groupReadPlatformService;
-    private final LoanDropdownReadPlatformService loanDropdownReadPlatformService;
-    private final FundReadPlatformService fundReadPlatformService;
-    private final ChargeReadPlatformService chargeReadPlatformService;
-    private final CodeValueReadPlatformService codeValueReadPlatformService;
-    private final CalendarReadPlatformService calendarReadPlatformService;
-    private final StaffReadPlatformService staffReadPlatformService;
     private final PaginationHelper paginationHelper;
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private final PaymentTypeReadPlatformService paymentTypeReadPlatformService;
-    private final LoanRepaymentScheduleTransactionProcessorFactory loanRepaymentScheduleTransactionProcessorFactory;
-    private final FloatingRatesReadPlatformService floatingRatesReadPlatformService;
-    private final LoanUtilService loanUtilService;
-    private final ConfigurationDomainService configurationDomainService;
-    private final AccountDetailsReadPlatformService accountDetailsReadPlatformService;
     private final ColumnValidator columnValidator;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
-    private final Long clientDefaultId;
-    private final LoansApiResource loansApiResource;
     private final FromJsonHelper fromJsonHelper;
     private final LoanMapper loanLoanMapper;
     private final LoanArrearsSummaryMapper loanArrearsSummaryMapper;
@@ -123,64 +81,6 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
     public static String totalLoanBalanceParameterName = "totalLoanBalance";
     public static String totalLoanCountParameterName = "totalLoanCount";
     public static String statusParameterName = "status";
-
-    @Autowired
-    public LoanArrearsBusinessReadPlatformServiceImpl(final PlatformSecurityContext context,
-            final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository,
-            final LoanProductReadPlatformService loanProductReadPlatformService,
-            final ClientReadPlatformService clientReadPlatformService,
-            final GroupReadPlatformService groupReadPlatformService,
-            final LoanDropdownReadPlatformService loanDropdownReadPlatformService,
-            final FundReadPlatformService fundReadPlatformService,
-            final ChargeReadPlatformService chargeReadPlatformService,
-            final CodeValueReadPlatformService codeValueReadPlatformService,
-            final JdbcTemplate jdbcTemplate,
-            final NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-            final CalendarReadPlatformService calendarReadPlatformService,
-            final StaffReadPlatformService staffReadPlatformService,
-            final PaymentTypeReadPlatformService paymentTypeReadPlatformService,
-            final LoanRepaymentScheduleTransactionProcessorFactory loanRepaymentScheduleTransactionProcessorFactory,
-            final FloatingRatesReadPlatformService floatingRatesReadPlatformService,
-            final LoanUtilService loanUtilService,
-            final ConfigurationDomainService configurationDomainService,
-            final AccountDetailsReadPlatformService accountDetailsReadPlatformService,
-            final LoanRepositoryWrapper loanRepositoryWrapper,
-            final ColumnValidator columnValidator,
-            DatabaseSpecificSQLGenerator sqlGenerator,
-            PaginationHelper paginationHelper,
-            final LoanArrearsSummaryMapper loanArrearsSummaryMapper,
-            final ApplicationContext applicationContext,
-            final LoansApiResource loansApiResource, final FromJsonHelper fromJsonHelper) {
-        this.context = context;
-        this.loanRepositoryWrapper = loanRepositoryWrapper;
-        this.applicationCurrencyRepository = applicationCurrencyRepository;
-        this.loanProductReadPlatformService = loanProductReadPlatformService;
-        this.clientReadPlatformService = clientReadPlatformService;
-        this.groupReadPlatformService = groupReadPlatformService;
-        this.loanDropdownReadPlatformService = loanDropdownReadPlatformService;
-        this.fundReadPlatformService = fundReadPlatformService;
-        this.chargeReadPlatformService = chargeReadPlatformService;
-        this.codeValueReadPlatformService = codeValueReadPlatformService;
-        this.calendarReadPlatformService = calendarReadPlatformService;
-        this.staffReadPlatformService = staffReadPlatformService;
-        this.jdbcTemplate = jdbcTemplate;
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        this.paymentTypeReadPlatformService = paymentTypeReadPlatformService;
-        this.loanRepaymentScheduleTransactionProcessorFactory = loanRepaymentScheduleTransactionProcessorFactory;
-        this.floatingRatesReadPlatformService = floatingRatesReadPlatformService;
-        this.loanUtilService = loanUtilService;
-        this.configurationDomainService = configurationDomainService;
-        this.accountDetailsReadPlatformService = accountDetailsReadPlatformService;
-        this.columnValidator = columnValidator;
-        this.sqlGenerator = sqlGenerator;
-        this.paginationHelper = paginationHelper;
-        Environment environment = applicationContext.getEnvironment();
-        this.clientDefaultId = Long.valueOf(environment.getProperty(CLIENT_DEFAULT_ID_API));
-        this.loansApiResource = loansApiResource;
-        this.fromJsonHelper = fromJsonHelper;
-        this.loanLoanMapper = new LoanMapper(sqlGenerator);
-        this.loanArrearsSummaryMapper = new LoanArrearsSummaryMapper();
-    }
 
     @Override
     public JsonObject retrieveLoanArrearsSummary(final SearchParametersBusiness searchParameters) {

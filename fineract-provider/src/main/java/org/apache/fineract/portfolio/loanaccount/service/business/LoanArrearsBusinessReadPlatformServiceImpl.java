@@ -499,7 +499,7 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
         }
     }
 
-    public static final class LoanArrearsSummaryMapper implements RowMapper<JsonObject> {
+    private static final class LoanArrearsSummaryMapper implements RowMapper<JsonObject> {
 
         public String schema() {
             return " rc.display_symbol currencyDisplaySymbol, SUM(COALESCE(mla.principal_amount,0)) totalPrincipal, "

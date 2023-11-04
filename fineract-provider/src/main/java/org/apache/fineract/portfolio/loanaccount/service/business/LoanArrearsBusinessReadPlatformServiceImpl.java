@@ -50,6 +50,7 @@ import org.apache.fineract.portfolio.loanaccount.data.LoanSummaryData;
 import org.apache.fineract.portfolio.loanaccount.data.business.LoanBusinessAccountData;
 import org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations;
 import org.apache.fineract.useradministration.domain.AppUser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -60,7 +61,6 @@ import org.springframework.util.CollectionUtils;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBusinessReadPlatformService {
 
     private final JdbcTemplate jdbcTemplate;
@@ -69,7 +69,9 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
     private final ColumnValidator columnValidator;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
     private final FromJsonHelper fromJsonHelper;
+    @Autowired
     private final LoanMapper loanLoanMapper;
+    @Autowired
     private final LoanArrearsSummaryMapper loanArrearsSummaryMapper;
 
     public static String loanProductIdParameterName = "loanProductId";
@@ -82,6 +84,7 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
     public static String totalLoanCountParameterName = "totalLoanCount";
     public static String statusParameterName = "status";
 
+    @Transactional(readOnly = true)
     @Override
     public JsonObject retrieveLoanArrearsSummary(final SearchParametersBusiness searchParameters) {
         this.context.authenticatedUser();
@@ -144,6 +147,7 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
         return jsonObjectArrearsSummary;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<LoanBusinessAccountData> retrieveAll(final SearchParametersBusiness searchParameters) {
 

@@ -179,7 +179,7 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
         this.loansApiResource = loansApiResource;
         this.fromJsonHelper = fromJsonHelper;
         this.loanLoanMapper = new LoanMapper(sqlGenerator);
-        this.loanArrearsSummaryMapper = new LoanArrearsSummaryMapper(sqlGenerator);
+        this.loanArrearsSummaryMapper = new LoanArrearsSummaryMapper();
     }
 
     @Override

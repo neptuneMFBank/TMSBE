@@ -547,7 +547,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             final Long loanClientId = JdbcSupport.getLong(rs, "loanClientId");
             if (loanClientId > 0) {
                 final String loanClientName = rs.getString("loanClientName");
-                clientData = ClientData.instance(id, loanClientName);
+                clientData = ClientData.instance(loanClientId, loanClientName);
             }
 
             StaffData loanOfficerData = null;

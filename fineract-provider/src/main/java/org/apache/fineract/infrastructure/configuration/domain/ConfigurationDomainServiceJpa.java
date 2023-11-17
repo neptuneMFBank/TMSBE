@@ -383,7 +383,7 @@ public class ConfigurationDomainServiceJpa implements ConfigurationDomainService
     }
 
     @Cacheable(value = "configByName", key = "T(org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat(#propertyName)")
-    private GlobalConfigurationPropertyData getGlobalConfigurationPropertyData(final String propertyName) {
+    public GlobalConfigurationPropertyData getGlobalConfigurationPropertyData(final String propertyName) {
         String identifier = ThreadLocalContextUtil.getTenant().getTenantIdentifier();
         String key = identifier + "_" + propertyName;
         if (!configurations.containsKey(key)) {

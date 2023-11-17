@@ -357,7 +357,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 }
             }
         }
-        log.info("clientRetrieveAl: {}-{}", sqlBuilder.toString(), ArrayUtils.toString(paramList.toArray()));
+        //log.info("clientRetrieveAl: {}-{}", sqlBuilder.toString(), ArrayUtils.toString(paramList.toArray()));
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.clientMapper);
     }
 

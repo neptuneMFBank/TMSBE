@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.codes.data.business.CodeValueBusinessData;
@@ -288,7 +289,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
                 // , lgaValuesOptions
-                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                ,
+                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions
         // , industryOptions
         );
@@ -355,6 +357,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 }
             }
         }
+        log.info("clientRetrieveAl: {}-{}", sqlBuilder.toString(), ArrayUtils.toString(paramList.toArray()));
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.clientMapper);
     }
 

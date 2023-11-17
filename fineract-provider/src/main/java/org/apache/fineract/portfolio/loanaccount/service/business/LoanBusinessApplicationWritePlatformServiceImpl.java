@@ -105,6 +105,7 @@ import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConsta
 import org.apache.fineract.portfolio.client.domain.AccountNumberGenerator;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
+import org.apache.fineract.portfolio.client.domain.LegalForm;
 import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.collateralmanagement.domain.ClientCollateralManagementRepository;
 import org.apache.fineract.portfolio.collateralmanagement.service.LoanCollateralAssembler;
@@ -701,16 +702,19 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
     }
 
     protected void loanAgeLimit(Client client) {
-        final Integer limitLoanAge = this.configurationBusinessDomainService.isLimitLoanAge();
-        //check client age is with age loan limit if enabled
-        if (limitLoanAge != null) {
-            final LocalDate localDateOfBirth = client.dateOfBirthLocalDate();
-            if (localDateOfBirth != null) {
-                LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
-                Period period = Period.between(localDateOfBirth, today);
-                final Integer currentYear = period.getYears();
-                if (currentYear < limitLoanAge) {
-                    throw new LoanApplicationDateException("loan.client.dateOfBirth", "Date of birth does not meet current loan age limit.");
+        final Integer legalForm = client.getLegalForm();
+        if (legalForm != null && LegalForm.fromInt(legalForm).isPerson()) {
+            final Integer limitLoanAge = this.configurationBusinessDomainService.isLimitLoanAge();
+            //check client age is with age loan limit if enabled
+            if (limitLoanAge != null) {
+                final LocalDate localDateOfBirth = client.dateOfBirthLocalDate();
+                if (localDateOfBirth != null) {
+                    LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
+                    Period period = Period.between(localDateOfBirth, today);
+                    final Integer currentYear = period.getYears();
+                    if (currentYear < limitLoanAge) {
+                        throw new LoanApplicationDateException("loan.client.dateOfBirth", "Date of birth does not meet current loan age limit.");
+                    }
                 }
             }
         }

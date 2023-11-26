@@ -291,20 +291,21 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             sumUpfrontCharges = sumUpfrontCharges.setScale(2, RoundingMode.HALF_EVEN);
 
-            final JsonObject withdrawAmountJson = new JsonObject();
-            withdrawAmountJson.addProperty(SavingsApiConstants.transactionDateParamName, today.toString());
-            withdrawAmountJson.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
-            withdrawAmountJson.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
-            withdrawAmountJson.addProperty(SavingsApiConstants.transactionAmountParamName, sumUpfrontCharges);
-            withdrawAmountJson.addProperty(SavingsApiConstants.noteParamName, "Withdraw Loan Upfront Charges");
-            withdrawAmountJson.addProperty(SavingsApiConstants.accountNumberParamName, accountNumber);
-            withdrawAmountJson.addProperty(SavingsApiConstants.paymentTypeIdParamName, 1);
-            final String apiRequestBodyAsJson = withdrawAmountJson.toString();
-            builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
-            commandRequest = builder.savingsAccountWithdrawal(savingsId).build();
-            CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-            saveNoteMetrics("Withdraw Loan Upfront Charges " + sumUpfrontCharges + " with savings transaction Id-" + result.resourceId(), loan);
-
+            if (sumUpfrontCharges.compareTo(BigDecimal.ZERO) > 0) {
+                final JsonObject withdrawAmountJson = new JsonObject();
+                withdrawAmountJson.addProperty(SavingsApiConstants.transactionDateParamName, today.toString());
+                withdrawAmountJson.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
+                withdrawAmountJson.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
+                withdrawAmountJson.addProperty(SavingsApiConstants.transactionAmountParamName, sumUpfrontCharges);
+                withdrawAmountJson.addProperty(SavingsApiConstants.noteParamName, "Withdraw Loan Upfront Charges");
+                withdrawAmountJson.addProperty(SavingsApiConstants.accountNumberParamName, accountNumber);
+                withdrawAmountJson.addProperty(SavingsApiConstants.paymentTypeIdParamName, 1);
+                final String apiRequestBodyAsJson = withdrawAmountJson.toString();
+                builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
+                commandRequest = builder.savingsAccountWithdrawal(savingsId).build();
+                CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+                saveNoteMetrics("Withdraw Loan Upfront Charges " + sumUpfrontCharges + " with savings transaction Id-" + result.resourceId(), loan);
+            }
             //then hold the rest
             BigDecimal sumUpfrontChargesHold = loanCharges
                     .stream()
@@ -315,11 +316,12 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                     .map(mapper -> mapper.amountOutstanding())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             sumUpfrontChargesHold = sumUpfrontChargesHold.setScale(2, RoundingMode.HALF_EVEN);
-            final Long lienTransactionId = holdAmount(sumUpfrontChargesHold, loanId, savingsId,
-                    "lien amount for upFront charges of loan Id-" + loanId,
-                    this.commandsSourceWritePlatformService);
-            saveNoteMetrics("Lien Loan Upfront Charges " + sumUpfrontChargesHold + " with savings transaction Id-" + lienTransactionId, loan);
-
+            if (sumUpfrontChargesHold.compareTo(BigDecimal.ZERO) > 0) {
+                final Long lienTransactionId = holdAmount(sumUpfrontChargesHold, loanId, savingsId,
+                        "lien amount for upFront charges of loan Id-" + loanId,
+                        this.commandsSourceWritePlatformService);
+                saveNoteMetrics("Lien Loan Upfront Charges " + sumUpfrontChargesHold + " with savings transaction Id-" + lienTransactionId, loan);
+            }
             List<LoanCharge> charges = new ArrayList<>();
             for (LoanCharge loanCharge : loanCharges) {
                 if (loanCharge.isUpfrontCharge() || loanCharge.isUpfrontHoldCharge()) {

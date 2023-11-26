@@ -64,10 +64,10 @@ public class DocumentConfigApiConstants {
     public static final Set<String> DOCUMENT_CONFIG_TEMPLATE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(loanProductDatasParam, clientLegalFormOptionsParam, savingProductOptionsParam, settingsCodeParam));
     public static final Set<String> DOCUMENT_CONFIG_CREATE_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(
+            GlobalConfigurationApiConstant.localeParamName,
             // productIdsParam,
             formIdParam, typeParam, nameParam, descriptionParam, settingsParam));
     public static final Set<String> DOCUMENT_CONFIG_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(
-            GlobalConfigurationApiConstant.localeParamName,
             // productIdsParam,
             idParam, formIdParam, typeParam, nameParam, descriptionParam, settingsParam, globalEntityTypeParam));
 

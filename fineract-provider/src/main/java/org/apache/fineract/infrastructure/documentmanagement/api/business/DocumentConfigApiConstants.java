@@ -34,6 +34,7 @@ public class DocumentConfigApiConstants {
     public static final String clientBankIdParam = "clientBankId";
     public static final String netPayParam = "netPay";
     public static final String defaultPaymentMethodIdParam = "defaultPaymentMethodId";
+    public static final String lienSavingsTransactionIdParam = "lienSavingsTransactionId";
 
     public static final String entityTypeParam = "entityType";
     public static final String entityIdParam = "entityId";

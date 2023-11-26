@@ -247,9 +247,9 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
             int nextRank = 0;
             for (LoanProductApprovalConfigData loanProductApprovalConfigData : loanProductApprovalConfigDatas) {
-                int rank = nextRank++;
+                int rank = nextRank;
                 int status = rank == 0 ? LoanApprovalStatus.PENDING.getValue() : LoanApprovalStatus.QUEUE.getValue();
-
+                nextRank++;
                 // isWithinRange
                 final BigDecimal value = loan.getProposedPrincipal();
                 log.warn("createLoanMetrics value: {}", value);
@@ -261,10 +261,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                 log.warn("createLoanMetrics maxApprovalAmount: {}", maxApprovalAmount);
                 final boolean isWithinRange = GeneralConstants.isWithinRange(value, minApprovalAmount, maxApprovalAmount);
                 if ( // loanProductApprovalConfigData.getMaxApprovalAmount() == null
-                     // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
-                     // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal())
-                     // >= 0
-                isWithinRange) {
+                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
+                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal())
+                        // >= 0
+                        isWithinRange) {
                     // create loan movement approval if this condition is met
                     final RoleData roleData = loanProductApprovalConfigData.getRoleData();
                     final Long roleId = roleData.getId();

@@ -198,7 +198,8 @@ public enum ChargeTimeType {
     }
 
     public boolean isAllowedLoanChargeTime() {
-        return isTimeOfDisbursement() || isOnSpecifiedDueDate() || isInstalmentFee() || isOverdueInstallment() || isTrancheDisbursement();
+        return isTimeOfDisbursement() || isOnSpecifiedDueDate() || isInstalmentFee() || isOverdueInstallment() || isTrancheDisbursement()
+                || isTimeOfUpfront() || isTimeOfUpfrontHold();
     }
 
     public boolean isAllowedClientChargeTime() {

@@ -249,87 +249,102 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     }
 
     protected void loanDisbursalAccountLien(final Long loanId, final Loan loan, final LocalDate today) {
-        Long lienSavingsTransactionId = null;
-        //check if upFront Charges via 
-        //withdraw upFront charges and lien the upFront hold Fee before disbursal
-        final GenericResultsetData results = this.readWriteNonCoreDataService
-                .retrieveDataTableGenericResultSet(DocumentConfigApiConstants.approvalCheckParam, loanId, null, null);
-        if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
-            final List<ResultsetRowData> resultsetRowDatas = results.getData();
-            for (ResultsetRowData res : resultsetRowDatas) {
-                try {
-                    final Object objectLienSavingsTransactionIdParam = res.getRow().get(7);
-                    if (ObjectUtils.isNotEmpty(objectLienSavingsTransactionIdParam)) {
-                        final String lienSavingsTransactionIdDT = StringUtils.defaultIfBlank(String.valueOf(objectLienSavingsTransactionIdParam), null);
-                        lienSavingsTransactionId = Long.valueOf(lienSavingsTransactionIdDT);
-                    }
-                } catch (Exception e) {
-                    log.warn("error.approvalCheckRequest.loanDisbursal: {}", e.getMessage());
-                }
-            }
-        }
-
         final Set<LoanCharge> loanCharges = loan.charges();
-        //we need to update the charges status to paid
-        if (lienSavingsTransactionId != null && !CollectionUtils.isEmpty(loanCharges)) {
-            final Client client = loan.client();
-            final String accountNumber = loan.getAccountNumber();
-            final Long savingsId = client.savingsAccountId();
-            //release the lien/hold amount
-            CommandWrapperBuilder builder = new CommandWrapperBuilder().withNoJsonBody();
-            CommandWrapper commandRequest = builder.releaseAmount(savingsId, lienSavingsTransactionId).build();
-            this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-
-            //withdraw upFrontFees
-            BigDecimal sumUpfrontCharges = loanCharges
+        if (!CollectionUtils.isEmpty(loanCharges)) {
+            //check if upFront iswithdrawal is available else leave Fee onHoldAmount
+            long countUpfrontCharges = loanCharges
                     .stream()
                     .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
                     && chg.isChargePending()
                     && chg.isActive()
-                    && chg.isUpfrontCharge())
-                    .map(mapper -> mapper.amountOutstanding())
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            sumUpfrontCharges = sumUpfrontCharges.setScale(2, RoundingMode.HALF_EVEN);
+                    && chg.isUpfrontCharge()).count();
 
-            if (sumUpfrontCharges.compareTo(BigDecimal.ZERO) > 0) {
-                final JsonObject withdrawAmountJson = new JsonObject();
-                withdrawAmountJson.addProperty(SavingsApiConstants.transactionDateParamName, today.toString());
-                withdrawAmountJson.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
-                withdrawAmountJson.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
-                withdrawAmountJson.addProperty(SavingsApiConstants.transactionAmountParamName, sumUpfrontCharges);
-                withdrawAmountJson.addProperty(SavingsApiConstants.noteParamName, "Withdraw Loan Upfront Charges");
-                withdrawAmountJson.addProperty(SavingsApiConstants.accountNumberParamName, accountNumber);
-                withdrawAmountJson.addProperty(SavingsApiConstants.paymentTypeIdParamName, 1);
-                final String apiRequestBodyAsJson = withdrawAmountJson.toString();
-                builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
-                commandRequest = builder.savingsAccountWithdrawal(savingsId).build();
-                CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-                saveNoteMetrics("Withdraw Loan Upfront Charges " + sumUpfrontCharges + " with savings transaction Id-" + result.resourceId(), loan);
+            if (countUpfrontCharges <= 0) {
+                return;
             }
-            //then hold the rest
-            BigDecimal sumUpfrontChargesHold = loanCharges
-                    .stream()
-                    .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
-                    && chg.isChargePending()
-                    && chg.isActive()
-                    && chg.isUpfrontHoldCharge())
-                    .map(mapper -> mapper.amountOutstanding())
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            sumUpfrontChargesHold = sumUpfrontChargesHold.setScale(2, RoundingMode.HALF_EVEN);
-            if (sumUpfrontChargesHold.compareTo(BigDecimal.ZERO) > 0) {
-                final Long lienTransactionId = holdAmount(sumUpfrontChargesHold, loanId, savingsId,
-                        "lien amount for upFront charges of loan Id-" + loanId,
-                        this.commandsSourceWritePlatformService);
-                saveNoteMetrics("Lien Loan Upfront Charges " + sumUpfrontChargesHold + " with savings transaction Id-" + lienTransactionId, loan);
-            }
-            List<LoanCharge> charges = new ArrayList<>();
-            for (LoanCharge loanCharge : loanCharges) {
-                if (loanCharge.isUpfrontCharge() || loanCharge.isUpfrontHoldCharge()) {
-                    loanCharge.markAsFullyPaid();
-                    charges.add(loanCharge);
+
+            Long lienSavingsTransactionId = null;
+            //check if upFront Charges via 
+            //withdraw upFront charges and lien the upFront hold Fee before disbursal
+            final GenericResultsetData results = this.readWriteNonCoreDataService
+                    .retrieveDataTableGenericResultSet(DocumentConfigApiConstants.approvalCheckParam, loanId, null, null);
+            if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
+                final List<ResultsetRowData> resultsetRowDatas = results.getData();
+                for (ResultsetRowData res : resultsetRowDatas) {
+                    try {
+                        final Object objectLienSavingsTransactionIdParam = res.getRow().get(7);
+                        if (ObjectUtils.isNotEmpty(objectLienSavingsTransactionIdParam)) {
+                            final String lienSavingsTransactionIdDT = StringUtils.defaultIfBlank(String.valueOf(objectLienSavingsTransactionIdParam), null);
+                            lienSavingsTransactionId = Long.valueOf(lienSavingsTransactionIdDT);
+                        }
+                    } catch (Exception e) {
+                        log.warn("error.approvalCheckRequest.loanDisbursal: {}", e.getMessage());
+                    }
                 }
-                if (!CollectionUtils.isEmpty(charges)) {
-                    loanChargeRepository.saveAll(charges);
+            }
+
+            //we need to update the charges status to paid
+            if (lienSavingsTransactionId != null) {
+
+                final Client client = loan.client();
+                final String accountNumber = loan.getAccountNumber();
+                final Long savingsId = client.savingsAccountId();
+                //release the lien/hold amount
+                CommandWrapperBuilder builder = new CommandWrapperBuilder().withNoJsonBody();
+                CommandWrapper commandRequest = builder.releaseAmount(savingsId, lienSavingsTransactionId).build();
+                this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+                //withdraw upFrontFees
+                BigDecimal sumUpfrontCharges = loanCharges
+                        .stream()
+                        .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
+                        && chg.isChargePending()
+                        && chg.isActive()
+                        && chg.isUpfrontCharge())
+                        .map(mapper -> mapper.amountOutstanding())
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                sumUpfrontCharges = sumUpfrontCharges.setScale(2, RoundingMode.HALF_EVEN);
+
+                if (sumUpfrontCharges.compareTo(BigDecimal.ZERO) > 0) {
+                    final JsonObject withdrawAmountJson = new JsonObject();
+                    withdrawAmountJson.addProperty(SavingsApiConstants.transactionDateParamName, today.toString());
+                    withdrawAmountJson.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
+                    withdrawAmountJson.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
+                    withdrawAmountJson.addProperty(SavingsApiConstants.transactionAmountParamName, sumUpfrontCharges);
+                    withdrawAmountJson.addProperty(SavingsApiConstants.noteParamName, "Withdraw Loan Upfront Charges");
+                    withdrawAmountJson.addProperty(SavingsApiConstants.accountNumberParamName, accountNumber);
+                    withdrawAmountJson.addProperty(SavingsApiConstants.paymentTypeIdParamName, 1);
+                    final String apiRequestBodyAsJson = withdrawAmountJson.toString();
+                    builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
+                    commandRequest = builder.savingsAccountWithdrawal(savingsId).build();
+                    CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+                    saveNoteMetrics("Withdraw Loan Upfront Charges " + sumUpfrontCharges + " with savings transaction Id-" + result.resourceId(), loan);
+                }
+                //then hold the rest
+                BigDecimal sumUpfrontChargesHold = loanCharges
+                        .stream()
+                        .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
+                        && chg.isChargePending()
+                        && chg.isActive()
+                        && chg.isUpfrontHoldCharge())
+                        .map(mapper -> mapper.amountOutstanding())
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                sumUpfrontChargesHold = sumUpfrontChargesHold.setScale(2, RoundingMode.HALF_EVEN);
+                if (sumUpfrontChargesHold.compareTo(BigDecimal.ZERO) > 0) {
+                    final Long lienTransactionId = holdAmount(sumUpfrontChargesHold, loanId, savingsId,
+                            "lien amount for upFront charges of loan Id-" + loanId,
+                            this.commandsSourceWritePlatformService);
+                    saveNoteMetrics("Lien Loan Upfront Charges " + sumUpfrontChargesHold + " with savings transaction Id-" + lienTransactionId, loan);
+                }
+                List<LoanCharge> charges = new ArrayList<>();
+                for (LoanCharge loanCharge : loanCharges) {
+                    if (loanCharge.isUpfrontCharge() || loanCharge.isUpfrontHoldCharge()) {
+                        loanCharge.markAsFullyPaid();
+                        charges.add(loanCharge);
+                    }
+                    if (!CollectionUtils.isEmpty(charges)) {
+                        loanChargeRepository.saveAll(charges);
+                    }
                 }
             }
         }

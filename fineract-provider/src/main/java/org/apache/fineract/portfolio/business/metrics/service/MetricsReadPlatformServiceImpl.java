@@ -247,9 +247,9 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
             int nextRank = 0;
             for (LoanProductApprovalConfigData loanProductApprovalConfigData : loanProductApprovalConfigDatas) {
-                int rank = nextRank;
+                int rank = nextRank++;
                 int status = rank == 0 ? LoanApprovalStatus.PENDING.getValue() : LoanApprovalStatus.QUEUE.getValue();
-                nextRank++;
+
                 // isWithinRange
                 final BigDecimal value = loan.getProposedPrincipal();
                 log.warn("createLoanMetrics value: {}", value);
@@ -311,6 +311,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                         }
                     }
                 } else {
+                    nextRank = 0;
                     log.warn("Not withIn range for loanId: {}", loanApprovalScheduleId);
                 }
             }

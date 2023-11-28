@@ -139,7 +139,7 @@ public class TwoFactorServiceImpl implements TwoFactorService {
         otpRequestRepository.deleteOTPRequestForUser(user);
 
         final GlobalConfigurationPropertyData multiplePlatformLogin = this.configurationReadPlatformService
-                .retrieveGlobalConfigurationX("multiple-platform-login");
+                .retrieveGlobalConfiguration("multiple-platform-login");
         // remove old token still active, as recommended by EY company 2022-09-23
         if (!multiplePlatformLogin.isEnabled()) {
             //disAble all other apps if multiplePlatformLogin=false

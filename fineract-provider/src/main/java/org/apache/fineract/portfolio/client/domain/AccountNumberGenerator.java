@@ -35,12 +35,16 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanRepository;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepository;
 import org.apache.fineract.portfolio.shareaccounts.domain.ShareAccount;
+import org.apache.fineract.simplifytech.data.AccountNumberNuban;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 /**
- * Example {@link AccountNumberGenerator} for clients that takes an entities auto generated database id and zero fills
- * it ensuring the identifier is always of a given <code>maxLength</code>.
+ * Example {@link AccountNumberGenerator} for clients that takes an entities
+ * auto generated database id and zero fills it ensuring the identifier is
+ * always of a given <code>maxLength</code>.
  */
 @Component
 public class AccountNumberGenerator {
@@ -61,15 +65,18 @@ public class AccountNumberGenerator {
     private final LoanRepository loanRepository;
     private final SavingsAccountRepository savingsAccountRepository;
 
+    private final Environment environment;
+
     @Autowired
     public AccountNumberGenerator(final ConfigurationReadPlatformService configurationReadPlatformService,
             final AccountNumberFormatRepository accountNumberFormatRepository, final ClientRepository clientRepository,
-            final LoanRepository loanRepository, final SavingsAccountRepository savingsAccountRepository) {
+            final LoanRepository loanRepository, final SavingsAccountRepository savingsAccountRepository, final ApplicationContext contextApplication) {
         this.configurationReadPlatformService = configurationReadPlatformService;
         this.accountNumberFormatRepository = accountNumberFormatRepository;
         this.clientRepository = clientRepository;
         this.loanRepository = loanRepository;
         this.savingsAccountRepository = savingsAccountRepository;
+        this.environment = contextApplication.getEnvironment();
     }
 
     public String generateX(Client client, AccountNumberFormat accountNumberFormat) {
@@ -150,24 +157,24 @@ public class AccountNumberGenerator {
             switch (accountNumberPrefixType) {
                 case CLIENT_TYPE:
                     prefix = propertyMap.get(CLIENT_TYPE);
-                break;
+                    break;
 
                 case OFFICE_NAME:
                     prefix = propertyMap.get(OFFICE_NAME);
-                break;
+                    break;
 
                 case LOAN_PRODUCT_SHORT_NAME:
                     prefix = propertyMap.get(LOAN_PRODUCT_SHORT_NAME);
-                break;
+                    break;
 
                 case SAVINGS_PRODUCT_SHORT_NAME:
                     prefix = propertyMap.get(SAVINGS_PRODUCT_SHORT_NAME);
-                break;
+                    break;
 
                 case PREFIX_SHORT_NAME:
                     generatePrefix(propertyMap, propertyMap.get(ID), accountMaxLength, accountNumberFormat);
                     prefix = propertyMap.get(PREFIX_SHORT_NAME);
-                break;
+                    break;
             }
 
             // FINERACT-590
@@ -216,6 +223,16 @@ public class AccountNumberGenerator {
             }
         }
 
+        // find if the custom NIBSS SORTCODE is defined
+        String nibssSortcode = null;
+        final GlobalConfigurationPropertyData nibssSortcodeConfig = this.configurationReadPlatformService
+                .retrieveGlobalConfiguration("nibss-sortcode");
+        if (nibssSortcodeConfig.isEnabled()) {
+            nibssSortcode = nibssSortcodeConfig.getStringValue();
+        }
+        // add CDL NIBSS NUBAN logic
+        accountNumber = new AccountNumberNuban(accountNumber, this.environment, nibssSortcode).NUBAN();
+
         final GlobalConfigurationPropertyData randomAccountNumber = this.configurationReadPlatformService
                 .retrieveGlobalConfiguration("random-account-number");
 
@@ -230,24 +247,24 @@ public class AccountNumberGenerator {
             switch (accountNumberPrefixType) {
                 case CLIENT_TYPE:
                     prefix = propertyMap.get(CLIENT_TYPE);
-                break;
+                    break;
 
                 case OFFICE_NAME:
                     prefix = propertyMap.get(OFFICE_NAME);
-                break;
+                    break;
 
                 case LOAN_PRODUCT_SHORT_NAME:
                     prefix = propertyMap.get(LOAN_PRODUCT_SHORT_NAME);
-                break;
+                    break;
 
                 case SAVINGS_PRODUCT_SHORT_NAME:
                     prefix = propertyMap.get(SAVINGS_PRODUCT_SHORT_NAME);
-                break;
+                    break;
 
                 case PREFIX_SHORT_NAME:
                     generatePrefix(propertyMap, propertyMap.get(ID), accountMaxLength, accountNumberFormat);
                     prefix = propertyMap.get(PREFIX_SHORT_NAME);
-                break;
+                    break;
             }
 
             // FINERACT-590

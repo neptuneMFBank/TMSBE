@@ -142,6 +142,7 @@ public class AccountNumberGenerator {
                 accountMaxLength = customLength.getValue().intValue();
             }
         }
+        accountNumber = nibssNuban(accountNumber);
 
         final GlobalConfigurationPropertyData randomAccountNumber = this.configurationReadPlatformService
                 .retrieveGlobalConfigurationX("random-account-number");
@@ -223,15 +224,7 @@ public class AccountNumberGenerator {
             }
         }
 
-        // find if the custom NIBSS SORTCODE is defined
-        String nibssSortcode = null;
-        final GlobalConfigurationPropertyData nibssSortcodeConfig = this.configurationReadPlatformService
-                .retrieveGlobalConfiguration("nibss-sortcode");
-        if (nibssSortcodeConfig.isEnabled()) {
-            nibssSortcode = nibssSortcodeConfig.getStringValue();
-        }
-        // add CDL NIBSS NUBAN logic
-        accountNumber = new AccountNumberNuban(accountNumber, this.environment, nibssSortcode).NUBAN();
+        accountNumber = nibssNuban(accountNumber);
 
         final GlobalConfigurationPropertyData randomAccountNumber = this.configurationReadPlatformService
                 .retrieveGlobalConfiguration("random-account-number");
@@ -295,6 +288,19 @@ public class AccountNumberGenerator {
                 accountNumber = generateAccountNumber(propertyMap, accountNumberFormat);
             }
         }
+        return accountNumber;
+    }
+
+    protected String nibssNuban(String accountNumber) {
+        // find if the custom NIBSS SORTCODE is defined
+        String nibssSortcode = null;
+        final GlobalConfigurationPropertyData nibssSortcodeConfig = this.configurationReadPlatformService
+                .retrieveGlobalConfiguration("nibss-sortcode");
+        if (nibssSortcodeConfig.isEnabled()) {
+            nibssSortcode = nibssSortcodeConfig.getStringValue();
+        }
+        // add CDL NIBSS NUBAN logic
+        accountNumber = new AccountNumberNuban(accountNumber, this.environment, nibssSortcode).NUBAN();
         return accountNumber;
     }
 

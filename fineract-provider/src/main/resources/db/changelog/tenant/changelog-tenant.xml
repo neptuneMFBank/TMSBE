@@ -135,4 +135,5 @@
     <include file="parts/0119_m_read_loan_arrears_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0120_limit_loan_age_config.sql" relativeToChangelogFile="true" />
     <include file="parts/0121_nibss_sortcode_config.sql" relativeToChangelogFile="true" />
+    <include file="parts/0122_multiple_platform_login.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

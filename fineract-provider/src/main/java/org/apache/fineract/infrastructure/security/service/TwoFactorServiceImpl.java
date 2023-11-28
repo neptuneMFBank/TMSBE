@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
+import org.apache.fineract.infrastructure.configuration.service.ConfigurationReadPlatformService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.EmailDetail;
 import org.apache.fineract.infrastructure.core.service.PlatformEmailService;
@@ -58,12 +60,13 @@ public class TwoFactorServiceImpl implements TwoFactorService {
     private final SmsMessageRepository smsMessageRepository;
 
     private final TwoFactorConfigurationService configurationService;
+    private final ConfigurationReadPlatformService configurationReadPlatformService;
 
     @Autowired
     public TwoFactorServiceImpl(AccessTokenGenerationService accessTokenGenerationService, PlatformEmailService emailService,
             SmsMessageScheduledJobService smsMessageScheduledJobService, OTPRequestRepository otpRequestRepository,
             TFAccessTokenRepository tfAccessTokenRepository, SmsMessageRepository smsMessageRepository,
-            TwoFactorConfigurationService configurationService) {
+            TwoFactorConfigurationService configurationService, final ConfigurationReadPlatformService configurationReadPlatformService) {
         this.accessTokenGenerationService = accessTokenGenerationService;
         this.emailService = emailService;
         this.smsMessageScheduledJobService = smsMessageScheduledJobService;
@@ -71,6 +74,7 @@ public class TwoFactorServiceImpl implements TwoFactorService {
         this.tfAccessTokenRepository = tfAccessTokenRepository;
         this.smsMessageRepository = smsMessageRepository;
         this.configurationService = configurationService;
+        this.configurationReadPlatformService = configurationReadPlatformService;
     }
 
     @Override
@@ -133,6 +137,20 @@ public class TwoFactorServiceImpl implements TwoFactorService {
         }
 
         otpRequestRepository.deleteOTPRequestForUser(user);
+
+        final GlobalConfigurationPropertyData multiplePlatformLogin = this.configurationReadPlatformService
+                .retrieveGlobalConfigurationX("multiple-platform-login");
+        // remove old token still active, as recommended by EY company 2022-09-23
+        if (!multiplePlatformLogin.isEnabled()) {
+            //disAble all other apps if multiplePlatformLogin=false
+            final List<TFAccessToken> tFAccessTokens = this.tfAccessTokenRepository.findByUserAndEnabled(user, true);
+            tFAccessTokens.stream().map(tFAccessToken -> {
+                tFAccessToken.setEnabled(false);
+                return tFAccessToken;
+            }).forEachOrdered(tFAccessToken -> {
+                tfAccessTokenRepository.save(tFAccessToken);
+            });
+        }
 
         String token = accessTokenGenerationService.generateRandomToken();
         int liveTime;

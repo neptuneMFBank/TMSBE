@@ -53,7 +53,8 @@ public final class DocumentConfigDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DocumentConfigApiConstants.DOCUMENT_CONFIG_CREATE_RESPONSE_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -67,9 +68,11 @@ public final class DocumentConfigDataValidator {
         baseDataValidator.reset().parameter(DocumentConfigApiConstants.nameParam).value(name).notBlank();
 
         Integer typeParam = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(DocumentConfigApiConstants.typeParam, element);
-        final GlobalEntityType globalEntityType = GlobalEntityType.fromInt(typeParam);
-        if (globalEntityType == null) {
-            typeParam = null;
+        if (typeParam != null) {
+            final GlobalEntityType globalEntityType = GlobalEntityType.fromInt(typeParam);
+            if (globalEntityType == null) {
+                typeParam = null;
+            }
         }
         baseDataValidator.reset().parameter(DocumentConfigApiConstants.typeParam).value(typeParam).notNull().integerGreaterThanZero();
 

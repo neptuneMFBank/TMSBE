@@ -261,10 +261,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                 log.warn("createLoanMetrics maxApprovalAmount: {}", maxApprovalAmount);
                 final boolean isWithinRange = GeneralConstants.isWithinRange(value, minApprovalAmount, maxApprovalAmount);
                 if ( // loanProductApprovalConfigData.getMaxApprovalAmount() == null
-                     // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
-                     // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal())
-                     // >= 0
-                isWithinRange) {
+                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
+                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal())
+                        // >= 0
+                        isWithinRange) {
                     // create loan movement approval if this condition is met
                     final RoleData roleData = loanProductApprovalConfigData.getRoleData();
                     final Long roleId = roleData.getId();
@@ -311,6 +311,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                         }
                     }
                 } else {
+                    nextRank = 0;
                     log.warn("Not withIn range for loanId: {}", loanApprovalScheduleId);
                 }
             }
@@ -547,7 +548,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             final Long loanClientId = JdbcSupport.getLong(rs, "loanClientId");
             if (loanClientId > 0) {
                 final String loanClientName = rs.getString("loanClientName");
-                clientData = ClientData.instance(id, loanClientName);
+                clientData = ClientData.instance(loanClientId, loanClientName);
             }
 
             StaffData loanOfficerData = null;

@@ -24,6 +24,7 @@ import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstan
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.temporal.ChronoField;
@@ -105,6 +106,7 @@ import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConsta
 import org.apache.fineract.portfolio.client.domain.AccountNumberGenerator;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
+import org.apache.fineract.portfolio.client.domain.LegalForm;
 import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.collateralmanagement.domain.ClientCollateralManagementRepository;
 import org.apache.fineract.portfolio.collateralmanagement.service.LoanCollateralAssembler;
@@ -179,6 +181,7 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountAssembler;
 import org.apache.fineract.portfolio.savings.service.GSIMReadPlatformService;
 import org.apache.fineract.simplifytech.data.GeneralConstants;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.holdAmount;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -701,16 +704,19 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
     }
 
     protected void loanAgeLimit(Client client) {
-        final Integer limitLoanAge = this.configurationBusinessDomainService.isLimitLoanAge();
-        //check client age is with age loan limit if enabled
-        if (limitLoanAge != null) {
-            final LocalDate localDateOfBirth = client.dateOfBirthLocalDate();
-            if (localDateOfBirth != null) {
-                LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
-                Period period = Period.between(localDateOfBirth, today);
-                final Integer currentYear = period.getYears();
-                if (currentYear < limitLoanAge) {
-                    throw new LoanApplicationDateException("loan.client.dateOfBirth", "Date of birth does not meet current loan age limit.");
+        final Integer legalForm = client.getLegalForm();
+        if (legalForm != null && LegalForm.fromInt(legalForm).isPerson()) {
+            final Integer limitLoanAge = this.configurationBusinessDomainService.isLimitLoanAge();
+            //check client age is with age loan limit if enabled
+            if (limitLoanAge != null) {
+                final LocalDate localDateOfBirth = client.dateOfBirthLocalDate();
+                if (localDateOfBirth != null) {
+                    LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
+                    Period period = Period.between(localDateOfBirth, today);
+                    final Integer currentYear = period.getYears();
+                    if (currentYear < limitLoanAge) {
+                        throw new LoanApplicationDateException("loan.client.dateOfBirth", "Date of birth does not meet current loan age limit.");
+                    }
                 }
             }
         }
@@ -1533,28 +1539,9 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
         final Long loanProductId = loan.productId();
 
-        // validate document is complete
-        final DocumentProductConfigData documentProductConfigData = this.documentProductConfigReadPlatformService
-                .retrieveLoanProductDocument(loanProductId);
-        int loanProductDocumentCount = 0;
-        if (ObjectUtils.isNotEmpty(documentProductConfigData)) {
-            final DocumentConfigData documentConfigData = documentProductConfigData.getConfigData();
-            if (ObjectUtils.isNotEmpty(documentConfigData)) {
-                final Collection<CodeBusinessData> codeBusinessDatas = documentConfigData.getSettings();
-                if (!CollectionUtils.isEmpty(codeBusinessDatas)) {
-                    loanProductDocumentCount = codeBusinessDatas.size();
-                }
-            }
-        }
+        Long lienSavingsTransactionId = upFrontChargeLienProcess(loan);
 
-        final Long totalLoanDocumentSaved = this.documentBusinessRepositoryWrapper
-                .countByParentEntityTypeAndParentEntityId(DocumentManagementEntity.LOANS.toString(), loanId);
-        log.info("loanProductDocumentCount:{} - totalLoanDocumentSaved:{}", loanProductDocumentCount, totalLoanDocumentSaved);
-        if (totalLoanDocumentSaved < loanProductDocumentCount) {
-            Long remaining = (loanProductDocumentCount - totalLoanDocumentSaved);
-            throw new PlatformDataIntegrityException("error.submit.loan.approval",
-                    "System requires " + remaining + " more document(s) before sending for approval.");
-        }
+        validateDocumentComplete(loanProductId, loanId);
 
         final JsonElement loanApprovalRequest = this.fromJsonHelper.parse(command.json());
         final Long paymentTypeId = this.fromJsonHelper.extractLongNamed(ClientBusinessApiConstants.paymentTypeIdParamName,
@@ -1651,6 +1638,9 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.clientBankIdParam, "");
             jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.netPayParam, "");
             jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.defaultPaymentMethodIdParam, loanInstrumentId);
+            if (lienSavingsTransactionId != null) {
+                jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.lienSavingsTransactionIdParam, lienSavingsTransactionId);
+            }
 
             final GenericResultsetData results = this.readWriteNonCoreDataService
                     .retrieveDataTableGenericResultSet(DocumentConfigApiConstants.approvalCheckParam, loanId, null, null);
@@ -1698,6 +1688,11 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                             final String isLafSigned = StringUtils.defaultIfBlank(String.valueOf(objectIsLafSigned), "");
                             jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isLafSignedParam, isLafSigned);
                         }
+//                        final Object objectLienSavingsTransactionIdParam = res.getRow().get(7);
+//                        if (ObjectUtils.isNotEmpty(objectLienSavingsTransactionIdParam)) {
+//                            final String lienSavingsTransactionIdDT = StringUtils.defaultIfBlank(String.valueOf(objectLienSavingsTransactionIdParam), null);
+//                            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.lienSavingsTransactionIdParam, lienSavingsTransactionIdDT);
+//                        }
                     } catch (Exception e) {
                         log.warn("error.approvalCheckRequest.submitLoanApproval: {}", e.getMessage());
                     }
@@ -1729,6 +1724,65 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
                 .withEntityId(loanInstrumentId).withSubEntityId(loanId).build();
+    }
+
+    protected void validateDocumentComplete(final Long loanProductId, Long loanId) throws PlatformDataIntegrityException {
+        // validate document is complete
+        final DocumentProductConfigData documentProductConfigData = this.documentProductConfigReadPlatformService
+                .retrieveLoanProductDocument(loanProductId);
+        int loanProductDocumentCount = 0;
+        if (ObjectUtils.isNotEmpty(documentProductConfigData)) {
+            final DocumentConfigData documentConfigData = documentProductConfigData.getConfigData();
+            if (ObjectUtils.isNotEmpty(documentConfigData)) {
+                final Collection<CodeBusinessData> codeBusinessDatas = documentConfigData.getSettings();
+                if (!CollectionUtils.isEmpty(codeBusinessDatas)) {
+                    loanProductDocumentCount = codeBusinessDatas.size();
+                }
+            }
+        }
+
+        final Long totalLoanDocumentSaved = this.documentBusinessRepositoryWrapper
+                .countByParentEntityTypeAndParentEntityId(DocumentManagementEntity.LOANS.toString(), loanId);
+        log.info("loanProductDocumentCount:{} - totalLoanDocumentSaved:{}", loanProductDocumentCount, totalLoanDocumentSaved);
+        if (totalLoanDocumentSaved < loanProductDocumentCount) {
+            Long remaining = (loanProductDocumentCount - totalLoanDocumentSaved);
+            throw new PlatformDataIntegrityException("error.submit.loan.approval",
+                    "System requires " + remaining + " more document(s) before sending for approval.");
+        }
+    }
+
+    protected Long upFrontChargeLienProcess(final Loan loan) {
+        final Long loanId = loan.getId();
+        Long lienSavingsTransactionId = null;
+        //check if upFront Charges are set for this loan
+        //and validate the total upFront charge amount is available in the client default savings account/wallet
+        //lien/hold the amount before sending for approval
+        final Set<LoanCharge> loanCharges = loan.charges();
+        if (!CollectionUtils.isEmpty(loanCharges)) {
+            final Client client = loan.client();
+            final Long savingsId = client.savingsAccountId();
+
+            //sum the upfront fees
+            BigDecimal sumUpfrontCharges = loanCharges
+                    .stream()
+                    .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
+                    && chg.isChargePending()
+                    && chg.isActive()
+                    && (chg.isUpfrontCharge() || chg.isUpfrontHoldCharge()))
+                    .map(mapper -> mapper.amountOutstanding())
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            sumUpfrontCharges = sumUpfrontCharges.setScale(2, RoundingMode.HALF_EVEN);
+            if (sumUpfrontCharges.compareTo(BigDecimal.ZERO) > 0) {
+                lienSavingsTransactionId = holdAmount(sumUpfrontCharges, loanId, savingsId,
+                        "for upFront charges of loan Id-" + loanId,
+                        this.commandsSourceWritePlatformService);
+
+                //put in a note for clarification
+                final Note note = Note.loanNote(loan, "Total Loan Upfront Charges " + sumUpfrontCharges + " on hold with savings transaction Id-" + lienSavingsTransactionId);
+                this.noteRepository.save(note);
+            }
+        }
+        return lienSavingsTransactionId;
     }
 
 }

@@ -31,5 +31,6 @@ public class ApplicationPropertiesConstant {
     public static final String CLIENT_DEFAULT_ID_API = "client.default.id";
     public static final String PAYMENT_TYPE_DEDUCTION = "payment.type.deduction";
     public static final String PAYMENT_TYPE_CHEQUE = "payment.type.cheque";
+    public static final String NIBSS_SORTCODE = "nibss.sortcode";
 
 }

@@ -20,6 +20,7 @@ package org.apache.fineract.simplifytech.data;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
@@ -33,7 +34,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.FuzzyScore;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
+import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
+import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,8 +103,8 @@ public class GeneralConstants {
     }
 
     /**
-     * TODO: Need a better implementation with guaranteed uniqueness (but not a long UUID)...maybe something tied to
-     * system clock..
+     * TODO: Need a better implementation with guaranteed uniqueness (but not a
+     * long UUID)...maybe something tied to system clock..
      *
      * @param context
      * @return
@@ -111,22 +117,22 @@ public class GeneralConstants {
     }
 
     public static void main(String[] args) {
-        String[][] inputStrings = new String[][] {
-                // Matches abc at start of term
-                { "Asiata Omodeleola Babalola", "Asiata Omodeleola Babalola" }, // {"Thompson Olakunle Rasak", "Rasak
-                // Olakunle Thompson"},
-                // // ABC in different case than term
-                // {"cecilianwebonyi", "testname2"},
-                // // Matches abc at end of term
-                // {"qwreweqwqw", "testname3"},
-                // // Matches abc in middle
-                // {"dedede", "testname4"},
-                // // Matches abc but not continuous.
-                // {"abxycz", "abc"}, {"axbycz", "abc"},
-                // // Reverse order of abc
-                // {"cbaxyz", "abc"},
-                // // Matches abc but different order.
-                // {"cabxyz", "abc"}
+        String[][] inputStrings = new String[][]{
+            // Matches abc at start of term
+            {"Asiata Omodeleola Babalola", "Asiata Omodeleola Babalola"}, // {"Thompson Olakunle Rasak", "Rasak
+        // Olakunle Thompson"},
+        // // ABC in different case than term
+        // {"cecilianwebonyi", "testname2"},
+        // // Matches abc at end of term
+        // {"qwreweqwqw", "testname3"},
+        // // Matches abc in middle
+        // {"dedede", "testname4"},
+        // // Matches abc but not continuous.
+        // {"abxycz", "abc"}, {"axbycz", "abc"},
+        // // Reverse order of abc
+        // {"cbaxyz", "abc"},
+        // // Matches abc but different order.
+        // {"cabxyz", "abc"}
         };
         for (String[] input : inputStrings) {
             String term = input[0];
@@ -195,5 +201,23 @@ public class GeneralConstants {
 
     public static boolean isWithinRange(final BigDecimal value, final BigDecimal min, final BigDecimal max) {
         return value.compareTo(min) >= 0 && value.compareTo(max) <= 0;
+    }
+
+    public static Long holdAmount(final BigDecimal amountToHold, final Long loanId, final Long savingsId,
+            final String note,
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+        //lien/hold the upfront fee sum
+        LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
+        final JsonObject holdAmountJson = new JsonObject();
+        holdAmountJson.addProperty(SavingsApiConstants.transactionDateParamName, today.toString());
+        holdAmountJson.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
+        holdAmountJson.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
+        holdAmountJson.addProperty(SavingsApiConstants.transactionAmountParamName, amountToHold);
+        holdAmountJson.addProperty(SavingsApiConstants.reasonForBlockParamName, note);
+        final String apiRequestBodyAsJson = holdAmountJson.toString();
+        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
+        final CommandWrapper commandRequest = builder.holdAmount(savingsId).build();
+        final CommandProcessingResult result = commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        return result.resourceId();
     }
 }

@@ -123,7 +123,7 @@ public class ClientsBusinessApiResource {
             @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
             @QueryParam("underHierarchy") @Parameter(description = "underHierarchy") final String hierarchy,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
-            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @DefaultValue("20") @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
             @DefaultValue(" c.id ") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
             @DefaultValue(" desc ") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
             @QueryParam("orphansOnly") @Parameter(description = "orphansOnly") final Boolean orphansOnly,

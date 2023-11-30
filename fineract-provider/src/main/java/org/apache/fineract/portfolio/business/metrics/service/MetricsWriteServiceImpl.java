@@ -24,13 +24,18 @@ import static org.apache.fineract.simplifytech.data.GeneralConstants.LOCALE_EN_D
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.fineract.commands.domain.CommandWrapper;
@@ -42,6 +47,10 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuild
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
+import org.apache.fineract.infrastructure.dataqueries.data.GenericResultsetData;
+import org.apache.fineract.infrastructure.dataqueries.data.ResultsetRowData;
+import org.apache.fineract.infrastructure.dataqueries.service.ReadWriteNonCoreDataService;
+import org.apache.fineract.infrastructure.documentmanagement.api.business.DocumentConfigApiConstants;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
@@ -53,18 +62,24 @@ import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistory;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistoryRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.exception.MetricsNotFoundException;
+import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.collectionsheet.CollectionSheetConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanCharge;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanChargeRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanStatus;
 import org.apache.fineract.portfolio.note.domain.Note;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
+import org.apache.fineract.simplifytech.data.GeneralConstants;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.holdAmount;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Service
@@ -80,6 +95,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     private final MetricsRepositoryWrapper metricsRepositoryWrapper;
     private final MetricsHistoryRepositoryWrapper metricsHistoryRepositoryWrapper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+    private final ReadWriteNonCoreDataService readWriteNonCoreDataService;
+    private final LoanChargeRepository loanChargeRepository;
 
     /*
      * Guaranteed to throw an exception no matter what the data integrity issue is.
@@ -205,10 +222,12 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
 
     protected void loanDisbursal(final Loan loan, final String noteText, final LocalDate today, final Integer paymentTypeId) {
         final Long loanId = loan.getId();
+
+        loanDisbursalAccountLien(loanId, loan, today);
+
         // perform first approval
         // future checks=> check if tokenization is set, Repayment Method Done
         // future checks=> check if laf is set
-
         JsonObject apiRequestBodyAsJson = new JsonObject();
         apiRequestBodyAsJson.addProperty(CollectionSheetConstants.actualDisbursementDateParamName, today.toString());
         apiRequestBodyAsJson.addProperty(LoanApiConstants.localeParameterName, LOCALE_EN_DEFAULT);
@@ -227,6 +246,108 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             commandRequest = builder.disburseLoanToSavingsApplication(loanId).build();
         }
         this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+    }
+
+    protected void loanDisbursalAccountLien(final Long loanId, final Loan loan, final LocalDate today) {
+        final Set<LoanCharge> loanCharges = loan.charges();
+        if (!CollectionUtils.isEmpty(loanCharges)) {
+            //check if upFront iswithdrawal is available else leave Fee onHoldAmount
+            long countUpfrontCharges = loanCharges
+                    .stream()
+                    .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
+                    && chg.isChargePending()
+                    && chg.isActive()
+                    && chg.isUpfrontCharge()).count();
+
+            if (countUpfrontCharges <= 0) {
+                return;
+            }
+
+            Long lienSavingsTransactionId = null;
+            //check if upFront Charges via 
+            //withdraw upFront charges and lien the upFront hold Fee before disbursal
+            final GenericResultsetData results = this.readWriteNonCoreDataService
+                    .retrieveDataTableGenericResultSet(DocumentConfigApiConstants.approvalCheckParam, loanId, null, null);
+            if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
+                final List<ResultsetRowData> resultsetRowDatas = results.getData();
+                for (ResultsetRowData res : resultsetRowDatas) {
+                    try {
+                        final Object objectLienSavingsTransactionIdParam = res.getRow().get(7);
+                        if (ObjectUtils.isNotEmpty(objectLienSavingsTransactionIdParam)) {
+                            final String lienSavingsTransactionIdDT = StringUtils.defaultIfBlank(String.valueOf(objectLienSavingsTransactionIdParam), null);
+                            lienSavingsTransactionId = Long.valueOf(lienSavingsTransactionIdDT);
+                        }
+                    } catch (Exception e) {
+                        log.warn("error.approvalCheckRequest.loanDisbursal: {}", e.getMessage());
+                    }
+                }
+            }
+
+            //we need to update the charges status to paid
+            if (lienSavingsTransactionId != null) {
+
+                final Client client = loan.client();
+                final String accountNumber = loan.getAccountNumber();
+                final Long savingsId = client.savingsAccountId();
+                //release the lien/hold amount
+                CommandWrapperBuilder builder = new CommandWrapperBuilder().withNoJsonBody();
+                CommandWrapper commandRequest = builder.releaseAmount(savingsId, lienSavingsTransactionId).build();
+                this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+                //withdraw upFrontFees
+                BigDecimal sumUpfrontCharges = loanCharges
+                        .stream()
+                        .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
+                        && chg.isChargePending()
+                        && chg.isActive()
+                        && chg.isUpfrontCharge())
+                        .map(mapper -> mapper.amountOutstanding())
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                sumUpfrontCharges = sumUpfrontCharges.setScale(2, RoundingMode.HALF_EVEN);
+
+                if (sumUpfrontCharges.compareTo(BigDecimal.ZERO) > 0) {
+                    final JsonObject withdrawAmountJson = new JsonObject();
+                    withdrawAmountJson.addProperty(SavingsApiConstants.transactionDateParamName, today.toString());
+                    withdrawAmountJson.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
+                    withdrawAmountJson.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
+                    withdrawAmountJson.addProperty(SavingsApiConstants.transactionAmountParamName, sumUpfrontCharges);
+                    withdrawAmountJson.addProperty(SavingsApiConstants.noteParamName, "Withdraw Loan Upfront Charges");
+                    withdrawAmountJson.addProperty(SavingsApiConstants.accountNumberParamName, accountNumber);
+                    withdrawAmountJson.addProperty(SavingsApiConstants.paymentTypeIdParamName, 1);
+                    final String apiRequestBodyAsJson = withdrawAmountJson.toString();
+                    builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
+                    commandRequest = builder.savingsAccountWithdrawal(savingsId).build();
+                    CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+                    saveNoteMetrics("Withdraw Loan Upfront Charges " + sumUpfrontCharges + " with savings transaction Id-" + result.resourceId(), loan);
+                }
+                //then hold the rest
+                BigDecimal sumUpfrontChargesHold = loanCharges
+                        .stream()
+                        .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
+                        && chg.isChargePending()
+                        && chg.isActive()
+                        && chg.isUpfrontHoldCharge())
+                        .map(mapper -> mapper.amountOutstanding())
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                sumUpfrontChargesHold = sumUpfrontChargesHold.setScale(2, RoundingMode.HALF_EVEN);
+                if (sumUpfrontChargesHold.compareTo(BigDecimal.ZERO) > 0) {
+                    final Long lienTransactionId = holdAmount(sumUpfrontChargesHold, loanId, savingsId,
+                            "lien amount for upFront charges of loan Id-" + loanId,
+                            this.commandsSourceWritePlatformService);
+                    saveNoteMetrics("Lien Loan Upfront Charges " + sumUpfrontChargesHold + " with savings transaction Id-" + lienTransactionId, loan);
+                }
+                List<LoanCharge> charges = new ArrayList<>();
+                for (LoanCharge loanCharge : loanCharges) {
+                    if (loanCharge.isUpfrontCharge() || loanCharge.isUpfrontHoldCharge()) {
+                        loanCharge.markAsFullyPaid();
+                        charges.add(loanCharge);
+                    }
+                    if (!CollectionUtils.isEmpty(charges)) {
+                        loanChargeRepository.saveAll(charges);
+                    }
+                }
+            }
+        }
     }
 
     protected void loanReject(final Loan loan, final String noteText, final LocalDate today) {

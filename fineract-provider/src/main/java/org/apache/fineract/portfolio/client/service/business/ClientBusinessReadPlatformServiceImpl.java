@@ -288,7 +288,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
                 // , lgaValuesOptions
-                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                ,
+                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions
         // , industryOptions
         );
@@ -355,6 +356,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 }
             }
         }
+        //log.info("clientRetrieveAl: {}-{}", sqlBuilder.toString(), ArrayUtils.toString(paramList.toArray()));
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.clientMapper);
     }
 

@@ -60,7 +60,6 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
 
     public static LoanProductApproval create(String name, LoanProduct loanProduct) {
         Set<LoanProductApprovalConfig> loanProductApprovalConfig = new HashSet<>();
-        ;
         return new LoanProductApproval(name, loanProduct, loanProductApprovalConfig);
     }
 

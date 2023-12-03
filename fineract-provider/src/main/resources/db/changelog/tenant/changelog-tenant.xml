@@ -136,4 +136,5 @@
     <include file="parts/0120_limit_loan_age_config.sql" relativeToChangelogFile="true" />
     <include file="parts/0121_nibss_sortcode_config.sql" relativeToChangelogFile="true" />
     <include file="parts/0122_multiple_platform_login.sql" relativeToChangelogFile="true" />
+    <include file="parts/0123_product_id_loan_payment_type_unique.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

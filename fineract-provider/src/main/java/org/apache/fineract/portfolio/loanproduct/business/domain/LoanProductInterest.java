@@ -38,8 +38,8 @@ import org.springframework.util.CollectionUtils;
 @Entity
 @Component
 @Table(name = "m_product_loan_interest", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"name"}, name = "name_UNIQUE_product_loan_interest_config"),
-    @UniqueConstraint(columnNames = {"product_id"}, name = "product_id_UNIQUE_product_loan_interest_config")})
+    @UniqueConstraint(columnNames = {"name"}, name = "name_UQ_pli"),
+    @UniqueConstraint(columnNames = {"loan_product_id"}, name = "loan_product_id_UQ_pli")})
 public class LoanProductInterest extends AbstractAuditableWithUTCDateTimeCustom {
 
     @Column(name = "active", nullable = false)
@@ -48,33 +48,41 @@ public class LoanProductInterest extends AbstractAuditableWithUTCDateTimeCustom 
     @Column(name = "name")
     private String name;
 
+    @Column(name = "description")
+    private String description;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "LoanProductInterest", orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<LoanProductInterestConfig> loanProductInterestConfig = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "loan_product_id", nullable = false)
     private LoanProduct loanProduct;
 
     protected LoanProductInterest() {
     }
 
-    private LoanProductInterest(String name, LoanProduct loanProduct, Set<LoanProductInterestConfig> loanProductInterestConfig, final boolean active) {
+    private LoanProductInterest(String name, final String description, LoanProduct loanProduct, Set<LoanProductInterestConfig> loanProductInterestConfig, final boolean active) {
         this.name = name;
+        this.description = description;
         this.loanProduct = loanProduct;
         this.loanProductInterestConfig = loanProductInterestConfig;
         this.active = active;
     }
 
-    public static LoanProductInterest create(String name, LoanProduct loanProduct) {
-        Set<LoanProductInterestConfig> loanProductApprovalConfig = new HashSet<>();
+    public static LoanProductInterest create(String name, final String description, LoanProduct loanProduct) {
+        Set<LoanProductInterestConfig> loanProductInterestConfig = new HashSet<>();
         final boolean active = true;
-        return new LoanProductInterest(name, loanProduct, loanProductApprovalConfig, active);
+        return new LoanProductInterest(name, description, loanProduct, loanProductInterestConfig, active);
     }
 
-    public static LoanProductInterest create(String name, LoanProduct loanProduct,
-            Set<LoanProductInterestConfig> loanProductApprovalConfig) {
+    public static LoanProductInterest create(String name, final String description, LoanProduct loanProduct,
+            Set<LoanProductInterestConfig> loanProductInterestConfig) {
         final boolean active = true;
-        return new LoanProductInterest(name, loanProduct, loanProductApprovalConfig, active);
+        return new LoanProductInterest(name, description, loanProduct, loanProductInterestConfig, active);
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public boolean isActive() {

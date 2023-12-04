@@ -26,7 +26,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
-import org.apache.fineract.useradministration.domain.Role;
 
 @Entity
 @Table(name = "m_product_loan_interest_config")
@@ -48,7 +47,7 @@ public class LoanProductInterestConfig extends AbstractPersistableCustom {
     protected LoanProductInterestConfig() {
     }
 
-    public static LoanProductInterestConfig create(Role role, BigDecimal minTenor, BigDecimal maxTenor, BigDecimal nominalInterestRatePerPeriod) {
+    public static LoanProductInterestConfig create(BigDecimal minTenor, BigDecimal maxTenor, BigDecimal nominalInterestRatePerPeriod) {
         final LoanProductInterest loanProductInterest = null;
         return new LoanProductInterestConfig(loanProductInterest, minTenor, maxTenor, nominalInterestRatePerPeriod);
     }

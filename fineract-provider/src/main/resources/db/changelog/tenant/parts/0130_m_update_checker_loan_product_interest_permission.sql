@@ -17,11 +17,8 @@
 -- under the License.
 --
 
-CREATE TABLE `m_product_loan_interest_config`(
-      `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-      `rlpi_id` BIGINT NOT NULL,
-      `min_tenor` INT DEFAULT '0',
-      `max_tenor` INT DEFAULT '0',
-      `nominal_interest_rate_per_period` decimal(19,6) DEFAULT '0',
-      CONSTRAINT `config_FK_rlpi_id` FOREIGN KEY (`rlpi_id`) REFERENCES `m_product_loan_interest` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- INSERT m_permission
+INSERT INTO `m_permission` (`id`, `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`)
+VALUES
+     (NULL, 'portfolio', 'UPDATE_LOANPRODUCT_INTEREST_CHECKER', 'LOANPRODUCT_INTEREST', 'UPDATE_CHECKER', false)

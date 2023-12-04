@@ -22,6 +22,7 @@ CREATE TABLE `m_product_loan_interest`(
       `name` VARCHAR(150) NOT NULL,
       `description` varchar(250) NULL,
       `loan_product_id` BIGINT NOT NULL,
+      `active` tinyint(4) NOT NULL DEFAULT 0,
       `created_by` BIGINT NOT NULL,
       `created_on_utc` DATETIME NULL,
       `last_modified_by` BIGINT NOT NULL,

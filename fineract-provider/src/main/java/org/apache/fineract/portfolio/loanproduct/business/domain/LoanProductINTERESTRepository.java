@@ -22,11 +22,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface LoanProductInterestRepository
-        extends JpaRepository<LoanProductInterest, Long>, JpaSpecificationExecutor<LoanProductInterest> {
+public interface LoanProductApprovalRepository
+        extends JpaRepository<LoanProductApproval, Long>, JpaSpecificationExecutor<LoanProductApproval> {
 
-    Optional<LoanProductInterest> findByLoanProductId(final Long loanProductId);
-
-    Optional<LoanProductInterest> findByLoanProductIdAndActive(final Long loanProductId, final boolean active);
+    Optional<LoanProductApproval> findByLoanProductId(final Long loanProductId);
 
 }

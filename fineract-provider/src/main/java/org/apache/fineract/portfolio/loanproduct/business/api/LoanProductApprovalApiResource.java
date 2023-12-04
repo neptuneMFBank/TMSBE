@@ -93,7 +93,7 @@ public class LoanProductApprovalApiResource {
     @GET
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Retrieve all Employers", description = "Retrieve list of Employers")
+    @Operation(summary = "Retrieve all Loan Product Approval", description = "Retrieve list of Loan Product Approval")
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
     // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
     // EmployerApiResourceSwagger.GetEmployersResponse.class)))

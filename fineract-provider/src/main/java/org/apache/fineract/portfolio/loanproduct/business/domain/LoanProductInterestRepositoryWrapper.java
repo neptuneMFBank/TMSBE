@@ -49,4 +49,9 @@ public class LoanProductInterestRepositoryWrapper {
                 "No configuration for loan product interest with id :" + loanProductId));
     }
 
+    @Transactional(readOnly = true)
+    public LoanProductInterest findByLoanProductIdAndActive(final Long loanProductId, final boolean active) {
+        return this.repository.findByLoanProductIdAndActive(loanProductId, active).orElse(null);
+    }
+
 }

@@ -18,15 +18,14 @@
  */
 package org.apache.fineract.portfolio.loanproduct.business.domain;
 
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface LoanProductInterestRepository
-        extends JpaRepository<LoanProductInterest, Long>, JpaSpecificationExecutor<LoanProductInterest> {
+public interface LoanProductApprovalConfigRepository
+        extends JpaRepository<LoanProductApprovalConfig, Long>, JpaSpecificationExecutor<LoanProductApprovalConfig> {
 
-    Optional<LoanProductInterest> findByLoanProductId(final Long loanProductId);
+    boolean existsByLoanProductApprovalIdAndRank(final Long loanProductApprovalId, final Integer rank);
 
-    Optional<LoanProductInterest> findByLoanProductIdAndActive(final Long loanProductId, final boolean active);
+    LoanProductApprovalConfig findByLoanProductApprovalIdAndRank(final Long loanProductApprovalId, final Integer rank);
 
 }

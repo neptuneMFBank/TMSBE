@@ -16,17 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanproduct.business.domain;
+package org.apache.fineract.portfolio.loanproduct.business.data;
 
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import lombok.Data;
 
-public interface LoanProductInterestRepository
-        extends JpaRepository<LoanProductInterest, Long>, JpaSpecificationExecutor<LoanProductInterest> {
+@SuppressWarnings("unused")
+@Data
+public class LoanProductInterestConfigData implements Serializable {
 
-    Optional<LoanProductInterest> findByLoanProductId(final Long loanProductId);
+    private final Long id;
+    private final BigDecimal minTenor;
+    private final BigDecimal maxTenor;
+    private final BigDecimal nominalInterestRatePerPeriod;
 
-    Optional<LoanProductInterest> findByLoanProductIdAndActive(final Long loanProductId, final boolean active);
+    public static LoanProductInterestConfigData instance(Long id, BigDecimal minTenor,
+            BigDecimal maxTenor, BigDecimal nominalInterestRatePerPeriod) {
+        return new LoanProductInterestConfigData(id, minTenor, maxTenor, nominalInterestRatePerPeriod);
+    }
 
 }

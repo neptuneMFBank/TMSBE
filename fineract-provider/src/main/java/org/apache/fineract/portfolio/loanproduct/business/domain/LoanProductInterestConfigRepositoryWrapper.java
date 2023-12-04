@@ -24,12 +24,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class LoanProductlnterestConfigRepositoryWrapper {
+public class LoanProductInterestConfigRepositoryWrapper {
 
     private final LoanProductInterestConfigRepository repository;
 
     @Autowired
-    public LoanProductlnterestConfigRepositoryWrapper(final LoanProductInterestConfigRepository repository) {
+    public LoanProductInterestConfigRepositoryWrapper(final LoanProductInterestConfigRepository repository) {
         this.repository = repository;
     }
 

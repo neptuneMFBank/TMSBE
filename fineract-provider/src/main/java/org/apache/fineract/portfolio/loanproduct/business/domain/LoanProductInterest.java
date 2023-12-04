@@ -81,6 +81,10 @@ public class LoanProductInterest extends AbstractAuditableWithUTCDateTimeCustom 
         return new LoanProductInterest(name, description, loanProduct, loanProductInterestConfig, active);
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -117,8 +121,9 @@ public class LoanProductInterest extends AbstractAuditableWithUTCDateTimeCustom 
         singleLoanProductInterestConfig.setLoanProductInterest(this);
         if (!CollectionUtils.isEmpty(this.loanProductInterestConfig)) {
 
+            //check if any match false-> means duplicate
             final boolean rangeExist = this.loanProductInterestConfig.stream()
-                    .noneMatch(predicate -> predicate.isNoOtherRangeWithin(this.loanProductInterestConfig));
+                    .anyMatch(predicate -> predicate.isNoOtherRangeWithin(this.loanProductInterestConfig) == false);
             if (rangeExist) {
                 throw new PlatformDataIntegrityException("error.msg.loanproduct.interest.config.duplicate",
                         "Loan Product Interest config has conflicting range values");

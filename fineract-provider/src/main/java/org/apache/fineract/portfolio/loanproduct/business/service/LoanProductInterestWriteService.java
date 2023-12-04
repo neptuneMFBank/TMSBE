@@ -16,17 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanproduct.business.domain;
+package org.apache.fineract.portfolio.loanproduct.business.service;
 
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
-public interface LoanProductInterestRepository
-        extends JpaRepository<LoanProductInterest, Long>, JpaSpecificationExecutor<LoanProductInterest> {
+public interface LoanProductInterestWriteService {
 
-    Optional<LoanProductInterest> findByLoanProductId(final Long loanProductId);
+    CommandProcessingResult createLoanProductInterest(JsonCommand command);
 
-    Optional<LoanProductInterest> findByLoanProductIdAndActive(final Long loanProductId, final boolean active);
-
+    CommandProcessingResult updateLoanProductInterest(Long loanProductInterestId, JsonCommand command);
 }

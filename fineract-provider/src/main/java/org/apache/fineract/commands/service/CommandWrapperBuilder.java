@@ -23,6 +23,7 @@ import org.apache.fineract.infrastructure.accountnumberformat.service.AccountNum
 import org.apache.fineract.portfolio.business.metrics.api.MetricsApiResourceConstants;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductApprovalApiResourceConstants;
+import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductInterestApiResourceConstants;
 import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductPaymentTypeConfigConstants;
 import org.apache.fineract.portfolio.paymenttype.api.PaymentTypeApiResourceConstants;
 import org.apache.fineract.portfolio.savings.DepositsApiConstants;
@@ -3715,6 +3716,21 @@ public class CommandWrapperBuilder {
         this.entityName = LoanProductPaymentTypeConfigConstants.RESOURCENAME;
         this.entityId = loanProductPaymentTypeConfigId;
         this.href = "/loanproducts/payment/" + loanProductPaymentTypeConfigId;
+        return this;
+    }
+
+    public CommandWrapperBuilder createLoanProductInterest() {
+        this.actionName = "CREATE";
+        this.entityName = LoanProductInterestApiResourceConstants.RESOURCENAME;
+        this.href = "/loanproducts/interest";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateLoanProductInterest(final Long loanProductInterestId) {
+        this.actionName = "UPDATE";
+        this.entityName = LoanProductInterestApiResourceConstants.RESOURCENAME;
+        this.entityId = loanProductInterestId;
+        this.href = "/loanproducts/interest/" + loanProductInterestId;
         return this;
     }
 }

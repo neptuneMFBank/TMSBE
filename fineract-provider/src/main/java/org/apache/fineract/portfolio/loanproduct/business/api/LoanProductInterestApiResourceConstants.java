@@ -35,18 +35,17 @@ public final class LoanProductInterestApiResourceConstants {
     public static final String DESCRIPTION = "description";
     public static final String LOANPRODUCTDATA = "loanProductData";
     public static final String LOANPRODUCTID = "loanProductId";
-    public static final String LOANPRODUCTAPPROVALCONFIGDATA = "loanProductApprovalConfigData";
+    public static final String LOANPRODUCTINTERESTCONFIGDATA = "loanProductInterestConfigData";
 
-    public static final String ROLEID = "roleId";
-    public static final String RANK = "rank";
-    public static final String MINAPPROVALAMOUNT = "minApprovalAmount";
-    public static final String MAXAPPROVALAMOUNT = "maxApprovalAmount";
+    public static final String MINTENOR = "minTenor";
+    public static final String MAXTENOR = "maxTenor";
+    public static final String INTERESTRATEPERPERIOD = "nominalInterestRatePerPeriod";
 
     public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(ID, NAME, DESCRIPTION, LOANPRODUCTDATA, LOANPRODUCTAPPROVALCONFIGDATA));
+            Arrays.asList(ID, NAME, DESCRIPTION, LOANPRODUCTDATA, LOANPRODUCTINTERESTCONFIGDATA));
 
     public static final Set<String> REQUEST_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(NAME, DESCRIPTION, LOANPRODUCTID, LOANPRODUCTAPPROVALCONFIGDATA));
+            Arrays.asList(NAME, DESCRIPTION, LOANPRODUCTID, LOANPRODUCTINTERESTCONFIGDATA));
 
     public static final Set<String> REQUEST_UPDATE_DATA_PARAMETERS = REQUEST_DATA_PARAMETERS;
 

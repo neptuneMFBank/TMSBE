@@ -25,7 +25,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.Set;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import org.apache.commons.lang3.BooleanUtils;
@@ -36,11 +35,8 @@ import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoansApiResource;
 import org.apache.fineract.portfolio.loanproduct.LoanProductConstants;
-import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterest;
-import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestConfig;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestRepositoryWrapper;
-import org.apache.fineract.simplifytech.data.GeneralConstants;
-import org.springframework.util.CollectionUtils;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.loanProductInterestGeneration;
 
 public interface LoanBusinessApiConstants {
 
@@ -388,20 +384,9 @@ public interface LoanBusinessApiConstants {
                     loanTemplateElement);
         }
 
-        //connect to Loan Product Interest to pick business interest rate if configured
-        final LoanProductInterest loanProductInterest = loanProductInterestRepositoryWrapper.findByLoanProductIdAndActive(productId, true);
-        if (loanProductInterest != null) {
-            final Set<LoanProductInterestConfig> loanProductInterestConfig = loanProductInterest.getLoanProductInterestConfig();
-            if (!CollectionUtils.isEmpty(loanProductInterestConfig)) {
-                final BigDecimal interestRatePerPeriodCheck = loanProductInterestConfig.stream()
-                        .filter(predicate -> GeneralConstants.isWithinRange(new BigDecimal(loanTermFrequency), predicate.getMinTenor(), predicate.getMaxTenor()))
-                        .map(LoanProductInterestConfig::getNominalInterestRatePerPeriod)
-                        .findFirst().orElse(null);
-                if (interestRatePerPeriodCheck != null) {
-                    interestRatePerPeriod = interestRatePerPeriodCheck;
-                }
-            }
-        }
+        interestRatePerPeriod = loanProductInterestGeneration(
+                loanProductInterestRepositoryWrapper,
+                productId, loanTermFrequency, interestRatePerPeriod);
         jsonObjectLoan.addProperty(LoanApiConstants.interestRatePerPeriodParameterName, interestRatePerPeriod);
 
         Integer amortizationType;

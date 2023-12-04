@@ -52,8 +52,7 @@ public class LoanProductInterestDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         if (isUpdate) {
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, UPDATE_REQUEST_DATA_PARAMETERS);
         } else {

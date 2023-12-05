@@ -120,24 +120,24 @@ public class LoanProductInterest extends AbstractAuditableWithUTCDateTimeCustom 
 
     public void addLoanProductInterestConfig(LoanProductInterestConfig singleLoanProductInterestConfig) {
         singleLoanProductInterestConfig.setLoanProductInterest(this);
-        if (!CollectionUtils.isEmpty(this.loanProductInterestConfig)) {
-            String msg = null;
-            for (LoanProductInterestConfig loanProductInterestConfig1 : loanProductInterestConfig) {
-                if (!loanProductInterestConfig1.isNoOtherRangeWithin(loanProductInterestConfig)) {
-                    msg = "Other range(s) exist within the range: " + loanProductInterestConfig1.getMinTenor() + " to " + loanProductInterestConfig1.getMaxTenor();
-                    break;
-                }
-            }
-            //check if any match false-> means duplicate
-//            final boolean rangeExmsgist = this.loanProductInterestConfig.stream()
-//                    .allMatch(predicate -> predicate.isNoOtherRangeWithin(this.loanProductInterestConfig));
-//            if (rangeExist == false) {
-            if (StringUtils.isNotBlank(msg)) {
-                throw new PlatformDataIntegrityException("error.msg.loanproduct.interest.config.duplicate",
-                        msg);
-            }
-
-        }
+//        if (!CollectionUtils.isEmpty(this.loanProductInterestConfig)) {
+//            String msg = null;
+//            for (LoanProductInterestConfig loanProductInterestConfig1 : loanProductInterestConfig) {
+//                if (!loanProductInterestConfig1.isNoOtherRangeWithin(loanProductInterestConfig)) {
+//                    msg = "Other range(s) exist within the range: " + loanProductInterestConfig1.getMinTenor() + " to " + loanProductInterestConfig1.getMaxTenor();
+//                    break;
+//                }
+//            }
+//            //check if any match false-> means duplicate
+////            final boolean rangeExmsgist = this.loanProductInterestConfig.stream()
+////                    .allMatch(predicate -> predicate.isNoOtherRangeWithin(this.loanProductInterestConfig));
+////            if (rangeExist == false) {
+//            if (StringUtils.isNotBlank(msg)) {
+//                throw new PlatformDataIntegrityException("error.msg.loanproduct.interest.config.duplicate",
+//                        msg);
+//            }
+//
+//        }
 
         this.loanProductInterestConfig.add(singleLoanProductInterestConfig);
     }

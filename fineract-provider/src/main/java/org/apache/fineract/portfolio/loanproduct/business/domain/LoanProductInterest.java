@@ -29,12 +29,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
-import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 @Entity
 @Component

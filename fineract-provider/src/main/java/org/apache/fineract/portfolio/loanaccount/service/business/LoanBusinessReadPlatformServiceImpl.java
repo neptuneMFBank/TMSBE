@@ -72,6 +72,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanSubStatus;
 import org.apache.fineract.portfolio.loanaccount.exception.LoanNotFoundException;
 import org.apache.fineract.portfolio.loanaccount.service.LoanUtilService;
+import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestRepositoryWrapper;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.service.LoanDropdownReadPlatformService;
 import org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations;
@@ -120,6 +121,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
     private final LoansApiResource loansApiResource;
     private final FromJsonHelper fromJsonHelper;
     private final LoanMapper loanLoanMapper;
+    private final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper;
 
     @Autowired
     public LoanBusinessReadPlatformServiceImpl(final PlatformSecurityContext context,
@@ -135,7 +137,8 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
             final ConfigurationDomainService configurationDomainService,
             final AccountDetailsReadPlatformService accountDetailsReadPlatformService, final LoanRepositoryWrapper loanRepositoryWrapper,
             final ColumnValidator columnValidator, DatabaseSpecificSQLGenerator sqlGenerator, PaginationHelper paginationHelper,
-            final ApplicationContext applicationContext, final LoansApiResource loansApiResource, final FromJsonHelper fromJsonHelper) {
+            final ApplicationContext applicationContext, final LoansApiResource loansApiResource, final FromJsonHelper fromJsonHelper,
+            final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper) {
         this.context = context;
         this.loanRepositoryWrapper = loanRepositoryWrapper;
         this.applicationCurrencyRepository = applicationCurrencyRepository;
@@ -164,13 +167,14 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
         this.loansApiResource = loansApiResource;
         this.fromJsonHelper = fromJsonHelper;
         this.loanLoanMapper = new LoanMapper(sqlGenerator);
+        this.loanProductInterestRepositoryWrapper = loanProductInterestRepositoryWrapper;
     }
 
     @Override
     public String calculateLoanScheduleLoanApplication(String apiRequestBodyAsJson, @Context final UriInfo uriInfo) {
         this.context.authenticatedUser();
         final String loanTemplateJson = LoanBusinessApiConstants.loanTemplateConfig(this.loansApiResource, apiRequestBodyAsJson,
-                fromJsonHelper, clientDefaultId, true, uriInfo, null);
+                fromJsonHelper, clientDefaultId, true, uriInfo, null, this.loanProductInterestRepositoryWrapper);
         log.info("calculateLoanScheduleLoanApplicationTemplate: {}", loanTemplateJson);
         return this.loansApiResource.calculateLoanScheduleOrSubmitLoanApplication("calculateLoanSchedule", uriInfo, loanTemplateJson);
     }

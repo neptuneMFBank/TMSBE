@@ -221,7 +221,7 @@ public class LoanProductInterestReadPlatformServiceImpl implements LoanProductIn
 
         public String schema() {
             return " lpic.id, lpic.min_tenor minTenor, lpic.max_tenor maxTenor, lpic.nominal_interest_rate_per_period interestRatePerPeriod "
-                    + " from m_product_loan_interest_config lpic " + " JOIN m_role mr ON mr.id=lpic.role_id ";
+                    + " from m_product_loan_interest_config lpic ";
         }
 
         @Override

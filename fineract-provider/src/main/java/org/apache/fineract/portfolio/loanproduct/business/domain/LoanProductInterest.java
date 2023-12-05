@@ -132,7 +132,7 @@ public class LoanProductInterest extends AbstractAuditableWithUTCDateTimeCustom 
 //            final boolean rangeExmsgist = this.loanProductInterestConfig.stream()
 //                    .allMatch(predicate -> predicate.isNoOtherRangeWithin(this.loanProductInterestConfig));
 //            if (rangeExist == false) {
-            if (StringUtils.isNotBlank()) {
+            if (StringUtils.isNotBlank(msg)) {
                 throw new PlatformDataIntegrityException("error.msg.loanproduct.interest.config.duplicate",
                         msg);
             }

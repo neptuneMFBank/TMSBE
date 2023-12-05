@@ -198,6 +198,7 @@ public class LoanProductInterestWriteServiceImpl implements LoanProductInterestW
     private void handleDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve) {
         log.warn("handleDataIntegrityIssues: {} and Exception: {}", realCause.getMessage(), dve.getMessage());
         String[] cause = StringUtils.split(realCause.getMessage(), "'");
+        String msg = "One or more fields are in conflict.";
         try {
             String getCause = StringUtils.defaultIfBlank(cause[3], realCause.getMessage());
             if (getCause.contains("name")) {
@@ -213,11 +214,12 @@ public class LoanProductInterestWriteServiceImpl implements LoanProductInterestW
             }
         } catch (PlatformDataIntegrityException e) {
             log.error("handleDataIntegrityIssues LoanProductInterestErrorOccured: {}", e);
+            msg = e.getMessage();
         }
 
         logAsErrorUnexpectedDataIntegrityException(dve);
         throw new PlatformDataIntegrityException("error.msg.loanproduct.interest.unknown.data.integrity.issue",
-                "One or more fields are in conflict.", "Unknown data integrity issue with resource.");
+                msg, "Unknown data integrity issue with resource.");
     }
 
     private void logAsErrorUnexpectedDataIntegrityException(final Exception dve) {

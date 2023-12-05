@@ -123,8 +123,8 @@ public class LoanProductInterest extends AbstractAuditableWithUTCDateTimeCustom 
 
             //check if any match false-> means duplicate
             final boolean rangeExist = this.loanProductInterestConfig.stream()
-                    .anyMatch(predicate -> predicate.isNoOtherRangeWithin(this.loanProductInterestConfig) == false);
-            if (rangeExist) {
+                    .allMatch(predicate -> predicate.isNoOtherRangeWithin(this.loanProductInterestConfig));
+            if (rangeExist == false) {
                 throw new PlatformDataIntegrityException("error.msg.loanproduct.interest.config.duplicate",
                         "Loan Product Interest config has conflicting range values");
             }

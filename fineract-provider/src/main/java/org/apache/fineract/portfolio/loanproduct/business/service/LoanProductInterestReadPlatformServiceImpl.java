@@ -152,20 +152,20 @@ public class LoanProductInterestReadPlatformServiceImpl implements LoanProductIn
     }
 
     @Override
-    public LoanProductInterestData retrieveOne(Long loanProductApprovalId) {
+    public LoanProductInterestData retrieveOne(Long loanProductInterestId) {
         this.context.authenticatedUser();
         try {
             final String sql = "select " + loanProductInterestMapper.schema() + " where lpi.id = ?";
             LoanProductInterestData loanProductInterestData = this.jdbcTemplate.queryForObject(sql, loanProductInterestMapper,
-                    new Object[]{loanProductApprovalId});
-            Collection<LoanProductInterestConfigData> retrieveConfig = retrieveConfig(loanProductApprovalId);
+                    new Object[]{loanProductInterestId});
+            Collection<LoanProductInterestConfigData> retrieveConfig = retrieveConfig(loanProductInterestId);
             if (!CollectionUtils.isEmpty(retrieveConfig)) {
                 loanProductInterestData = LoanProductInterestData.lookUpFinal(retrieveConfig, loanProductInterestData);
             }
             return loanProductInterestData;
         } catch (DataAccessException e) {
             LOG.error("retrieveOne Loan Product Interest not found: {}", e);
-            throw new LoanProductInterestNotFoundException(loanProductApprovalId);
+            throw new LoanProductInterestNotFoundException(loanProductInterestId);
         }
     }
 
@@ -192,7 +192,7 @@ public class LoanProductInterestReadPlatformServiceImpl implements LoanProductIn
     @Override
     public Collection<LoanProductInterestConfigData> retrieveConfig(Long loanProductInterestId) {
         this.context.authenticatedUser();
-        final String sql = "select " + loanProductInterestConfigMapper.schema() + " WHERE lpic.rlpi_id = ? ORDER BY lpic.rank ASC ";
+        final String sql = "select " + loanProductInterestConfigMapper.schema() + " WHERE lpic.rlpi_id = ? ORDER BY lpic.min_tenor ASC ";
         return this.jdbcTemplate.query(sql, loanProductInterestConfigMapper, new Object[]{loanProductInterestId}); // NOSONAR
     }
 

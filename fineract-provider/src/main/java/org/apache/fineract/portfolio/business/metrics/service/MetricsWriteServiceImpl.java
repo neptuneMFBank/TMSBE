@@ -221,6 +221,10 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     }
 
     protected void loanDisbursal(final Loan loan, final String noteText, final LocalDate today, final Integer paymentTypeId) {
+
+        if (loan.isSubmittedAndPendingApproval()) {
+            loanSubmittedPendingApproval(loan, noteText, today);
+        }
         final Long loanId = loan.getId();
 
         loanDisbursalAccountLien(loanId, loan, today);

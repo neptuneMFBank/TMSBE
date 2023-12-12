@@ -1082,4 +1082,8 @@ public class LoanCharge extends AbstractPersistableCustom {
         return ChargeTimeType.fromInt(this.chargeTime).equals(ChargeTimeType.UPFRONT_HOLD);
     }
 
+    public boolean isUpfrontWithdrawalCharge() {
+        return ChargeTimeType.fromInt(this.chargeTime).equals(ChargeTimeType.UPFRONT_WITHDRAWAL);
+    }
+
 }

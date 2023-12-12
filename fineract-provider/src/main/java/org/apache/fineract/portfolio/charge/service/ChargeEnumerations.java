@@ -110,6 +110,10 @@ public final class ChargeEnumerations {
                 optionData = new EnumOptionData(ChargeTimeType.UPFRONT_HOLD.getValue().longValue(),
                         ChargeTimeType.UPFRONT_HOLD.getCode(), "Upfront Hold Fee");
                 break;
+            case UPFRONT_WITHDRAWAL:
+                optionData = new EnumOptionData(ChargeTimeType.UPFRONT_WITHDRAWAL.getValue().longValue(),
+                        ChargeTimeType.UPFRONT_WITHDRAWAL.getCode(), "Upfront Withdrawal Fee/Interest");
+                break;
             default:
                 optionData = new EnumOptionData(ChargeTimeType.INVALID.getValue().longValue(), ChargeTimeType.INVALID.getCode(), "Invalid");
                 break;

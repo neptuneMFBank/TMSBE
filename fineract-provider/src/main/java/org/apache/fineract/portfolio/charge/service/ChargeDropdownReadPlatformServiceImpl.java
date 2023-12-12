@@ -88,6 +88,7 @@ public class ChargeDropdownReadPlatformServiceImpl implements ChargeDropdownRead
         return Arrays.asList(
                 chargeTimeType(ChargeTimeType.UPFRONT),
                 chargeTimeType(ChargeTimeType.UPFRONT_HOLD),
+                chargeTimeType(ChargeTimeType.UPFRONT_WITHDRAWAL),
                 chargeTimeType(ChargeTimeType.DISBURSEMENT), chargeTimeType(ChargeTimeType.SPECIFIED_DUE_DATE),
                 chargeTimeType(ChargeTimeType.INSTALMENT_FEE), chargeTimeType(ChargeTimeType.OVERDUE_INSTALLMENT),
                 chargeTimeType(ChargeTimeType.TRANCHE_DISBURSEMENT));

@@ -44,7 +44,6 @@ public class NotificationBusinessWritePlatformServiceImpl implements Notificatio
     private final NotificationMapperReadRepositoryWrapperImpl notificationMapperReadRepositoryWrapper;
     private final JdbcTemplate jdbcTemplate;
 
-
     @Transactional
     @Override
     public CommandProcessingResult updateNotificationReadStatus(final Long notificationId, final JsonCommand command) {
@@ -63,6 +62,7 @@ public class NotificationBusinessWritePlatformServiceImpl implements Notificatio
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(notificationId) //
+                    .withSubEntityId(appUserId)
                     .build();
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleOfficeDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);

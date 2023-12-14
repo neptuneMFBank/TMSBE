@@ -26,6 +26,13 @@ import org.apache.fineract.portfolio.client.data.ClientData;
 
 public class ClientBusinessApiCollectionConstants extends ClientApiConstants {
 
+    public static String ledgerAmountParameterName = "ledgerAmount";
+    public static String amountParameterName = "amount";
+    public static String totalOverdueDerivedParameterName = "totalOverdueDerived";
+    public static String countParameterName = "count";
+    public static String statusParameterName = "status";
+    public static String messageParameterName = "message";
+
     protected static final Set<String> CLIENT_CREATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(familyMembers, address,
             localeParamName, dateFormatParamName, groupIdParamName, accountNoParamName, externalIdParamName, mobileNoParamName,
             emailAddressParamName, firstnameParamName, middlenameParamName, lastnameParamName, fullnameParamName, officeIdParamName,
@@ -39,11 +46,9 @@ public class ClientBusinessApiCollectionConstants extends ClientApiConstants {
 
     protected static final Set<String> CLIENT_UPDATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
             dateFormatParamName, accountNoParamName, externalIdParamName, mobileNoParamName, emailAddressParamName, firstnameParamName,
-            middlenameParamName,
-
-            lastnameParamName, fullnameParamName, activeParamName, activationDateParamName, staffIdParamName, savingsProductIdParamName,
-            dateOfBirthParamName, genderIdParamName, clientTypeIdParamName, clientClassificationIdParamName, submittedOnDateParamName,
-            clientNonPersonDetailsParamName, displaynameParamName, legalFormIdParamName, isStaffParamName));
+            middlenameParamName, lastnameParamName, fullnameParamName, activeParamName, activationDateParamName, staffIdParamName,
+            savingsProductIdParamName, dateOfBirthParamName, genderIdParamName, clientTypeIdParamName, clientClassificationIdParamName,
+            submittedOnDateParamName, clientNonPersonDetailsParamName, displaynameParamName, legalFormIdParamName, isStaffParamName));
 
     protected static final Set<String> CLIENT_NON_PERSON_UPDATE_REQUEST_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(localeParamName, dateFormatParamName, incorpNumberParamName, remarksParamName, incorpValidityTillParamName,
@@ -53,7 +58,6 @@ public class ClientBusinessApiCollectionConstants extends ClientApiConstants {
      * These parameters will match the class level parameters of {@link ClientData}. Where possible, we try to get
      * response parameters to match those of request parameters.
      */
-
     protected static final Set<String> ACTIVATION_REQUEST_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(localeParamName, dateFormatParamName, activationDateParamName));
     protected static final Set<String> REACTIVATION_REQUEST_DATA_PARAMETERS = new HashSet<>(

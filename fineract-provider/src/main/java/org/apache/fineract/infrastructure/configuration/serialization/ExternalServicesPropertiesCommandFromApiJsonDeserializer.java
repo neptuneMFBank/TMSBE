@@ -28,6 +28,7 @@ import org.apache.fineract.infrastructure.configuration.service.ExternalServices
 import org.apache.fineract.infrastructure.configuration.service.ExternalServicesConstants.S3JSONinputParams;
 import org.apache.fineract.infrastructure.configuration.service.ExternalServicesConstants.SMSJSONinputParams;
 import org.apache.fineract.infrastructure.configuration.service.ExternalServicesConstants.SMTPJSONinputParams;
+import org.apache.fineract.infrastructure.configuration.service.business.ExternalServicesBusinessConstants.AzureJSONinputParams;
 import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExternalServicesPropertiesCommandFromApiJsonDeserializer {
 
+    private final Set<String> azureSupportedParameters = AzureJSONinputParams.getAllValues();
     private final Set<String> s3SupportedParameters = S3JSONinputParams.getAllValues();
     private final Set<String> smtpSupportedParameters = SMTPJSONinputParams.getAllValues();
     private final Set<String> smsSupportedParameters = SMSJSONinputParams.getAllValues();
@@ -54,6 +56,10 @@ public class ExternalServicesPropertiesCommandFromApiJsonDeserializer {
 
         final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         switch (externalServiceName) {
+            case "Azure":
+                this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.azureSupportedParameters);
+            break;
+
             case "S3":
                 this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.s3SupportedParameters);
             break;

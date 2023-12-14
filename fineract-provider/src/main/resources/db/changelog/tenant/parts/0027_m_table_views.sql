@@ -35,6 +35,7 @@ SELECT
     mc.submittedon_date,
     mc.created_by,
     mc.status_enum,
-    mc.office_id
+    mc.office_id,
+    mc.transfer_to_office_id
 FROM m_client mc
 ORDER BY mc.id DESC

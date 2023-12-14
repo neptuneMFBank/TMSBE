@@ -18,9 +18,15 @@
  */
 package org.apache.fineract.portfolio.loanaccount.service.business;
 
+import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.PAYMENT_TYPE_CHEQUE;
+import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.PAYMENT_TYPE_DEDUCTION;
+
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,18 +34,27 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.PersistenceException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
+import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormat;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.EntityAccountType;
+import org.apache.fineract.infrastructure.codes.data.business.CodeBusinessData;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.configuration.domain.GlobalConfigurationProperty;
 import org.apache.fineract.infrastructure.configuration.domain.GlobalConfigurationRepositoryWrapper;
+import org.apache.fineract.infrastructure.configuration.domain.business.ConfigurationBusinessDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.api.JsonQuery;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
@@ -50,9 +65,18 @@ import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRu
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.dataqueries.data.EntityTables;
+import org.apache.fineract.infrastructure.dataqueries.data.GenericResultsetData;
+import org.apache.fineract.infrastructure.dataqueries.data.ResultsetRowData;
 import org.apache.fineract.infrastructure.dataqueries.data.StatusEnum;
 import org.apache.fineract.infrastructure.dataqueries.service.EntityDatatableChecksWritePlatformService;
+import org.apache.fineract.infrastructure.dataqueries.service.ReadWriteNonCoreDataService;
+import org.apache.fineract.infrastructure.documentmanagement.api.business.DocumentConfigApiConstants;
+import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
+import org.apache.fineract.infrastructure.documentmanagement.domain.DocumentBusinessRepositoryWrapper;
+import org.apache.fineract.infrastructure.documentmanagement.service.DocumentWritePlatformServiceJpaRepositoryImpl.DocumentManagementEntity;
+import org.apache.fineract.infrastructure.documentmanagement.service.business.DocumentBusinessWritePlatformService;
 import org.apache.fineract.infrastructure.entityaccess.FineractEntityAccessConstants;
 import org.apache.fineract.infrastructure.entityaccess.domain.FineractEntityAccessType;
 import org.apache.fineract.infrastructure.entityaccess.domain.FineractEntityRelation;
@@ -78,9 +102,11 @@ import org.apache.fineract.portfolio.calendar.domain.CalendarType;
 import org.apache.fineract.portfolio.calendar.exception.CalendarNotFoundException;
 import org.apache.fineract.portfolio.calendar.service.CalendarReadPlatformService;
 import org.apache.fineract.portfolio.charge.domain.Charge;
+import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConstants;
 import org.apache.fineract.portfolio.client.domain.AccountNumberGenerator;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
+import org.apache.fineract.portfolio.client.domain.LegalForm;
 import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.collateralmanagement.domain.ClientCollateralManagementRepository;
 import org.apache.fineract.portfolio.collateralmanagement.service.LoanCollateralAssembler;
@@ -110,6 +136,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanStatus;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanSummaryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanTopupDetails;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanTransactionType;
+import org.apache.fineract.portfolio.loanaccount.domain.business.LoanInstrumentStatus;
 import org.apache.fineract.portfolio.loanaccount.domain.business.LoanOther;
 import org.apache.fineract.portfolio.loanaccount.domain.business.LoanOtherRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.exception.LoanApplicationDateException;
@@ -127,6 +154,8 @@ import org.apache.fineract.portfolio.loanaccount.service.LoanChargeAssembler;
 import org.apache.fineract.portfolio.loanaccount.service.LoanReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.service.LoanUtilService;
 import org.apache.fineract.portfolio.loanproduct.LoanProductConstants;
+import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductPaymentTypeConfigData;
+import org.apache.fineract.portfolio.loanproduct.business.service.LoanProductPaymentTypeConfigReadPlatformService;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProductRelatedDetail;
@@ -135,25 +164,37 @@ import org.apache.fineract.portfolio.loanproduct.domain.LoanTransactionProcessin
 import org.apache.fineract.portfolio.loanproduct.domain.RecalculationFrequencyType;
 import org.apache.fineract.portfolio.loanproduct.exception.LinkedAccountRequiredException;
 import org.apache.fineract.portfolio.loanproduct.exception.LoanProductNotFoundException;
+import org.apache.fineract.portfolio.loanproduct.exception.business.LoanProductPaymentTypeConfigNotFoundException;
 import org.apache.fineract.portfolio.loanproduct.serialization.LoanProductDataValidator;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
 import org.apache.fineract.portfolio.note.domain.Note;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
+import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
+import org.apache.fineract.portfolio.paymenttype.domain.PaymentType;
+import org.apache.fineract.portfolio.paymenttype.domain.PaymentTypeRepositoryWrapper;
+import org.apache.fineract.portfolio.products.data.business.DocumentProductConfigData;
+import org.apache.fineract.portfolio.products.service.business.DocumentProductConfigReadPlatformService;
 import org.apache.fineract.portfolio.rate.service.RateAssembler;
+import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.apache.fineract.portfolio.savings.data.GroupSavingsIndividualMonitoringAccountData;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountAssembler;
 import org.apache.fineract.portfolio.savings.service.GSIMReadPlatformService;
+import org.apache.fineract.simplifytech.data.GeneralConstants;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.holdAmount;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+@Slf4j
 @Service
 public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusinessApplicationWritePlatformService {
 
@@ -206,6 +247,18 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
     private final CodeValueRepositoryWrapper codeValueRepository;
     private final LoanOtherRepositoryWrapper loanOtherRepositoryWrapper;
 
+    private final Long paymentTypeDeductionId;
+    private final Long paymentTypeChequeId;
+    private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+    private final PaymentTypeRepositoryWrapper paymentTypeRepositoryWrapper;
+    private final DocumentBusinessWritePlatformService documentWritePlatformService;
+    private final ReadWriteNonCoreDataService readWriteNonCoreDataService;
+
+    private final DocumentBusinessRepositoryWrapper documentBusinessRepositoryWrapper;
+    private final DocumentProductConfigReadPlatformService documentProductConfigReadPlatformService;
+    private final LoanProductPaymentTypeConfigReadPlatformService loanProductPaymentTypeConfigReadPlatformService;
+    private final ConfigurationBusinessDomainService configurationBusinessDomainService;
+
     @Autowired
     public LoanBusinessApplicationWritePlatformServiceImpl(final PlatformSecurityContext context, final FromJsonHelper fromJsonHelper,
             final LoanApplicationTransitionApiJsonValidator loanApplicationTransitionApiJsonValidator,
@@ -234,7 +287,16 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             final LoanProductReadPlatformService loanProductReadPlatformService,
             final LoanCollateralManagementRepository loanCollateralManagementRepository,
             final ClientCollateralManagementRepository clientCollateralManagementRepository,
-            final CodeValueRepositoryWrapper codeValueRepository, final LoanOtherRepositoryWrapper loanOtherRepositoryWrapper) {
+            final LoanProductPaymentTypeConfigReadPlatformService loanProductPaymentTypeConfigReadPlatformService,
+            final DocumentProductConfigReadPlatformService documentProductConfigReadPlatformService,
+            final DocumentBusinessRepositoryWrapper documentBusinessRepositoryWrapper,
+            final ReadWriteNonCoreDataService readWriteNonCoreDataService,
+            final DocumentBusinessWritePlatformService documentWritePlatformService,
+            final PaymentTypeRepositoryWrapper paymentTypeRepositoryWrapper,
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
+            final ApplicationContext applicationContext, final CodeValueRepositoryWrapper codeValueRepository,
+            final LoanOtherRepositoryWrapper loanOtherRepositoryWrapper,
+            final ConfigurationBusinessDomainService configurationBusinessDomainService) {
         this.context = context;
         this.fromJsonHelper = fromJsonHelper;
         this.loanApplicationTransitionApiJsonValidator = loanApplicationTransitionApiJsonValidator;
@@ -279,6 +341,19 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         this.clientCollateralManagementRepository = clientCollateralManagementRepository;
         this.codeValueRepository = codeValueRepository;
         this.loanOtherRepositoryWrapper = loanOtherRepositoryWrapper;
+
+        Environment environment = applicationContext.getEnvironment();
+        this.paymentTypeDeductionId = Long.valueOf(environment.getProperty(PAYMENT_TYPE_DEDUCTION));
+        this.paymentTypeChequeId = Long.valueOf(environment.getProperty(PAYMENT_TYPE_CHEQUE));
+
+        this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
+        this.paymentTypeRepositoryWrapper = paymentTypeRepositoryWrapper;
+        this.documentWritePlatformService = documentWritePlatformService;
+        this.readWriteNonCoreDataService = readWriteNonCoreDataService;
+        this.documentBusinessRepositoryWrapper = documentBusinessRepositoryWrapper;
+        this.documentProductConfigReadPlatformService = documentProductConfigReadPlatformService;
+        this.loanProductPaymentTypeConfigReadPlatformService = loanProductPaymentTypeConfigReadPlatformService;
+        this.configurationBusinessDomainService = configurationBusinessDomainService;
     }
 
     private LoanLifecycleStateMachine defaultLoanLifecycleStateMachine() {
@@ -289,6 +364,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
     @Transactional
     @Override
     public CommandProcessingResult submitApplication(final JsonCommand command) {
+        this.context.authenticatedUser();
 
         try {
             boolean isMeetingMandatoryForJLGLoans = configurationDomainService.isMeetingMandatoryForJLGLoans();
@@ -300,6 +376,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             if (clientId != null) {
                 Client client = this.clientRepository.findOneWithNotFoundDetection(clientId);
                 officeSpecificLoanProductValidation(productId, client.getOffice().getId());
+                loanAgeLimit(client);
             }
             final Long groupId = this.fromJsonHelper.extractLongNamed("groupId", command.parsedJson());
             if (groupId != null) {
@@ -383,7 +460,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                         throw new GeneralPlatformDomainRuleException(
                                 "error.msg.loan.submitted.date.should.be.after.topup.loan.disbursal.date",
                                 "Submitted date of this loan application " + newLoanApplication.getSubmittedOnDate()
-                                        + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
+                                + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
                     }
                     if (!loanToClose.getCurrencyCode().equals(newLoanApplication.getCurrencyCode())) {
                         throw new GeneralPlatformDomainRuleException("error.msg.loan.to.be.closed.has.different.currency",
@@ -394,8 +471,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                         throw new GeneralPlatformDomainRuleException(
                                 "error.msg.loan.disbursal.date.should.be.after.last.transaction.date.of.loan.to.be.closed",
                                 "Disbursal date of this loan application " + newLoanApplication.getDisbursementDate()
-                                        + " should be after last transaction date of loan to be closed "
-                                        + lastUserTransactionOnLoanToClose);
+                                + " should be after last transaction date of loan to be closed "
+                                + lastUserTransactionOnLoanToClose);
                     }
                     BigDecimal loanOutstanding = this.loanReadPlatformService.retrieveLoanPrePaymentTemplate(LoanTransactionType.REPAYMENT,
                             loanIdToClose, newLoanApplication.getDisbursementDate()).getAmount();
@@ -626,6 +703,25 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         }
     }
 
+    protected void loanAgeLimit(Client client) {
+        final Integer legalForm = client.getLegalForm();
+        if (legalForm != null && LegalForm.fromInt(legalForm).isPerson()) {
+            final Integer limitLoanAge = this.configurationBusinessDomainService.isLimitLoanAge();
+            //check client age is with age loan limit if enabled
+            if (limitLoanAge != null) {
+                final LocalDate localDateOfBirth = client.dateOfBirthLocalDate();
+                if (localDateOfBirth != null) {
+                    LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
+                    Period period = Period.between(localDateOfBirth, today);
+                    final Integer currentYear = period.getYears();
+                    if (currentYear < limitLoanAge) {
+                        throw new LoanApplicationDateException("loan.client.dateOfBirth", "Date of birth does not meet current loan age limit.");
+                    }
+                }
+            }
+        }
+    }
+
     protected void loanOtherProcess(final JsonCommand command, final Loan loanApplication, final boolean isUpdate,
             final Map<String, Object> changes) {
         LoanOther loanOther;
@@ -692,7 +788,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                     throw new GeneralPlatformDomainRuleException(
                             "error.msg.loan.applied.or.to.be.disbursed.can.not.co-exist.with.the.loan.already.active.to.this.client",
                             "This loan could not be applied/disbursed as the loan and `" + restrictedProduct
-                                    + "` are not allowed to co-exist");
+                            + "` are not allowed to co-exist");
                 }
             }
         }
@@ -786,10 +882,10 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         switch (recalculationFrequencyType) {
             case DAILY:
                 calendarFrequencyType = CalendarFrequencyType.DAILY;
-            break;
+                break;
             case MONTHLY:
                 calendarFrequencyType = CalendarFrequencyType.MONTHLY;
-            break;
+                break;
             case SAME_AS_REPAYMENT_PERIOD:
                 frequency = loan.repaymentScheduleDetail().getRepayEvery();
                 calendarFrequencyType = CalendarFrequencyType.from(loan.repaymentScheduleDetail().getRepaymentPeriodFrequencyType());
@@ -797,12 +893,12 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                 if (updatedRepeatsOnDay == null) {
                     updatedRepeatsOnDay = calendarStartDate.get(ChronoField.DAY_OF_WEEK);
                 }
-            break;
+                break;
             case WEEKLY:
                 calendarFrequencyType = CalendarFrequencyType.WEEKLY;
-            break;
+                break;
             default:
-            break;
+                break;
         }
 
         final Calendar calendar = Calendar.createRepeatingCalendar(title, calendarStartDate, CalendarType.COLLECTION.getValue(),
@@ -847,7 +943,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                     .fetchDisbursementData(command.parsedJson().getAsJsonObject());
 
             /**
-             * Stores all charges which are passed in during modify loan application
+             * Stores all charges which are passed in during modify loan
+             * application
              *
              */
             final Set<LoanCharge> possiblyModifedLoanCharges = this.loanChargeAssembler.fromParsedJson(command.parsedJson(),
@@ -863,8 +960,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             }
 
             /**
-             * If there are any charges already present, which are now not passed in as a part of the request, deem the
-             * charges as modified
+             * If there are any charges already present, which are now not
+             * passed in as a part of the request, deem the charges as modified
              *
              */
             if (!possiblyModifedLoanCharges.isEmpty()) {
@@ -874,7 +971,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             }
 
             /**
-             * If any new charges are added or values of existing charges are modified
+             * If any new charges are added or values of existing charges are
+             * modified
              *
              */
             for (LoanCharge loanCharge : possiblyModifedLoanCharges) {
@@ -914,6 +1012,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                 if (client.isNotActive()) {
                     throw new ClientNotActiveException(clientId);
                 }
+                loanAgeLimit(client);
 
                 existingLoanApplication.updateClient(client);
             }
@@ -1006,7 +1105,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                             throw new GeneralPlatformDomainRuleException(
                                     "error.msg.loan.submitted.date.should.be.after.topup.loan.disbursal.date",
                                     "Submitted date of this loan application " + existingLoanApplication.getSubmittedOnDate()
-                                            + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
+                                    + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
                         }
                         if (!loanToClose.getCurrencyCode().equals(existingLoanApplication.getCurrencyCode())) {
                             throw new GeneralPlatformDomainRuleException("error.msg.loan.to.be.closed.has.different.currency",
@@ -1017,8 +1116,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                             throw new GeneralPlatformDomainRuleException(
                                     "error.msg.loan.disbursal.date.should.be.after.last.transaction.date.of.loan.to.be.closed",
                                     "Disbursal date of this loan application " + existingLoanApplication.getDisbursementDate()
-                                            + " should be after last transaction date of loan to be closed "
-                                            + lastUserTransactionOnLoanToClose);
+                                    + " should be after last transaction date of loan to be closed "
+                                    + lastUserTransactionOnLoanToClose);
                         }
                         BigDecimal loanOutstanding = this.loanReadPlatformService.retrieveLoanPrePaymentTemplate(
                                 LoanTransactionType.REPAYMENT, loanIdToClose, existingLoanApplication.getDisbursementDate()).getAmount();
@@ -1430,6 +1529,260 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             }
 
         }
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult submitLoanApproval(Long loanId, JsonCommand command) {
+        this.context.authenticatedUser();
+        this.fromApiJsonDeserializer.validateForSubmitLoanApproval(command.json());
+        final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
+        final Long loanProductId = loan.productId();
+
+        Long lienSavingsTransactionId = upFrontChargeLienProcess(loan);
+
+        validateDocumentComplete(loanProductId, loanId);
+
+        final JsonElement loanApprovalRequest = this.fromJsonHelper.parse(command.json());
+        final Long paymentTypeId = this.fromJsonHelper.extractLongNamed(ClientBusinessApiConstants.paymentTypeIdParamName,
+                loanApprovalRequest);
+        final PaymentType paymentType = this.paymentTypeRepositoryWrapper.findOneWithNotFoundDetection(paymentTypeId);
+
+        // validate repayment method is base on loan product repayment configured
+        boolean doNotAllowAfterCheckLoanProductPaymentTypeConfig = false;
+        final LoanProductPaymentTypeConfigData loanProductPaymentTypeConfigData = this.loanProductPaymentTypeConfigReadPlatformService
+                .retrieveOneViaLoanProduct(loanProductId);
+        if (ObjectUtils.isNotEmpty(loanProductPaymentTypeConfigData)) {
+            if (BooleanUtils.isNotTrue(loanProductPaymentTypeConfigData.getActive())) {
+                throw new LoanProductPaymentTypeConfigNotFoundException(
+                        "Loan product " + loanProductPaymentTypeConfigData.getLoanProductData().getName() + " with payment type config "
+                        + loanProductPaymentTypeConfigData.getName() + " is not active.");
+            }
+            final Collection<PaymentTypeData> paymentTypeDatas = loanProductPaymentTypeConfigData.getPaymentTypes();
+            if (ObjectUtils.isNotEmpty(paymentTypeDatas)) {
+                doNotAllowAfterCheckLoanProductPaymentTypeConfig = paymentTypeDatas.stream()
+                        .noneMatch(predicate -> Objects.equals(predicate.getId(), paymentTypeId));
+            } else {
+                throw new LoanProductPaymentTypeConfigNotFoundException(
+                        "Loan product " + loanProductPaymentTypeConfigData.getLoanProductData().getName() + " with payment type config "
+                        + loanProductPaymentTypeConfigData.getName() + " does not have a source payment type configuration.");
+            }
+        } else {
+            log.warn("No configuration for Loan Product Payment Type.");
+        }
+
+        if (doNotAllowAfterCheckLoanProductPaymentTypeConfig) {
+            throw new LoanProductPaymentTypeConfigNotFoundException(
+                    "You have selected a wrong payment type " + paymentType.getPaymentName() + " for this loan.");
+        }
+
+        String message = "Successful";
+        String auth = null;
+        Integer statusEnum = LoanInstrumentStatus.PENDING.getValue();
+        String data = null;
+
+        final JsonObject jsonObjectLoanInstrument = new JsonObject();
+        jsonObjectLoanInstrument.addProperty(ClientBusinessApiConstants.paymentTypeIdParamName, paymentTypeId);
+        jsonObjectLoanInstrument.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
+        jsonObjectLoanInstrument.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
+
+        if (Objects.equals(paymentTypeId, this.paymentTypeDeductionId)) {
+            // deduction process
+            statusEnum = LoanInstrumentStatus.ACTIVE.getValue();
+        } else if (Objects.equals(paymentTypeId, this.paymentTypeChequeId)) {
+            // cheque process
+            statusEnum = LoanInstrumentStatus.ACTIVE.getValue();
+            final String name = loanId + "_CHEQUE";
+            final String description = loanId + "_CHEQUE";
+            final String location = this.fromJsonHelper.extractStringNamed(DocumentConfigApiConstants.locationParam, loanApprovalRequest);
+            final String type = this.fromJsonHelper.extractStringNamed(DocumentConfigApiConstants.typeParam, loanApprovalRequest);
+            final JsonObject jsonObjectLoanInstrumentCheque = new JsonObject();
+            jsonObjectLoanInstrumentCheque.addProperty(DocumentConfigApiConstants.nameParam, name);
+            jsonObjectLoanInstrumentCheque.addProperty(DocumentConfigApiConstants.descriptionParam, description);
+            jsonObjectLoanInstrumentCheque.addProperty(DocumentConfigApiConstants.locationParam, location);
+            jsonObjectLoanInstrumentCheque.addProperty(DocumentConfigApiConstants.typeParam, type);
+            this.documentWritePlatformService.createBase64Document(DocumentManagementEntity.LOANS.toString(), loanId,
+                    jsonObjectLoanInstrumentCheque.toString());
+        } else {
+            throw new PlatformDataIntegrityException("error.submit.loan.approval",
+                    "Payment type " + paymentType.getPaymentName() + " not yet supported.");
+        }
+
+        jsonObjectLoanInstrument.addProperty(LoanBusinessApiConstants.messageParam, message);
+        jsonObjectLoanInstrument.addProperty(LoanBusinessApiConstants.statusEnumParam, statusEnum);
+
+        if (StringUtils.isNotBlank(auth)) {
+            jsonObjectLoanInstrument.addProperty(LoanBusinessApiConstants.authParam, auth);
+        }
+        if (StringUtils.isNotBlank(data)) {
+            jsonObjectLoanInstrument.addProperty(LoanBusinessApiConstants.dataParam, data);
+        }
+        // every call is a new LoanInstrument
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .createDatatable(LoanBusinessApiConstants.loanInstrumentParam, loanId, null) //
+                .withJson(jsonObjectLoanInstrument.toString()) //
+                .build();
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        final Long loanInstrumentId = result.resourceId();
+
+        try {
+            // check if approvalCheck is created then perform an update else create new
+            final JsonObject jsonObjectApprovalCheck = new JsonObject();
+            boolean updateLafApprovalCheck = false;
+
+            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isLafSignedParam, "");
+            jsonObjectApprovalCheck.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
+            jsonObjectApprovalCheck.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
+            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isSentForApprovalParam, false);
+            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.internalTransferParam, "");
+            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.clientBankIdParam, "");
+            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.netPayParam, "");
+            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.defaultPaymentMethodIdParam, loanInstrumentId);
+            if (lienSavingsTransactionId != null) {
+                jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.lienSavingsTransactionIdParam, lienSavingsTransactionId);
+            }
+
+            final GenericResultsetData results = this.readWriteNonCoreDataService
+                    .retrieveDataTableGenericResultSet(DocumentConfigApiConstants.approvalCheckParam, loanId, null, null);
+            if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
+                updateLafApprovalCheck = true;
+
+                final List<ResultsetRowData> resultsetRowDatas = results.getData();
+                resultsetRowDatas.stream().forEach(res -> {
+                    try {
+                        // final Object objectLoanId = res.getRow().get(0);
+                        // if (ObjectUtils.isNotEmpty(objectLoanId)) {
+                        // final Long loan_id = Long.valueOf(StringUtils.defaultIfBlank(String.valueOf(objectLoanId),
+                        // null));
+                        // approvalCheckRequest.setLoan_id(loan_id);
+                        // }
+                        final Object objectSentForApproval = res.getRow().get(1);
+                        if (ObjectUtils.isNotEmpty(objectSentForApproval)) {
+                            final String isSentForApproval = StringUtils.defaultIfBlank(String.valueOf(objectSentForApproval), "");
+                            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isSentForApprovalParam, isSentForApproval);
+                        }
+                        final Object objectInternalTransfer = res.getRow().get(2);
+                        if (ObjectUtils.isNotEmpty(objectInternalTransfer)) {
+                            final String internalTransfer = StringUtils.defaultIfBlank(String.valueOf(objectInternalTransfer), "");
+                            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.internalTransferParam, internalTransfer);
+                        }
+                        final Object objectClientBankId = res.getRow().get(3);
+                        if (ObjectUtils.isNotEmpty(objectClientBankId)) {
+                            final String clientBankId = StringUtils.defaultIfBlank(String.valueOf(objectClientBankId), "");
+                            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.clientBankIdParam, clientBankId);
+                        }
+                        final Object objectNetPay = res.getRow().get(4);
+                        if (ObjectUtils.isNotEmpty(objectNetPay)) {
+                            final String netPay = StringUtils.defaultIfBlank(String.valueOf(objectNetPay), "");
+                            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.netPayParam, netPay);
+                        }
+                        // final Object objectDefaultPaymentMethodId = res.getRow().get(5);
+                        // if (ObjectUtils.isNotEmpty(objectDefaultPaymentMethodId)) {
+                        // final String defaultPaymentMethodId =
+                        // StringUtils.defaultIfBlank(String.valueOf(objectDefaultPaymentMethodId), "");
+                        // jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.defaultPaymentMethodIdParam,
+                        // defaultPaymentMethodId);
+                        // }
+                        final Object objectIsLafSigned = res.getRow().get(6);
+                        if (ObjectUtils.isNotEmpty(objectIsLafSigned)) {
+                            final String isLafSigned = StringUtils.defaultIfBlank(String.valueOf(objectIsLafSigned), "");
+                            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.isLafSignedParam, isLafSigned);
+                        }
+//                        final Object objectLienSavingsTransactionIdParam = res.getRow().get(7);
+//                        if (ObjectUtils.isNotEmpty(objectLienSavingsTransactionIdParam)) {
+//                            final String lienSavingsTransactionIdDT = StringUtils.defaultIfBlank(String.valueOf(objectLienSavingsTransactionIdParam), null);
+//                            jsonObjectApprovalCheck.addProperty(DocumentConfigApiConstants.lienSavingsTransactionIdParam, lienSavingsTransactionIdDT);
+//                        }
+                    } catch (Exception e) {
+                        log.warn("error.approvalCheckRequest.submitLoanApproval: {}", e.getMessage());
+                    }
+                });
+            }
+            final String apiRequestBodyAsJson = jsonObjectApprovalCheck.toString();
+
+            CommandWrapper commandRequestApprovalCheck;
+            if (updateLafApprovalCheck) {
+                // update approvalCheck
+                commandRequestApprovalCheck = new CommandWrapperBuilder() //
+                        .updateDatatable(DocumentConfigApiConstants.approvalCheckParam, loanId, null) //
+                        .withJson(apiRequestBodyAsJson) //
+                        .build();
+            } else {
+                // create approvalCheck
+                commandRequestApprovalCheck = new CommandWrapperBuilder() //
+                        .createDatatable(DocumentConfigApiConstants.approvalCheckParam, loanId, null) //
+                        .withJson(apiRequestBodyAsJson) //
+                        .build();
+            }
+            this.commandsSourceWritePlatformService.logCommandSource(commandRequestApprovalCheck);
+
+        } catch (Exception e) {
+            log.warn("submitLoanApproval ApprovalCheck: {}", e);
+            throw new PlatformDataIntegrityException("error.submit.loan.approval", "Unable to save loan approval checks.");
+        }
+
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(loanInstrumentId).withSubEntityId(loanId).build();
+    }
+
+    protected void validateDocumentComplete(final Long loanProductId, Long loanId) throws PlatformDataIntegrityException {
+        // validate document is complete
+        final DocumentProductConfigData documentProductConfigData = this.documentProductConfigReadPlatformService
+                .retrieveLoanProductDocument(loanProductId);
+        int loanProductDocumentCount = 0;
+        if (ObjectUtils.isNotEmpty(documentProductConfigData)) {
+            final DocumentConfigData documentConfigData = documentProductConfigData.getConfigData();
+            if (ObjectUtils.isNotEmpty(documentConfigData)) {
+                final Collection<CodeBusinessData> codeBusinessDatas = documentConfigData.getSettings();
+                if (!CollectionUtils.isEmpty(codeBusinessDatas)) {
+                    loanProductDocumentCount = codeBusinessDatas.size();
+                }
+            }
+        }
+
+        final Long totalLoanDocumentSaved = this.documentBusinessRepositoryWrapper
+                .countByParentEntityTypeAndParentEntityId(DocumentManagementEntity.LOANS.toString(), loanId);
+        log.info("loanProductDocumentCount:{} - totalLoanDocumentSaved:{}", loanProductDocumentCount, totalLoanDocumentSaved);
+        if (totalLoanDocumentSaved < loanProductDocumentCount) {
+            Long remaining = (loanProductDocumentCount - totalLoanDocumentSaved);
+            throw new PlatformDataIntegrityException("error.submit.loan.approval",
+                    "System requires " + remaining + " more document(s) before sending for approval.");
+        }
+    }
+
+    protected Long upFrontChargeLienProcess(final Loan loan) {
+        final Long loanId = loan.getId();
+        Long lienSavingsTransactionId = null;
+        //check if upFront Charges are set for this loan
+        //and validate the total upFront charge amount is available in the client default savings account/wallet
+        //lien/hold the amount before sending for approval
+        final Set<LoanCharge> loanCharges = loan.charges();
+        if (!CollectionUtils.isEmpty(loanCharges)) {
+            final Client client = loan.client();
+            final Long savingsId = client.savingsAccountId();
+
+            //sum the upfront fees
+            BigDecimal sumUpfrontCharges = loanCharges
+                    .stream()
+                    .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
+                    && chg.isChargePending()
+                    && chg.isActive()
+                    && (chg.isUpfrontCharge() || chg.isUpfrontHoldCharge()))
+                    .map(mapper -> mapper.amountOutstanding())
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            sumUpfrontCharges = sumUpfrontCharges.setScale(2, RoundingMode.HALF_EVEN);
+            if (sumUpfrontCharges.compareTo(BigDecimal.ZERO) > 0) {
+                lienSavingsTransactionId = holdAmount(sumUpfrontCharges, loanId, savingsId,
+                        "for upFront charges of loan Id-" + loanId,
+                        this.commandsSourceWritePlatformService);
+
+                //put in a note for clarification
+                final Note note = Note.loanNote(loan, "Total Loan Upfront Charges " + sumUpfrontCharges + " on hold with savings transaction Id-" + lienSavingsTransactionId);
+                this.noteRepository.save(note);
+            }
+        }
+        return lienSavingsTransactionId;
     }
 
 }

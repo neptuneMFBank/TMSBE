@@ -749,4 +749,12 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     public String toString() {
         return "AppUser [username=" + this.username + ", getId()=" + this.getId() + "]";
     }
+
+    public void disableUser() {
+        this.enabled = false;
+    }
+
+    public void enableUser() {
+        this.enabled = true;
+    }
 }

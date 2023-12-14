@@ -38,7 +38,8 @@ public final class ContentRepositoryUtils {
 
     public enum ImageMIMEtype {
 
-        GIF("image/gif"), JPEG("image/jpeg"), PNG("image/png"), PDF("application/pdf");
+        GIF("image/gif"), JPEG("image/jpeg"), PNG("image/png"), PDF("application/pdf"), XLSX("application/xlsx"), XLS(
+                "application/xls"), DOC("application/doc"), DOCX("application/docx");
 
         private final String value;
 
@@ -70,7 +71,7 @@ public final class ContentRepositoryUtils {
 
     public enum ImageFileExtension {
 
-        GIF(".gif"), JPEG(".jpeg"), JPG(".jpg"), PNG(".png"), PDF(".pdf");
+        GIF(".gif"), JPEG(".jpeg"), JPG(".jpg"), PNG(".png"), PDF(".pdf"), XLSX(".xlsx"), XLS(".xls"), DOC(".doc"), DOCX(".docx");
 
         private final String value;
 
@@ -105,7 +106,11 @@ public final class ContentRepositoryUtils {
     public enum ImageDataURIsuffix {
 
         GIF("data:" + ImageMIMEtype.GIF.getValue() + ";base64,"), JPEG("data:" + ImageMIMEtype.JPEG.getValue() + ";base64,"), PNG(
-                "data:" + ImageMIMEtype.PNG.getValue() + ";base64,"), PDF("data:" + ImageMIMEtype.PDF.getValue() + ";base64,");
+                "data:" + ImageMIMEtype.PNG.getValue() + ";base64,"), PDF("data:" + ImageMIMEtype.PDF.getValue() + ";base64,"), DOC(
+                        "data:" + ImageMIMEtype.DOC.getValue() + ";base64,"), DOCX(
+                                "data:" + ImageMIMEtype.DOCX.getValue() + ";base64,"), XLS(
+                                        "data:" + ImageMIMEtype.XLS.getValue() + ";base64,"), XLSX(
+                                                "data:" + ImageMIMEtype.XLSX.getValue() + ";base64,");
 
         private final String value;
 

@@ -139,4 +139,8 @@ public final class StaffData implements Serializable {
     public Long getOfficeId() {
         return this.officeId;
     }
+
+    public String getMobileNo() {
+        return mobileNo;
+    }
 }

@@ -26,7 +26,11 @@ public class ApplicationPropertiesConstant {
 
     public static final String OFFICE_ID = "office.id";
     public static final String SAVINGS_PRODUCT_ID = "savings.product.id";
+    public static final String CLIENT_SIGNATURE_ID = "client.signature.id";
     public static final String SAVINGS_PRODUCT_RECONCILE_ID_API = "savings.product.reconcile.id";
     public static final String CLIENT_DEFAULT_ID_API = "client.default.id";
+    public static final String PAYMENT_TYPE_DEDUCTION = "payment.type.deduction";
+    public static final String PAYMENT_TYPE_CHEQUE = "payment.type.cheque";
+    public static final String NIBSS_SORTCODE = "nibss.sortcode";
 
 }

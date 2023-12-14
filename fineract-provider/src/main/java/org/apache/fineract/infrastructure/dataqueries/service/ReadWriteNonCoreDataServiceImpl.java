@@ -596,12 +596,12 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
             final String apptableName = this.fromJsonHelper.extractStringNamed("apptableName", element);
             Boolean multiRow = this.fromJsonHelper.extractBooleanNamed("multiRow", element);
 
-            /***
-             * In cases of tables storing hierarchical entities (like m_group), different entities would end up being
+            /**
+             * * In cases of tables storing hierarchical entities (like m_group), different entities would end up being
              * stored in the same table.
              *
-             * Ex: Centers are a specific type of group, add abstractions for the same
-             ***/
+             * Ex: Centers are a specific type of group, add abstractions for the same *
+             */
             final String actualAppTableName = mapToActualAppTable(apptableName);
 
             if (multiRow == null) {
@@ -916,7 +916,8 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
      * @param column
      *            JSON encoded array of column properties
      * @see <a href="https://mifosforge.jira.com/browse/MIFOSX-1145">MIFOSX-1145</a>
-     **/
+     *
+     */
     private void removeNullValuesFromStringColumn(final String datatableName, final JsonObject column,
             final Map<String, ResultsetColumnHeaderData> mapColumnNameDefinition) {
         final Boolean mandatory = column.has("mandatory") ? column.get("mandatory").getAsBoolean() : false;
@@ -1423,6 +1424,11 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
             scopedSQL = "select null as officeId, null as groupId, null as clientId, null as savingsId, null as loanId, p.id as entityId from "
                     + appTable + " as p WHERE p.id = " + appTableId;
         }
+        if (appTable.equalsIgnoreCase("m_staff")) {
+            scopedSQL = "select o.id as officeId, null as groupId, null as clientId, null as savingsId, null as loanId, s.id as entityId from m_staff s "
+                    + " join m_office o on o.id = s.office_id and o.hierarchy like '" + currentUser.getOffice().getHierarchy() + "%'"
+                    + " where s.id = " + appTableId;
+        }
 
         if (scopedSQL == null) {
             throw new PlatformDataIntegrityException("error.msg.invalid.dataScopeCriteria",
@@ -1457,6 +1463,9 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
             return;
         }
         if (appTable.equalsIgnoreCase("m_savings_product")) {
+            return;
+        }
+        if (appTable.equalsIgnoreCase("m_staff")) {
             return;
         }
 
@@ -1627,7 +1636,6 @@ public class ReadWriteNonCoreDataServiceImpl implements ReadWriteNonCoreDataServ
         // other update got in quick) - would need a version field for
         // completeness but its okay to take this risk with additional fields
         // data
-
         if (changedColumns.size() == 0) {
             return null;
         }

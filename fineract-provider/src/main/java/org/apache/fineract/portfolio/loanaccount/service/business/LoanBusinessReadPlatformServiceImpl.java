@@ -23,9 +23,8 @@ import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstan
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +37,7 @@ import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDoma
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.PaginationHelper;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
@@ -72,6 +72,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanSubStatus;
 import org.apache.fineract.portfolio.loanaccount.exception.LoanNotFoundException;
 import org.apache.fineract.portfolio.loanaccount.service.LoanUtilService;
+import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestRepositoryWrapper;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.service.LoanDropdownReadPlatformService;
 import org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations;
@@ -120,6 +121,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
     private final LoansApiResource loansApiResource;
     private final FromJsonHelper fromJsonHelper;
     private final LoanMapper loanLoanMapper;
+    private final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper;
 
     @Autowired
     public LoanBusinessReadPlatformServiceImpl(final PlatformSecurityContext context,
@@ -135,7 +137,8 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
             final ConfigurationDomainService configurationDomainService,
             final AccountDetailsReadPlatformService accountDetailsReadPlatformService, final LoanRepositoryWrapper loanRepositoryWrapper,
             final ColumnValidator columnValidator, DatabaseSpecificSQLGenerator sqlGenerator, PaginationHelper paginationHelper,
-            final ApplicationContext applicationContext, final LoansApiResource loansApiResource, final FromJsonHelper fromJsonHelper) {
+            final ApplicationContext applicationContext, final LoansApiResource loansApiResource, final FromJsonHelper fromJsonHelper,
+            final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper) {
         this.context = context;
         this.loanRepositoryWrapper = loanRepositoryWrapper;
         this.applicationCurrencyRepository = applicationCurrencyRepository;
@@ -164,13 +167,14 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
         this.loansApiResource = loansApiResource;
         this.fromJsonHelper = fromJsonHelper;
         this.loanLoanMapper = new LoanMapper(sqlGenerator);
+        this.loanProductInterestRepositoryWrapper = loanProductInterestRepositoryWrapper;
     }
 
     @Override
     public String calculateLoanScheduleLoanApplication(String apiRequestBodyAsJson, @Context final UriInfo uriInfo) {
         this.context.authenticatedUser();
         final String loanTemplateJson = LoanBusinessApiConstants.loanTemplateConfig(this.loansApiResource, apiRequestBodyAsJson,
-                fromJsonHelper, clientDefaultId, true, uriInfo, null);
+                fromJsonHelper, clientDefaultId, true, uriInfo, null, this.loanProductInterestRepositoryWrapper);
         log.info("calculateLoanScheduleLoanApplicationTemplate: {}", loanTemplateJson);
         return this.loansApiResource.calculateLoanScheduleOrSubmitLoanApplication("calculateLoanSchedule", uriInfo, loanTemplateJson);
     }
@@ -231,7 +235,8 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
             if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
                 final LocalDate startPeriod = searchParameters.getFromDate();
                 final LocalDate endPeriod = searchParameters.getToDate();
-                final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                // final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
                 if (startPeriod != null && endPeriod != null) {
                     sqlBuilder.append(" and CAST(l.submittedon_date AS DATE) BETWEEN ? AND ? ");
                     extraCriterias.add(df.format(startPeriod));

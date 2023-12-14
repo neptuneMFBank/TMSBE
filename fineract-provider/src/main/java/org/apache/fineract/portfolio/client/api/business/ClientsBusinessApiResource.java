@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.client.api.business;
 
+import com.google.gson.JsonObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -25,6 +26,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -80,6 +84,7 @@ public class ClientsBusinessApiResource {
     private final ToApiJsonSerializer<ClientBusinessData> toBusinessApiJsonSerializer;
     private final ToApiJsonSerializer<KycBusinessData> toKycBusinessApiJsonSerializer;
     private final ToApiJsonSerializer<AccountSummaryCollectionData> clientAccountSummaryToApiJsonSerializer;
+    private final ToApiJsonSerializer<JsonObject> clientAccountBalanceSummary;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final AccountDetailsReadPlatformService accountDetailsReadPlatformService;
@@ -106,7 +111,7 @@ public class ClientsBusinessApiResource {
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
     // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
     ) })
-    public String retrieveAll(@Context final UriInfo uriInfo,
+    public String retrieveAll(@Context final UriInfo uriInfo, @QueryParam("bvn") @Parameter(description = "bvn") final String bvn,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
             @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
             @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
@@ -118,7 +123,7 @@ public class ClientsBusinessApiResource {
             @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
             @QueryParam("underHierarchy") @Parameter(description = "underHierarchy") final String hierarchy,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
-            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @DefaultValue("20") @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
             @DefaultValue(" c.id ") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
             @DefaultValue(" desc ") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
             @QueryParam("orphansOnly") @Parameter(description = "orphansOnly") final Boolean orphansOnly,
@@ -128,14 +133,14 @@ public class ClientsBusinessApiResource {
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
 
         return this.retrieveAll(uriInfo, officeId, externalId, displayName, statusId, hierarchy, offset, limit, orderBy, sortOrder,
-                orphansOnly, false, startPeriod, endPeriod, locale, dateFormat, staffId, accountNo, email, mobile, legalFormId);
+                orphansOnly, false, startPeriod, endPeriod, locale, dateFormat, staffId, accountNo, email, mobile, legalFormId, bvn);
     }
 
     public String retrieveAll(final UriInfo uriInfo, final Long officeId, final String externalId, final String displayName,
             final Integer statusId, final String hierarchy, final Integer offset, final Integer limit, final String orderBy,
             final String sortOrder, final Boolean orphansOnly, final boolean isSelfUser, final DateParam startPeriod,
             final DateParam endPeriod, final String locale, final String dateFormat, final Long staffId, final String accountNo,
-            final String email, final String mobile, final Integer legalFormId) {
+            final String email, final String mobile, final Integer legalFormId, final String bvn) {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
@@ -150,7 +155,7 @@ public class ClientsBusinessApiResource {
 
         final SearchParametersBusiness searchParameters = SearchParametersBusiness.forClientsBusiness(officeId, externalId, statusId,
                 hierarchy, offset, limit, orderBy, sortOrder, staffId, accountNo, fromDate, toDate, displayName, orphansOnly, isSelfUser,
-                email, mobile, legalFormId);
+                email, mobile, legalFormId, bvn);
 
         final Page<ClientData> clientData = this.clientBusinessReadPlatformService.retrieveAll(searchParameters);
 
@@ -389,4 +394,22 @@ public class ClientsBusinessApiResource {
         return this.toBusinessApiJsonSerializer.serialize(settings, clientData, ClientBusinessApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
     }
 
+    @GET
+    @Path("{clientId}/balance")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve client accounts balance", description = "")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsClientIdAccountsResponse.class))
+    ), @ApiResponse(responseCode = "400", description = "Bad Request") })
+    public String retrieveAssociatedAccounts(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
+            @Context final UriInfo uriInfo) {
+        this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
+        final JsonObject retrieveBalance = this.clientBusinessReadPlatformService.retrieveBalance(clientId);
+        final Set<String> CLIENT_BALANCE_DATA_PARAMETERS = new HashSet<>(
+                Arrays.asList("loanAccount", "savingDeposit", "fixedDeposit", "recurringDeposit", "currentDeposit"));
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.clientAccountBalanceSummary.serialize(settings, retrieveBalance, CLIENT_BALANCE_DATA_PARAMETERS);
+    }
 }

@@ -32,4 +32,8 @@ public class UserNotFoundException extends AbstractPlatformResourceNotFoundExcep
     public UserNotFoundException(final String userName) {
         super("error.msg.user.name.not.found", "User with '" + userName + "' does not exist");
     }
+
+    public UserNotFoundException(final String msg, final Long id) {
+        super("error.msg.user.name.not.found", msg, id);
+    }
 }

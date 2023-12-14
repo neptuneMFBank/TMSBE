@@ -219,7 +219,9 @@ public class ImagesApiResource {
         return this.toApiJsonSerializer.serialize(new CommandProcessingResult(entityId));
     }
 
-    /*** Entities for document Management **/
+    /**
+     * * Entities for document Management *
+     */
     public enum EntityTypeForImages {
 
         STAFF, CLIENTS;

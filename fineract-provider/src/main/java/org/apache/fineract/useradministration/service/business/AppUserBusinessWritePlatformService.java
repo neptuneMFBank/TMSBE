@@ -25,6 +25,10 @@ public interface AppUserBusinessWritePlatformService {
 
     CommandProcessingResult updateUserPassword(final JsonCommand command);
 
-    public CommandProcessingResult updateUserInfo(final Long userId, final JsonCommand command);
+    CommandProcessingResult updateUserInfo(final Long userId, final JsonCommand command);
+
+    CommandProcessingResult enableUser(Long userId);
+
+    CommandProcessingResult disableUser(Long userId);
 
 }

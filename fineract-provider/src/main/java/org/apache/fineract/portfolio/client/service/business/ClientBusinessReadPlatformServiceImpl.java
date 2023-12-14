@@ -18,13 +18,19 @@
  */
 package org.apache.fineract.portfolio.client.service.business;
 
+import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.amountParameterName;
+import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.countParameterName;
+import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.ledgerAmountParameterName;
+import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.statusParameterName;
+import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.totalOverdueDerivedParameterName;
+
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -83,10 +89,12 @@ import org.apache.fineract.portfolio.client.service.ClientFamilyMembersReadPlatf
 import org.apache.fineract.portfolio.collateralmanagement.domain.ClientCollateralManagement;
 import org.apache.fineract.portfolio.collateralmanagement.domain.ClientCollateralManagementRepositoryWrapper;
 import org.apache.fineract.portfolio.group.data.GroupGeneralData;
+import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountData;
 import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountReadPlatformService;
 import org.apache.fineract.portfolio.savings.service.SavingsProductReadPlatformService;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -129,6 +137,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
     private final ClientBusinessDataValidator fromApiJsonDeserializer;
     private final FromJsonHelper fromJsonHelper;
+
+    private final LoanActiveSummaryMapper loanActiveSummaryMapper = new LoanActiveSummaryMapper();
+    private final SavingsActiveSummaryMapper savingActiveSummaryMapper = new SavingsActiveSummaryMapper();
 
     private Long defaultToUsersOfficeIfNull(final Long officeId) {
         Long defaultOfficeId = officeId;
@@ -277,7 +288,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
                 // , lgaValuesOptions
-                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                ,
+                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions
         // , industryOptions
         );
@@ -344,11 +356,12 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 }
             }
         }
+        //log.info("clientRetrieveAl: {}-{}", sqlBuilder.toString(), ArrayUtils.toString(paramList.toArray()));
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.clientMapper);
     }
 
     private String buildSqlStringFromClientCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
-
+        final String bvn = searchParameters.getBvn();
         final Integer statusId = searchParameters.getStatusId();
         final Integer legalFormId = searchParameters.getLegalFormId();
         final Long officeId = searchParameters.getOfficeId();
@@ -367,7 +380,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
             final LocalDate startPeriod = searchParameters.getFromDate();
             final LocalDate endPeriod = searchParameters.getToDate();
-            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
             if (startPeriod != null && endPeriod != null) {
                 extraCriteria += " and CAST(c.submittedon_date AS DATE) BETWEEN ? AND ? ";
                 paramList.add(df.format(startPeriod));
@@ -381,6 +394,10 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             }
         }
 
+        if (searchParameters.isBvnPassed()) {
+            paramList.add(bvn);
+            extraCriteria += " and slk.bvn = ? ";
+        }
         if (officeId != null) {
             extraCriteria += " and c.office_id = ? ";
             paramList.add(officeId);
@@ -458,7 +475,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             }
             sqlBuilder.append(key);
             sqlBuilder.append("=");
+            sqlBuilder.append("'");
             sqlBuilder.append(value);
+            sqlBuilder.append("'");
             String sql = sqlBuilder.toString();
             log.info("findClient: {}", sql);
 
@@ -488,6 +507,99 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             log.warn("retrieveKycLevel: {}", e);
             throw new ClientNotFoundException();
         }
+    }
+
+    @Override
+    public JsonObject retrieveBalance(Long clientId) {
+        this.context.authenticatedUser();
+        final JsonObject jsonObjectBalance = new JsonObject();
+        // loans
+        // loanActiveSummaryMapper savingActiveSummaryMapper fixedActiveSummaryMapper recurringActiveSummaryMapper
+        // currentActiveSummaryMapper
+        JsonObject jsonObjectLoan = new JsonObject();
+        try {
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            sqlBuilder.append("select ");
+            sqlBuilder.append(this.loanActiveSummaryMapper.schema());
+            sqlBuilder.append(" WHERE ml.client_id=? AND ml.loan_status_id=300 ");
+
+            String sql = sqlBuilder.toString();
+            jsonObjectLoan = this.jdbcTemplate.queryForObject(sql, this.loanActiveSummaryMapper, clientId);
+            jsonObjectBalance.add("loanAccount", jsonObjectLoan);
+        } catch (DataAccessException e) {
+            log.warn("retrieveBalance Loan: {}", e);
+            jsonObjectLoan.addProperty(statusParameterName, Boolean.FALSE);
+            jsonObjectBalance.add("loanAccount", jsonObjectLoan);
+        }
+        // savings
+        JsonObject jsonObjectSaving = new JsonObject();
+        try {
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            sqlBuilder.append("select ");
+            sqlBuilder.append(this.savingActiveSummaryMapper.schema());
+            // sqlBuilder.append(this.savingActiveSummaryMapper.savingsSchema());
+
+            String sql = sqlBuilder.toString();
+            jsonObjectSaving = this.jdbcTemplate.queryForObject(sql, this.savingActiveSummaryMapper, clientId,
+                    DepositAccountType.SAVINGS_DEPOSIT.getValue());
+            jsonObjectBalance.add("savingDeposit", jsonObjectSaving);
+        } catch (DataAccessException e) {
+            log.warn("retrieveBalance savingDeposit: {}", e);
+            jsonObjectSaving.addProperty(statusParameterName, Boolean.FALSE);
+            jsonObjectBalance.add("savingDeposit", jsonObjectSaving);
+        }
+        // fixed
+        JsonObject jsonObjectFixed = new JsonObject();
+        try {
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            sqlBuilder.append("select ");
+            sqlBuilder.append(this.savingActiveSummaryMapper.schema());
+            // sqlBuilder.append(this.savingActiveSummaryMapper.fixedSchema());
+
+            String sql = sqlBuilder.toString();
+            jsonObjectFixed = this.jdbcTemplate.queryForObject(sql, this.savingActiveSummaryMapper, clientId,
+                    DepositAccountType.FIXED_DEPOSIT.getValue());
+            jsonObjectBalance.add("fixedDeposit", jsonObjectFixed);
+        } catch (DataAccessException e) {
+            log.warn("retrieveBalance fixedDeposit: {}", e);
+            jsonObjectFixed.addProperty(statusParameterName, Boolean.FALSE);
+            jsonObjectBalance.add("fixedDeposit", jsonObjectFixed);
+        }
+        // recurring
+        JsonObject jsonObjectRecurring = new JsonObject();
+        try {
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            sqlBuilder.append("select ");
+            sqlBuilder.append(this.savingActiveSummaryMapper.schema());
+            // sqlBuilder.append(this.savingActiveSummaryMapper.recurringSchema());
+
+            String sql = sqlBuilder.toString();
+            jsonObjectRecurring = this.jdbcTemplate.queryForObject(sql, this.savingActiveSummaryMapper, clientId,
+                    DepositAccountType.RECURRING_DEPOSIT.getValue());
+            jsonObjectBalance.add("recurringDeposit", jsonObjectRecurring);
+        } catch (DataAccessException e) {
+            log.warn("retrieveBalance recurringDeposit: {}", e);
+            jsonObjectRecurring.addProperty(statusParameterName, Boolean.FALSE);
+            jsonObjectBalance.add("recurringDeposit", jsonObjectRecurring);
+        }
+        // current
+        JsonObject jsonObjectCurrent = new JsonObject();
+        try {
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            sqlBuilder.append("select ");
+            sqlBuilder.append(this.savingActiveSummaryMapper.schema());
+            // sqlBuilder.append(this.savingActiveSummaryMapper.currentSchema());
+
+            String sql = sqlBuilder.toString();
+            jsonObjectCurrent = this.jdbcTemplate.queryForObject(sql, this.savingActiveSummaryMapper, clientId,
+                    DepositAccountType.CURRENT_DEPOSIT.getValue());
+            jsonObjectBalance.add("currentDeposit", jsonObjectCurrent);
+        } catch (DataAccessException e) {
+            log.warn("retrieveBalance currentDeposit: {}", e);
+            jsonObjectCurrent.addProperty(statusParameterName, Boolean.FALSE);
+            jsonObjectBalance.add("currentDeposit", jsonObjectCurrent);
+        }
+        return jsonObjectBalance;
     }
 
     private static final class ClientLookupKycLevelMapper implements RowMapper<KycBusinessData> {
@@ -536,7 +648,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
             builder.append("c.id as id, c.display_name as displayName, ");
             builder.append("c.office_id as officeId, o.name as officeName ");
-            builder.append("from m_client c ");
+            builder.append("from m_client_view c ");
             builder.append("join m_office o on o.id = c.office_id ");
             builder.append("left join secondLevelKYC slk on slk.client_id = c.id ");
 
@@ -581,12 +693,13 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             sqlBuilder.append("c.submittedon_date as submittedOnDate, ");
             sqlBuilder.append("sbu.username as submittedByUsername ");
 
-            sqlBuilder.append("from m_client c ");
+            sqlBuilder.append("from m_client_view c ");
             sqlBuilder.append("join m_office o on o.id = c.office_id ");
             sqlBuilder.append("left join m_office transferToOffice on transferToOffice.id = c.transfer_to_office_id ");
             sqlBuilder.append("left join m_staff s on s.id = c.staff_id ");
             sqlBuilder.append("left join m_appuser sbu on sbu.id = c.created_by ");
             sqlBuilder.append("left join m_code_value cvclassification on cvclassification.id = c.client_classification_cv_id ");
+            sqlBuilder.append("left join secondLevelKYC slk on slk.client_id = c.id ");
 
             this.schema = sqlBuilder.toString();
         }
@@ -890,7 +1003,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
             final LocalDate startPeriod = searchParameters.getFromDate();
             final LocalDate endPeriod = searchParameters.getToDate();
-            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            // final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
             if (startPeriod != null && endPeriod != null) {
                 extraCriteria += " and CAST(cpa.submittedon_date AS DATE) BETWEEN ? AND ? ";
                 paramList.add(df.format(startPeriod));
@@ -1003,6 +1117,120 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
             return ClientBusinessData.pendingActivation(accountNo, officeId, officeName, id, clientDisplayName, staffId, staffDisplayName,
                     clientTimelineData, legalForm, supervisorStaffData, bvn, iAgree);
+        }
+    }
+
+    public static final class LoanActiveSummaryMapper implements RowMapper<JsonObject> {
+
+        public String schema() {
+            return " SUM(COALESCE(ml.total_outstanding_derived,0)) loanBalance, " + " COUNT(ml.id) AS totalCount "
+                    + " FROM m_loan_view ml ";
+            // return " SUM(CASE WHEN ml.loan_status_id=300 THEN COALESCE(ml.total_outstanding_derived,0) END)
+            // loanBalance, "
+            // + " COUNT(ml.loan_status_id=300) AS totalCount"
+            // + " FROM m_loan_view ml WHERE ml.client_id=?";
+        }
+
+        @Override
+        public JsonObject mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+            final BigDecimal totalLoanBalance = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "loanBalance");
+            final Long totalLoanCount = rs.getLong("totalCount");
+            final JsonObject loanSummary = new JsonObject();
+            loanSummary.addProperty(statusParameterName, Boolean.TRUE);
+            loanSummary.addProperty(amountParameterName, totalLoanBalance);
+            loanSummary.addProperty(countParameterName, totalLoanCount);
+            return loanSummary;
+        }
+    }
+
+    public static final class LoanPrincipalAmountSummaryMapper implements RowMapper<JsonObject> {
+
+        public String schema() {
+            return " SUM(COALESCE(ml.principal_amount,0)) principalAmount, "
+                    + " SUM(COALESCE(mla.total_overdue_derived,0)) totalOverdueDerived, " + " COUNT(ml.id) AS totalCount "
+                    + " FROM m_loan_view ml " + " LEFT JOIN m_loan_arrears_aging mla ON mla.loan_id=ml.id ";
+        }
+
+        @Override
+        public JsonObject mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+            final BigDecimal totalOverdueDerived = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalOverdueDerived");
+            final BigDecimal principalAmount = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "principalAmount");
+            final Long totalLoanCount = rs.getLong("totalCount");
+            final JsonObject loanSummary = new JsonObject();
+            loanSummary.addProperty(statusParameterName, Boolean.TRUE);
+            loanSummary.addProperty(amountParameterName, principalAmount);
+            loanSummary.addProperty(totalOverdueDerivedParameterName, totalOverdueDerived);
+            loanSummary.addProperty(countParameterName, totalLoanCount);
+            return loanSummary;
+        }
+    }
+
+    public static final class ClientCountSummaryMapper implements RowMapper<JsonObject> {
+
+        public String schema() {
+            return " COUNT(mcv.id) AS totalCount " + " FROM m_client_view mcv ";
+        }
+
+        @Override
+        public JsonObject mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+            final Long totalCount = rs.getLong("totalCount");
+            final JsonObject clientSummary = new JsonObject();
+            clientSummary.addProperty(statusParameterName, Boolean.TRUE);
+            clientSummary.addProperty(countParameterName, totalCount);
+            return clientSummary;
+        }
+    }
+
+    public static final class SavingsActiveSummaryMapper implements RowMapper<JsonObject> {
+
+        public String schema() {
+            return "  SUM(COALESCE(ms.available_balance,0)) availableBalance, SUM(COALESCE(ms.ledger_balance,0)) ledgerBalance, "
+                    + " COUNT(ms.id) totalCount FROM m_saving_view ms "
+                    + " WHERE ms.client_id=? AND ms.status_enum=300 AND ms.deposit_type_enum=? ";
+        }
+
+        // public String savingsSchema() {
+        // return " SUM(CASE WHEN ms.deposit_type_enum=100 THEN COALESCE(ms.available_balance,0) END) availableBalance,
+        // "
+        // + " SUM(CASE WHEN ms.deposit_type_enum=100 THEN COALESCE(ms.ledger_balance,0) END) ledgerBalance, "
+        // + " COUNT(ms.status_enum=300) AS totalCount"
+        // + " FROM m_saving_view ms WHERE ms.client_id=?";
+        // }
+        //
+        // public String fixedSchema() {
+        // return " SUM(CASE WHEN ms.deposit_type_enum=200 THEN COALESCE(ms.available_balance,0) END) availableBalance,
+        // "
+        // + " SUM(CASE WHEN ms.deposit_type_enum=200 THEN COALESCE(ms.ledger_balance,0) END) ledgerBalance, "
+        // + " COUNT(ms.status_enum=300) AS totalCount"
+        // + " FROM m_saving_view ms WHERE ms.client_id=?";
+        // }
+        //
+        // public String recurringSchema() {
+        // return " SUM(CASE WHEN ms.deposit_type_enum=300 THEN COALESCE(ms.available_balance,0) END) availableBalance,
+        // "
+        // + " SUM(CASE WHEN ms.deposit_type_enum=300 THEN COALESCE(ms.ledger_balance,0) END) ledgerBalance, "
+        // + " COUNT(ms.status_enum=300) AS totalCount"
+        // + " FROM m_saving_view ms WHERE ms.client_id=?";
+        // }
+        //
+        // public String currentSchema() {
+        // return " SUM(CASE WHEN ms.deposit_type_enum=400 THEN COALESCE(ms.available_balance,0) END) availableBalance,
+        // "
+        // + " SUM(CASE WHEN ms.deposit_type_enum=400 THEN COALESCE(ms.ledger_balance,0) END) ledgerBalance, "
+        // + " COUNT(ms.status_enum=300) AS totalCount"
+        // + " FROM m_saving_view ms WHERE ms.client_id=?";
+        // }
+        @Override
+        public JsonObject mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+            final BigDecimal availableBalance = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "availableBalance");
+            final BigDecimal ledgerBalance = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "ledgerBalance");
+            final Long totalLoanCount = rs.getLong("totalCount");
+            final JsonObject currentSummary = new JsonObject();
+            currentSummary.addProperty(statusParameterName, Boolean.TRUE);
+            currentSummary.addProperty(amountParameterName, availableBalance);
+            currentSummary.addProperty(ledgerAmountParameterName, ledgerBalance);
+            currentSummary.addProperty(countParameterName, totalLoanCount);
+            return currentSummary;
         }
     }
 

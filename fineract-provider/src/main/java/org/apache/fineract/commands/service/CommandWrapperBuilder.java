@@ -20,7 +20,11 @@ package org.apache.fineract.commands.service;
 
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.infrastructure.accountnumberformat.service.AccountNumberFormatConstants;
+import org.apache.fineract.portfolio.business.metrics.api.MetricsApiResourceConstants;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
+import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductApprovalApiResourceConstants;
+import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductInterestApiResourceConstants;
+import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductPaymentTypeConfigConstants;
 import org.apache.fineract.portfolio.paymenttype.api.PaymentTypeApiResourceConstants;
 import org.apache.fineract.portfolio.savings.DepositsApiConstants;
 import org.apache.fineract.portfolio.self.pockets.api.PocketApiConstants;
@@ -3494,6 +3498,15 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder submitLoanApproval(final Long loanId) {
+        this.actionName = "SUBMIT_APPROVAL";
+        this.entityName = "LOAN";
+        this.entityId = loanId;
+        this.loanId = loanId;
+        this.href = "/loans/business/" + loanId;
+        return this;
+    }
+
     public CommandWrapperBuilder updateLoanBusinessApplication(final Long loanId) {
         this.actionName = "UPDATE_BUSINESS";
         this.entityName = "LOAN";
@@ -3508,6 +3521,22 @@ public class CommandWrapperBuilder {
         this.entityName = "USER";
         this.entityId = null;
         this.href = "/users/business/change-password";
+        return this;
+    }
+
+    public CommandWrapperBuilder disableUser(Long userId) {
+        this.actionName = "DISABLE";
+        this.entityName = "USER";
+        this.entityId = userId;
+        this.href = "/users/business/" + userId + "/disbale";
+        return this;
+    }
+
+    public CommandWrapperBuilder enableUser(Long userId) {
+        this.actionName = "ENABLE";
+        this.entityName = "USER";
+        this.entityId = userId;
+        this.href = "/users/business/" + userId + "/enable";
         return this;
     }
 
@@ -3597,4 +3626,111 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createEmployer() {
+        this.actionName = "CREATE";
+        this.entityName = "EMPLOYER";
+        this.href = "/employers";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateEmployer(final Long employerId) {
+        this.actionName = "UPDATE";
+        this.entityName = "EMPLOYER";
+        this.entityId = employerId;
+        this.href = "/employers/" + entityId;
+        return this;
+    }
+
+    public CommandWrapperBuilder activateEmployer(final Long employerId) {
+        this.actionName = "ACTIVATE";
+        this.entityName = "EMPLOYER";
+        this.entityId = employerId;
+        this.href = "/employers/" + employerId + "?command=activate";
+        return this;
+    }
+
+    public CommandWrapperBuilder closeEmployer(final Long employerId) {
+        this.actionName = "CLOSE";
+        this.entityName = "EMPLOYER";
+        this.entityId = employerId;
+        this.href = "/employers/" + employerId + "?command=close";
+        return this;
+    }
+
+    public CommandWrapperBuilder createLoanProductApproval() {
+        this.actionName = "CREATE";
+        this.entityName = LoanProductApprovalApiResourceConstants.RESOURCENAME;
+        this.href = "/loanproducts/approval";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateLoanProductApproval(final Long loanProductApprovalId) {
+        this.actionName = "UPDATE";
+        this.entityName = LoanProductApprovalApiResourceConstants.RESOURCENAME;
+        this.entityId = loanProductApprovalId;
+        this.href = "/loanproducts/approval/" + loanProductApprovalId;
+        return this;
+    }
+
+    public CommandWrapperBuilder approveLoanMetrics(final Long metricsId) {
+        this.actionName = "APPROVE_LOAN";
+        this.entityName = MetricsApiResourceConstants.RESOURCENAME;
+        this.entityId = metricsId;
+        this.href = "/metrics/loan/" + metricsId + "?command=approve";
+        return this;
+    }
+
+    public CommandWrapperBuilder undoLoanMetrics(final Long metricsId) {
+        this.actionName = "UNDO_LOAN";
+        this.entityName = MetricsApiResourceConstants.RESOURCENAME;
+        this.entityId = metricsId;
+        this.href = "/metrics/loan/" + metricsId + "?command=undo";
+        return this;
+    }
+
+    public CommandWrapperBuilder rejectLoanMetrics(final Long metricsId) {
+        this.actionName = "REJECT_LOAN";
+        this.entityName = MetricsApiResourceConstants.RESOURCENAME;
+        this.entityId = metricsId;
+        this.href = "/metrics/loan/" + metricsId + "?command=reject";
+        return this;
+    }
+
+    public CommandWrapperBuilder assignLoanMetrics(final Long metricsId) {
+        this.actionName = "ASSIGN_LOAN";
+        this.entityId = metricsId;
+        this.entityName = MetricsApiResourceConstants.RESOURCENAME;
+        this.href = "/metrics/loan/" + metricsId + "?command=assign";
+        return this;
+    }
+
+    public CommandWrapperBuilder createLoanProductPaymentTypeConfig() {
+        this.actionName = "CREATE_PAYMENT";
+        this.entityName = LoanProductPaymentTypeConfigConstants.RESOURCENAME;
+        this.href = "/loanproducts/payment";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateLoanProductPaymentTypeConfig(final Long loanProductPaymentTypeConfigId) {
+        this.actionName = "UPDATE_PAYMENT";
+        this.entityName = LoanProductPaymentTypeConfigConstants.RESOURCENAME;
+        this.entityId = loanProductPaymentTypeConfigId;
+        this.href = "/loanproducts/payment/" + loanProductPaymentTypeConfigId;
+        return this;
+    }
+
+    public CommandWrapperBuilder createLoanProductInterest() {
+        this.actionName = "CREATE";
+        this.entityName = LoanProductInterestApiResourceConstants.RESOURCENAME;
+        this.href = "/loanproducts/interest";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateLoanProductInterest(final Long loanProductInterestId) {
+        this.actionName = "UPDATE";
+        this.entityName = LoanProductInterestApiResourceConstants.RESOURCENAME;
+        this.entityId = loanProductInterestId;
+        this.href = "/loanproducts/interest/" + loanProductInterestId;
+        return this;
+    }
 }

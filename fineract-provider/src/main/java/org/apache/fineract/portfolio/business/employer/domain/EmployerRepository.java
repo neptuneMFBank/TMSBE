@@ -24,7 +24,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface EmployerRepository extends JpaRepository<Employer, Long>, JpaSpecificationExecutor<Employer> {
 
-    //List<Employer> findByParentId(Long parentId);
+    // List<Employer> findByParentId(Long parentId);
     // Employer findByBusinessId(Long businessId);
     List<Employer> findByBusinessId(Long businessId);
 

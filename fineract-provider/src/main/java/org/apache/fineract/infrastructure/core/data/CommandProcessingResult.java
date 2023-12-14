@@ -40,7 +40,7 @@ public class CommandProcessingResult implements Serializable {
     private final String transactionId;
     private final Map<String, Object> changes;
     private final Map<String, Object> creditBureauReportData;
-    private final String resourceIdentifier;
+    private String resourceIdentifier;
     private final Long productId;
     private final Long gsimId;
     private final Long glimId;
@@ -247,4 +247,9 @@ public class CommandProcessingResult implements Serializable {
     public Long getSubResourceId() {
         return subResourceId;
     }
+
+    public String getResourceIdentifier() {
+        return resourceIdentifier;
+    }
+
 }

@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.apache.fineract.infrastructure.configuration.data.ExternalServicesData;
 import org.apache.fineract.infrastructure.configuration.exception.ExternalServiceConfigurationNotFoundException;
+import org.apache.fineract.infrastructure.configuration.service.business.ExternalServicesBusinessConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -44,6 +45,10 @@ public class ExternalServicesReadPlatformServiceImpl implements ExternalServices
         final ResultSetExtractor<ExternalServicesData> resultSetExtractor = new ExternalServicesDetailsDataExtractor();
         String serviceNameToUse = null;
         switch (serviceName) {
+            case "Azure":
+                serviceNameToUse = ExternalServicesBusinessConstants.AZURE_SERVICE_NAME;
+            break;
+
             case "S3":
                 serviceNameToUse = ExternalServicesConstants.S3_SERVICE_NAME;
             break;

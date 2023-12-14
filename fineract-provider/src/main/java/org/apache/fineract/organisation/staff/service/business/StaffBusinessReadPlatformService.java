@@ -18,9 +18,17 @@
  */
 package org.apache.fineract.organisation.staff.service.business;
 
+import com.google.gson.JsonObject;
+import org.apache.fineract.infrastructure.core.service.Page;
+import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.organisation.staff.data.business.StaffBusinessData;
 
 public interface StaffBusinessReadPlatformService {
 
+    Page<StaffBusinessData> retrieveAll(SearchParametersBusiness searchParameters);
+
     StaffBusinessData retrieveStaff(Long staffId);
+
+    JsonObject retrieveBalance(Long staffId);
+
 }

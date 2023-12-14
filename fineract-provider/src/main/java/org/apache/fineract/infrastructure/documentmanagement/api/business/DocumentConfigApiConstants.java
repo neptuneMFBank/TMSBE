@@ -21,10 +21,20 @@ package org.apache.fineract.infrastructure.documentmanagement.api.business;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.fineract.infrastructure.configuration.api.GlobalConfigurationApiConstant;
 import org.apache.fineract.portfolio.client.data.ClientData;
 
-@SuppressWarnings({ "HideUtilityClassConstructor" })
+@SuppressWarnings({"HideUtilityClassConstructor"})
 public class DocumentConfigApiConstants {
+
+    public static final String approvalCheckParam = "approvalCheck";
+    public static final String isLafSignedParam = "isLafSigned";
+    public static final String isSentForApprovalParam = "isSentForApproval";
+    public static final String internalTransferParam = "internalTransfer";
+    public static final String clientBankIdParam = "clientBankId";
+    public static final String netPayParam = "netPay";
+    public static final String defaultPaymentMethodIdParam = "defaultPaymentMethodId";
+    public static final String lienSavingsTransactionIdParam = "lienSavingsTransactionId";
 
     public static final String entityTypeParam = "entityType";
     public static final String entityIdParam = "entityId";
@@ -48,12 +58,14 @@ public class DocumentConfigApiConstants {
     public static final String globalEntityTypeParam = "globalEntityType";
 
     /**
-     * These parameters will match the class level parameters of {@link ClientData}. Where possible, we try to get
-     * response parameters to match those of request parameters.
+     * These parameters will match the class level parameters of
+     * {@link ClientData}. Where possible, we try to get response parameters to
+     * match those of request parameters.
      */
     public static final Set<String> DOCUMENT_CONFIG_TEMPLATE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(loanProductDatasParam, clientLegalFormOptionsParam, savingProductOptionsParam, settingsCodeParam));
     public static final Set<String> DOCUMENT_CONFIG_CREATE_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(
+            GlobalConfigurationApiConstant.localeParamName,
             // productIdsParam,
             formIdParam, typeParam, nameParam, descriptionParam, settingsParam));
     public static final Set<String> DOCUMENT_CONFIG_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(

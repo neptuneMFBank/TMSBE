@@ -104,7 +104,8 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
             final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository(imageData.storageType());
             return contentRepository.fetchImage(imageData);
         } catch (final EmptyResultDataAccessException e) {
-            throw new ImageNotFoundException("clients", entityId, e);
+            // throw new ImageNotFoundException("clients", entityId, e);
+            throw new ImageNotFoundException(entityType, entityId, e);
         }
     }
 }

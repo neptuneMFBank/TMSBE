@@ -20,6 +20,10 @@ package org.apache.fineract.infrastructure.jobs.service;
 
 public enum JobName {
 
+    // Added Business Lofgic start here
+    REMINDER_LOAN_APPROVAL_CHECKS("Reminder Loan Approval Checks"), QUEUE_LOAN_APPROVAL_CHECKS(
+            "Queue Loan Approval Checks"), CREATE_RECONCILIATION_WALLET("Create Reconciliation Wallet"),
+    // Added Business Lofgic end here
     UPDATE_LOAN_ARREARS_AGEING("Update Loan Arrears Ageing"), APPLY_ANNUAL_FEE_FOR_SAVINGS(
             "Apply Annual Fee For Savings"), APPLY_HOLIDAYS_TO_LOANS("Apply Holidays To Loans"), POST_INTEREST_FOR_SAVINGS(
                     "Post Interest For Savings"), TRANSFER_FEE_CHARGE_FOR_LOANS(

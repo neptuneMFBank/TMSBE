@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.loanaccount.data.business;
 
+import com.google.gson.JsonObject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,8 +36,10 @@ import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
 import org.apache.fineract.portfolio.accountdetails.data.LoanAccountSummaryData;
+import org.apache.fineract.portfolio.business.metrics.data.MetricsData;
 import org.apache.fineract.portfolio.calendar.data.CalendarData;
 import org.apache.fineract.portfolio.charge.data.ChargeData;
+import org.apache.fineract.portfolio.collateral.data.CollateralData;
 import org.apache.fineract.portfolio.common.domain.PeriodFrequencyType;
 import org.apache.fineract.portfolio.floatingrates.data.InterestRatePeriodData;
 import org.apache.fineract.portfolio.fund.data.FundData;
@@ -58,6 +61,7 @@ import org.apache.fineract.portfolio.loanaccount.data.RepaymentScheduleRelatedLo
 import org.apache.fineract.portfolio.loanaccount.domain.LoanStatus;
 import org.apache.fineract.portfolio.loanaccount.guarantor.data.GuarantorData;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.data.LoanScheduleData;
+import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductPaymentTypeConfigData;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductBorrowerCycleVariationData;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.data.TransactionProcessingStrategyData;
@@ -82,7 +86,7 @@ public final class LoanBusinessAccountData {
     // status
     private final LoanStatusEnumData status;
     private final EnumOptionData subStatus;
-
+    private JsonObject clientData;
     // related to
     private final Long clientId;
     private final String clientAccountNo;
@@ -149,6 +153,7 @@ public final class LoanBusinessAccountData {
     private final Collection<LoanTransactionData> transactions;
     private final Collection<LoanChargeData> charges;
     private final Collection<LoanCollateralManagementData> collateral;
+    private Collection<CollateralData> collateralOld;
     private final Collection<GuarantorData> guarantors;
     private final CalendarData meeting;
     private final Collection<NoteData> notes;
@@ -156,7 +161,7 @@ public final class LoanBusinessAccountData {
     private final LoanScheduleData originalSchedule;
     // template
     private final Collection<LoanProductData> productOptions;
-    private final Collection<StaffData> loanOfficerOptions;
+    private Collection<StaffData> loanOfficerOptions;
     private final Collection<CodeValueData> loanPurposeOptions;
     private final Collection<FundData> fundOptions;
     private final Collection<EnumOptionData> termFrequencyTypeOptions;
@@ -255,6 +260,9 @@ public final class LoanBusinessAccountData {
 
     private Long activationChannelId;
     private String activationChannelName;
+
+    private Collection<MetricsData> metricsData;
+    private LoanProductPaymentTypeConfigData loanProductPaymentTypeConfigData;
 
     public static LoanBusinessAccountData importInstanceIndividual(EnumOptionData loanTypeEnumOption, Long clientId, Long productId,
             Long loanOfficerId, LocalDate submittedOnDate, Long fundId, BigDecimal principal, Integer numberOfRepayments,
@@ -1254,7 +1262,7 @@ public final class LoanBusinessAccountData {
             final EnumOptionData daysInYearType, final boolean isInterestRecalculationEnabled,
             final LoanInterestRecalculationData interestRecalculationData, final Boolean createStandingInstructionAtDisbursement,
             final Boolean isVariableInstallmentsAllowed, Integer minimumGap, Integer maximumGap, final EnumOptionData subStatus,
-            final boolean canUseForTopup, final boolean isTopup, final Long closureLoanId, final String closureLoanAccountNo,
+            final Boolean canUseForTopup, final boolean isTopup, final Long closureLoanId, final String closureLoanAccountNo,
             final BigDecimal topupAmount, final boolean isEqualAmortization, final BigDecimal fixedPrincipalPercentagePerInstallment) {
 
         final LoanScheduleData repaymentSchedule = null;
@@ -1987,6 +1995,38 @@ public final class LoanBusinessAccountData {
 
     public void setActivationChannelName(String activationChannelName) {
         this.activationChannelName = activationChannelName;
+    }
+
+    public Collection<MetricsData> getMetricsData() {
+        return metricsData;
+    }
+
+    public void setMetricsData(Collection<MetricsData> metricsData) {
+        this.metricsData = metricsData;
+    }
+
+    public void setLoanOfficerOptions(Collection<StaffData> loanOfficerOptions) {
+        this.loanOfficerOptions = loanOfficerOptions;
+    }
+
+    public Collection<CollateralData> getCollateralOld() {
+        return collateralOld;
+    }
+
+    public void setCollateralOld(Collection<CollateralData> collateralOld) {
+        this.collateralOld = collateralOld;
+    }
+
+    public LoanProductPaymentTypeConfigData getLoanProductPaymentTypeConfigData() {
+        return loanProductPaymentTypeConfigData;
+    }
+
+    public void setLoanProductPaymentTypeConfigData(LoanProductPaymentTypeConfigData loanProductPaymentTypeConfigData) {
+        this.loanProductPaymentTypeConfigData = loanProductPaymentTypeConfigData;
+    }
+
+    public void setClientData(JsonObject clientData) {
+        this.clientData = clientData;
     }
 
 }

@@ -34,6 +34,10 @@ public class EmployerRepositoryWrapper {
         this.repository = repository;
     }
 
+    public void saveAndFlush(final Employer employer) {
+        this.repository.saveAndFlush(employer);
+    }
+
     public boolean existsByIdAndBusinessId(final Long id, final Long businessId) {
         return this.repository.existsByIdAndBusinessId(id, businessId);
     }
@@ -52,9 +56,9 @@ public class EmployerRepositoryWrapper {
         return employer;
     }
 
-//    public List<Employer> findByParentId(final Long parentId) {
-//        return this.repository.findByParentId(parentId);
-//    }
+    // public List<Employer> findByParentId(final Long parentId) {
+    // return this.repository.findByParentId(parentId);
+    // }
     @Transactional(readOnly = true)
     public List<Employer> findByBusinessId(final Long businessId) {
         return this.repository.findByBusinessId(businessId);

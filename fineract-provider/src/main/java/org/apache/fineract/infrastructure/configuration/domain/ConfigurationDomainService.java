@@ -118,4 +118,7 @@ public interface ConfigurationDomainService {
     boolean isCOBDateAdjustmentEnabled();
 
     boolean isReversalTransactionAllowed();
+
+    boolean isAzureStorageBlob();
+
 }

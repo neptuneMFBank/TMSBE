@@ -164,13 +164,13 @@ public class DocumentProductConfigReadPlatformServiceImpl implements DocumentPro
         DocumentProductMapper() {
             final StringBuilder sqlBuilder = new StringBuilder(400);
 
-            sqlBuilder.append(" mdcp.id, mdcp.m_document_client_config_id documentConfig, mdcp.name documentConfigName, "
+            sqlBuilder.append(" mdcp.id, mdcp.m_document_client_config_id documentConfig, mdc.name documentConfigName, "
                     + " mdcp.loan_product_id loanProductId, lp.name loanProductName, "
                     + " mdcp.savings_product_id savingsProductId, sp.name savingsProductName ");
             sqlBuilder.append(" from m_document_config_product mdcp "
-                    + " join m_document_client_config_id mdc on mdc.id=mdcp.m_document_client_config_id "
-                    + " left join loan_product_id lp on lp.id=mdcp.loan_product_id "
-                    + " left join savings_product_id sp on sp.id=mdcp.savings_product_id ");
+                    + " join m_document_client_config mdc on mdc.id=mdcp.m_document_client_config_id "
+                    + " left join m_product_loan lp on lp.id=mdcp.loan_product_id "
+                    + " left join m_savings_product sp on sp.id=mdcp.savings_product_id ");
 
             this.schema = sqlBuilder.toString();
         }

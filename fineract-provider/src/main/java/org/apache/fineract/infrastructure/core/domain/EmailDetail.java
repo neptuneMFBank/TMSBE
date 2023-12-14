@@ -24,12 +24,22 @@ public class EmailDetail {
     private final String body;
     private final String address;
     private final String contactName;
+    private final String[] businessAddresses;
 
     public EmailDetail(final String subject, final String body, final String address, final String contactName) {
         this.subject = subject;
         this.body = body;
         this.address = address;
         this.contactName = contactName;
+        this.businessAddresses = null;
+    }
+
+    public EmailDetail(final String subject, final String body, final String[] businessAddresses, final String contactName) {
+        this.subject = subject;
+        this.body = body;
+        this.address = null;
+        this.contactName = contactName;
+        this.businessAddresses = businessAddresses;
     }
 
     public String getSubject() {
@@ -46,5 +56,9 @@ public class EmailDetail {
 
     public String getAddress() {
         return this.address;
+    }
+
+    public String[] getBusinessAddresses() {
+        return businessAddresses;
     }
 }

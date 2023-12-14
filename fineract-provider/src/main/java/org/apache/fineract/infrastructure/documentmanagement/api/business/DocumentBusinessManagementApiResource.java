@@ -25,7 +25,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -138,4 +140,40 @@ public class DocumentBusinessManagementApiResource {
 
     }
 
+    @GET
+    @Path("{documentId}/attachment")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Avatar", description = "")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetAllClientIdResponse.class))
+    ) })
+    public String retrieveAttachment(@PathParam("documentId") @Parameter(description = "documentId") final Long documentId,
+            @PathParam("entityType") @Parameter(description = "entityType") final String entityType,
+            @PathParam("entityId") @Parameter(description = "entityId") final Long entityId) {
+        this.context.authenticatedUser().validateHasReadPermission(this.systemEntityType);
+        final CommandProcessingResult result = this.documentWritePlatformService.retrieveAttachment(entityType, entityId, documentId);
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @PUT
+    @Path("{documentId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Update a Document", description = """
+            Note: A document is updated using a Json
+            """)
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Update Document"
+    // , content = @Content(schema = @Schema(implementation =
+    // DocumentManagementApiResourceSwagger.PutEntityTypeEntityIdDocumentsResponse.class))
+    ) })
+    public String updateDocument(@PathParam("documentId") @Parameter(description = "documentId") final Long documentId,
+            @PathParam("entityType") @Parameter(description = "entityType") final String entityType,
+            @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
+
+        final CommandProcessingResult documentIdentifier = this.documentWritePlatformService.updateBase64Document(documentId, entityType,
+                entityId, apiRequestBodyAsJson);
+
+        return this.toApiJsonSerializer.serialize(documentIdentifier);
+    }
 }

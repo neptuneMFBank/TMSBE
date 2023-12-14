@@ -35,8 +35,16 @@ import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoansApiResource;
 import org.apache.fineract.portfolio.loanproduct.LoanProductConstants;
+import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestRepositoryWrapper;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.loanProductInterestGeneration;
 
 public interface LoanBusinessApiConstants {
+
+    String messageParam = "message";
+    String authParam = "auth";
+    String statusEnumParam = "statusEnum";
+    String dataParam = "data";
+    String loanInstrumentParam = "loanInstrument";
 
     String termFrequencyParameterName = "termFrequency";
     String termPeriodFrequencyTypeParameterName = "termPeriodFrequencyType";
@@ -50,6 +58,8 @@ public interface LoanBusinessApiConstants {
 
     String activationChannelIdParam = "activationChannelId";
     String activationChannelNameParam = "activationChannelName";
+    String metricsDataParam = "metricsData";
+    String loanProductPaymentTypeConfigDataParam = "loanProductPaymentTypeConfigData";
 
     /*
      * { "clientId":1, "clientAccountNo":"000000001", "clientName":"Test Test", "clientOfficeId":1, "loanProductId":1,
@@ -201,7 +211,7 @@ public interface LoanBusinessApiConstants {
      */
     public static String loanTemplateConfig(final LoansApiResource loansApiResource, final String apiRequestBodyAsJson,
             final FromJsonHelper fromApiJsonHelper, final Long clientDefaultId, final boolean staffInSelectedOfficeOnly,
-            @Context final UriInfo uriInfo, final Long loanId) {
+            @Context final UriInfo uriInfo, final Long loanId, final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper) {
 
         final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
 
@@ -373,6 +383,10 @@ public interface LoanBusinessApiConstants {
             interestRatePerPeriod = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.interestRatePerPeriodParameterName,
                     loanTemplateElement);
         }
+
+        interestRatePerPeriod = loanProductInterestGeneration(
+                loanProductInterestRepositoryWrapper,
+                productId, loanTermFrequency, interestRatePerPeriod);
         jsonObjectLoan.addProperty(LoanApiConstants.interestRatePerPeriodParameterName, interestRatePerPeriod);
 
         Integer amortizationType;
@@ -441,11 +455,11 @@ public interface LoanBusinessApiConstants {
 
         BigDecimal inArrearsTolerance;
         if (fromApiJsonHelper.parameterExists(LoanApiConstants.inArrearsToleranceParameterName, apiRequestBodyAsJsonElement)) {
-            inArrearsTolerance = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.inArrearsToleranceParameterName,
-                    apiRequestBodyAsJsonElement);
+            inArrearsTolerance = fromApiJsonHelper.extractBigDecimalNamed(LoanApiConstants.inArrearsToleranceParameterName,
+                    apiRequestBodyAsJsonElement, localeFormat);
         } else {
-            inArrearsTolerance = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.inArrearsToleranceParameterName,
-                    loanTemplateElement);
+            inArrearsTolerance = fromApiJsonHelper.extractBigDecimalNamed(LoanApiConstants.inArrearsToleranceParameterName,
+                    loanTemplateElement, localeFormat);
         }
         jsonObjectLoan.addProperty(LoanApiConstants.inArrearsToleranceParameterName, inArrearsTolerance);
 

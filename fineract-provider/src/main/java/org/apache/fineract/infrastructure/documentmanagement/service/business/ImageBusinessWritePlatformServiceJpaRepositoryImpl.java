@@ -19,19 +19,25 @@
 package org.apache.fineract.infrastructure.documentmanagement.service.business;
 
 import com.google.gson.JsonElement;
+import java.util.Base64;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.infrastructure.core.domain.Base64EncodedImage;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.documentmanagement.api.business.DocumentConfigApiConstants;
 import org.apache.fineract.infrastructure.documentmanagement.contentrepository.ContentRepository;
 import org.apache.fineract.infrastructure.documentmanagement.contentrepository.ContentRepositoryFactory;
 import org.apache.fineract.infrastructure.documentmanagement.contentrepository.ContentRepositoryUtils;
+import org.apache.fineract.infrastructure.documentmanagement.data.FileData;
 import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
 import org.apache.fineract.infrastructure.documentmanagement.domain.ImageRepository;
 import org.apache.fineract.infrastructure.documentmanagement.domain.StorageType;
+import org.apache.fineract.infrastructure.documentmanagement.exception.ContentManagementException;
 import org.apache.fineract.infrastructure.documentmanagement.exception.InvalidEntityTypeForImageManagementException;
 import org.apache.fineract.infrastructure.documentmanagement.serialization.business.DocumentBusinessDataValidator;
+import org.apache.fineract.infrastructure.documentmanagement.service.ImageReadPlatformService;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
 import org.apache.fineract.portfolio.client.domain.Client;
@@ -50,18 +56,20 @@ public class ImageBusinessWritePlatformServiceJpaRepositoryImpl implements Image
     private final StaffRepositoryWrapper staffRepositoryWrapper;
     private final DocumentBusinessDataValidator fromApiJsonDeserializer;
     private final FromJsonHelper fromApiJsonHelper;
+    private final ImageReadPlatformService imageReadPlatformService;
 
     @Autowired
     public ImageBusinessWritePlatformServiceJpaRepositoryImpl(final ContentRepositoryFactory documentStoreFactory,
             final ClientRepositoryWrapper clientRepositoryWrapper, final ImageRepository imageRepository,
             final StaffRepositoryWrapper staffRepositoryWrapper, final DocumentBusinessDataValidator fromApiJsonDeserializer,
-            final FromJsonHelper fromApiJsonHelper) {
+            final FromJsonHelper fromApiJsonHelper, final ImageReadPlatformService imageReadPlatformService) {
         this.contentRepositoryFactory = documentStoreFactory;
         this.clientRepositoryWrapper = clientRepositoryWrapper;
         this.imageRepository = imageRepository;
         this.staffRepositoryWrapper = staffRepositoryWrapper;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.fromApiJsonHelper = fromApiJsonHelper;
+        this.imageReadPlatformService = imageReadPlatformService;
     }
 
     @Transactional
@@ -71,14 +79,19 @@ public class ImageBusinessWritePlatformServiceJpaRepositoryImpl implements Image
         this.fromApiJsonDeserializer.validateForImage(entityName, entityId, jsonRequestBody);
         final JsonElement jsonElement = this.fromApiJsonHelper.parse(jsonRequestBody);
         final String avatarBase64 = this.fromApiJsonHelper.extractStringNamed(DocumentConfigApiConstants.avatarBase64Param, jsonElement);
-        log.info("saveOrUpdateImage_avatarBase64: {}", jsonRequestBody);
+        // log.info("saveOrUpdateImage_avatarBase64: {}", jsonRequestBody);
         final Base64EncodedImage base64EncodedImage = ContentRepositoryUtils.extractImageFromDataURL(avatarBase64);
-        Object owner = deletePreviousImage(entityName, entityId);
+        try {
+            Object owner = deletePreviousImage(entityName, entityId);
 
-        final ContentRepository contenRepository = this.contentRepositoryFactory.getRepository();
-        final String imageLocation = contenRepository.saveImage(base64EncodedImage, entityId, "image");
+            final ContentRepository contenRepository = this.contentRepositoryFactory.getRepository();
+            final String imageLocation = contenRepository.saveImage(base64EncodedImage, entityId, "image");
+            return updateImage(owner, imageLocation, contenRepository.getStorageType());
 
-        return updateImage(owner, imageLocation, contenRepository.getStorageType());
+        } catch (Exception e) {
+            log.error("saveOrUpdateImage: {}", e);
+            throw new ContentManagementException(entityName, "Image upload not successful");
+        }
     }
 
     /**
@@ -135,6 +148,32 @@ public class ImageBusinessWritePlatformServiceJpaRepositoryImpl implements Image
             image.setStorageType(storageType.getValue());
         }
         return image;
+    }
+
+    @Override
+    public CommandProcessingResult retrieveImage(String entityName, Long entityId) {
+        validateEntityTypeforImage(entityName);
+        final FileData imageData = this.imageReadPlatformService.retrieveImage(entityName, entityId);
+        try {
+            // Else return response with Base64 encoded
+            // TODO: Need a better way of determining image type
+            String imageDataURISuffix = ContentRepositoryUtils.ImageDataURIsuffix.JPEG.getValue();
+            if (StringUtils.endsWith(imageData.name(), ContentRepositoryUtils.ImageFileExtension.GIF.getValue())) {
+                imageDataURISuffix = ContentRepositoryUtils.ImageDataURIsuffix.GIF.getValue();
+            } else if (StringUtils.endsWith(imageData.name(), ContentRepositoryUtils.ImageFileExtension.PNG.getValue())) {
+                imageDataURISuffix = ContentRepositoryUtils.ImageDataURIsuffix.PNG.getValue();
+            }
+
+            byte[] resizedImageBytes = imageData.getByteSource().read();
+            if (resizedImageBytes != null) {
+                final String imageAsBase64Text = imageDataURISuffix + Base64.getMimeEncoder().encodeToString(resizedImageBytes);
+                return new CommandProcessingResultBuilder().withEntityId(entityId).withResourceIdAsString(imageAsBase64Text).build();
+            } else {
+                throw new ContentManagementException(imageData.name(), "Image not available.");
+            }
+        } catch (Exception e) {
+            throw new ContentManagementException(imageData.name(), e.getMessage(), e);
+        }
     }
 
     /**

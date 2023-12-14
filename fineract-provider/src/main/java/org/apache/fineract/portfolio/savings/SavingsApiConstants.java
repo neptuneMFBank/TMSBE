@@ -18,7 +18,7 @@
  */
 package org.apache.fineract.portfolio.savings;
 
-@SuppressWarnings({ "HideUtilityClassConstructor" })
+@SuppressWarnings({"HideUtilityClassConstructor"})
 public class SavingsApiConstants {
 
     public static final String SAVINGS_PRODUCT_RESOURCE_NAME = "savingsproduct";
@@ -174,6 +174,7 @@ public class SavingsApiConstants {
     public static final String chargeOptionsParamName = "chargeOptions";
     public static final String chargePaymentModeParamName = "chargePaymentMode";
 
+    public static final String accountNumberParamName = "accountNumber";
     public static final String noteParamName = "note";
 
     // Savings account associations

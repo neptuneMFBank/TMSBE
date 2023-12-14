@@ -18,12 +18,17 @@
  */
 package org.apache.fineract.useradministration.service.business;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
+import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.useradministration.domain.AppUser;
+import org.apache.fineract.useradministration.domain.AppUserRepository;
+import org.apache.fineract.useradministration.exception.UserNotFoundException;
 import org.apache.fineract.useradministration.service.AppUserWritePlatformService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
@@ -38,6 +43,7 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
     private final PlatformSecurityContext context;
     private final AppUserWritePlatformService appUserWritePlatformService;
     private final UserBusinessDataValidator fromApiJsonDeserializer;
+    private final AppUserRepository appUserRepository;
 
     @Override
     @Transactional
@@ -58,6 +64,46 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForUpdate(command.json());
         return appUserWritePlatformService.updateUser(userId, command);
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult enableUser(Long userId) {
+        final AppUser appUser = this.context.authenticatedUser();
+        rejectActionOnSelfUser(appUser, userId);
+        final AppUser userToUpdate = this.appUserRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
+        try {
+            userToUpdate.enableUser();
+            this.appUserRepository.saveAndFlush(userToUpdate);
+            return new CommandProcessingResultBuilder().withEntityId(userId).build();
+        } catch (final Exception e) {
+            log.warn("enableUser: {}", e);
+            throw new PlatformDataIntegrityException("error.msg.unknown.data.integrity.issue", "User not Enabled.");
+        }
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult disableUser(Long userId) {
+        final AppUser appUser = this.context.authenticatedUser();
+        rejectActionOnSelfUser(appUser, userId);
+        final AppUser userToUpdate = this.appUserRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
+        try {
+            userToUpdate.disableUser();
+            this.appUserRepository.saveAndFlush(userToUpdate);
+            return new CommandProcessingResultBuilder().withEntityId(userId).build();
+        } catch (final Exception e) {
+            log.warn("disableUser: {}", e);
+            throw new PlatformDataIntegrityException("error.msg.unknown.data.integrity.issue", "User not Disabled.");
+        }
+    }
+
+    protected void rejectActionOnSelfUser(final AppUser appUser, Long userId) throws UserNotFoundException {
+        if (Objects.equals(appUser.getId(), userId) && appUser.isSelfServiceUser() == false) {
+            throw new UserNotFoundException("User cannot perform action on self.", userId);
+        }
     }
 
 }

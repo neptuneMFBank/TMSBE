@@ -74,7 +74,7 @@ public final class ClientIdentifierBusinessDataValidator {
             final String documentKey = this.fromApiJsonHelper.extractStringNamed(documentKeyParam, element);
             baseDataValidator.reset().parameter(documentKeyParam).value(documentKey).notBlank();
         }
-        if (this.fromApiJsonHelper.parameterExists(documentKeyParam, element)) {
+        if (this.fromApiJsonHelper.parameterExists(descriptionParam, element)) {
             final String description = this.fromApiJsonHelper.extractStringNamed(descriptionParam, element);
             baseDataValidator.reset().parameter(descriptionParam).value(description).notBlank();
         }

@@ -57,6 +57,8 @@ public final class AppUserData {
     @SuppressWarnings("unused")
     private Set<ClientData> clients;
 
+    private Boolean active;
+
     public static AppUserData importInstance(Long officeId, Long staffId, String username, String firstname, String lastname, String email,
             Boolean sendPasswordToEmail, Boolean passwordNeverExpires, List<Long> roleIds, Integer rowIndex) {
         return new AppUserData(officeId, staffId, username, firstname, lastname, email, sendPasswordToEmail, passwordNeverExpires, roleIds,
@@ -175,6 +177,22 @@ public final class AppUserData {
 
     public void setFirstTimeLoginRemaining(Boolean firstTimeLoginRemaining) {
         this.firstTimeLoginRemaining = firstTimeLoginRemaining;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public StaffData getStaff() {
+        return staff;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
 }

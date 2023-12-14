@@ -34,6 +34,8 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.documentmanagement.api.business.DocumentConfigApiConstants;
+import org.apache.fineract.infrastructure.documentmanagement.domain.DocumentRepository;
+import org.apache.fineract.infrastructure.documentmanagement.exception.DocumentNotFoundException;
 import org.apache.fineract.infrastructure.documentmanagement.service.business.DocumentBusinessWritePlatformService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
@@ -41,6 +43,7 @@ import org.apache.fineract.portfolio.client.api.ClientIdentifiersApiResource;
 import org.apache.fineract.portfolio.client.data.business.ClientIdentifierBusinessDataValidator;
 import org.apache.fineract.portfolio.client.domain.ClientIdentifierRepository;
 import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
+import org.apache.fineract.portfolio.client.exception.ClientIdentifierNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +63,7 @@ public class ClientIdentifierBusinessWritePlatformServiceImpl implements ClientI
     private final ClientIdentifiersApiResource clientIdentifiersApiResource;
     private final DocumentBusinessWritePlatformService documentWritePlatformService;
     private final FromJsonHelper fromApiJsonHelper;
+    private final DocumentRepository documentRepository;
 
     @Autowired
     public ClientIdentifierBusinessWritePlatformServiceImpl(final PlatformSecurityContext context,
@@ -67,7 +71,7 @@ public class ClientIdentifierBusinessWritePlatformServiceImpl implements ClientI
             final CodeValueRepositoryWrapper codeValueRepository,
             final ClientIdentifierBusinessDataValidator clientIdentifierBusinessDataValidator, final FromJsonHelper fromApiJsonHelper,
             final ClientIdentifiersApiResource clientIdentifiersApiResource,
-            final DocumentBusinessWritePlatformService documentWritePlatformService) {
+            final DocumentBusinessWritePlatformService documentWritePlatformService, final DocumentRepository documentRepository) {
         this.context = context;
         this.clientRepository = clientRepository;
         this.clientIdentifierRepository = clientIdentifierRepository;
@@ -76,6 +80,7 @@ public class ClientIdentifierBusinessWritePlatformServiceImpl implements ClientI
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.clientIdentifiersApiResource = clientIdentifiersApiResource;
         this.documentWritePlatformService = documentWritePlatformService;
+        this.documentRepository = documentRepository;
     }
 
     @Transactional
@@ -124,6 +129,60 @@ public class ClientIdentifierBusinessWritePlatformServiceImpl implements ClientI
         return new CommandProcessingResultBuilder() //
                 .withEntityId(resourceId).withSubEntityId(subResourceId).build();
 
+    }
+
+    @Override
+    public CommandProcessingResult updateClientIdentifier(Long clientId, Long identifierId, final Long clientDocumentId,
+            String apiRequestBodyAsJson) {
+
+        this.context.authenticatedUser();
+        final String clientIdentifiers = "client_identifiers";
+        this.clientIdentifierBusinessDataValidator.validateForCreate(apiRequestBodyAsJson);
+
+        this.clientRepository.findOneWithNotFoundDetection(clientId);
+
+        this.clientIdentifierRepository.findById(identifierId).orElseThrow(() -> new ClientIdentifierNotFoundException(identifierId));
+
+        this.documentRepository.findById(clientDocumentId)
+                .orElseThrow(() -> new DocumentNotFoundException(clientIdentifiers, identifierId, clientDocumentId));
+
+        final JsonElement jsonElement = this.fromApiJsonHelper.parse(apiRequestBodyAsJson);
+
+        final Long documentTypeId = this.fromApiJsonHelper.extractLongNamed(documentTypeIdParam, jsonElement);
+        final CodeValue documentType = this.codeValueRepository.findOneWithNotFoundDetection(documentTypeId);
+        final String name = documentType.label();
+
+        final String documentKey = this.fromApiJsonHelper.extractStringNamed(documentKeyParam, jsonElement);
+        final String description = this.fromApiJsonHelper.extractStringNamed(descriptionParam, jsonElement);
+        final String type = this.fromApiJsonHelper.extractStringNamed(typeParam, jsonElement);
+        String location = this.fromApiJsonHelper.extractStringNamed(locationParam, jsonElement);
+
+        final JsonObject jsonClientIdentifier = new JsonObject();
+        jsonClientIdentifier.addProperty(documentTypeIdParam, documentTypeId);
+        if (StringUtils.isNotBlank(documentKey)) {
+            jsonClientIdentifier.addProperty(documentKeyParam, documentKey);
+        }
+        if (StringUtils.isNotBlank(description)) {
+            jsonClientIdentifier.addProperty(descriptionParam, description);
+        }
+        jsonClientIdentifier.addProperty(ClientApiConstants.statusParamName, "Active");
+
+        this.clientIdentifiersApiResource.updateClientIdentifer(clientId, identifierId, jsonClientIdentifier.toString());
+        final Long resourceId = identifierId;
+
+        final JsonObject jsonClientIdentifierDocument = new JsonObject();
+        jsonClientIdentifierDocument.addProperty(typeParam, type);
+        jsonClientIdentifierDocument.addProperty(locationParam, location);
+        jsonClientIdentifierDocument.addProperty(DocumentConfigApiConstants.nameParam, name);
+        // if (StringUtils.isNotBlank(description)) {
+        // jsonClientIdentifierDocument.addProperty(descriptionParam, documentTypeId);
+        // }
+        this.documentWritePlatformService.updateBase64Document(clientDocumentId, clientIdentifiers, identifierId,
+                jsonClientIdentifierDocument.toString());
+        final Long subResourceId = clientDocumentId;
+
+        return new CommandProcessingResultBuilder() //
+                .withEntityId(resourceId).withSubEntityId(subResourceId).build();
     }
 
 }

@@ -1578,4 +1578,10 @@ public class LoanProduct extends AbstractPersistableCustom {
         this.loanProducTrancheDetails = loanProducTrancheDetails;
     }
 
+    // business starts here
+    public String getName() {
+        return name;
+    }
+    // business ends here
+
 }

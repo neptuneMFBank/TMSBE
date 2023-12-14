@@ -19,13 +19,13 @@
 package org.apache.fineract.portfolio.business.employer.data;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collection;
-import lombok.Data;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
+import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.portfolio.address.data.business.AddressBusinessData;
 import org.apache.fineract.portfolio.client.data.ClientData;
 
-@Data
 public class EmployerData implements Serializable {
 
     private final Long id;
@@ -69,8 +69,11 @@ public class EmployerData implements Serializable {
     private final Collection<CodeValueData> clientClassificationOptions;
     private final Collection<CodeValueData> industryOptions;
 
-    public static EmployerData template(
-            AddressBusinessData addressOptions, Collection<CodeValueData> clientClassificationOptions,
+    private final StaffData staffData;
+    private final StaffData supervisorStaffData;
+    private final LocalDate createdOn;
+
+    public static EmployerData template(AddressBusinessData addressOptions, Collection<CodeValueData> clientClassificationOptions,
             Collection<CodeValueData> industryOptions) {
         final Long id = null;
         final String externalId = null;
@@ -90,11 +93,151 @@ public class EmployerData implements Serializable {
         final String nearestLandMark = null;
         final Boolean active = null;
         final ClientData business = null;
-        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country, clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions, clientClassificationOptions, industryOptions);
+        final LocalDate createdOn = null;
+        final StaffData staffData = null;
+        final StaffData supervisorStaffData = null;
+        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country,
+                clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions,
+                clientClassificationOptions, industryOptions, staffData, supervisorStaffData, createdOn);
     }
 
-    public static EmployerData instance(Long id, String externalId, String mobileNo, String contactPerson, String emailAddress, String emailExtension, String name, String slug, String rcNumber, CodeValueData state, CodeValueData country, CodeValueData clientClassification, CodeValueData industry, CodeValueData lga, String officeAddress, String nearestLandMark, Boolean active, ClientData business, AddressBusinessData addressOptions, Collection<CodeValueData> clientClassificationOptions, Collection<CodeValueData> industryOptions) {
-        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country, clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions, clientClassificationOptions, industryOptions);
+    public static EmployerData instance(Long id, String externalId, String mobileNo, String contactPerson, String emailAddress,
+            String emailExtension, String name, String slug, String rcNumber, CodeValueData state, CodeValueData country,
+            CodeValueData clientClassification, CodeValueData industry, CodeValueData lga, String officeAddress, String nearestLandMark,
+            Boolean active, ClientData business, final StaffData staffData, final StaffData supervisorStaffData, LocalDate createdOn) {
+        final AddressBusinessData addressOptions = null;
+        final Collection<CodeValueData> clientClassificationOptions = null;
+        final Collection<CodeValueData> industryOptions = null;
+        return new EmployerData(id, externalId, mobileNo, contactPerson, emailAddress, emailExtension, name, slug, rcNumber, state, country,
+                clientClassification, industry, lga, officeAddress, nearestLandMark, active, business, addressOptions,
+                clientClassificationOptions, industryOptions, staffData, supervisorStaffData, createdOn);
+    }
+
+    public EmployerData(Long id, String externalId, String mobileNo, String contactPerson, String emailAddress, String emailExtension,
+            String name, String slug, String rcNumber, CodeValueData state, CodeValueData country, CodeValueData clientClassification,
+            CodeValueData industry, CodeValueData lga, String officeAddress, String nearestLandMark, Boolean active, ClientData business,
+            AddressBusinessData addressOptions, Collection<CodeValueData> clientClassificationOptions,
+            Collection<CodeValueData> industryOptions, StaffData staffData, StaffData supervisorStaffData, LocalDate createdOn) {
+        this.id = id;
+        this.externalId = externalId;
+        this.mobileNo = mobileNo;
+        this.contactPerson = contactPerson;
+        this.emailAddress = emailAddress;
+        this.emailExtension = emailExtension;
+        this.name = name;
+        this.slug = slug;
+        this.rcNumber = rcNumber;
+        this.state = state;
+        this.country = country;
+        this.clientClassification = clientClassification;
+        this.industry = industry;
+        this.lga = lga;
+        this.officeAddress = officeAddress;
+        this.nearestLandMark = nearestLandMark;
+        this.active = active;
+        this.business = business;
+        this.addressOptions = addressOptions;
+        this.clientClassificationOptions = clientClassificationOptions;
+        this.industryOptions = industryOptions;
+        this.staffData = staffData;
+        this.supervisorStaffData = supervisorStaffData;
+        this.createdOn = createdOn;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public String getMobileNo() {
+        return mobileNo;
+    }
+
+    public String getContactPerson() {
+        return contactPerson;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public String getEmailExtension() {
+        return emailExtension;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public String getRcNumber() {
+        return rcNumber;
+    }
+
+    public CodeValueData getState() {
+        return state;
+    }
+
+    public CodeValueData getCountry() {
+        return country;
+    }
+
+    public CodeValueData getClientClassification() {
+        return clientClassification;
+    }
+
+    public CodeValueData getIndustry() {
+        return industry;
+    }
+
+    public CodeValueData getLga() {
+        return lga;
+    }
+
+    public String getOfficeAddress() {
+        return officeAddress;
+    }
+
+    public String getNearestLandMark() {
+        return nearestLandMark;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public ClientData getBusiness() {
+        return business;
+    }
+
+    public AddressBusinessData getAddressOptions() {
+        return addressOptions;
+    }
+
+    public Collection<CodeValueData> getClientClassificationOptions() {
+        return clientClassificationOptions;
+    }
+
+    public Collection<CodeValueData> getIndustryOptions() {
+        return industryOptions;
+    }
+
+    public StaffData getStaffData() {
+        return staffData;
+    }
+
+    public StaffData getSupervisorStaffData() {
+        return supervisorStaffData;
+    }
+
+    public LocalDate getCreatedOn() {
+        return createdOn;
     }
 
 }

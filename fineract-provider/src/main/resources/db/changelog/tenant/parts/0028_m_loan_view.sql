@@ -55,6 +55,7 @@ SELECT
     ml.withdrawnon_date,
     ml.closedon_date,
     ml.writtenoffon_date,
+    ml.total_outstanding_derived,
     la.total_overdue_derived,
     la.overdue_since_date_derived,
     ml.currency_code

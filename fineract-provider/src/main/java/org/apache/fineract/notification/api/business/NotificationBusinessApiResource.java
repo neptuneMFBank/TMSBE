@@ -37,6 +37,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.accounting.journalentry.api.DateParam;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
+import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
@@ -46,7 +49,6 @@ import org.apache.fineract.infrastructure.core.service.business.SearchParameters
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.notification.data.NotificationData;
 import org.apache.fineract.notification.service.business.NotificationBusinessReadPlatformService;
-import org.apache.fineract.notification.service.business.NotificationBusinessWritePlatformService;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
 import org.springframework.stereotype.Component;
 
@@ -58,10 +60,10 @@ public class NotificationBusinessApiResource {
 
     private final PlatformSecurityContext context;
     private final NotificationBusinessReadPlatformService notificationReadPlatformService;
-    private final NotificationBusinessWritePlatformService notificationWritePlatformService;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final ToApiJsonSerializer<NotificationData> toApiJsonSerializer;
     public static final String RESOURCENAME = "NOTIFICATION";
+    private final PortfolioCommandSourceWritePlatformService commandWritePlatformService;
 
     @GET
     @Consumes({MediaType.APPLICATION_JSON})
@@ -103,9 +105,12 @@ public class NotificationBusinessApiResource {
     @PUT
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public String readAll() {
-        this.context.authenticatedUser();
-        final CommandProcessingResult result = this.notificationReadPlatformService.updateNotificationReadStatus();
+    public String updateAllNotification() {
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().
+                updateNotification(null)
+                .withNoJsonBody()
+                .build();
+        final CommandProcessingResult result = this.commandWritePlatformService.logCommandSource(commandRequest);
         return this.toApiJsonSerializer.serialize(result);
     }
 
@@ -113,9 +118,12 @@ public class NotificationBusinessApiResource {
     @Path("{notificationId}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public String readOne(@PathParam("metricsId") @Parameter(description = "metricsId") final Long metricsId) {
-        this.context.authenticatedUser();
-        final CommandProcessingResult result = this.notificationReadPlatformService.updateNotificationReadStatus();
+    public String updateOneNotification(@PathParam("notificationId") @Parameter(description = "notificationId") final Long notificationId) {
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().
+                updateNotification(notificationId)
+                .withNoJsonBody()
+                .build();
+        final CommandProcessingResult result = this.commandWritePlatformService.logCommandSource(commandRequest);
         return this.toApiJsonSerializer.serialize(result);
     }
 }

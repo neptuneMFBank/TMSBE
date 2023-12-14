@@ -16,13 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.notification.service.business;
+package org.apache.fineract.portfolio.businessevent.domain.loan.business;
 
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.portfolio.businessevent.domain.loan.LoanBusinessEvent;
+import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 
-public interface NotificationBusinessWritePlatformService {
+public class LoanMetricsApprovalBusinessEvent extends LoanBusinessEvent {
 
-    CommandProcessingResult updateNotificationReadStatus(final Long notificationId, final JsonCommand command);
-
+    public LoanMetricsApprovalBusinessEvent(Loan value) {
+        super(value);
+    }
 }

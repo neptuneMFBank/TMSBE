@@ -20,6 +20,7 @@ package org.apache.fineract.commands.service;
 
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.infrastructure.accountnumberformat.service.AccountNumberFormatConstants;
+import org.apache.fineract.notification.api.business.NotificationBusinessApiResource;
 import org.apache.fineract.portfolio.business.metrics.api.MetricsApiResourceConstants;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductApprovalApiResourceConstants;
@@ -3731,6 +3732,14 @@ public class CommandWrapperBuilder {
         this.entityName = LoanProductInterestApiResourceConstants.RESOURCENAME;
         this.entityId = loanProductInterestId;
         this.href = "/loanproducts/interest/" + loanProductInterestId;
+        return this;
+    }
+
+    public CommandWrapperBuilder updateNotification(final Long notificationId) {
+        this.actionName = "UPDATE";
+        this.entityName = NotificationBusinessApiResource.RESOURCENAME;
+        this.entityId = notificationId;
+        this.href = "/notifications/business" + entityId;
         return this;
     }
 }

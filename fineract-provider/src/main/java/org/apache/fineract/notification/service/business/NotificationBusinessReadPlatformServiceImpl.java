@@ -80,9 +80,9 @@ public class NotificationBusinessReadPlatformServiceImpl implements Notification
             paramList.add(type);
         }
 
-        if (StringUtils.isNotBlank(extraCriteria)) {
-            extraCriteria = extraCriteria.substring(4);
-        }
+        //if (StringUtils.isNotBlank(extraCriteria)) {
+        //  extraCriteria = extraCriteria.substring(4);
+        //}
         return extraCriteria;
     }
 

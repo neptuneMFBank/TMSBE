@@ -283,6 +283,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                     } else {
                         try {
                             final Staff staff = setAssingmentLoanApprovalCheck(appUserDatas);
+                            if (ObjectUtils.isEmpty(staff)) {
+                                nextRank = nextRank > 0 ? nextRank-- : 0;
+                                continue;
+                            }
                             final Long staffId = staff.getId();
                             final AppUser appUser = this.appUserRepositoryWrapper.findFirstByStaffId(staffId);
                             if (ObjectUtils.isNotEmpty(appUser)) {
@@ -311,7 +315,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                         }
                     }
                 } else {
-                    nextRank = 0;
+                    nextRank = nextRank > 0 ? nextRank-- : 0;
                     log.warn("Not withIn range for loanId: {}", loanApprovalScheduleId);
                 }
             }

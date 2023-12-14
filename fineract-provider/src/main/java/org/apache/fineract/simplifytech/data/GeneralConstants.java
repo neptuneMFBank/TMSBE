@@ -208,6 +208,25 @@ public class GeneralConstants {
         return value.compareTo(min) >= 0 && value.compareTo(max) <= 0;
     }
 
+    public static Long withdrawAmount(final BigDecimal amount, final Long savingsId,
+            final String note, final String accountNumber, final Long paymentTypeId,
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+        LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
+        final JsonObject withdrawAmountJson = new JsonObject();
+        withdrawAmountJson.addProperty(SavingsApiConstants.transactionDateParamName, today.toString());
+        withdrawAmountJson.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
+        withdrawAmountJson.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
+        withdrawAmountJson.addProperty(SavingsApiConstants.transactionAmountParamName, amount);
+        withdrawAmountJson.addProperty(SavingsApiConstants.noteParamName, note);
+        withdrawAmountJson.addProperty(SavingsApiConstants.accountNumberParamName, accountNumber);
+        withdrawAmountJson.addProperty(SavingsApiConstants.paymentTypeIdParamName, paymentTypeId);
+        final String apiRequestBodyAsJson = withdrawAmountJson.toString();
+        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
+        final CommandWrapper commandRequest = builder.savingsAccountWithdrawal(savingsId).build();
+        final CommandProcessingResult result = commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        return result.resourceId();
+    }
+
     public static Long holdAmount(final BigDecimal amountToHold, final Long loanId, final Long savingsId,
             final String note,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {

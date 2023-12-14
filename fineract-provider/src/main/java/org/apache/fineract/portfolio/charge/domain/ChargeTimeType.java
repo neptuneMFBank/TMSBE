@@ -39,7 +39,8 @@ public enum ChargeTimeType {
     SAVINGS_NOACTIVITY_FEE(16, "chargeTimeType.savingsNoActivityFee"),
     //for business upfront payment 
     UPFRONT(1000, "chargeTimeType.upfront"),
-    UPFRONT_HOLD(1001, "chargeTimeType.upfront_hold");
+    UPFRONT_HOLD(1001, "chargeTimeType.upfront_hold"),
+    UPFRONT_WITHDRAWAL(1002, "chargeTimeType.upfront_withdrawal");
 
     private final Integer value;
     private final String code;
@@ -61,6 +62,7 @@ public enum ChargeTimeType {
         return new Integer[]{
             ChargeTimeType.UPFRONT.getValue(),
             ChargeTimeType.UPFRONT_HOLD.getValue(),
+            ChargeTimeType.UPFRONT_WITHDRAWAL.getValue(),
             ChargeTimeType.DISBURSEMENT.getValue(), ChargeTimeType.SPECIFIED_DUE_DATE.getValue(),
             ChargeTimeType.INSTALMENT_FEE.getValue(), ChargeTimeType.OVERDUE_INSTALLMENT.getValue(),
             ChargeTimeType.TRANCHE_DISBURSEMENT.getValue()};
@@ -145,6 +147,9 @@ public enum ChargeTimeType {
                 case 1001:
                     chargeTimeType = UPFRONT_HOLD;
                     break;
+                case 1002:
+                    chargeTimeType = UPFRONT_WITHDRAWAL;
+                    break;
                 default:
                     chargeTimeType = INVALID;
                     break;
@@ -199,7 +204,7 @@ public enum ChargeTimeType {
 
     public boolean isAllowedLoanChargeTime() {
         return isTimeOfDisbursement() || isOnSpecifiedDueDate() || isInstalmentFee() || isOverdueInstallment() || isTrancheDisbursement()
-                || isTimeOfUpfront() || isTimeOfUpfrontHold();
+                || isTimeOfUpfront() || isTimeOfUpfrontHold() || isTimeOfUpfrontWithdrawal();
     }
 
     public boolean isAllowedClientChargeTime() {
@@ -237,5 +242,9 @@ public enum ChargeTimeType {
 
     public boolean isTimeOfUpfrontHold() {
         return ChargeTimeType.UPFRONT_HOLD.getValue().equals(this.value);
+    }
+
+    public boolean isTimeOfUpfrontWithdrawal() {
+        return ChargeTimeType.UPFRONT_WITHDRAWAL.getValue().equals(this.value);
     }
 }

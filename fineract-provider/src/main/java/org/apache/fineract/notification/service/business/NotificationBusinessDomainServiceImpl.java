@@ -49,7 +49,6 @@ public class NotificationBusinessDomainServiceImpl implements NotificationBusine
 
     @PostConstruct
     public void addListeners() {
-
         businessEventNotifierService.addPostBusinessEventListener(LoanMetricsApprovalBusinessEvent.class, new LoanMetricsApprovalListener());
     }
 

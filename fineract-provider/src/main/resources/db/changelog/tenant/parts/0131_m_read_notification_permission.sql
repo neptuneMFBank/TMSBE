@@ -20,5 +20,4 @@
 
 -- INSERT m_permission
 INSERT INTO `m_permission` (`id`, `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`)
-VALUES
-     (NULL, 'portfolio', 'READ_EMPLOYER', 'EMPLOYER', 'READ', false)
+VALUES (NULL, 'portfolio', 'READ_NOTIFICATION', 'NOTIFICATION', 'READ', false)

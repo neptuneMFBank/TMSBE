@@ -101,6 +101,7 @@ public class NotificationBusinessReadPlatformServiceImpl implements Notification
 
     private Page<NotificationData> getNotificationDataPage(SearchParametersBusiness searchParameters, Long appUserId, String sql) {
         List<Object> paramList = new ArrayList<>();
+        paramList.add(appUserId);
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append(sql);
         sqlBuilder.append(" WHERE nm.user_id = ? AND nm.is_read = false ");
@@ -129,8 +130,8 @@ public class NotificationBusinessReadPlatformServiceImpl implements Notification
             }
         }
 
-        Object[] params = new Object[]{appUserId};
-        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), params, this.notificationDataRow);
+        //Object[] params = new Object[]{appUserId};
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.notificationDataRow);
     }
 
     private static final class NotificationDataRow implements RowMapper<NotificationData> {

@@ -62,6 +62,8 @@ import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistory;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistoryRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.exception.MetricsNotFoundException;
+import org.apache.fineract.portfolio.businessevent.domain.loan.business.LoanMetricsApprovalBusinessEvent;
+import org.apache.fineract.portfolio.businessevent.service.BusinessEventNotifierService;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.collectionsheet.CollectionSheetConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
@@ -97,6 +99,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final ReadWriteNonCoreDataService readWriteNonCoreDataService;
     private final LoanChargeRepository loanChargeRepository;
+    private final BusinessEventNotifierService businessEventNotifierService;
 
     /*
      * Guaranteed to throw an exception no matter what the data integrity issue is.
@@ -148,10 +151,12 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
 
         metricsLoanStateCheck(metrics, loanId);
         try {
+            boolean sendMetricsApproval = false;
             final Loan loan = metrics.getLoan();
             final Integer rank = metrics.getRank();
             if (rank == 0) {
                 loanSubmittedPendingApproval(loan, noteText, today);
+                sendMetricsApproval = true;
             }
             // final Integer status = loan.status().getValue();
             final List<Metrics> metricses = this.metricsRepositoryWrapper.findByLoanId(loanId);
@@ -177,6 +182,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 pickTheNextMetricApproval.setStatus(LoanApprovalStatus.PENDING.getValue());
                 this.metricsRepositoryWrapper.saveAndFlush(pickTheNextMetricApproval);
                 saveMetricsHistory(pickTheNextMetricApproval, LoanApprovalStatus.PENDING.getValue());
+                sendMetricsApproval = true;
             }
 
             saveNoteMetrics(noteText, loan);
@@ -184,6 +190,10 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             metrics.setStatus(LoanApprovalStatus.APPROVED.getValue());
             this.metricsRepositoryWrapper.saveAndFlush(metrics);
             saveMetricsHistory(metrics, LoanApprovalStatus.APPROVED.getValue());
+
+            if (sendMetricsApproval) {
+                businessEventNotifierService.notifyPostBusinessEvent(new LoanMetricsApprovalBusinessEvent(loan));
+            }
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
             return CommandProcessingResult.empty();

@@ -237,7 +237,8 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
             if (isDueForTransfer && transactionAmount != null && transactionAmount.compareTo(BigDecimal.ZERO) > 0) {
                 final SavingsAccount fromSavingsAccount = null;
                 final boolean isRegularTransaction = true;
-                final boolean isExceptionForBalanceCheck = false;
+                final boolean isExceptionForBalanceCheck = true;//this would ensure account balance is positive (even if overDraft is allowed) - 14/12/2023
+                //final boolean isExceptionForBalanceCheck = false;//this allow money to be withdrawn from overDraft account - 14/12/2023
                 AccountTransferDTO accountTransferDTO = new AccountTransferDTO(transactionDate, transactionAmount, data.fromAccountType(),
                         data.toAccountType(), data.fromAccount().accountId(), data.toAccount().accountId(),
                         data.name() + " Standing instruction trasfer ", null, null, null, null, data.toTransferType(), null, null,
@@ -262,7 +263,7 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
         StringBuilder errorLog = new StringBuilder();
         StringBuilder updateQuery = new StringBuilder(
                 "INSERT INTO m_account_transfer_standing_instructions_history (standing_instruction_id, " + sqlGenerator.escape("status")
-                        + ", amount, execution_time, error_log) VALUES (");
+                + ", amount, execution_time, error_log) VALUES (");
         try {
             this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
         } catch (final PlatformApiDataValidationException e) {

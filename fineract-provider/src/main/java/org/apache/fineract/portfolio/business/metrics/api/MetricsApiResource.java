@@ -108,10 +108,10 @@ public class MetricsApiResource {
         final SearchParametersBusiness searchParameters = SearchParametersBusiness.forMetricsLoan(loanId, offset, limit, orderBy, sortOrder,
                 productId, fromDate, toDate, officeId, staffId, staffSupervisorId);
 
-        final Page<MetricsData> employerData = this.readPlatformService.retrieveAll(searchParameters);
+        final Page<MetricsData> metricsData = this.readPlatformService.retrieveAll(searchParameters);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.jsonSerializer.serialize(settings, employerData, MetricsApiResourceConstants.RESPONSE_DATA_PARAMETERS);
+        return this.jsonSerializer.serialize(settings, metricsData, MetricsApiResourceConstants.RESPONSE_DATA_PARAMETERS);
     }
 
     @POST

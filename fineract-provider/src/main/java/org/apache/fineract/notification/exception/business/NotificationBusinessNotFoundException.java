@@ -30,7 +30,11 @@ public class NotificationBusinessNotFoundException extends AbstractPlatformResou
         super("error.msg.notification.id.invalid", "Notification with identifier " + id + " does not exist", id);
     }
 
-    public NotificationBusinessNotFoundException(Long id, EmptyResultDataAccessException e) {
+    public NotificationBusinessNotFoundException(final Long id, EmptyResultDataAccessException e) {
         super("error.msg.notification.id.invalid", "Notification with identifier " + id + " does not exist", id, e);
+    }
+
+    public NotificationBusinessNotFoundException(final String msg) {
+        super("error.msg.notification.id.invalid", msg);
     }
 }

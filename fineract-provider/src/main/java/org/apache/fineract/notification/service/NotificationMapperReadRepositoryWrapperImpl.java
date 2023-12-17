@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.fineract.notification.domain.NotificationMapper;
 import org.apache.fineract.notification.domain.NotificationMapperRepository;
 import org.apache.fineract.notification.exception.business.NotificationBusinessNotFoundException;
+import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,5 +53,10 @@ public class NotificationMapperReadRepositoryWrapperImpl implements Notification
 
     public NotificationMapper findOneWithNotFoundDetection(final Long id) {
         return this.notificationMapperRepository.findById(id).orElseThrow(() -> new NotificationBusinessNotFoundException(id));
+    }
+
+    public NotificationMapper findOneByNotificationIdAndUserId(final Long notificationId, final AppUser userId) {
+        return this.notificationMapperRepository.findOneByNotificationIdAndUserId(notificationId, userId)
+                .orElseThrow(() -> new NotificationBusinessNotFoundException("Notification to update not found."));
     }
 }

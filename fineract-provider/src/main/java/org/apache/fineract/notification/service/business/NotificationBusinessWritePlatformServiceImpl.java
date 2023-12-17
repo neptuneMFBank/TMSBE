@@ -54,8 +54,8 @@ public class NotificationBusinessWritePlatformServiceImpl implements Notificatio
                 String sql = "UPDATE notification_mapper SET is_read = true WHERE is_read = false and user_id = ?";
                 this.jdbcTemplate.update(sql, appUserId);
             } else {
-                this.notificationMapperReadRepositoryWrapper.findOneWithNotFoundDetection(notificationId);
-                String sql = "UPDATE notification_mapper SET is_read = true WHERE is_read = false and user_id = ? and id = ?";
+                this.notificationMapperReadRepositoryWrapper.findOneByNotificationIdAndUserId(notificationId, currentUser);
+                String sql = "UPDATE notification_mapper SET is_read = true WHERE is_read = false and user_id = ? and notification_id = ?";
                 this.jdbcTemplate.update(sql, appUserId, notificationId);
             }
 

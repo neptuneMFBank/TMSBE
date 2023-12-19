@@ -16,13 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.notification.domain;
+package org.apache.fineract.portfolio.businessevent.domain.loan.business;
 
-import java.util.Optional;
-import org.apache.fineract.useradministration.domain.AppUser;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.apache.fineract.portfolio.businessevent.domain.loan.LoanBusinessEvent;
+import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 
-public interface NotificationMapperRepository extends JpaRepository<NotificationMapper, Long> {
+public class LoanMetricsApprovalBusinessEvent extends LoanBusinessEvent {
 
-    Optional<NotificationMapper> findOneByNotificationIdAndUserId(final Long notificationId, final AppUser userId);
+    public LoanMetricsApprovalBusinessEvent(Loan value) {
+        super(value);
+    }
 }

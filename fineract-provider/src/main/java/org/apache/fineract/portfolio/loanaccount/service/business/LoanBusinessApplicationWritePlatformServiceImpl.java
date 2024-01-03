@@ -1539,9 +1539,9 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
         final Long loanProductId = loan.productId();
 
-        Long lienSavingsTransactionId = upFrontChargeLienProcess(loan);
-
         validateDocumentComplete(loanProductId, loanId);
+
+        Long lienSavingsTransactionId = upFrontChargeLienProcess(loan);
 
         final JsonElement loanApprovalRequest = this.fromJsonHelper.parse(command.json());
         final Long paymentTypeId = this.fromJsonHelper.extractLongNamed(ClientBusinessApiConstants.paymentTypeIdParamName,

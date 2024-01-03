@@ -68,6 +68,7 @@ import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.collectionsheet.CollectionSheetConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
+import static org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants.expectedDisbursementDateParameterName;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCharge;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanChargeRepository;
@@ -138,7 +139,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     public CommandProcessingResult approveLoanMetrics(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
 
-        final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
+        LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
 
         this.fromApiJsonDeserializer.validateForLoanApprovalUndoReject(command.json());
         final JsonElement element = this.fromApiJsonHelper.parse(command.json());
@@ -146,8 +147,12 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         final Long loanId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.LOAN_ID, element);
         this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
         final String noteText = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
-        final Integer paymentTypeId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.paymentTypeIdParamName,
-                element);
+
+        if (this.fromApiJsonHelper.parameterExists(expectedDisbursementDateParameterName, element)) {
+            today = this.fromApiJsonHelper.extractLocalDateNamed(expectedDisbursementDateParameterName, element);
+        }
+
+        final Integer paymentTypeId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.paymentTypeIdParamName, element);
 
         metricsLoanStateCheck(metrics, loanId);
         try {

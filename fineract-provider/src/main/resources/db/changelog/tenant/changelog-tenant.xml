@@ -146,4 +146,5 @@
     <include file="parts/0130_m_update_checker_loan_product_interest_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0131_m_read_notification_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0132_m_update_notification.sql" relativeToChangelogFile="true" />
+    <include file="parts/0133_m_read_module.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

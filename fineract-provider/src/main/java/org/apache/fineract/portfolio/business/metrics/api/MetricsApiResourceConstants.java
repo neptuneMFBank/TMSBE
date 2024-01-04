@@ -48,6 +48,6 @@ public final class MetricsApiResourceConstants {
             SUPERVISOR_STAFF_DATA, CREATED_ON, MODIFIED_ON, CLIENT_DATA, LOAN_OFFICER_DATA));
 
     public static final Set<String> LOAN_ACTION_DATA_PARAMETERS = new HashSet<>(Arrays.asList(LoanApiConstants.noteParamName, LOAN_ID,
-            ClientApiConstants.staffIdParamName, SavingsApiConstants.paymentTypeIdParamName, LoanBusinessApiConstants.expectedDisbursementDateParameterName));
+            ClientApiConstants.staffIdParamName, SavingsApiConstants.paymentTypeIdParamName, LoanBusinessApiConstants.expectedDisbursementDateParameterName, LoanApiConstants.dateFormatParameterName));
 
 }

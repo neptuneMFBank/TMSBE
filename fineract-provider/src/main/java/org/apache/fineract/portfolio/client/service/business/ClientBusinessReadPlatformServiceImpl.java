@@ -309,33 +309,18 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             throw new PlatformApiDataValidationException(dataValidationErrors);
         }
 
-        final String userOfficeHierarchy = this.context.officeHierarchy();
-        final String underHierarchySearchString = userOfficeHierarchy + "%";
-        final String appUserID = String.valueOf(context.authenticatedUser().getId());
-
-        // if (searchParameters.isScopedByOfficeHierarchy()) {
-        // this.context.validateAccessRights(searchParameters.getHierarchy());
-        // underHierarchySearchString = searchParameters.getHierarchy() + "%";
-        // }
-        List<Object> paramList = new ArrayList<>(Arrays.asList(underHierarchySearchString, underHierarchySearchString));
+        List<Object> paramList = new ArrayList<>();
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append("select ");
         sqlBuilder.append(sqlGenerator.calcFoundRows());
         sqlBuilder.append(" ");
         sqlBuilder.append(this.clientMapper.schema());
-        sqlBuilder.append(" where (o.hierarchy like ? or transferToOffice.hierarchy like ?) ");
 
         if (searchParameters != null) {
-            if (searchParameters.isSelfUser()) {
-                sqlBuilder.append(
-                        " and c.id in (select umap.client_id from m_selfservice_user_client_mapping as umap where umap.appuser_id = ? ) ");
-                paramList.add(appUserID);
-            }
-
             final String extraCriteria = buildSqlStringFromClientCriteria(searchParameters, paramList);
 
             if (StringUtils.isNotBlank(extraCriteria)) {
-                sqlBuilder.append(" and (").append(extraCriteria).append(")");
+                sqlBuilder.append(" WHERE (").append(extraCriteria).append(")");
             }
 
             if (searchParameters.isOrderByRequested()) {
@@ -376,6 +361,13 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         // limit, orderBy, sortOrder, staffId,
         // accountNo, fromDate, toDate, displayName, orphansOnly, isSelfUser
         String extraCriteria = "";
+
+        if (searchParameters.isSelfUser()) {
+            final String appUserID = String.valueOf(context.authenticatedUser().getId());
+            extraCriteria
+                    += " and c.id in (select umap.client_id from m_selfservice_user_client_mapping as umap where umap.appuser_id = ? ) ";
+            paramList.add(appUserID);
+        }
 
         if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
             final LocalDate startPeriod = searchParameters.getFromDate();
@@ -419,8 +411,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
 
         if (displayName != null) {
-            paramList.add("%" + displayName + "%");
-            extraCriteria += " and c.display_name like ? ";
+            final String displayNameFinal = StringUtils.lowerCase(displayName);
+            paramList.add("%" + displayNameFinal + "%");
+            extraCriteria += " and LOWER(c.display_name) like ? ";
         }
 
         if (searchParameters.isStatusIdPassed()) {

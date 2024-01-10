@@ -123,7 +123,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                 final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
                 final Client client = loan.getClient();
                 clientName = client.getDisplayName();
-                mobileNo = client.mobileNo();
+                mobileNo = StringUtils.defaultIfBlank(client.mobileNo(), "N/A");
                 final LoanProduct loanProduct = loan.getLoanProduct();
                 loanProductName = loanProduct.getName();
 
@@ -243,7 +243,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                 notificationToUsers(businessAddresses, subject, body);
             }
         } else {
-            List<String> notifybusinessUsers = new ArrayList<>();
+            // List<String> notifybusinessUsers = new ArrayList<>();
 
             int nextRank = 0;
             for (LoanProductApprovalConfigData loanProductApprovalConfigData : loanProductApprovalConfigDatas) {
@@ -287,21 +287,21 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                                 nextRank = nextRank > 0 ? nextRank-- : 0;
                                 continue;
                             }
-                            final Long staffId = staff.getId();
-                            final AppUser appUser = this.appUserRepositoryWrapper.findFirstByStaffId(staffId);
-                            if (ObjectUtils.isNotEmpty(appUser)) {
-                                getEmailAddress(appUser, notifybusinessUsers);
-                            }
-                            final Staff organisationalRoleParentStaff = staff.getOrganisationalRoleParentStaff();
-                            if (ObjectUtils.isNotEmpty(organisationalRoleParentStaff)) {
-                                final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();
-                                final AppUser appUserSupervisor = this.appUserRepositoryWrapper
-                                        .findFirstByStaffId(organisationalRoleParentStaffId);
-                                if (ObjectUtils.isNotEmpty(appUserSupervisor)) {
-                                    // set email of approval supervisor
-                                    getEmailAddress(appUserSupervisor, notifybusinessUsers);
-                                }
-                            }
+                            //final Long staffId = staff.getId();
+                            //final AppUser appUser = this.appUserRepositoryWrapper.findFirstByStaffId(staffId);
+//                            if (ObjectUtils.isNotEmpty(appUser)) {
+//                                getEmailAddress(appUser, notifybusinessUsers);
+//                            }
+//                            final Staff organisationalRoleParentStaff = staff.getOrganisationalRoleParentStaff();
+//                            if (ObjectUtils.isNotEmpty(organisationalRoleParentStaff)) {
+//                                final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();
+//                                final AppUser appUserSupervisor = this.appUserRepositoryWrapper
+//                                        .findFirstByStaffId(organisationalRoleParentStaffId);
+//                                if (ObjectUtils.isNotEmpty(appUserSupervisor)) {
+//                                    // set email of approval supervisor
+//                                    getEmailAddress(appUserSupervisor, notifybusinessUsers);
+//                                }
+//                            }
                             final Metrics metrics = Metrics.createLoanMetrics(staff, status, rank, loan);
                             this.metricsRepositoryWrapper.saveAndFlush(metrics);
                             final Long metricsId = metrics.getId();
@@ -323,12 +323,12 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                 // update dataTable loan approvalCheck
                 String loanApprovalCheckSql = "UPDATE approvalCheck ac SET ac.isSentForApproval=1 WHERE ac.loan_id=?";
                 jdbcTemplate.update(loanApprovalCheckSql, loanApprovalScheduleId);
-                if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
-                    final String subject = String.format("Notification on new Loan `%s` Awaiting Approval", loanApprovalScheduleId);
-                    final String body = String.format("%s with mobile %s have a loan (`%s`) pending approval.", clientName, mobileNo,
-                            loanProductName);
-                    notificationToUsers(notifybusinessUsers, subject, body);
-                }
+//                if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
+//                    final String subject = String.format("Notification on new Loan `%s` Awaiting Approval", loanApprovalScheduleId);
+//                    final String body = String.format("%s with mobile %s have a loan (`%s`) pending approval.", clientName, mobileNo,
+//                            loanProductName);
+//                    notificationToUsers(notifybusinessUsers, subject, body);
+//                }
             }
         }
     }

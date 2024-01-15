@@ -874,4 +874,47 @@ public class LoansBusinessApiResource {
 
         return this.toApiJsonSerializer.serialize(result);
     }
+
+    @GET
+    @Path("pending-disbursement")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "List Loans pending final disbursement", description = "")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansResponse.class))
+        )})
+    public String retrievePendingDisbursement(@Context final UriInfo uriInfo,
+            @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
+            @QueryParam("staffId") @Parameter(description = "staffId") final Long staffId,
+            @QueryParam("clientId") @Parameter(description = "clientId") final Long clientId,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
+            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @DefaultValue("en") @QueryParam("locale") final String locale,
+            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        LocalDate fromDate = null;
+        if (startPeriod != null) {
+            fromDate = startPeriod.getDate(LoanBusinessApiConstants.startPeriodParameterName, dateFormat, locale);
+        }
+        LocalDate toDate = null;
+        if (endPeriod != null) {
+            toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
+        }
+
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forLoansPendingDisbursementBusiness(clientId, officeId,
+                offset, limit, orderBy, sortOrder, staffId, accountNo, fromDate, toDate);
+
+        final Page<LoanBusinessAccountData> loanBasicDetails = this.loanBusinessReadPlatformService.retrievePendingDisbursement(searchParameters);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiJsonSerializer.serialize(settings, loanBasicDetails, this.loanDataParameters);
+    }
 }

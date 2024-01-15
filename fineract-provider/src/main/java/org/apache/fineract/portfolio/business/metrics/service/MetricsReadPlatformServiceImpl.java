@@ -280,6 +280,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                             final String body = String.format("No user/staff assigned to role `%s` ", roleData.getName());
                             notificationToUsers(businessAddresses, subject, body);
                         }
+                        nextRank = nextRank > 0 ? nextRank-- : 0;
                     } else {
                         try {
                             final Staff staff = setAssingmentLoanApprovalCheck(appUserDatas);

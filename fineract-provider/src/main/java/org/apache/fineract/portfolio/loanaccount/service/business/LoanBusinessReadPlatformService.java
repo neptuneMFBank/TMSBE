@@ -32,6 +32,8 @@ public interface LoanBusinessReadPlatformService {
 
     Page<LoanBusinessAccountData> retrieveAll(SearchParametersBusiness searchParameters);
 
+    Page<LoanBusinessAccountData> retrievePendingDisbursement(SearchParametersBusiness searchParameters);
+
     LoanBusinessAccountData retrieveOne(Long loanId);
 
     Collection<InterestRatePeriodData> retrieveLoanInterestRatePeriodData(LoanBusinessAccountData loanData);

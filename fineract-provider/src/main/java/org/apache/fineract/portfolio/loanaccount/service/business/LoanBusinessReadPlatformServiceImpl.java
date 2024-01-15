@@ -121,6 +121,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
     private final LoansApiResource loansApiResource;
     private final FromJsonHelper fromJsonHelper;
     private final LoanMapper loanLoanMapper;
+    private final LoanPendingDisbursementMapper loanPendingDisbursementMapper;
     private final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper;
 
     @Autowired
@@ -168,6 +169,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
         this.fromJsonHelper = fromJsonHelper;
         this.loanLoanMapper = new LoanMapper(sqlGenerator);
         this.loanProductInterestRepositoryWrapper = loanProductInterestRepositoryWrapper;
+        this.loanPendingDisbursementMapper = new LoanPendingDisbursementMapper(sqlGenerator);
     }
 
     @Override
@@ -306,6 +308,104 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
     }
 
     @Override
+    public Page<LoanBusinessAccountData> retrievePendingDisbursement(final SearchParametersBusiness searchParameters) {
+
+        this.context.authenticatedUser();
+
+        final StringBuilder sqlBuilder = new StringBuilder(200);
+        sqlBuilder.append("select ");
+        sqlBuilder.append(sqlGenerator.calcFoundRows());
+        sqlBuilder.append(" ");
+        sqlBuilder.append(this.loanPendingDisbursementMapper.schema());
+
+        // TODO - for time being this will data scope list of loans returned to
+        // only loans that have a client associated.
+        // to support senario where loan has group_id only OR client_id will
+        // probably require a UNION query
+        // but that at present is an edge case
+        sqlBuilder.append(" join m_office o on (o.id = c.office_id or o.id = g.office_id) ");
+
+        int arrayPos = 0;
+        List<Object> extraCriterias = new ArrayList<>();
+
+        if (searchParameters != null) {
+
+            String sqlSub = "";
+
+            if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
+                final LocalDate startPeriod = searchParameters.getFromDate();
+                final LocalDate endPeriod = searchParameters.getToDate();
+                // final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
+                if (startPeriod != null && endPeriod != null) {
+                    sqlSub += " and CAST(l.submittedon_date AS DATE) BETWEEN ? AND ? ";
+                    extraCriterias.add(df.format(startPeriod));
+                    arrayPos = arrayPos + 1;
+                    extraCriterias.add(df.format(endPeriod));
+                    arrayPos = arrayPos + 1;
+                } else if (startPeriod != null) {
+                    sqlSub += " and CAST(l.submittedon_date AS DATE) >= ? ";
+                    extraCriterias.add(df.format(startPeriod));
+                    arrayPos = arrayPos + 1;
+                } else if (endPeriod != null) {
+                    sqlSub += " and CAST(l.submittedon_date AS DATE) <= ? ";
+                    extraCriterias.add(df.format(endPeriod));
+                    arrayPos = arrayPos + 1;
+                }
+            }
+
+            if (searchParameters.isOfficeIdPassed()) {
+                sqlSub += "and c.office_id =?";
+                extraCriterias.add(searchParameters.getOfficeId());
+                arrayPos = arrayPos + 1;
+            }
+            if (searchParameters.isStaffIdPassed()) {
+                sqlSub += "and l.loan_officer_id =?";
+                extraCriterias.add(searchParameters.getStaffId());
+                arrayPos = arrayPos + 1;
+            }
+            if (searchParameters.isClientIdPassed()) {
+                sqlSub += "and l.client_id =?";
+                extraCriterias.add(searchParameters.getClientId());
+                arrayPos = arrayPos + 1;
+            }
+
+            if (searchParameters.isAccountNoPassed()) {
+                sqlSub += " and l.account_no = ?";
+                extraCriterias.add(searchParameters.getAccountNo());
+                arrayPos = arrayPos + 1;
+            }
+
+            if (StringUtils.isNotBlank(sqlSub)) {
+                sqlSub = sqlSub.substring(4);
+                sqlBuilder.append("WHERE ").append(sqlSub);
+            }
+
+            if (searchParameters.isOrderByRequested()) {
+                sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
+                this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getOrderBy());
+
+                if (searchParameters.isSortOrderProvided()) {
+                    sqlBuilder.append(' ').append(searchParameters.getSortOrder());
+                    this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getSortOrder());
+                }
+            }
+
+            if (searchParameters.isLimited()) {
+                sqlBuilder.append(" ");
+                if (searchParameters.isOffset()) {
+                    sqlBuilder.append(sqlGenerator.limit(searchParameters.getLimit(), searchParameters.getOffset()));
+                } else {
+                    sqlBuilder.append(sqlGenerator.limit(searchParameters.getLimit()));
+                }
+            }
+        }
+        final Object[] objectArray = extraCriterias.toArray();
+        final Object[] finalObjectArray = Arrays.copyOf(objectArray, arrayPos);
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), finalObjectArray, this.loanLoanMapper);
+    }
+
+    @Override
     public Collection<InterestRatePeriodData> retrieveLoanInterestRatePeriodData(LoanBusinessAccountData loanData) {
         this.context.authenticatedUser();
 
@@ -378,6 +478,156 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
                     + " l.disbursedon_date as actualDisbursementDate, dbu.username as disbursedByUsername,"
                     + " l.closedon_date as closedOnDate, cbu.username as closedByUsername, l.writtenoffon_date as writtenOffOnDate "
                     + " FROM m_loan_view l " + " left join m_loan_arrears_aging la on la.loan_id = l.id" //
+                    + " left join m_client c on c.id = l.client_id " + " left join m_group g on g.id = l.group_id"
+                    + " join m_product_loan lp on lp.id = l.product_id" + " left join m_staff s on s.id = l.loan_officer_id"
+                    + " left join m_appuser sbu on sbu.id = l.created_by" + " left join m_appuser rbu on rbu.id = l.rejectedon_userid"
+                    + " left join m_appuser wbu on wbu.id = l.withdrawnon_userid"
+                    + " left join m_appuser abu on abu.id = l.approvedon_userid"
+                    + " left join m_appuser dbu on dbu.id = l.disbursedon_userid" + " left join m_appuser cbu on cbu.id = l.closedon_userid"
+                    + " left join m_code_value cv on cv.id = l.loanpurpose_cv_id" + " join m_currency rc on rc."
+                    + sqlGenerator.escape("code") + " = l.currency_code";
+        }
+
+        @Override
+        public LoanBusinessAccountData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final String currencyCode = rs.getString("currencyCode");
+            final String currencyName = rs.getString("currencyName");
+            final String currencyNameCode = rs.getString("currencyNameCode");
+            final String currencyDisplaySymbol = rs.getString("currencyDisplaySymbol");
+            final CurrencyData currencyData = new CurrencyData(currencyCode, currencyName, 0, null, currencyDisplaySymbol,
+                    currencyNameCode);
+
+            final Long id = rs.getLong("id");
+            final String accountNo = rs.getString("accountNo");
+            final String externalId = rs.getString("externalId");
+
+            final Long clientId = JdbcSupport.getLong(rs, "clientId");
+            final String clientName = rs.getString("clientName");
+
+            final Long groupId = JdbcSupport.getLong(rs, "groupId");
+            final String groupName = rs.getString("groupName");
+
+            final Integer loanTypeId = JdbcSupport.getInteger(rs, "loanType");
+            final EnumOptionData loanType = AccountEnumerations.loanType(loanTypeId);
+
+            final Long loanOfficerId = JdbcSupport.getLong(rs, "loanOfficerId");
+            final String loanOfficerName = rs.getString("loanOfficerName");
+
+            final Long loanPurposeId = JdbcSupport.getLong(rs, "loanPurposeId");
+            final String loanPurposeName = rs.getString("loanPurposeName");
+
+            final Long loanProductId = JdbcSupport.getLong(rs, "loanProductId");
+            final String loanProductName = rs.getString("loanProductName");
+
+            final LocalDate submittedOnDate = JdbcSupport.getLocalDate(rs, "submittedOnDate");
+            final String submittedByUsername = rs.getString("submittedByUsername");
+
+            final LocalDate rejectedOnDate = JdbcSupport.getLocalDate(rs, "rejectedOnDate");
+            final String rejectedByUsername = rs.getString("rejectedByUsername");
+
+            final LocalDate withdrawnOnDate = JdbcSupport.getLocalDate(rs, "withdrawnOnDate");
+            final String withdrawnByUsername = rs.getString("withdrawnByUsername");
+
+            final LocalDate approvedOnDate = JdbcSupport.getLocalDate(rs, "approvedOnDate");
+            final String approvedByUsername = rs.getString("approvedByUsername");
+
+            final LocalDate actualDisbursementDate = JdbcSupport.getLocalDate(rs, "actualDisbursementDate");
+            final String disbursedByUsername = rs.getString("disbursedByUsername");
+
+            final LocalDate closedOnDate = JdbcSupport.getLocalDate(rs, "closedOnDate");
+            final String closedByUsername = rs.getString("closedByUsername");
+
+            final LocalDate writtenOffOnDate = JdbcSupport.getLocalDate(rs, "writtenOffOnDate");
+
+            final LoanApplicationTimelineData timeline = new LoanApplicationTimelineData(submittedOnDate, submittedByUsername, null, null,
+                    rejectedOnDate, rejectedByUsername, null, null, withdrawnOnDate, withdrawnByUsername, null, null, approvedOnDate,
+                    approvedByUsername, null, null, null, actualDisbursementDate, disbursedByUsername, null, null, closedOnDate,
+                    closedByUsername, null, null, null, writtenOffOnDate, closedByUsername, null, null);
+
+            final BigDecimal principal = rs.getBigDecimal("principal");
+            final BigDecimal approvedPrincipal = rs.getBigDecimal("approvedPrincipal");
+            final BigDecimal proposedPrincipal = rs.getBigDecimal("proposedPrincipal");
+            final BigDecimal netDisbursalAmount = rs.getBigDecimal("netDisbursalAmount");
+
+            final Integer numberOfRepayments = JdbcSupport.getInteger(rs, "numberOfRepayments");
+            final BigDecimal interestRatePerPeriod = rs.getBigDecimal("interestRatePerPeriod");
+            final BigDecimal annualInterestRate = rs.getBigDecimal("annualInterestRate");
+
+            final Integer termFrequency = JdbcSupport.getInteger(rs, "termFrequency");
+
+            final Integer lifeCycleStatusId = JdbcSupport.getInteger(rs, "lifeCycleStatusId");
+            final LoanStatusEnumData status = LoanEnumerations.status(lifeCycleStatusId);
+
+            LoanSummaryData loanSummary = null;
+            Boolean inArrears = false;
+            if (status.id().intValue() >= 300) {
+                final BigDecimal totalOverdue = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "totalOverdue");
+
+                final LocalDate overdueSinceDate = JdbcSupport.getLocalDate(rs, "overdueSinceDate");
+                if (overdueSinceDate != null) {
+                    inArrears = true;
+                }
+
+                loanSummary = new LoanSummaryData(currencyData, null, null, null, null, null, null, null, null, null, null, null, null,
+                        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                        totalOverdue, overdueSinceDate, null, null, null);
+            }
+
+            GroupGeneralData groupData = null;
+            if (groupId != null) {
+                final Integer groupStatusEnum = JdbcSupport.getInteger(rs, "statusEnum");
+                final EnumOptionData groupStatus = ClientEnumerations.status(groupStatusEnum);
+                final LocalDate activationDate = JdbcSupport.getLocalDate(rs, "activationDate");
+                groupData = GroupGeneralData.instance(groupId, null, groupName, null, groupStatus, activationDate, null, null, null, null,
+                        null, null, null, null, null);
+            }
+
+            final Boolean isNPA = rs.getBoolean("isNPA");
+
+            final boolean canUseForTopup = rs.getBoolean("canUseForTopup");
+            final boolean isTopup = rs.getBoolean("isTopup");
+
+            return LoanBusinessAccountData.basicLoanDetails(id, accountNo, status, externalId, clientId, null, clientName, null, groupData,
+                    loanType, loanProductId, loanProductName, null, false, null, null, loanPurposeId, loanPurposeName, loanOfficerId,
+                    loanOfficerName, currencyData, proposedPrincipal, principal, approvedPrincipal, netDisbursalAmount, null, null,
+                    termFrequency, null, numberOfRepayments, null, null, null, null, null, null, null, interestRatePerPeriod, null,
+                    annualInterestRate, null, false, null, null, null, null, null, null, null, null, null, timeline, loanSummary, null,
+                    null, null, null, null, null, null, null, inArrears, null, isNPA, null, null, false, null, null, null, null, null, null,
+                    canUseForTopup, isTopup, null, null, null, false, null);
+        }
+    }
+
+    private static final class LoanPendingDisbursementMapper implements RowMapper<LoanBusinessAccountData> {
+
+        private final DatabaseSpecificSQLGenerator sqlGenerator;
+
+        LoanPendingDisbursementMapper(DatabaseSpecificSQLGenerator sqlGenerator) {
+            this.sqlGenerator = sqlGenerator;
+        }
+
+        public String schema() {
+            return " l.id," + " l.external_id externalId," + " l.account_no accountNo,"
+                    + " l.client_id clientId, c.display_name as clientName," + " l.group_id groupId, g.display_name as groupName,"
+                    + " l.product_id loanProductId, lp.name as loanProductName,"
+                    + " l.loan_officer_id loanOfficerId, s.display_name as loanOfficerName,"
+                    + " l.loanpurpose_cv_id loanPurposeId, cv.code_value as loanPurposeName," + " l.loan_status_id lifeCycleStatusId,"
+                    + " l.loan_type_enum loanType,"
+                    + " l.principal_amount_proposed as proposedPrincipal, l.principal_amount as principal, l.approved_principal as approvedPrincipal,"
+                    + " l.net_disbursal_amount netDisbursalAmount,"
+                    + " l.nominal_interest_rate_per_period interestRatePerPeriod, l.annual_nominal_interest_rate as annualInterestRate,"
+                    + " l.term_frequency termFrequency," + " l.number_of_repayments numberOfRepayments,"
+                    + " l.is_topup isTopup, l.is_npa as isNPA, lp.can_use_for_topup as canUseForTopup,"
+                    + " la.total_overdue_derived as totalOverdue," + " la.overdue_since_date_derived as overdueSinceDate,"
+                    + " l.currency_code as currencyCode, rc." + sqlGenerator.escape("name")
+                    + " as currencyName, rc.display_symbol as currencyDisplaySymbol, rc.internationalized_name_code as currencyNameCode, "
+                    + " l.submittedon_date as submittedOnDate, sbu.username as submittedByUsername,"
+                    + " l.rejectedon_date as rejectedOnDate, rbu.username as rejectedByUsername,"
+                    + " l.withdrawnon_date as withdrawnOnDate, wbu.username as withdrawnByUsername,"
+                    + " l.approvedon_date as approvedOnDate, abu.username as approvedByUsername,"
+                    + " l.disbursedon_date as actualDisbursementDate, dbu.username as disbursedByUsername,"
+                    + " l.closedon_date as closedOnDate, cbu.username as closedByUsername, l.writtenoffon_date as writtenOffOnDate "
+                    + " FROM m_loan_pending_disbursement_view l " + " left join m_loan_arrears_aging la on la.loan_id = l.id" //
                     + " left join m_client c on c.id = l.client_id " + " left join m_group g on g.id = l.group_id"
                     + " join m_product_loan lp on lp.id = l.product_id" + " left join m_staff s on s.id = l.loan_officer_id"
                     + " left join m_appuser sbu on sbu.id = l.created_by" + " left join m_appuser rbu on rbu.id = l.rejectedon_userid"

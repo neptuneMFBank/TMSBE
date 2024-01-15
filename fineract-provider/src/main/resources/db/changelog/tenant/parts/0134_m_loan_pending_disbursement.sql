@@ -20,7 +20,7 @@
 
 -- INSERT m_permission
 CREATE OR REPLACE VIEW m_loan_pending_disbursement_view AS
-SELECT *
+SELECT A.*
 FROM m_loan_view A
 JOIN m_metrics B ON A.id = B.loan_id 
 WHERE 

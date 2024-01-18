@@ -34,6 +34,7 @@ public final class MetricsApiResourceConstants {
 
     public static final String RESOURCENAME = "METRICS";
     public static final String ID = "id";
+    public static final String UNDO_TO_METRICS_ID = "undoToMetricsId";
     public static final String LOAN_ID = "loanId";
     public static final String SAVINGS_ID = "savingsId";
     public static final String STATUS = "status";
@@ -48,6 +49,6 @@ public final class MetricsApiResourceConstants {
             SUPERVISOR_STAFF_DATA, CREATED_ON, MODIFIED_ON, CLIENT_DATA, LOAN_OFFICER_DATA));
 
     public static final Set<String> LOAN_ACTION_DATA_PARAMETERS = new HashSet<>(Arrays.asList(LoanApiConstants.noteParamName, LOAN_ID, LoanApiConstants.localeParameterName,
-            ClientApiConstants.staffIdParamName, SavingsApiConstants.paymentTypeIdParamName, LoanBusinessApiConstants.expectedDisbursementDateParameterName, LoanApiConstants.dateFormatParameterName));
+            ClientApiConstants.staffIdParamName, SavingsApiConstants.paymentTypeIdParamName, LoanBusinessApiConstants.expectedDisbursementDateParameterName, LoanApiConstants.dateFormatParameterName, UNDO_TO_METRICS_ID));
 
 }

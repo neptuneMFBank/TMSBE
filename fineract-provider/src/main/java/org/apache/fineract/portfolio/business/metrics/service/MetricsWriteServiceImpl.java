@@ -449,9 +449,21 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             if (totalUndoCount == 0) {
                 throw new PlatformDataIntegrityException("error.msg.metrics", "Approval not allowed for undo.");
             } else {
-                final Metrics pickTheLastMetricApproval = metricsesAhead.stream().findFirst().orElseThrow(
-                        () -> new MetricsNotFoundException("Last approval not found for loan account: {}." + loan.getAccountNumber()));
 
+                Metrics undoToMetrics = null;
+                if (this.fromApiJsonHelper.parameterExists(MetricsApiResourceConstants.UNDO_TO_METRICS_ID, element)) {
+                    final Long undoToMetricsId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.UNDO_TO_METRICS_ID, element);
+                    undoToMetrics = this.metricsRepositoryWrapper.findOneWithNotFoundDetection(undoToMetricsId);
+                    undoToMetricsStateCheck(undoToMetrics, loanId);
+                }
+
+                Metrics pickTheLastMetricApproval;
+                if (undoToMetrics != null) {
+                    pickTheLastMetricApproval = undoToMetrics;
+                } else {
+                    pickTheLastMetricApproval = metricsesAhead.stream().findFirst().orElseThrow(
+                            () -> new MetricsNotFoundException("Last approval not found for loan account: {}." + loan.getAccountNumber()));
+                }
                 pickTheLastMetricApproval.setStatus(LoanApprovalStatus.PENDING.getValue());
                 this.metricsRepositoryWrapper.saveAndFlush(pickTheLastMetricApproval);
                 saveMetricsHistory(pickTheLastMetricApproval, LoanApprovalStatus.PENDING.getValue());
@@ -473,6 +485,14 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
                 .withEntityId(metricsId).withLoanId(loanId).build();
+    }
+
+    protected void undoToMetricsStateCheck(Metrics undoToMetrics, final Long loanId) throws PlatformDataIntegrityException {
+        if (!Objects.equals(undoToMetrics.getStatus(), LoanApprovalStatus.APPROVED.getValue())
+                || !Objects.equals(loanId, undoToMetrics.getLoan().getId())) {
+            throw new PlatformDataIntegrityException("error.loan.metrics",
+                    "Loan Approval cannot be returned to selected state.");
+        }
     }
 
     @Override

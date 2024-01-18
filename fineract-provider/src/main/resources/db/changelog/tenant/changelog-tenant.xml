@@ -44,7 +44,7 @@
     <include file="parts/0027_m_table_views.sql" relativeToChangelogFile="true"/>
     <include file="parts/0028_m_loan_view.sql" relativeToChangelogFile="true"/>
     <include file="parts/0029_m_alter_client_email.sql" relativeToChangelogFile="true"/>
-    <!-- <include file="parts/0030_m_alter_appuser.sql" relativeToChangelogFile="true"/> -->
+    <include file="parts/0030_m_alter_appuser.sql" relativeToChangelogFile="true"/>
     <include file="parts/0031_m_update_permission.sql" relativeToChangelogFile="true"/>
     <include file="parts/0032_m_update_permission.sql" relativeToChangelogFile="true"/>
     <include file="parts/0033_m_update_m_codes.sql" relativeToChangelogFile="true" />

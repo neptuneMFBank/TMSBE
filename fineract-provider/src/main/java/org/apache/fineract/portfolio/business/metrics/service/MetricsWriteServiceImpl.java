@@ -458,7 +458,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 }
 
                 Metrics pickTheLastMetricApproval;
-                if (ObjectUtils.isNotEmpty(undoToMetrics)) {
+                if (undoToMetrics != null) {
                     pickTheLastMetricApproval = undoToMetrics;
                 } else {
                     pickTheLastMetricApproval = metricsesAhead.stream().findFirst().orElseThrow(

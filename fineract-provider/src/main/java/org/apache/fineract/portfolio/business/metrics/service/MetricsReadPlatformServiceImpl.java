@@ -110,7 +110,8 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     public void reminderLoanApprovals() {
 
         final String sql = "select " + metricsMapper.schema()
-                + " WHERE mm.loan_id IS NOT NULL AND mm.status_enum=100 AND mm.created_on_utc >= DATE_SUB(NOW(), INTERVAL 24 HOUR) ";
+                + " WHERE mm.loan_id IS NOT NULL AND mm.status_enum=100 ";
+//                + " WHERE mm.loan_id IS NOT NULL AND mm.status_enum=100 AND mm.created_on_utc >= DATE_SUB(NOW(), INTERVAL 24 HOUR) ";
         Collection<MetricsData> metricsDatas = this.jdbcTemplate.query(sql, metricsMapper);
         if (!CollectionUtils.isEmpty(metricsDatas)) {
             List<String> notifybusinessUsers = new ArrayList<>();

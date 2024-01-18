@@ -69,6 +69,11 @@ public class MetricsDataValidator {
         final String note = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
         baseDataValidator.reset().parameter(LoanApiConstants.noteParamName).value(note).notBlank();
 
+        if (this.fromApiJsonHelper.parameterExists(MetricsApiResourceConstants.UNDO_TO_METRICS_ID, element)) {
+            final Long undoToMetricsId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.UNDO_TO_METRICS_ID, element);
+            baseDataValidator.reset().parameter(MetricsApiResourceConstants.UNDO_TO_METRICS_ID).value(undoToMetricsId).notBlank()
+                    .integerGreaterThanZero();
+        }
         if (this.fromApiJsonHelper.parameterExists(SavingsApiConstants.paymentTypeIdParamName, element)) {
             final Long paymentTypeId = this.fromApiJsonHelper.extractLongNamed(SavingsApiConstants.paymentTypeIdParamName, element);
             baseDataValidator.reset().parameter(SavingsApiConstants.paymentTypeIdParamName).value(paymentTypeId).notBlank()

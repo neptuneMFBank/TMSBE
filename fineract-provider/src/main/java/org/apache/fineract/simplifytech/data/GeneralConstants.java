@@ -245,6 +245,14 @@ public class GeneralConstants {
         return result.resourceId();
     }
 
+    public static Long releaseAmount(final Long savingsId, final Long transactionId,
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withNoJsonBody();
+        final CommandWrapper commandRequest = builder.releaseAmount(savingsId, transactionId).build();
+        final CommandProcessingResult result = commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        return result.resourceId();
+    }
+
     public static BigDecimal loanProductInterestGeneration(final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper, final Long productId, Integer loanTermFrequency, BigDecimal interestRatePerPeriod) {
         //connect to Loan Product Interest to pick business interest rate if configured
         final LoanProductInterest loanProductInterest = loanProductInterestRepositoryWrapper.findByLoanProductIdAndActive(productId, true);

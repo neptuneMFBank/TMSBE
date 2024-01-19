@@ -54,6 +54,8 @@ import org.apache.fineract.infrastructure.documentmanagement.api.business.Docume
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
+import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
+import org.apache.fineract.portfolio.account.service.AccountAssociationsReadPlatformService;
 import org.apache.fineract.portfolio.business.metrics.api.MetricsApiResourceConstants;
 import org.apache.fineract.portfolio.business.metrics.data.LoanApprovalStatus;
 import org.apache.fineract.portfolio.business.metrics.data.MetricsDataValidator;
@@ -64,7 +66,6 @@ import org.apache.fineract.portfolio.business.metrics.domain.MetricsRepositoryWr
 import org.apache.fineract.portfolio.business.metrics.exception.MetricsNotFoundException;
 import org.apache.fineract.portfolio.businessevent.domain.loan.business.LoanMetricsApprovalBusinessEvent;
 import org.apache.fineract.portfolio.businessevent.service.BusinessEventNotifierService;
-import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.collectionsheet.CollectionSheetConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
@@ -74,10 +75,12 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanCharge;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanChargeRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanStatus;
+import org.apache.fineract.portfolio.loanproduct.exception.LinkedAccountRequiredException;
 import org.apache.fineract.portfolio.note.domain.Note;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import static org.apache.fineract.simplifytech.data.GeneralConstants.holdAmount;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.releaseAmount;
 import static org.apache.fineract.simplifytech.data.GeneralConstants.withdrawAmount;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -101,6 +104,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     private final ReadWriteNonCoreDataService readWriteNonCoreDataService;
     private final LoanChargeRepository loanChargeRepository;
     private final BusinessEventNotifierService businessEventNotifierService;
+    private final AccountAssociationsReadPlatformService accountAssociationsReadPlatformService;
 
     /*
      * Guaranteed to throw an exception no matter what the data integrity issue is.
@@ -282,9 +286,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 return;
             }
 
-            final Client client = loan.client();
             final String accountNumber = loan.getAccountNumber();
-            final Long savingsId = client.savingsAccountId();
+            final Long savingsId = getLoanLinkedSavingsId(loanId);
 
             //withdraw upFrontWithdrawal Fees/Interest
             BigDecimal sumUpfrontWithdrawalCharges = loanCharges
@@ -301,33 +304,18 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 saveNoteMetrics("Withdraw Loan Interest/Fees Upfront Withdrawal Charges " + sumUpfrontWithdrawalCharges + " with savings transaction Id-" + withdrawAmountId, loan);
             }
 
-            Long lienSavingsTransactionId = null;
-            //check if upFront Charges via 
+            //check if upFront Charges via
             //withdraw upFront charges and lien the upFront hold Fee before disbursal
-            final GenericResultsetData results = this.readWriteNonCoreDataService
-                    .retrieveDataTableGenericResultSet(DocumentConfigApiConstants.approvalCheckParam, loanId, null, null);
-            if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
-                final List<ResultsetRowData> resultsetRowDatas = results.getData();
-                for (ResultsetRowData res : resultsetRowDatas) {
-                    try {
-                        final Object objectLienSavingsTransactionIdParam = res.getRow().get(7);
-                        if (ObjectUtils.isNotEmpty(objectLienSavingsTransactionIdParam)) {
-                            final String lienSavingsTransactionIdDT = StringUtils.defaultIfBlank(String.valueOf(objectLienSavingsTransactionIdParam), null);
-                            lienSavingsTransactionId = Long.valueOf(lienSavingsTransactionIdDT);
-                        }
-                    } catch (Exception e) {
-                        log.warn("error.approvalCheckRequest.loanDisbursal: {}", e.getMessage());
-                    }
-                }
-            }
+            final Long lienSavingsTransactionId = getLienSavingsTransactionIdLinkToLoan(loanId);
 
             //we need to update the charges status to paid
             if (lienSavingsTransactionId != null) {
 
                 //release the lien/hold amount
-                CommandWrapperBuilder builder = new CommandWrapperBuilder().withNoJsonBody();
-                CommandWrapper commandRequest = builder.releaseAmount(savingsId, lienSavingsTransactionId).build();
-                this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+                //CommandWrapperBuilder builder = new CommandWrapperBuilder().withNoJsonBody();
+                //CommandWrapper commandRequest = builder.releaseAmount(savingsId, lienSavingsTransactionId).build();
+                //this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+                releaseAmount(savingsId, lienSavingsTransactionId, this.commandsSourceWritePlatformService);
 
                 //withdraw upFrontFees
                 BigDecimal sumUpfrontCharges = loanCharges
@@ -372,6 +360,37 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             }
 
         }
+    }
+
+    protected Long getLoanLinkedSavingsId(final Long loanId) {
+        final PortfolioAccountData portfolioAccountData = this.accountAssociationsReadPlatformService
+                .retriveLoanLinkedAssociation(loanId);
+        if (portfolioAccountData == null) {
+            final String errorMessage = "Loan with id:" + loanId + " is not linked to savings account";
+            throw new LinkedAccountRequiredException("loan.link.to.savings", errorMessage, loanId);
+        }
+        return portfolioAccountData.accountId();
+    }
+
+    protected Long getLienSavingsTransactionIdLinkToLoan(final Long loanId) {
+        Long lienSavingsTransactionId = null;
+        final GenericResultsetData results = this.readWriteNonCoreDataService
+                .retrieveDataTableGenericResultSet(DocumentConfigApiConstants.approvalCheckParam, loanId, null, null);
+        if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
+            final List<ResultsetRowData> resultsetRowDatas = results.getData();
+            for (ResultsetRowData res : resultsetRowDatas) {
+                try {
+                    final Object objectLienSavingsTransactionIdParam = res.getRow().get(7);
+                    if (ObjectUtils.isNotEmpty(objectLienSavingsTransactionIdParam)) {
+                        final String lienSavingsTransactionIdDT = StringUtils.defaultIfBlank(String.valueOf(objectLienSavingsTransactionIdParam), null);
+                        lienSavingsTransactionId = Long.valueOf(lienSavingsTransactionIdDT);
+                    }
+                } catch (NumberFormatException e) {
+                    log.warn("error.approvalCheckRequest.loanDisbursal: {}", e.getMessage());
+                }
+            }
+        }
+        return lienSavingsTransactionId;
     }
 
     protected void loanReject(final Loan loan, final String noteText, final LocalDate today) {
@@ -518,6 +537,13 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
 
             saveNoteMetrics(noteText, loan);
 
+            final Long lienSavingsTransactionId = getLienSavingsTransactionIdLinkToLoan(loanId);
+            if (lienSavingsTransactionId != null) {
+                //unLien all held Amount
+                final Long savingsId = getLoanLinkedSavingsId(loanId);
+                //release Amount if loan is rejected
+                releaseAmount(savingsId, lienSavingsTransactionId, this.commandsSourceWritePlatformService);
+            }
             metrics.setStatus(LoanApprovalStatus.REJECTED.getValue());
             this.metricsRepositoryWrapper.saveAndFlush(metrics);
             saveMetricsHistory(metrics, LoanApprovalStatus.REJECTED.getValue());

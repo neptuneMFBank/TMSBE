@@ -114,19 +114,16 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 //                + " WHERE mm.loan_id IS NOT NULL AND mm.status_enum=100 AND mm.created_on_utc >= DATE_SUB(NOW(), INTERVAL 24 HOUR) ";
         Collection<MetricsData> metricsDatas = this.jdbcTemplate.query(sql, metricsMapper);
         if (!CollectionUtils.isEmpty(metricsDatas)) {
-            List<String> notifybusinessUsers = new ArrayList<>();
-            String clientName = null;
-            String mobileNo = null;
-            String loanProductName = null;
-            Long loanId = null;
+            List<String> notifybusinessUsers;
             for (MetricsData metricsData : metricsDatas) {
-                loanId = metricsData.getLoanId();
+                notifybusinessUsers = new ArrayList<>();
+                final Long loanId = metricsData.getLoanId();
                 final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
                 final Client client = loan.getClient();
-                clientName = client.getDisplayName();
-                mobileNo = StringUtils.defaultIfBlank(client.mobileNo(), "N/A");
+                final String clientName = client.getDisplayName();
+                final String mobileNo = StringUtils.defaultIfBlank(client.mobileNo(), "N/A");
                 final LoanProduct loanProduct = loan.getLoanProduct();
-                loanProductName = loanProduct.getName();
+                final String loanProductName = loanProduct.getName();
 
                 final StaffData staff = metricsData.getStaffData();
                 final Long staffId = staff.getId();
@@ -143,13 +140,13 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                         getEmailAddress(appUserSupervisor, notifybusinessUsers);
                     }
                 }
-            }
 
-            if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
-                final String subject = String.format("Notification of Pending Loan `%s` Approval", loanId);
-                final String body = String.format("%s with mobile %s have a loan (`%s`) pending approval.", clientName, mobileNo,
-                        loanProductName);
-                notificationToUsers(notifybusinessUsers, subject, body);
+                if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
+                    final String subject = String.format("Notification of Pending Loan Id `%s` Approval", loanId);
+                    final String body = String.format("%s with mobile %s have a loan (`%s`) pending approval.", clientName, mobileNo,
+                            loanProductName);
+                    notificationToUsers(notifybusinessUsers, subject, body);
+                }
             }
         }
     }

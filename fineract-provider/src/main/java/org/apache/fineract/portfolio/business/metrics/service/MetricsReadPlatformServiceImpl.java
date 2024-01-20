@@ -114,8 +114,9 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 //                + " WHERE mm.loan_id IS NOT NULL AND mm.status_enum=100 AND mm.created_on_utc >= DATE_SUB(NOW(), INTERVAL 24 HOUR) ";
         Collection<MetricsData> metricsDatas = this.jdbcTemplate.query(sql, metricsMapper);
         if (!CollectionUtils.isEmpty(metricsDatas)) {
-            List<String> notifybusinessUsers = new ArrayList<>();
+            List<String> notifybusinessUsers;
             for (MetricsData metricsData : metricsDatas) {
+                notifybusinessUsers = new ArrayList<>();
                 final Long loanId = metricsData.getLoanId();
                 final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
                 final Client client = loan.getClient();

@@ -92,6 +92,7 @@ public class OverdraftWriteServiceImpl implements OverdraftWriteService {
 
     @Override
     public CommandProcessingResult submitOverdraft(JsonCommand command) {
+        handleDataIntegrityIssues(command, null, null);
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 

@@ -412,6 +412,21 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
         }
     }
 
+    @Override
+    public void queueOverdraftApprovals() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void reminderOverdraftApprovals() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Collection<MetricsData> retrieveOverdraftMetrics(Long overdraftId) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     private static final class MetricsMapper implements RowMapper<MetricsData> {
 
         public String schema() {
@@ -587,4 +602,6 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
     }
 
+    
+    
 }

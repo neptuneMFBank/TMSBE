@@ -148,4 +148,5 @@
     <include file="parts/0132_m_update_notification.sql" relativeToChangelogFile="true" />
     <include file="parts/0133_m_read_module.xml" relativeToChangelogFile="true" />
     <include file="parts/0134_m_loan_pending_disbursement.sql" relativeToChangelogFile="true" />
+    <include file="parts/0135_m_overdraft.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

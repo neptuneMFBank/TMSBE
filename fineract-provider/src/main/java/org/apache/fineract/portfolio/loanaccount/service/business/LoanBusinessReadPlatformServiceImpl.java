@@ -47,13 +47,16 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.organisation.monetary.domain.ApplicationCurrencyRepositoryWrapper;
+import org.apache.fineract.organisation.office.domain.Office;
 import org.apache.fineract.organisation.staff.service.StaffReadPlatformService;
 import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
 import org.apache.fineract.portfolio.accountdetails.service.AccountEnumerations;
 import org.apache.fineract.portfolio.calendar.data.CalendarData;
 import org.apache.fineract.portfolio.calendar.service.CalendarReadPlatformService;
 import org.apache.fineract.portfolio.charge.service.ChargeReadPlatformService;
+import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientEnumerations;
+import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
 import org.apache.fineract.portfolio.common.service.CommonEnumerations;
 import org.apache.fineract.portfolio.floatingrates.data.InterestRatePeriodData;
@@ -98,6 +101,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
     private final LoanRepositoryWrapper loanRepositoryWrapper;
+    private final ClientRepositoryWrapper clientRepositoryWrapper;
     private final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository;
     private final LoanProductReadPlatformService loanProductReadPlatformService;
     private final ClientReadPlatformService clientReadPlatformService;
@@ -118,7 +122,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
     private final AccountDetailsReadPlatformService accountDetailsReadPlatformService;
     private final ColumnValidator columnValidator;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
-    private final Long clientDefaultId;
+    private Long clientDefaultId;
     private final LoansApiResource loansApiResource;
     private final FromJsonHelper fromJsonHelper;
     private final LoanMapper loanLoanMapper;
@@ -140,7 +144,8 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
             final AccountDetailsReadPlatformService accountDetailsReadPlatformService, final LoanRepositoryWrapper loanRepositoryWrapper,
             final ColumnValidator columnValidator, DatabaseSpecificSQLGenerator sqlGenerator, PaginationHelper paginationHelper,
             final ApplicationContext applicationContext, final LoansApiResource loansApiResource, final FromJsonHelper fromJsonHelper,
-            final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper) {
+            final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper,
+            final ClientRepositoryWrapper clientRepositoryWrapper) {
         this.context = context;
         this.loanRepositoryWrapper = loanRepositoryWrapper;
         this.applicationCurrencyRepository = applicationCurrencyRepository;
@@ -171,11 +176,18 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
         this.loanLoanMapper = new LoanMapper(sqlGenerator);
         this.loanProductInterestRepositoryWrapper = loanProductInterestRepositoryWrapper;
         this.loanPendingDisbursementMapper = new LoanPendingDisbursementMapper(sqlGenerator);
+        this.clientRepositoryWrapper = clientRepositoryWrapper;
     }
 
     @Override
     public String calculateLoanScheduleLoanApplication(String apiRequestBodyAsJson, @Context final UriInfo uriInfo) {
-        this.context.authenticatedUser();
+        final AppUser appUser = this.context.authenticatedUser();
+        //set a default clientId, base on office
+        final Office office = appUser.getOffice();
+        final Long officeId = office.getId();
+
+        final Client client = this.clientRepositoryWrapper.findOneByOfficeIdWithNotFoundDetection(officeId);
+        clientDefaultId = client.getId();
         final String loanTemplateJson = LoanBusinessApiConstants.loanTemplateConfig(this.loansApiResource, apiRequestBodyAsJson,
                 fromJsonHelper, clientDefaultId, true, uriInfo, null, this.loanProductInterestRepositoryWrapper);
         log.info("calculateLoanScheduleLoanApplicationTemplate: {}", loanTemplateJson);

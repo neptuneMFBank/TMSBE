@@ -29,7 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
- * Wrapper for {@link ClientRepository} that adds NULL checking and Error handling capabilities
+ * Wrapper for {@link ClientRepository} that adds NULL checking and Error
+ * handling capabilities
  * </p>
  */
 @Service
@@ -62,6 +63,11 @@ public class ClientRepositoryWrapper {
     @Transactional(readOnly = true)
     public Client findOneWithNotFoundDetection(final Long id) {
         return this.findOneWithNotFoundDetection(id, false);
+    }
+
+    @Transactional(readOnly = true)
+    public Client findOneByOfficeIdWithNotFoundDetection(final Long officeId) {
+        return this.repository.findOneByOfficeId(officeId).orElseThrow(() -> new ClientNotFoundException("User office has no customer"));
     }
 
     @Transactional(readOnly = true)

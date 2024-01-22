@@ -606,4 +606,19 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             log.warn("Dev check, cannot update loanId {} with status >= 300", loan.getId());
         }
     }
+
+    @Override
+    public CommandProcessingResult approveOverdraft(Long overdraftId, JsonCommand command) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public CommandProcessingResult undoOverdraft(Long overdraftId, JsonCommand command) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public CommandProcessingResult rejectOverdraft(Long overdraftId, JsonCommand command) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

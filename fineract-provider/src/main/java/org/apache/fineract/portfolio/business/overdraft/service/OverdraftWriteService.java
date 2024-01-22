@@ -16,24 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.business.metrics.service;
+package org.apache.fineract.portfolio.business.overdraft.service;
 
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
-public interface MetricsWriteService {
+public interface OverdraftWriteService {
 
-    CommandProcessingResult approveLoanMetrics(Long metricsId, JsonCommand command);
+    CommandProcessingResult submitOverdraft(JsonCommand command);
 
-    CommandProcessingResult undoLoanMetrics(Long metricsId, JsonCommand command);
+    CommandProcessingResult modifyOverdraft(Long overdraftId, JsonCommand command);
 
-    CommandProcessingResult rejectLoanMetrics(Long metricsId, JsonCommand command);
+    CommandProcessingResult deleteOverdraft(Long overdraftId);
 
-    CommandProcessingResult assignLoanMetrics(Long metricsId, JsonCommand command);
+    CommandProcessingResult stopOverdraft(Long overdraftId, JsonCommand command);
 
-    CommandProcessingResult approveOverdraft(Long overdraftId, JsonCommand command);
-
-    CommandProcessingResult undoOverdraft(Long overdraftId, JsonCommand command);
-
-    CommandProcessingResult rejectOverdraft(Long overdraftId, JsonCommand command);
+    CommandProcessingResult sendOverdraftForApproval(Long overdraftId, JsonCommand command);
 }

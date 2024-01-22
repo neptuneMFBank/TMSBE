@@ -16,29 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.business.metrics.service;
+package org.apache.fineract.portfolio.business.overdraft.service;
 
-import java.util.Collection;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.business.metrics.data.MetricsData;
+import org.apache.fineract.portfolio.business.overdraft.data.OverdraftData;
 
-public interface MetricsReadPlatformService {
+public interface OverdraftReadPlatformService {
 
-    void queueLoanApprovals();
+    Page<OverdraftData> retrieveAll(final SearchParametersBusiness searchParameters);
 
-    void reminderLoanApprovals();
+    OverdraftData retrieveOne(final Long overdraftId);
 
-    Page<MetricsData> retrieveAll(final SearchParametersBusiness searchParameters);
-
-    Collection<MetricsData> retrieveSavingsAccountMetrics(final Long savingsAccountId);
-
-    Collection<MetricsData> retrieveLoanMetrics(final Long loanId);
-
-    void queueOverdraftApprovals();
-
-    void reminderOverdraftApprovals();
-
-    Collection<MetricsData> retrieveOverdraftMetrics(final Long overdraftId);
+    OverdraftData retrieveTemplate();
 
 }

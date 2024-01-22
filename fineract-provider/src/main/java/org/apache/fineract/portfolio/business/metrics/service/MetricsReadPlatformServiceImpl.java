@@ -36,6 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.campaigns.email.data.EmailConfigurationValidator;
+import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
+import org.apache.fineract.infrastructure.configuration.service.ConfigurationReadPlatformService;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.EmailDetail;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
@@ -101,6 +103,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     private final GmailBackedPlatformEmailService gmailBackedPlatformEmailService;
     private final EmailConfigurationValidator emailConfigurationValidator;
     private final AppUserRepositoryWrapper appUserRepositoryWrapper;
+    private final ConfigurationReadPlatformService configurationReadPlatformService;
 
     private static final Long SUPER_USER_SERVICE_ROLE = 1L;
 
@@ -142,9 +145,21 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                 }
 
                 if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
+                    String navigationUrl = "";
+                    final GlobalConfigurationPropertyData appBaseUrl = this.configurationReadPlatformService
+                            .retrieveGlobalConfiguration("app-base-url");
+                    if (appBaseUrl.isEnabled() && StringUtils.isNotBlank(appBaseUrl.getStringValue())) {
+                        StringBuilder navigationBuilder = new StringBuilder();
+                        navigationBuilder.append("\n\nClick here: ");
+                        navigationBuilder.append(appBaseUrl.getStringValue());
+                        navigationBuilder.append("/loans/details?loanId=");
+                        navigationBuilder.append(loanId);
+                        navigationUrl = navigationBuilder.toString();
+                    }
+
                     final String subject = String.format("Notification of Pending Loan Id `%s` Approval", loanId);
-                    final String body = String.format("%s with mobile %s have a loan (`%s`) pending approval.", clientName, mobileNo,
-                            loanProductName);
+                    final String body = String.format("%s with mobile %s have a loan (`%s`) pending approval.%s", clientName, mobileNo,
+                            loanProductName, navigationUrl);
                     notificationToUsers(notifybusinessUsers, subject, body);
                 }
             }
@@ -217,11 +232,11 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     private void createLoanMetrics(Long loanApprovalScheduleId) {
         boolean updateLoan = false;
         final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanApprovalScheduleId);
-        final Client client = loan.getClient();
-        final String clientName = client.getDisplayName();
-        final String mobileNo = client.mobileNo();
+        //final Client client = loan.getClient();
+        //final String clientName = client.getDisplayName();
+        //final String mobileNo = client.mobileNo();
         final LoanProduct loanProduct = loan.getLoanProduct();
-        final String loanProductName = loanProduct.getName();
+        //final String loanProductName = loanProduct.getName();
         final Long loanProductId = loanProduct.getId();
         final LoanProductApprovalData loanProductApprovalData = this.loanProductApprovalReadPlatformService
                 .retrieveOneViaLoanProduct(loanProductId);
@@ -410,6 +425,21 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             log.warn("No user available in Super User Role, Loan Approval metrics cannot be set.");
             return null;
         }
+    }
+
+    @Override
+    public void queueOverdraftApprovals() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void reminderOverdraftApprovals() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Collection<MetricsData> retrieveOverdraftMetrics(Long overdraftId) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     private static final class MetricsMapper implements RowMapper<MetricsData> {

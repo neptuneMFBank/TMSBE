@@ -59,7 +59,7 @@ import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiCon
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Path("/metrics")
+@Path("/overdraft")
 @Component
 @RequiredArgsConstructor
 @Tag(name = "Metrics", description = "This defines the metrics model")

@@ -186,7 +186,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
         final Office office = appUser.getOffice();
         final Long officeId = office.getId();
 
-        final Client client = this.clientRepositoryWrapper.findOneByOfficeIdWithNotFoundDetection(officeId);
+        final Client client = this.clientRepositoryWrapper.findFirstByOfficeId(officeId);
         clientDefaultId = client.getId();
         final String loanTemplateJson = LoanBusinessApiConstants.loanTemplateConfig(this.loansApiResource, apiRequestBodyAsJson,
                 fromJsonHelper, clientDefaultId, true, uriInfo, null, this.loanProductInterestRepositoryWrapper);

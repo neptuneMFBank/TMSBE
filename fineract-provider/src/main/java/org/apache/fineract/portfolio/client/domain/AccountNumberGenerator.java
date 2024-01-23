@@ -295,7 +295,7 @@ public class AccountNumberGenerator {
         // find if the custom NIBSS SORTCODE is defined
         String nibssSortcode = null;
         final GlobalConfigurationPropertyData nibssSortcodeConfig = this.configurationReadPlatformService
-                .retrieveGlobalConfiguration("nibss-sortcode");
+                .retrieveGlobalConfigurationX("nibss-sortcode");
         if (nibssSortcodeConfig.isEnabled()) {
             nibssSortcode = nibssSortcodeConfig.getStringValue();
         }

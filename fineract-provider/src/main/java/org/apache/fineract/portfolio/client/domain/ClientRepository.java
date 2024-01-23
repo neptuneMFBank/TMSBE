@@ -37,6 +37,6 @@ interface ClientRepository extends JpaRepository<Client, Long>, JpaSpecification
 
     Client findByEmailAddress(String emailAddress);
 
-    Optional<Client> findOneByOfficeId(Long officeId);
+    Optional<Client> findFirstByOfficeId(Long officeId);
 
 }

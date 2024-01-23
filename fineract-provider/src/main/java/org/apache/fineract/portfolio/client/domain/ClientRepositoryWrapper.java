@@ -66,8 +66,8 @@ public class ClientRepositoryWrapper {
     }
 
     @Transactional(readOnly = true)
-    public Client findOneByOfficeIdWithNotFoundDetection(final Long officeId) {
-        return this.repository.findOneByOfficeId(officeId).orElseThrow(() -> new ClientNotFoundException("User office has no customer"));
+    public Client findFirstByOfficeIdWithNotFoundDetection(final Long officeId) {
+        return this.repository.findFirstByOfficeId(officeId).orElseThrow(() -> new ClientNotFoundException("User office has no customer"));
     }
 
     @Transactional(readOnly = true)

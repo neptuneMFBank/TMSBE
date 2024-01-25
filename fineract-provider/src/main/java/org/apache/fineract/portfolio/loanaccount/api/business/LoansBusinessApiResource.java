@@ -683,6 +683,7 @@ public class LoansBusinessApiResource {
             @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
             @QueryParam("clientId") @Parameter(description = "clientId") final Long clientId,
+            @QueryParam("staffId") @Parameter(description = "staffId") final Long staffId,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
             @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
             @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
@@ -705,7 +706,7 @@ public class LoansBusinessApiResource {
         }
 
         final SearchParametersBusiness searchParameters = SearchParametersBusiness.forLoansBusiness(clientId, officeId, externalId,
-                statusId, null, offset, limit, orderBy, sortOrder, null, accountNo, fromDate, toDate);
+                statusId, null, offset, limit, orderBy, sortOrder, staffId, accountNo, fromDate, toDate);
 
         final Page<LoanBusinessAccountData> loanBasicDetails = this.loanBusinessReadPlatformService.retrieveAll(searchParameters);
 

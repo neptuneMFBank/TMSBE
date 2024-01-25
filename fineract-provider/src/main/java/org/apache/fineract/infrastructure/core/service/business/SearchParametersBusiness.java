@@ -78,6 +78,7 @@ public final class SearchParametersBusiness {
 
     private final Long staffSupervisorId;
     private final Boolean isSupervisor;
+    private final Boolean isLoanOfficer;
 
     public static SearchParametersBusiness forNotification(final Integer offset, final Integer limit, final String orderBy, final String sortOrder,
             final String actionType, final LocalDate fromDate, final LocalDate toDate) {
@@ -116,6 +117,7 @@ public final class SearchParametersBusiness {
         final Integer type = null;
         final Long documentConfigId = null;
         final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
         final Long loanId = null;
         final Long productId = null;
         final Long officeId = null;
@@ -126,7 +128,7 @@ public final class SearchParametersBusiness {
                 sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
                 productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
                 showLoanProducts, showSavingsProducts, documentConfigId, bvn, industryId, classificationId, organisationalRoleEnumId, username,
-                depositTypeId, staffSupervisorId, isSupervisor);
+                depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     public static SearchParametersBusiness forMetricsLoan(final Long loanId, final Integer offset, final Integer limit,
@@ -164,11 +166,12 @@ public final class SearchParametersBusiness {
         final Integer type = null;
         final Long documentConfigId = null;
         final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
                 productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
                 showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId,
-                username, depositTypeId, staffSupervisorId, isSupervisor);
+                username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     public static SearchParametersBusiness forDeposit(final Integer offset, final Integer limit, final String orderBy,
@@ -203,12 +206,13 @@ public final class SearchParametersBusiness {
         final Long documentConfigId = null;
         final Long staffSupervisorId = null;
         final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
                 productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
                 showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId,
-                username, depositTypeId, staffSupervisorId, isSupervisor);
+                username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     public static SearchParametersBusiness forLoanProductApproval(final Integer offset, final Integer limit, final String orderBy,
@@ -246,12 +250,13 @@ public final class SearchParametersBusiness {
         final Integer depositTypeId = null;
         final Long staffSupervisorId = null;
         final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
                 productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
                 showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId,
-                username, depositTypeId, staffSupervisorId, isSupervisor);
+                username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     public static SearchParametersBusiness forUser(final Boolean active, final Integer offset, final Integer limit, final String orderBy,
@@ -288,17 +293,18 @@ public final class SearchParametersBusiness {
         final Integer depositTypeId = null;
         final Long staffSupervisorId = null;
         final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, supervisorId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status,
                 categoryId, productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
                 showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId,
-                username, depositTypeId, staffSupervisorId, isSupervisor);
+                username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     public static SearchParametersBusiness forStaff(final Boolean active, final Integer offset, final Integer limit, final String orderBy,
             final String sortOrder, final Long supervisorId, final LocalDate fromDate, final LocalDate toDate, final String displayName,
-            final Long organisationalRoleEnumId, final Long officeId, final Boolean isSupervisor) {
+            final Long organisationalRoleEnumId, final Long officeId, final Boolean isSupervisor, final Boolean isLoanOfficer) {
         final Long industryId = null;
         final Long classificationId = null;
         final String accountNo = null;
@@ -333,7 +339,7 @@ public final class SearchParametersBusiness {
                 orderBy, sortOrder, supervisorId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status,
                 categoryId, productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
                 showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId,
-                username, depositTypeId, staffSupervisorId, isSupervisor);
+                username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     public static SearchParametersBusiness forEmployer(final Boolean active, final Integer offset, final Integer limit,
@@ -369,12 +375,13 @@ public final class SearchParametersBusiness {
         final Integer depositTypeId = null;
         final Long staffSupervisorId = null;
         final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, supervisorId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status,
                 categoryId, productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
                 showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId,
-                username, depositTypeId, staffSupervisorId, isSupervisor);
+                username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     public static SearchParametersBusiness forClientPendingActivation(final LocalDate fromDate, final LocalDate toDate,
@@ -411,12 +418,13 @@ public final class SearchParametersBusiness {
         final Integer depositTypeId = null;
         final Long staffSupervisorId = null;
         final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, supervisorStaffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status,
                 categoryId, productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
                 showLoanProducts, showSavingsProducts, documentConfigId, bvn, industryId, classificationId, organisationalRoleEnumId,
-                username, depositTypeId, staffSupervisorId, isSupervisor);
+                username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     public static SearchParametersBusiness forDocumentProductConfig(final Long documentConfigId, final Integer offset, final Integer limit,
@@ -455,12 +463,13 @@ public final class SearchParametersBusiness {
         final Integer depositTypeId = null;
         final Long staffSupervisorId = null;
         final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
                 productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
                 showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId,
-                username, depositTypeId, staffSupervisorId, isSupervisor);
+                username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     public static SearchParametersBusiness forDocumentConfig(final Integer type, final Integer offset, final Integer limit,
@@ -498,12 +507,13 @@ public final class SearchParametersBusiness {
         final Integer depositTypeId = null;
         final Long staffSupervisorId = null;
         final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
                 productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
                 showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId,
-                username, depositTypeId, staffSupervisorId, isSupervisor);
+                username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     public static SearchParametersBusiness forLoansBusiness(final Long clientId, final Long officeId, final String externalId,
@@ -539,12 +549,13 @@ public final class SearchParametersBusiness {
         final Integer depositTypeId = null;
         final Long staffSupervisorId = null;
         final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, name, hierarchy, firstname, lastname, offset, limit, orderBy,
                 sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId, productId,
                 provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId, showLoanProducts,
                 showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId, username,
-                depositTypeId, staffSupervisorId, isSupervisor);
+                depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     public static SearchParametersBusiness forLoansPendingDisbursementBusiness(final Long clientId, final Long officeId,
@@ -582,12 +593,13 @@ public final class SearchParametersBusiness {
         final Integer depositTypeId = null;
         final Long staffSupervisorId = null;
         final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, name, hierarchy, firstname, lastname, offset, limit, orderBy,
                 sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId, productId,
                 provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId, showLoanProducts,
                 showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId, username,
-                depositTypeId, staffSupervisorId, isSupervisor);
+                depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     public static SearchParametersBusiness forLoansArrearsBusiness(final Long productId, final Long clientId, final Long officeId,
@@ -624,12 +636,13 @@ public final class SearchParametersBusiness {
         final Integer depositTypeId = null;
         final Long staffSupervisorId = null;
         final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
 
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, name, hierarchy, firstname, lastname, offset, limit, orderBy,
                 sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId, productId,
                 provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId, showLoanProducts,
                 showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId, username,
-                depositTypeId, staffSupervisorId, isSupervisor);
+                depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     public static SearchParametersBusiness forClientsBusiness(final Long officeId, final String externalId, final Integer statusId,
@@ -661,11 +674,12 @@ public final class SearchParametersBusiness {
         final Integer depositTypeId = null;
         final Long staffSupervisorId = null;
         final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
         return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
                 orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
                 productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
                 showLoanProducts, showSavingsProducts, documentConfigId, bvn, industryId, classificationId, organisationalRoleEnumId,
-                username, depositTypeId, staffSupervisorId, isSupervisor);
+                username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
     private SearchParametersBusiness(final String sqlSearch, final Long officeId, final String externalId, final String name,
@@ -677,7 +691,8 @@ public final class SearchParametersBusiness {
             final Boolean active, final Long clientId, final Boolean showLoanProducts, final Boolean showSavingsProducts,
             final Long documentConfigId, final String bvn, final Long industryId, final Long classificationId,
             final Long organisationalRoleEnumId, final String username, final Integer depositTypeId, final Long staffSupervisorId,
-            final Boolean isSupervisor) {
+            final Boolean isSupervisor, final Boolean isLoanOfficer) {
+        this.isLoanOfficer = isLoanOfficer;
         this.isSupervisor = isSupervisor;
         this.username = username;
         this.depositTypeId = depositTypeId;
@@ -1063,6 +1078,14 @@ public final class SearchParametersBusiness {
 
     public boolean isSupervisorPassed() {
         return isSupervisor != null;
+    }
+
+    public boolean isLoanOfficerPassed() {
+        return isLoanOfficer != null;
+    }
+
+    public Boolean getIsLoanOfficer() {
+        return isLoanOfficer;
     }
 
     public boolean isOrphansOnlyPassed() {

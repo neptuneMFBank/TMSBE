@@ -88,7 +88,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
         try {
             final String sql = "select " + rm.schema() + " where s.id = ? and o.hierarchy like ? ";
 
-            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { staffId, hierarchy }); // NOSONAR
+            return this.jdbcTemplate.queryForObject(sql, rm, new Object[]{staffId, hierarchy}); // NOSONAR
         } catch (final EmptyResultDataAccessException e) {
             throw new StaffNotFoundException(staffId, e);
         }
@@ -139,6 +139,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
         final Long isOrganisationalRoleEnumIdPassed = searchParameters.getOrganisationalRoleEnumId();
         final Boolean active = searchParameters.isActive();
         final Boolean isSupervisor = searchParameters.getIsSupervisor();
+        final Boolean isLoanOfficer = searchParameters.getIsLoanOfficer();
 
         String extraCriteria = "";
 
@@ -163,6 +164,10 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
         if (searchParameters.isSupervisorPassed()) {
             extraCriteria += " and so.isSupervisor = ? ";
             paramList.add(isSupervisor);
+        }
+        if (searchParameters.isLoanOfficerPassed()) {
+            extraCriteria += " and s.is_loan_officer = ? ";
+            paramList.add(isLoanOfficer);
         }
         if (searchParameters.isOfficeIdPassed()) {
             extraCriteria += " and s.office_id = ? ";

@@ -62,6 +62,8 @@ import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistory;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistoryRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.exception.MetricsNotFoundException;
+import org.apache.fineract.portfolio.business.overdraft.domain.Overdraft;
+import org.apache.fineract.portfolio.business.overdraft.domain.OverdraftRepositoryWrapper;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
@@ -104,8 +106,145 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     private final EmailConfigurationValidator emailConfigurationValidator;
     private final AppUserRepositoryWrapper appUserRepositoryWrapper;
     private final ConfigurationReadPlatformService configurationReadPlatformService;
+    private final OverdraftRepositoryWrapper overdraftRepositoryWrapper;
 
     private static final Long SUPER_USER_SERVICE_ROLE = 1L;
+
+    private void createOverdraftMetrics(Long overdraftApprovalScheduleId) {
+        boolean updateLoan = false;
+        final Overdraft overdraft = this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftApprovalScheduleId);
+        //final Client client = loan.getClient();
+        //final String clientName = client.getDisplayName();
+        //final String mobileNo = client.mobileNo();
+        final LoanProduct loanProduct = loan.getLoanProduct();
+        //final String loanProductName = loanProduct.getName();
+        final Long loanProductId = loanProduct.getId();
+        final LoanProductApprovalData loanProductApprovalData = this.loanProductApprovalReadPlatformService
+                .retrieveOneViaLoanProduct(loanProductId);
+        log.warn("createLoanMetrics loanProductApprovalData {}", loanProductApprovalData.getId());
+
+        final Collection<LoanProductApprovalConfigData> loanProductApprovalConfigDatas = loanProductApprovalData
+                .getLoanProductApprovalConfigData();
+
+        if (CollectionUtils.isEmpty(loanProductApprovalConfigDatas)) {
+            // send a mail
+            log.warn("No loan approval set for loan product {} with id {}", loanProduct.getName(), loanProductId);
+
+            List<String> businessAddresses = getBusinessAddresses();
+            if (!CollectionUtils.isEmpty(businessAddresses)) {
+                final String subject = "Configuration Setup";
+                final String body = String.format("No loan approval process configured for loan product `%s` ", loanProduct.getName());
+                notificationToUsers(businessAddresses, subject, body);
+            }
+        } else {
+            // List<String> notifybusinessUsers = new ArrayList<>();
+
+            int nextRank = 0;
+            for (LoanProductApprovalConfigData loanProductApprovalConfigData : loanProductApprovalConfigDatas) {
+                int rank = nextRank++;
+                int status = rank == 0 ? LoanApprovalStatus.PENDING.getValue() : LoanApprovalStatus.QUEUE.getValue();
+
+                // isWithinRange
+                final BigDecimal value = loan.getProposedPrincipal();
+                log.warn("createLoanMetrics value: {}", value);
+                final BigDecimal minApprovalAmount = loanProductApprovalConfigData.getMinApprovalAmount() == null ? BigDecimal.ZERO
+                        : loanProductApprovalConfigData.getMinApprovalAmount();
+                log.warn("createLoanMetrics minApprovalAmount: {}", minApprovalAmount);
+                final BigDecimal maxApprovalAmount = loanProductApprovalConfigData.getMaxApprovalAmount() == null ? BigDecimal.ZERO
+                        : loanProductApprovalConfigData.getMaxApprovalAmount();
+                log.warn("createLoanMetrics maxApprovalAmount: {}", maxApprovalAmount);
+                final boolean isWithinRange = GeneralConstants.isWithinRange(value, minApprovalAmount, maxApprovalAmount);
+                if ( // loanProductApprovalConfigData.getMaxApprovalAmount() == null
+                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
+                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal())
+                        // >= 0
+                        isWithinRange) {
+                    // create loan movement approval if this condition is met
+                    final RoleData roleData = loanProductApprovalConfigData.getRoleData();
+                    final Long roleId = roleData.getId();
+                    Collection<AppUserData> appUserDatas = this.appUserBusinessReadPlatformService.retrieveActiveAppUsersForRole(roleId);
+                    if (CollectionUtils.isEmpty(appUserDatas)) {
+                        // send a mail informing no user_staff assigned to role
+                        log.warn("No user/staff assigned to role {} with id {} on loan approval loan product onfig", roleData.getName(),
+                                roleId);
+
+                        List<String> businessAddresses = getBusinessAddresses();
+                        if (!CollectionUtils.isEmpty(businessAddresses)) {
+                            final String subject = "Configuration Setup";
+                            final String body = String.format("No user/staff assigned to role `%s` ", roleData.getName());
+                            notificationToUsers(businessAddresses, subject, body);
+                        }
+                        nextRank = nextRank > 0 ? nextRank-- : 0;
+                    } else {
+                        try {
+                            final Staff staff = setAssingmentLoanApprovalCheck(appUserDatas);
+                            if (ObjectUtils.isEmpty(staff)) {
+                                nextRank = nextRank > 0 ? nextRank-- : 0;
+                                continue;
+                            }
+                            //final Long staffId = staff.getId();
+                            //final AppUser appUser = this.appUserRepositoryWrapper.findFirstByStaffId(staffId);
+//                            if (ObjectUtils.isNotEmpty(appUser)) {
+//                                getEmailAddress(appUser, notifybusinessUsers);
+//                            }
+//                            final Staff organisationalRoleParentStaff = staff.getOrganisationalRoleParentStaff();
+//                            if (ObjectUtils.isNotEmpty(organisationalRoleParentStaff)) {
+//                                final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();
+//                                final AppUser appUserSupervisor = this.appUserRepositoryWrapper
+//                                        .findFirstByStaffId(organisationalRoleParentStaffId);
+//                                if (ObjectUtils.isNotEmpty(appUserSupervisor)) {
+//                                    // set email of approval supervisor
+//                                    getEmailAddress(appUserSupervisor, notifybusinessUsers);
+//                                }
+//                            }
+                            final Metrics metrics = Metrics.createLoanMetrics(staff, status, rank, loan);
+                            this.metricsRepositoryWrapper.saveAndFlush(metrics);
+                            final Long metricsId = metrics.getId();
+                            if (metricsId != null) {
+                                final MetricsHistory metricsHistory = MetricsHistory.instance(metrics, status);
+                                this.metricsHistoryRepositoryWrapper.saveAndFlush(metricsHistory);
+                            }
+                            updateLoan = true;
+                        } catch (Exception e) {
+                            throw new MetricsNotFoundException("createLoanMetricsAssigningFailed: " + e);
+                        }
+                    }
+                } else {
+                    nextRank = nextRank > 0 ? nextRank-- : 0;
+                    log.warn("Not withIn range for loanId: {}", loanApprovalScheduleId);
+                }
+            }
+            if (updateLoan) {
+                // update dataTable loan approvalCheck
+                String loanApprovalCheckSql = "UPDATE approvalCheck ac SET ac.isSentForApproval=1 WHERE ac.loan_id=?";
+                jdbcTemplate.update(loanApprovalCheckSql, loanApprovalScheduleId);
+//                if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
+//                    final String subject = String.format("Notification on new Loan `%s` Awaiting Approval", loanApprovalScheduleId);
+//                    final String body = String.format("%s with mobile %s have a loan (`%s`) pending approval.", clientName, mobileNo,
+//                            loanProductName);
+//                    notificationToUsers(notifybusinessUsers, subject, body);
+//                }
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    @CronTarget(jobName = JobName.QUEUE_OVERDRAFT_APPROVAL_CHECKS)
+    public void queueOverdraftApprovals() {
+        final String sqlFinder = "select mosv.overdraft_id overdraftId from m_overdraft_schedule_view mosv ";
+        List<Long> overdraftApprovalSchedule = this.jdbcTemplate.queryForList(sqlFinder, Long.class);
+        for (Long overdraftApprovalScheduleId : overdraftApprovalSchedule) {
+            createOverdraftMetrics(overdraftApprovalScheduleId);
+        }
+        log.info("{}: Records affected by queueOverdraftApprovals: {}", ThreadLocalContextUtil.getTenant().getName(),
+                overdraftApprovalSchedule.size());
+    }
+
+    @Override
+    public void reminderOverdraftApprovals() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 
     @Override
     @Transactional
@@ -425,16 +564,6 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             log.warn("No user available in Super User Role, Loan Approval metrics cannot be set.");
             return null;
         }
-    }
-
-    @Override
-    public void queueOverdraftApprovals() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void reminderOverdraftApprovals() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override

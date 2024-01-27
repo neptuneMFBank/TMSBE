@@ -20,13 +20,19 @@ package org.apache.fineract.portfolio.business.overdraft.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
+import org.apache.fineract.portfolio.business.metrics.data.LoanApprovalStatus;
+import org.apache.fineract.portfolio.business.overdraft.api.OverdraftApiResourceConstants;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
+import org.apache.fineract.simplifytech.data.GeneralConstants;
 
 @Entity
 @Table(name = "m_overdraft")
@@ -63,7 +69,47 @@ public class Overdraft extends AbstractAuditableWithUTCDateTimeCustom {
         this.savingsAccount = savingsAccount;
     }
 
-    public static Overdraft createOverdraft(BigDecimal amount, BigDecimal nominalAnnualInterestRateOverdraft, Integer status, LocalDate startDate, LocalDate expiryDate, SavingsAccount savingsAccount) {
+    public Map<String, Object> update(final JsonCommand command) {
+
+        final Map<String, Object> actualChanges = new LinkedHashMap<>(7);
+
+        final String amountParamName = OverdraftApiResourceConstants.AMOUNT;
+        if (command.isChangeInBigDecimalParameterNamed(amountParamName, this.amount)) {
+            final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(amountParamName);
+            actualChanges.put(amountParamName, newValue);
+            this.amount = newValue;
+        }
+        final String daysParamName = OverdraftApiResourceConstants.NUMBER_OF_DAYS;
+        Integer numberOfDays = GeneralConstants.numberOfDays(startDate, expiryDate);
+        if (command.parameterExists(OverdraftApiResourceConstants.NUMBER_OF_DAYS)) {
+            final Integer checkNumberOfDays = command.integerValueOfParameterNamed(OverdraftApiResourceConstants.NUMBER_OF_DAYS);
+            numberOfDays = checkNumberOfDays != null && checkNumberOfDays > 0 ? checkNumberOfDays : numberOfDays;
+        }
+        if (command.isChangeInBigDecimalParameterNamed(daysParamName, this.nominalAnnualInterestRateOverdraft)) {
+            final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(daysParamName);
+            actualChanges.put(daysParamName, newValue);
+            this.nominalAnnualInterestRateOverdraft = newValue;
+        }
+        final String interestParamName = OverdraftApiResourceConstants.NOMINALINTEREST;
+        if (command.isChangeInBigDecimalParameterNamed(interestParamName, this.nominalAnnualInterestRateOverdraft)) {
+            final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(interestParamName);
+            actualChanges.put(interestParamName, newValue);
+            this.nominalAnnualInterestRateOverdraft = newValue;
+        }
+
+        final String startDateParamName = OverdraftApiResourceConstants.STARTDATE;
+        if (command.isChangeInDateParameterNamed(startDateParamName, this.startDate)) {
+            final LocalDate newValue = command.dateValueOfParameterNamed(startDateParamName);
+            actualChanges.put(startDateParamName, newValue);
+            this.startDate = newValue;
+            this.expiryDate = this.startDate.plusDays(numberOfDays);
+        }
+
+        return actualChanges;
+    }
+
+    public static Overdraft createOverdraft(BigDecimal amount, BigDecimal nominalAnnualInterestRateOverdraft, LocalDate startDate, LocalDate expiryDate, SavingsAccount savingsAccount) {
+        final Integer status = LoanApprovalStatus.DRAFT.getValue();
         return new Overdraft(amount, nominalAnnualInterestRateOverdraft, status, startDate, expiryDate, savingsAccount);
     }
 

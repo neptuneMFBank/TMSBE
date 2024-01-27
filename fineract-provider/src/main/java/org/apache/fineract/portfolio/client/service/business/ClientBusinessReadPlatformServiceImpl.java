@@ -595,6 +595,15 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         return jsonObjectBalance;
     }
 
+    @Override
+    public KycBusinessData isClientExisting(String email, String mobileNo, String altMobileNo, String bvn, String nin, String tin) {
+        Integer cnt = this.jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM client_unique_view WHERE mc.email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ", Integer.class,
+                email, mobileNo, altMobileNo, bvn, nin, tin);
+        Boolean agreement = cnt != null && cnt > 0;
+        return new KycBusinessData(null, null, null, null, null, null, null, agreement, null);
+    }
+
     private static final class ClientLookupKycLevelMapper implements RowMapper<KycBusinessData> {
 
         private final String schema;

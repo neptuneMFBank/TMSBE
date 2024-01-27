@@ -18,8 +18,6 @@
  */
 package org.apache.fineract.portfolio.business.overdraft.api;
 
-import static org.apache.fineract.simplifytech.data.GeneralConstants.is;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -28,9 +26,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -46,15 +46,13 @@ import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.infrastructure.core.exception.UnrecognizedQueryParamException;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.portfolio.business.metrics.api.MetricsApiResourceConstants;
-import org.apache.fineract.portfolio.business.metrics.data.MetricsData;
-import org.apache.fineract.portfolio.business.metrics.service.MetricsReadPlatformService;
+import org.apache.fineract.portfolio.business.overdraft.data.OverdraftData;
+import org.apache.fineract.portfolio.business.overdraft.service.OverdraftReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
 import org.springframework.stereotype.Component;
 
@@ -62,40 +60,56 @@ import org.springframework.stereotype.Component;
 @Path("/overdraft")
 @Component
 @RequiredArgsConstructor
-@Tag(name = "Metrics", description = "This defines the metrics model")
+@Tag(name = "Overdraft", description = "This defines the Overdraft model")
 public class OverdraftApiResource {
 
     private final PlatformSecurityContext securityContext;
-    private final ToApiJsonSerializer<MetricsData> jsonSerializer;
-    private final MetricsReadPlatformService readPlatformService;
+    private final ToApiJsonSerializer<OverdraftData> jsonSerializer;
+    private final OverdraftReadPlatformService readPlatformService;
     private final PortfolioCommandSourceWritePlatformService commandWritePlatformService;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
+    private final PlatformSecurityContext context;
+    private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
 
     @GET
-    @Path("loan")
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Path("{overdraftId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve a overdraft", description = "Returns the details of a overdraft. Example Requests: overdraft/1")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")
+    })
+    public String retreiveFund(@PathParam("overdraftId") @Parameter(description = "overdraftId") final Long overdraftId, @Context final UriInfo uriInfo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(OverdraftApiResourceConstants.RESOURCENAME);
+
+        final OverdraftData overdraftData = this.readPlatformService.retrieveOne(overdraftId);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.jsonSerializer.serialize(settings, overdraftData, OverdraftApiResourceConstants.RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
+    @Consumes({MediaType.APPLICATION_JSON})
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Retrieve loan Metricss", description = "Retrieve loan Metricss")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
-    // MetricsApiResourceSwagger.GetMetricssResponse.class)))
-    ) })
+    @Operation(summary = "Retrieve Overdraft", description = "Retrieve Overdraft")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+        // MetricsApiResourceSwagger.GetMetricssResponse.class)))
+        )})
     public String getLoanMetrics(@Context final UriInfo uriInfo,
-            @QueryParam("staffSupervisorId") @Parameter(description = "staffSupervisorId") final Long staffSupervisorId,
-            @QueryParam("staffId") @Parameter(description = "staffId") final Long staffId,
-            @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
-            @QueryParam("loanId") @Parameter(description = "loanId") final Long loanId,
-            @QueryParam("productId") @Parameter(description = "productId") final Long productId,
+            @QueryParam("savingsId") @Parameter(description = "savingsId") final Long savingsId,
             @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
             @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
             @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
-            @DefaultValue("mm.id") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
-            @DefaultValue("asc") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            @DefaultValue("id") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @DefaultValue("desc") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
             @DefaultValue("en") @QueryParam("locale") final String locale,
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
-        this.securityContext.authenticatedUser().validateHasReadPermission(MetricsApiResourceConstants.RESOURCENAME);
+        this.securityContext.authenticatedUser().validateHasReadPermission(OverdraftApiResourceConstants.RESOURCENAME);
 
         LocalDate fromDate = null;
         if (startPeriod != null) {
@@ -106,53 +120,97 @@ public class OverdraftApiResource {
             toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
         }
 
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forMetricsLoan(loanId, offset, limit, orderBy, sortOrder,
-                productId, fromDate, toDate, officeId, staffId, staffSupervisorId);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forOverdraft(offset, limit, orderBy, sortOrder, savingsId, fromDate, toDate, statusId);
 
-        final Page<MetricsData> metricsData = this.readPlatformService.retrieveAll(searchParameters);
+        final Page<OverdraftData> overdraftData = this.readPlatformService.retrieveAll(searchParameters);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        return this.jsonSerializer.serialize(settings, metricsData, MetricsApiResourceConstants.RESPONSE_DATA_PARAMETERS);
+        return this.jsonSerializer.serialize(settings, overdraftData, OverdraftApiResourceConstants.RESPONSE_DATA_PARAMETERS);
     }
 
     @POST
-    @Path("loan/{metricsId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Actions on Loan Approval", description = """
-            """)
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Create an Overdraft", description = "")
     @RequestBody(required = true
-    // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
-    ) })
-    public String actions(@PathParam("metricsId") @Parameter(description = "metricsId") final Long metricsId,
-            @QueryParam("command") @Parameter(description = "command") final String commandParam,
-            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
+    public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
-        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .createOverdraft()//
+                .withJson(apiRequestBodyAsJson) //
+                .build(); //
 
-        CommandProcessingResult result = null;
-        CommandWrapper commandRequest;
-        if (is(commandParam, "approve")) {
-            commandRequest = builder.approveLoanMetrics(metricsId).build();
-            result = this.commandWritePlatformService.logCommandSource(commandRequest);
-        } else if (is(commandParam, "undo")) {
-            commandRequest = builder.undoLoanMetrics(metricsId).build();
-            result = this.commandWritePlatformService.logCommandSource(commandRequest);
-        } else if (is(commandParam, "reject")) {
-            commandRequest = builder.rejectLoanMetrics(metricsId).build();
-            result = this.commandWritePlatformService.logCommandSource(commandRequest);
-        } else if (is(commandParam, "assign")) {
-            commandRequest = builder.assignLoanMetrics(metricsId).build();
-            result = this.commandWritePlatformService.logCommandSource(commandRequest);
-        }
-
-        if (result == null) {
-            throw new UnrecognizedQueryParamException("command", commandParam, new Object[] { "approve", "undo", "reject", "assign" });
-        }
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
         return this.jsonSerializer.serialize(result);
     }
+
+    @PUT
+    @Path("{overdraftId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Update an Overdraft", description = "")
+    @RequestBody(required = true)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        )})
+    public String update(@Parameter(description = "overdraftId") @PathParam("overdraftId") final Long overdraftId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .updateOverdraft(overdraftId) //
+                .withJson(apiRequestBodyAsJson) //
+                .build(); //
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.jsonSerializer.serialize(result);
+    }
+
+    @POST
+    @Path("/stop/{overdraftId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Stop an Overdraft", description = "")
+    @RequestBody(required = true)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        )})
+    public String stop(@Parameter(description = "overdraftId") @PathParam("overdraftId") final Long overdraftId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .stopOverdraft(overdraftId) //
+                .withJson(apiRequestBodyAsJson) //
+                .build(); //
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.jsonSerializer.serialize(result);
+    }
+
+    @DELETE
+    @Path("{overdraftId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Update a Client", description = "")
+    @RequestBody(required = true)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        )})
+    public String delete(@Parameter(description = "overdraftId") @PathParam("overdraftId") final Long overdraftId) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .deleteOverdraft(overdraftId) //
+                .withNoJsonBody() //
+                .build(); //
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.jsonSerializer.serialize(result);
+    }
+
 }

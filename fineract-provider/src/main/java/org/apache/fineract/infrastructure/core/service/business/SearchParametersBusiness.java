@@ -174,6 +174,53 @@ public final class SearchParametersBusiness {
                 username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
     }
 
+    public static SearchParametersBusiness forOverdraft(final Integer offset, final Integer limit,
+            final String orderBy, final String sortOrder, final Long savingsId, final LocalDate fromDate, final LocalDate toDate,
+             final Integer statusId) {
+        final Long loanId = null;
+        final Long officeId = null;
+        final Long staffId = null;
+        final Long staffSupervisorId = null;
+        final Long classificationId = null;
+        final Long productId = null;
+        final String accountNo = null;
+        final Long clientId = null;
+        final String externalId = null;
+        final Integer depositTypeId = null;
+        final Boolean active = null;
+        final Long organisationalRoleEnumId = null;
+        final Long industryId = null;
+        final String displayName = null;
+        final Boolean orphansOnly = null;
+        final String email = null;
+        final String mobile = null;
+        final Integer legalFormId = null;
+        final Boolean isSelfUser = null;
+        final Boolean showLoanProducts = null;
+        final Boolean showSavingsProducts = null;
+
+        final String status = null;
+        final Long categoryId = null;
+        final Long provisioningEntryId = null;
+        final String currencyCode = null;
+        final String firstname = null;
+        final String lastname = null;
+
+        final String sqlSearch = null;
+
+        final String hierarchy = null;
+        final String username = null;
+        final Integer type = null;
+        final Long documentConfigId = null;
+        final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
+        return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
+                orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
+                productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
+                showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId,
+                username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer);
+    }
+
     public static SearchParametersBusiness forDeposit(final Integer offset, final Integer limit, final String orderBy,
             final String sortOrder, final Long productId, final LocalDate fromDate, final LocalDate toDate, final Integer depositTypeId,
             final String accountNo, final Long officeId, final Integer statusId, final String externalId, final Long clientId,

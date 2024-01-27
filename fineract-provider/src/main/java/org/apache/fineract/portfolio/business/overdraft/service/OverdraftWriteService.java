@@ -31,5 +31,5 @@ public interface OverdraftWriteService {
 
     CommandProcessingResult stopOverdraft(Long overdraftId, JsonCommand command);
 
-    CommandProcessingResult sendOverdraftForApproval(Long overdraftId, JsonCommand command);
+    CommandProcessingResult sendOverdraftForApproval(Long overdraftId);
 }

@@ -40,4 +40,6 @@ public interface ClientBusinessReadPlatformService {
     KycBusinessData retrieveKycLevel(Long clientId);
 
     JsonObject retrieveBalance(Long clientId);
+
+    KycBusinessData isClientExisting(final String email, final String mobileNo, final String altMobileNo, final String bvn, final String nin, final String tin);
 }

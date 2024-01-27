@@ -22,6 +22,7 @@ import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.infrastructure.accountnumberformat.service.AccountNumberFormatConstants;
 import org.apache.fineract.notification.api.business.NotificationBusinessApiResource;
 import org.apache.fineract.portfolio.business.metrics.api.MetricsApiResourceConstants;
+import org.apache.fineract.portfolio.business.overdraft.api.OverdraftApiResourceConstants;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductApprovalApiResourceConstants;
 import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductInterestApiResourceConstants;
@@ -3740,6 +3741,45 @@ public class CommandWrapperBuilder {
         this.entityName = NotificationBusinessApiResource.RESOURCENAME;
         this.entityId = notificationId;
         this.href = "/notifications/business" + entityId;
+        return this;
+    }
+
+    public CommandWrapperBuilder createOverdraft() {
+        this.actionName = "CREATE";
+        this.entityName = OverdraftApiResourceConstants.RESOURCENAME;
+        this.href = "/overdraft";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateOverdraft(final Long overdraftId) {
+        this.actionName = "UPDATE";
+        this.entityName = OverdraftApiResourceConstants.RESOURCENAME;
+        this.entityId = overdraftId;
+        this.href = "/overdraft/" + entityId;
+        return this;
+    }
+
+    public CommandWrapperBuilder stopOverdraft(final Long overdraftId) {
+        this.actionName = "STOP";
+        this.entityName = OverdraftApiResourceConstants.RESOURCENAME;
+        this.entityId = overdraftId;
+        this.href = "/overdraft/stop/" + entityId;
+        return this;
+    }
+
+    public CommandWrapperBuilder deleteOverdraft(final Long overdraftId) {
+        this.actionName = "DELETE";
+        this.entityName = OverdraftApiResourceConstants.RESOURCENAME;
+        this.entityId = overdraftId;
+        this.href = "/overdraft/" + overdraftId;
+        return this;
+    }
+
+    public CommandWrapperBuilder submitOverdraft(final Long overdraftId) {
+        this.actionName = "SUBMIT";
+        this.entityName = OverdraftApiResourceConstants.RESOURCENAME;
+        this.entityId = overdraftId;
+        this.href = "/overdraft/" + overdraftId;
         return this;
     }
 }

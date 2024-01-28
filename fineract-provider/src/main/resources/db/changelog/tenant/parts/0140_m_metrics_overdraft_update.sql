@@ -20,5 +20,5 @@
 
 ALTER TABLE fineract_default.m_metrics 
 ADD overdraft_id BIGINT NULL,
-UNIQUE KEY `metrics_UNIQUE_rank_overdraft` (`overdraft_id`,`rank`),
-CONSTRAINT `metrics_FK_overdraft` FOREIGN KEY (`overdraft_id`) REFERENCES `m_overdraft` (`id`);
+ADD UNIQUE KEY `metrics_UNIQUE_rank_overdraft` (`overdraft_id`,`rank`),
+ADD CONSTRAINT `metrics_FK_overdraft` FOREIGN KEY (`overdraft_id`) REFERENCES `m_overdraft` (`id`);

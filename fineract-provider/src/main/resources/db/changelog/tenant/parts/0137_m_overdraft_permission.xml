@@ -154,4 +154,5 @@
             <column name="node_id" valueNumeric="1"/>
             <column name="is_mismatched_job" valueBoolean="true"/>
         </insert>
+    </changeSet>
 </databaseChangeLog>

@@ -17,9 +17,10 @@
 -- under the License.
 --
 
--- VIEW FOR OVERDRAFT APPROVAL
-CREATE OR REPLACE VIEW m_overdraft_schedule_view AS
-SELECT
-    ov.id overdraft_id
-    FROM m_overdraft ov
-    WHERE ov.status_enum=50;
+CREATE OR REPLACE VIEW m_metrics_view AS
+SELECT mm.id, mm.loan_id, mm.assigned_user_id, mm.savings_id, mm.overdraft_id, ms.display_name staff_display_name,
+mss.id organisational_role_parent_staff_id, mss.display_name organisational_role_parent_staff_display_name, mm.created_on_utc
+FROM m_metrics mm
+LEFT JOIN m_staff ms ON ms.id=mm.assigned_user_id
+LEFT JOIN m_staff mss ON mss.id=ms.organisational_role_parent_staff_id
+WHERE mm.status_enum=100;

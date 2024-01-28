@@ -42,7 +42,7 @@
             <column name="grouping" value="portfolio"/>
             <column name="code" value="CREATE_OVERDRAFT_CHECKER"/>
             <column name="entity_name" value="OVERDRAFT"/>
-            <column name="action_name" value="CREATE"/>
+            <column name="action_name" value="CREATE_CHECKER"/>
             <column name="can_maker_checker" valueBoolean="false"/>
         </insert>
         <insert tableName="m_permission">
@@ -56,7 +56,7 @@
             <column name="grouping" value="portfolio"/>
             <column name="code" value="UPDATE_OVERDRAFT_CHECKER"/>
             <column name="entity_name" value="OVERDRAFT"/>
-            <column name="action_name" value="UPDATE"/>
+            <column name="action_name" value="UPDATE_CHECKER"/>
             <column name="can_maker_checker" valueBoolean="false"/>
         </insert>
         <insert tableName="m_permission">
@@ -70,7 +70,7 @@
             <column name="grouping" value="portfolio"/>
             <column name="code" value="DELETE_OVERDRAFT_CHECKER"/>
             <column name="entity_name" value="OVERDRAFT"/>
-            <column name="action_name" value="DELETE"/>
+            <column name="action_name" value="DELETE_CHECKER"/>
             <column name="can_maker_checker" valueBoolean="false"/>
         </insert>
         <insert tableName="m_permission">
@@ -84,10 +84,10 @@
             <column name="grouping" value="portfolio"/>
             <column name="code" value="STOP_OVERDRAFT_CHECKER"/>
             <column name="entity_name" value="OVERDRAFT"/>
-            <column name="action_name" value="STOP"/>
+            <column name="action_name" value="STOP_CHECKER"/>
             <column name="can_maker_checker" valueBoolean="false"/>
         </insert>
-                <insert tableName="m_permission">
+        <insert tableName="m_permission">
             <column name="grouping" value="portfolio"/>
             <column name="code" value="SUBMIT_OVERDRAFT"/>
             <column name="entity_name" value="OVERDRAFT"/>
@@ -98,8 +98,60 @@
             <column name="grouping" value="portfolio"/>
             <column name="code" value="SUBMIT_OVERDRAFT_CHECKER"/>
             <column name="entity_name" value="OVERDRAFT"/>
-            <column name="action_name" value="SUBMIT"/>
+            <column name="action_name" value="SUBMIT_CHECKER"/>
+            <column name="can_maker_checker" valueBoolean="false"/>
+        </insert>
+
+
+
+        <insert tableName="m_permission">
+            <column name="grouping" value="portfolio"/>
+            <column name="code" value="APPROVE_OVERDRAFT_METRICS"/>
+            <column name="entity_name" value="METRICS"/>
+            <column name="action_name" value="APPROVE_OVERDRAFT"/>
+            <column name="can_maker_checker" valueBoolean="false"/>
+        </insert>
+        <insert tableName="m_permission">
+            <column name="grouping" value="portfolio"/>
+            <column name="code" value="UNDO_OVERDRAFT_METRICS"/>
+            <column name="entity_name" value="METRICS"/>
+            <column name="action_name" value="UNDO_OVERDRAFT"/>
+            <column name="can_maker_checker" valueBoolean="false"/>
+        </insert>
+        <insert tableName="m_permission">
+            <column name="grouping" value="portfolio"/>
+            <column name="code" value="REJECT_OVERDRAFT_METRICS"/>
+            <column name="entity_name" value="METRICS"/>
+            <column name="action_name" value="REJECT_OVERDRAFT"/>
+            <column name="can_maker_checker" valueBoolean="false"/>
+        </insert>
+        <insert tableName="m_permission">
+            <column name="grouping" value="portfolio"/>
+            <column name="code" value="ASSIGN_OVERDRAFT_METRICS"/>
+            <column name="entity_name" value="METRICS"/>
+            <column name="action_name" value="ASSIGN_OVERDRAFT"/>
             <column name="can_maker_checker" valueBoolean="false"/>
         </insert>
     </changeSet>
+
+    <changeSet author="fineract" id="2">
+        <insert tableName="job">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="Update Due Overdraft"/>
+            <column name="display_name" value="Update Due Overdraft"/>
+            <column name="cron_expression" value="0 0 03 1/1 * ? *"/>
+            <column name="create_time" valueDate="${current_datetime}"/>
+            <column name="task_priority" valueNumeric="5"/>
+            <column name="group_name"/>
+            <column name="previous_run_start_time"/>
+            <column name="job_key" value="Update Due OverdraftJobDetail1 _ DEFAULT"/>
+            <column name="initializing_errorlog"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="currently_running" valueBoolean="false"/>
+            <column name="updates_allowed" valueBoolean="true"/>
+            <column name="scheduler_group" valueNumeric="0"/>
+            <column name="is_misfired" valueBoolean="false"/>
+            <column name="node_id" valueNumeric="1"/>
+            <column name="is_mismatched_job" valueBoolean="true"/>
+        </insert>
 </databaseChangeLog>

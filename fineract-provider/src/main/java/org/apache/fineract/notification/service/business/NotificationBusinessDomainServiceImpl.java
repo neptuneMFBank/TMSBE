@@ -29,10 +29,13 @@ import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.notification.data.NotificationData;
 import org.apache.fineract.notification.eventandlistener.NotificationEventPublisher;
+import org.apache.fineract.portfolio.business.overdraft.domain.Overdraft;
 import org.apache.fineract.portfolio.businessevent.BusinessEventListener;
 import org.apache.fineract.portfolio.businessevent.domain.loan.business.LoanMetricsApprovalBusinessEvent;
+import org.apache.fineract.portfolio.businessevent.domain.savings.business.OverdraftMetricsApprovalBusinessEvent;
 import org.apache.fineract.portfolio.businessevent.service.BusinessEventNotifierService;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserRepository;
 import org.springframework.stereotype.Service;
@@ -50,6 +53,18 @@ public class NotificationBusinessDomainServiceImpl implements NotificationBusine
     @PostConstruct
     public void addListeners() {
         businessEventNotifierService.addPostBusinessEventListener(LoanMetricsApprovalBusinessEvent.class, new LoanMetricsApprovalListener());
+        businessEventNotifierService.addPostBusinessEventListener(OverdraftMetricsApprovalBusinessEvent.class, new OverdraftMetricsApprovalListener());
+    }
+
+    private class OverdraftMetricsApprovalListener implements BusinessEventListener<OverdraftMetricsApprovalBusinessEvent> {
+
+        @Override
+        public void onBusinessEvent(OverdraftMetricsApprovalBusinessEvent event) {
+            final Overdraft overdraft = event.get();
+            final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
+            buildNotification("APPROVE_OVERDRAFT", "overdraft", overdraft.getId(), "Overdraft Pending Approval", "created", context.authenticatedUser().getId(),
+                    savingsAccount.officeId());
+        }
     }
 
     private class LoanMetricsApprovalListener implements BusinessEventListener<LoanMetricsApprovalBusinessEvent> {

@@ -21,6 +21,7 @@ package org.apache.fineract.infrastructure.jobs.service;
 public enum JobName {
 
     // Added Business Lofgic start here
+    UPDATE_DUE_OVERDRAFT("Update Due Overdraft"),
     REMINDER_LOAN_APPROVAL_CHECKS("Reminder Loan Approval Checks"), REMINDER_OVERDRAFT_APPROVAL_CHECKS("Reminder Overdraft Approval Checks"), QUEUE_OVERDRAFT_APPROVAL_CHECKS(
             "Queue Overdraft Approval Checks"), QUEUE_LOAN_APPROVAL_CHECKS(
             "Queue Loan Approval Checks"), CREATE_RECONCILIATION_WALLET("Create Reconciliation Wallet"),

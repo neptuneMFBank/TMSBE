@@ -17,9 +17,8 @@
 -- under the License.
 --
 
--- VIEW FOR OVERDRAFT APPROVAL
-CREATE OR REPLACE VIEW m_overdraft_schedule_view AS
+CREATE OR REPLACE VIEW m_overdraft_expired_view AS
 SELECT
     ov.id overdraft_id
-    FROM m_overdraft ov
-    WHERE ov.status_enum=50;
+FROM m_overdraft ov
+WHERE ov.status_enum=300 AND CAST(ov.expiry_date AS DATE) < CURDATE();

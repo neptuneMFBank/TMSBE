@@ -156,4 +156,7 @@
     <include file="parts/0140_m_metrics_overdraft_update.sql" relativeToChangelogFile="true" />
     <include file="parts/0141_job_reminder_overdraft_approval.sql" relativeToChangelogFile="true" />
     <include file="parts/0142_job_queue_overdraft_approval.sql" relativeToChangelogFile="true" />
+    <include file="parts/0143_m_metrics_update_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0144_m_role_overdraft_approval_config.sql" relativeToChangelogFile="true" />
+    <include file="parts/0145_m_overdraft_expired_view.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

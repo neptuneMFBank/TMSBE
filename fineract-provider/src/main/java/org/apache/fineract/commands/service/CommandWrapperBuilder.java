@@ -3782,4 +3782,37 @@ public class CommandWrapperBuilder {
         this.href = "/overdraft/" + overdraftId;
         return this;
     }
+
+    public CommandWrapperBuilder approveOverdraftMetrics(final Long metricsId) {
+        this.actionName = "APPROVE_OVERDRAFT";
+        this.entityName = MetricsApiResourceConstants.RESOURCENAME;
+        this.entityId = metricsId;
+        this.href = "/metrics/overdraft/" + metricsId + "?command=approve";
+        return this;
+    }
+
+    public CommandWrapperBuilder undoOverdraftMetrics(final Long metricsId) {
+        this.actionName = "UNDO_OVERDRAFT";
+        this.entityName = MetricsApiResourceConstants.RESOURCENAME;
+        this.entityId = metricsId;
+        this.href = "/metrics/overdraft/" + metricsId + "?command=undo";
+        return this;
+    }
+
+    public CommandWrapperBuilder rejectOverdraftMetrics(final Long metricsId) {
+        this.actionName = "REJECT_OVERDRAFT";
+        this.entityName = MetricsApiResourceConstants.RESOURCENAME;
+        this.entityId = metricsId;
+        this.href = "/metrics/overdraft/" + metricsId + "?command=reject";
+        return this;
+    }
+
+    public CommandWrapperBuilder assignOverdraftMetrics(final Long metricsId) {
+        this.actionName = "ASSIGN_OVERDRAFT";
+        this.entityId = metricsId;
+        this.entityName = MetricsApiResourceConstants.RESOURCENAME;
+        this.href = "/metrics/overdraft/" + metricsId + "?command=assign";
+        return this;
+    }
+
 }

@@ -29,32 +29,30 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.fineract.infrastructure.campaigns.email.data.EmailConfigurationValidator;
-import org.apache.fineract.infrastructure.configuration.service.ConfigurationReadPlatformService;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
-import org.apache.fineract.infrastructure.core.service.GmailBackedPlatformEmailService;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.PaginationHelper;
+import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
+import org.apache.fineract.infrastructure.jobs.annotation.CronTarget;
+import org.apache.fineract.infrastructure.jobs.service.JobName;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
-import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.data.LoanApprovalStatus;
 import org.apache.fineract.portfolio.business.overdraft.data.OverdraftData;
+import org.apache.fineract.portfolio.business.overdraft.domain.Overdraft;
 import org.apache.fineract.portfolio.business.overdraft.domain.OverdraftRepositoryWrapper;
 import org.apache.fineract.portfolio.business.overdraft.exception.OverdraftNotFoundException;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
-import org.apache.fineract.portfolio.loanproduct.business.service.LoanProductApprovalReadPlatformService;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.simplifytech.data.GeneralConstants;
-import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
-import org.apache.fineract.useradministration.service.business.AppUserBusinessReadPlatformService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -66,16 +64,26 @@ public class OverdraftReadPlatformServiceImpl implements OverdraftReadPlatformSe
     private final PaginationHelper paginationHelper;
     private final ColumnValidator columnValidator;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
-    private final LoanRepositoryWrapper loanRepositoryWrapper;
-    private final OverdraftRepositoryWrapper metricsRepositoryWrapper;
-    private final LoanProductApprovalReadPlatformService loanProductApprovalReadPlatformService;
-    private final AppUserBusinessReadPlatformService appUserBusinessReadPlatformService;
-    private final StaffRepositoryWrapper staffRepositoryWrapper;
-    private final GmailBackedPlatformEmailService gmailBackedPlatformEmailService;
-    private final EmailConfigurationValidator emailConfigurationValidator;
-    private final AppUserRepositoryWrapper appUserRepositoryWrapper;
-    private final ConfigurationReadPlatformService configurationReadPlatformService;
     private final OverdraftMapper overdraftMapper = new OverdraftMapper();
+    private final OverdraftRepositoryWrapper overdraftRepositoryWrapper;
+
+    @Override
+    @Transactional
+    @CronTarget(jobName = JobName.UPDATE_DUE_OVERDRAFT)
+    public void updateDueOverdraft() {
+        final String sqlFinder = "select moev.overdraft_id overdraftId from m_overdraft_expired_view moev ";
+        List<Long> overdraftDue = this.jdbcTemplate.queryForList(sqlFinder, Long.class);
+        for (Long overdraftDueId : overdraftDue) {
+            final Overdraft overdraft = this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftDueId);
+            final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
+            final Long savingsAccountId = savingsAccount.getId();
+            String sql = "UPDATE m_savings_account ms SET ms.allow_overdraft=?, ms.overdraft_limit=?, ms.nominal_annual_interest_rate_overdraft=? WHERE ms.id=?";
+            this.jdbcTemplate.update(sql, false, 0, 0, savingsAccountId);
+
+        }
+        log.info("{}: Records overdraft due: {}", ThreadLocalContextUtil.getTenant().getName(),
+                overdraftDue.size());
+    }
 
     @Override
     public Page<OverdraftData> retrieveAll(SearchParametersBusiness searchParameters) {

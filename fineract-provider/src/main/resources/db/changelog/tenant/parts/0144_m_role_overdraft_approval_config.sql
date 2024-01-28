@@ -17,19 +17,12 @@
 -- under the License.
 --
 
-CREATE TABLE `m_overdraft`(
+CREATE TABLE `m_role_overdraft_approval_config`(
       `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-      `status_enum` SMALLINT NOT NULL DEFAULT 10,
-      `amount` decimal(19,6) NOT NULL,
-      `nominal_annual_interest_rate_overdraft` decimal(19,6) NOT NULL,
-      `savings_id` BIGINT NOT NULL,
-      `start_date` DATE NOT NULL DEFAULT CURRENT_DATE,
-      `expiry_date` DATE NOT NULL DEFAULT CURRENT_DATE,
-      `created_by` BIGINT NOT NULL,
-      `created_on_utc` DATETIME NULL,
-      `last_modified_by` BIGINT NOT NULL,
-      `last_modified_on_utc` DATETIME NULL,
-      CONSTRAINT `overdraft_FK_saving` FOREIGN KEY (`savings_id`) REFERENCES `m_savings_account` (`id`),
-      CONSTRAINT `overdraft_FK_created_by` FOREIGN KEY (`created_by`) REFERENCES m_appuser(`id`),
-      CONSTRAINT `overdraft_FK_last_modified_by` FOREIGN KEY (`last_modified_by`) REFERENCES m_appuser(`id`)
+      `role_id` BIGINT NOT NULL,
+      `min_approval_amount` decimal(19,6) DEFAULT NULL,
+      `max_approval_amount` decimal(19,6) DEFAULT NULL,
+      `rank` INT NOT NULL,
+      UNIQUE KEY `UNIQUE_rank` (`rank`),
+      CONSTRAINT `config_FK_roac_role` FOREIGN KEY (`role_id`) REFERENCES `m_role` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.business.overdraft.domain;
 
+import java.util.List;
 import org.apache.fineract.portfolio.business.overdraft.exception.OverdraftNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,13 +34,22 @@ public class OverdraftRepositoryWrapper {
         this.repository = repository;
     }
 
-    public void saveAndFlush(final Overdraft metrics) {
-        this.repository.saveAndFlush(metrics);
+    public void saveAndFlush(final Overdraft overdraft) {
+        this.repository.saveAndFlush(overdraft);
+    }
+
+    public void deleteById(final Long overdraftId) {
+        this.repository.deleteById(overdraftId);
     }
 
     @Transactional(readOnly = true)
     public Overdraft findOneWithNotFoundDetection(final Long id) {
         return this.repository.findById(id).orElseThrow(() -> new OverdraftNotFoundException(id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Overdraft> findBySavingsAccountId(final Long savingsAccountId) {
+        return this.repository.findBySavingsAccountId(savingsAccountId);
     }
 
     @Transactional(readOnly = true)

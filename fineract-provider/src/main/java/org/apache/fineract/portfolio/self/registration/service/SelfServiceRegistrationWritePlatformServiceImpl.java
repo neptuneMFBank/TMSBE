@@ -19,7 +19,6 @@
 package org.apache.fineract.portfolio.self.registration.service;
 
 import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.OFFICE_ID;
-import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.SAVINGS_PRODUCT_ID;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -75,6 +74,7 @@ import org.apache.fineract.portfolio.self.registration.domain.SelfServiceRegistr
 import org.apache.fineract.portfolio.self.registration.domain.SelfServiceRegistrationRepository;
 import org.apache.fineract.portfolio.self.registration.exception.SelfServiceRegistrationNotFoundException;
 import org.apache.fineract.simplifytech.data.ApiResponseMessage;
+import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.SAVINGS_PRODUCT_RECONCILE_ID_API;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserClientMapping;
 import org.apache.fineract.useradministration.domain.AppUserClientMappingRepository;
@@ -153,7 +153,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         this.roleRepository = roleRepository;
         this.selfServiceRegistrationCommandFromApiJsonDeserializer = selfServiceRegistrationCommandFromApiJsonDeserializer;
         Environment environment = context.getEnvironment();
-        this.savingsProductId = Long.valueOf(environment.getProperty(SAVINGS_PRODUCT_ID));
+        this.savingsProductId = Long.valueOf(environment.getProperty(SAVINGS_PRODUCT_RECONCILE_ID_API));
         this.officeId = Long.valueOf(environment.getProperty(OFFICE_ID));
         this.appUserClientMappingRepository = appUserClientMappingRepository;
         this.dataSource = dataSource;
@@ -407,7 +407,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
     @Override
     public SelfServiceRegistration createRegistrationRequest(String apiRequestBodyAsJson) {
         Gson gson = new Gson();
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, apiRequestBodyAsJson,
@@ -581,7 +582,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         String username = null;
         try {
             Gson gson = new Gson();
-            final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+            final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+            }.getType();
             final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
             final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, apiRequestBodyAsJson,
@@ -642,7 +644,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         String username = null;
         try {
             Gson gson = new Gson();
-            final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+            final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+            }.getType();
             final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
             final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, apiRequestBodyAsJson,

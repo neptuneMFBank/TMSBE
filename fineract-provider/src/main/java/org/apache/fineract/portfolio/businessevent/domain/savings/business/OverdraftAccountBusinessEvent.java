@@ -16,20 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.business.overdraft.service;
+package org.apache.fineract.portfolio.businessevent.domain.savings.business;
 
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.business.overdraft.data.OverdraftData;
+import org.apache.fineract.portfolio.business.overdraft.domain.Overdraft;
+import org.apache.fineract.portfolio.businessevent.domain.AbstractBusinessEvent;
 
-public interface OverdraftReadPlatformService {
+public abstract class OverdraftAccountBusinessEvent extends AbstractBusinessEvent<Overdraft> {
 
-    void updateDueOverdraft();
-
-    Page<OverdraftData> retrieveAll(final SearchParametersBusiness searchParameters);
-
-    OverdraftData retrieveOne(final Long overdraftId);
-
-    OverdraftData retrieveTemplate();
-
+    public OverdraftAccountBusinessEvent(Overdraft value) {
+        super(value);
+    }
 }

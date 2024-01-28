@@ -18,14 +18,22 @@
  */
 package org.apache.fineract.portfolio.business.overdraft.domain;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface OverdraftRepository extends JpaRepository<Overdraft, Long>, JpaSpecificationExecutor<Overdraft> {
 
+    List<Overdraft> findBySavingsAccountId(Long savingsAccountId);
+
     Optional<Overdraft> findByIdAndSavingsAccountId(Long id, Long savingsAccountId);
 
     boolean existsByIdAndSavingsAccountId(Long id, Long savingsAccountId);
 
+    boolean existsBySavingsAccountIdAndStatus(Long savingsAccountId, Long status);
+
+//    @Query("select ov from Overdraft ov where ov.savingsAccount.id = :savingsId and status IN :status")
+//    List<Ov> findBySavingsIdAndStatus(@Param("savingsId") Long savingsId,
+//            @Param("status") Collection<Integer> status);
 }

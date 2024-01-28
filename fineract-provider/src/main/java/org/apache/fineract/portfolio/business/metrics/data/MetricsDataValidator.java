@@ -45,6 +45,7 @@ public class MetricsDataValidator {
 
     private final FromJsonHelper fromApiJsonHelper;
     private static final Set<String> LOAN_ACTION_DATA_PARAMETERS = MetricsApiResourceConstants.LOAN_ACTION_DATA_PARAMETERS;
+    private static final Set<String> OVERDRAFT_ACTION_DATA_PARAMETERS = MetricsApiResourceConstants.OVERDRAFT_ACTION_DATA_PARAMETERS;
 
     @Autowired
     public MetricsDataValidator(final FromJsonHelper fromApiJsonHelper) {
@@ -114,6 +115,60 @@ public class MetricsDataValidator {
         // baseDataValidator.reset().parameter(LoanApiConstants.noteParamName).value(note).notBlank();
         final Long loanId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.LOAN_ID, element);
         baseDataValidator.reset().parameter(MetricsApiResourceConstants.LOAN_ID).value(loanId).notBlank().integerGreaterThanZero();
+
+        final Long staffId = this.fromApiJsonHelper.extractLongNamed(ClientApiConstants.staffIdParamName, element);
+        baseDataValidator.reset().parameter(ClientApiConstants.staffIdParamName).value(staffId).notBlank().integerGreaterThanZero();
+
+        throwExceptionIfValidationWarningsExist(dataValidationErrors);
+    }
+
+    public void validateForOverdraftApprovalUndoReject(final String json) {
+        if (StringUtils.isBlank(json)) {
+            throw new InvalidJsonException();
+        }
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
+
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, OVERDRAFT_ACTION_DATA_PARAMETERS);
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+                .resource(MetricsApiResourceConstants.RESOURCENAME);
+
+        final String note = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
+        baseDataValidator.reset().parameter(LoanApiConstants.noteParamName).value(note).notBlank();
+
+        if (this.fromApiJsonHelper.parameterExists(MetricsApiResourceConstants.UNDO_TO_METRICS_ID, element)) {
+            final Long undoToMetricsId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.UNDO_TO_METRICS_ID, element);
+            baseDataValidator.reset().parameter(MetricsApiResourceConstants.UNDO_TO_METRICS_ID).value(undoToMetricsId).notBlank()
+                    .integerGreaterThanZero();
+        }
+
+        final Long overdraftId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.OVERDRAFT_ID, element);
+        baseDataValidator.reset().parameter(MetricsApiResourceConstants.OVERDRAFT_ID).value(overdraftId).notBlank().integerGreaterThanZero();
+
+        throwExceptionIfValidationWarningsExist(dataValidationErrors);
+    }
+
+    public void validateForOverdraftAssign(final String json) {
+        if (StringUtils.isBlank(json)) {
+            throw new InvalidJsonException();
+        }
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
+
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, OVERDRAFT_ACTION_DATA_PARAMETERS);
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+                .resource(MetricsApiResourceConstants.RESOURCENAME);
+
+        final Long overdraftId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.OVERDRAFT_ID, element);
+        baseDataValidator.reset().parameter(MetricsApiResourceConstants.OVERDRAFT_ID).value(overdraftId).notBlank().integerGreaterThanZero();
 
         final Long staffId = this.fromApiJsonHelper.extractLongNamed(ClientApiConstants.staffIdParamName, element);
         baseDataValidator.reset().parameter(ClientApiConstants.staffIdParamName).value(staffId).notBlank().integerGreaterThanZero();

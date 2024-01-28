@@ -21,9 +21,7 @@ package org.apache.fineract.portfolio.business.overdraft.api;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
-import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 
 public final class OverdraftApiResourceConstants {
@@ -34,21 +32,22 @@ public final class OverdraftApiResourceConstants {
 
     public static final String RESOURCENAME = "OVERDRAFT";
     public static final String ID = "id";
-    public static final String UNDO_TO_METRICS_ID = "undoToMetricsId";
-    public static final String LOAN_ID = "loanId";
-    public static final String SAVINGS_ID = "savingsId";
+    public static final String AMOUNT = "amount";
+    public static final String NOMINALINTEREST = "nominalAnnualInterestRateOverdraft";
+    public static final String STARTDATE = "startDate";
     public static final String STATUS = "status";
-    public static final String STAFF_DATA = "staffData";
-    public static final String SUPERVISOR_STAFF_DATA = "supervisorStaffData";
+    public static final String EXPIRYDATE = "expiryDate";
+    public static final String CREATEDBYUSER = "createdByUser";
     public static final String CREATED_ON = "createdOn";
     public static final String MODIFIED_ON = "modifiedOn";
-    public static final String CLIENT_DATA = "clientData";
-    public static final String LOAN_OFFICER_DATA = "loanOfficerData";
+    public static final String MODIFIEDBYUSER = "modifiedByUser";
+    public static final String SAVINGS_ID = "savingsId";
+    public static final String NUMBER_OF_DAYS = "numberOfDays";
 
-    public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ID, LOAN_ID, SAVINGS_ID, STATUS, STAFF_DATA,
-            SUPERVISOR_STAFF_DATA, CREATED_ON, MODIFIED_ON, CLIENT_DATA, LOAN_OFFICER_DATA));
+    public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ID, AMOUNT, SAVINGS_ID, STATUS, NOMINALINTEREST,
+            STARTDATE, CREATED_ON, MODIFIED_ON, EXPIRYDATE, CREATEDBYUSER, MODIFIEDBYUSER, NUMBER_OF_DAYS));
 
-    public static final Set<String> LOAN_ACTION_DATA_PARAMETERS = new HashSet<>(Arrays.asList(LoanApiConstants.noteParamName, LOAN_ID, LoanApiConstants.localeParameterName,
-            ClientApiConstants.staffIdParamName, SavingsApiConstants.paymentTypeIdParamName, LoanBusinessApiConstants.expectedDisbursementDateParameterName, LoanApiConstants.dateFormatParameterName, UNDO_TO_METRICS_ID));
+    public static final Set<String> REQUEST_ACTION_DATA_PARAMETERS = new HashSet<>(Arrays.asList(SAVINGS_ID, AMOUNT, LoanApiConstants.localeParameterName,
+            NOMINALINTEREST, STARTDATE, NUMBER_OF_DAYS,SavingsApiConstants.noteParamName));
 
 }

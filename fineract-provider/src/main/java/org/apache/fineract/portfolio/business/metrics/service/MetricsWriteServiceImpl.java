@@ -64,7 +64,10 @@ import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistory;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsHistoryRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.domain.MetricsRepositoryWrapper;
 import org.apache.fineract.portfolio.business.metrics.exception.MetricsNotFoundException;
+import org.apache.fineract.portfolio.business.overdraft.domain.Overdraft;
+import org.apache.fineract.portfolio.business.overdraft.domain.OverdraftRepositoryWrapper;
 import org.apache.fineract.portfolio.businessevent.domain.loan.business.LoanMetricsApprovalBusinessEvent;
+import org.apache.fineract.portfolio.businessevent.domain.savings.business.OverdraftMetricsApprovalBusinessEvent;
 import org.apache.fineract.portfolio.businessevent.service.BusinessEventNotifierService;
 import org.apache.fineract.portfolio.collectionsheet.CollectionSheetConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
@@ -79,10 +82,12 @@ import org.apache.fineract.portfolio.loanproduct.exception.LinkedAccountRequired
 import org.apache.fineract.portfolio.note.domain.Note;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import static org.apache.fineract.simplifytech.data.GeneralConstants.holdAmount;
 import static org.apache.fineract.simplifytech.data.GeneralConstants.releaseAmount;
 import static org.apache.fineract.simplifytech.data.GeneralConstants.withdrawAmount;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -105,6 +110,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     private final LoanChargeRepository loanChargeRepository;
     private final BusinessEventNotifierService businessEventNotifierService;
     private final AccountAssociationsReadPlatformService accountAssociationsReadPlatformService;
+    private final OverdraftRepositoryWrapper overdraftRepositoryWrapper;
+    private final JdbcTemplate jdbcTemplate;
 
     /*
      * Guaranteed to throw an exception no matter what the data integrity issue is.
@@ -424,6 +431,14 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
     }
 
+    protected void metricsOverdraftStateCheck(final Metrics metrics, final Long overdraftId) throws PlatformDataIntegrityException {
+        if (!Objects.equals(metrics.getStatus(), LoanApprovalStatus.PENDING.getValue())
+                || !Objects.equals(overdraftId, metrics.getOverdraft().getId())) {
+            throw new PlatformDataIntegrityException("error.overdraft.metrics",
+                    "Approval does not match or overdraft approval not in pending state.");
+        }
+    }
+
     // protected void approvalUndoRejectFirstProcess(JsonCommand command, final JsonElement element) {
     // final Long loanId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.LOAN_ID, element);
     // final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
@@ -433,6 +448,13 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     protected void saveNoteMetrics(final String noteText, final Loan loan) {
         if (StringUtils.isNotBlank(noteText)) {
             final Note note = Note.loanNote(loan, noteText);
+            this.noteRepository.save(note);
+        }
+    }
+
+    protected void saveNoteSavingsMetrics(final String noteText, final SavingsAccount savingsAccount) {
+        if (StringUtils.isNotBlank(noteText)) {
+            final Note note = Note.savingNote(savingsAccount, noteText);
             this.noteRepository.save(note);
         }
     }
@@ -511,6 +533,14 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 || !Objects.equals(loanId, undoToMetrics.getLoan().getId())) {
             throw new PlatformDataIntegrityException("error.loan.metrics",
                     "Loan Approval cannot be returned to selected state.");
+        }
+    }
+
+    protected void undoToMetricsOverdraftStateCheck(Metrics undoToMetrics, final Long overdraftId) throws PlatformDataIntegrityException {
+        if (!Objects.equals(undoToMetrics.getStatus(), LoanApprovalStatus.APPROVED.getValue())
+                || !Objects.equals(overdraftId, undoToMetrics.getOverdraft().getId())) {
+            throw new PlatformDataIntegrityException("error.overdraft.metrics",
+                    "Overdraft Approval cannot be returned to selected state.");
         }
     }
 
@@ -607,18 +637,213 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
     }
 
-    @Override
-    public CommandProcessingResult approveOverdraft(Long overdraftId, JsonCommand command) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private void UpdateOverdraftStatus(final Overdraft overdraft, final Integer status) {
+        if (status <= 300) {
+            overdraft.setStatus(status);
+            this.overdraftRepositoryWrapper.saveAndFlush(overdraft);
+        } else {
+            log.warn("Dev check, cannot update overdraftId {} with status >= 300", overdraft.getId());
+        }
     }
 
     @Override
-    public CommandProcessingResult undoOverdraft(Long overdraftId, JsonCommand command) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public CommandProcessingResult approveOverdraft(Long metricsId, JsonCommand command) {
+        this.context.authenticatedUser();
+        this.fromApiJsonDeserializer.validateForOverdraftApprovalUndoReject(command.json());
+        final Metrics metrics = this.metricsRepositoryWrapper.findOneWithNotFoundDetection(metricsId);
+        final JsonElement element = this.fromApiJsonHelper.parse(command.json());
+        final Long overdraftId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.OVERDRAFT_ID, element);
+        final Overdraft overdraft = this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftId);
+        final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
+        final String noteText = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
+
+        metricsOverdraftStateCheck(metrics, overdraftId);
+        try {
+            boolean sendMetricsApproval = false;
+            final Integer rank = metrics.getRank();
+
+            final List<Metrics> metricses = this.metricsRepositoryWrapper.findByOverdraftId(overdraftId);
+            // order stream by getRank asc and pick the first
+            final List<Metrics> metricsesAhead = metricses.stream()
+                    .filter(action -> Objects.equals(action.getStatus(), LoanApprovalStatus.QUEUE.getValue()) && action.getRank() > rank)
+                    .sorted(Comparator.comparingInt(Metrics::getRank)).toList();
+            final long totalAheadCount = metricsesAhead.stream().count();
+            if (totalAheadCount == 0) {
+                log.info("second overdraftDisbursal");
+                final Long savingsAccountId = savingsAccount.getId();
+                String sql = "UPDATE m_savings_account ms SET ms.allow_overdraft=?, ms.overdraft_limit=?, ms.nominal_annual_interest_rate_overdraft=? WHERE ms.id=?";
+                this.jdbcTemplate.update(sql, true, overdraft.getAmount(), overdraft.getNominalAnnualInterestRateOverdraft(), savingsAccountId);
+                UpdateOverdraftStatus(overdraft, LoanApprovalStatus.ACTIVE.getValue());
+            } else {
+                final Metrics pickTheNextMetricApproval = metricsesAhead.stream().findFirst().orElseThrow(
+                        () -> new MetricsNotFoundException("Next approval not found for overdraft account: {}." + overdraftId));
+
+                pickTheNextMetricApproval.setStatus(LoanApprovalStatus.PENDING.getValue());
+                this.metricsRepositoryWrapper.saveAndFlush(pickTheNextMetricApproval);
+                saveMetricsHistory(pickTheNextMetricApproval, LoanApprovalStatus.PENDING.getValue());
+                sendMetricsApproval = true;
+            }
+
+            saveNoteSavingsMetrics(noteText + "-" + overdraftId, savingsAccount);
+
+            metrics.setStatus(LoanApprovalStatus.APPROVED.getValue());
+            this.metricsRepositoryWrapper.saveAndFlush(metrics);
+            saveMetricsHistory(metrics, LoanApprovalStatus.APPROVED.getValue());
+
+            if (sendMetricsApproval) {
+                businessEventNotifierService.notifyPostBusinessEvent(new OverdraftMetricsApprovalBusinessEvent(overdraft));
+            }
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException dve) {
+            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+            handleDataIntegrityIssues(command, throwable, dve);
+            return CommandProcessingResult.empty();
+        }
+
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(metricsId).withSavingsId(savingsAccount.getId())
+                .withSubEntityId(overdraftId)
+                .build();
     }
 
     @Override
-    public CommandProcessingResult rejectOverdraft(Long overdraftId, JsonCommand command) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public CommandProcessingResult undoOverdraft(Long metricsId, JsonCommand command) {
+        this.context.authenticatedUser();
+        this.fromApiJsonDeserializer.validateForOverdraftApprovalUndoReject(command.json());
+        final Metrics metrics = this.metricsRepositoryWrapper.findOneWithNotFoundDetection(metricsId);
+        final JsonElement element = this.fromApiJsonHelper.parse(command.json());
+        final Long overdraftId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.OVERDRAFT_ID, element);
+        final Overdraft overdraft = this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftId);
+        final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
+        final String noteText = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
+        metricsOverdraftStateCheck(metrics, overdraftId);
+
+        try {
+            final Integer rank = metrics.getRank();
+            if (rank <= 0) {
+                throw new PlatformDataIntegrityException("error.msg.metrics", "Undo not allowed for approval level.");
+            }
+            final List<Metrics> metricses = this.metricsRepositoryWrapper.findByOverdraftId(overdraftId);
+            // order stream by getRank desc but less than current rank and pick the first
+            final List<Metrics> metricsesAhead = metricses.stream()
+                    .filter(action -> Objects.equals(action.getStatus(), LoanApprovalStatus.APPROVED.getValue()) && action.getRank() < rank)
+                    .sorted(Comparator.comparingInt(Metrics::getRank).reversed()).toList();
+            final long totalUndoCount = metricsesAhead.stream().count();
+            if (totalUndoCount == 0) {
+                throw new PlatformDataIntegrityException("error.msg.metrics", "Approval not allowed for undo.");
+            } else {
+
+                Metrics undoToMetrics = null;
+                if (this.fromApiJsonHelper.parameterExists(MetricsApiResourceConstants.UNDO_TO_METRICS_ID, element)) {
+                    final Long undoToMetricsId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.UNDO_TO_METRICS_ID, element);
+                    undoToMetrics = this.metricsRepositoryWrapper.findOneWithNotFoundDetection(undoToMetricsId);
+                    undoToMetricsOverdraftStateCheck(undoToMetrics, overdraftId);
+                }
+
+                Metrics pickTheLastMetricApproval;
+                if (undoToMetrics != null) {
+                    pickTheLastMetricApproval = undoToMetrics;
+                } else {
+                    pickTheLastMetricApproval = metricsesAhead.stream().findFirst().orElseThrow(
+                            () -> new MetricsNotFoundException("Last approval not found for overdraft account: {}." + overdraftId));
+                }
+                pickTheLastMetricApproval.setStatus(LoanApprovalStatus.PENDING.getValue());
+                this.metricsRepositoryWrapper.saveAndFlush(pickTheLastMetricApproval);
+                saveMetricsHistory(pickTheLastMetricApproval, LoanApprovalStatus.PENDING.getValue());
+
+                saveNoteSavingsMetrics(noteText + "-" + overdraftId, savingsAccount);
+
+                metrics.setStatus(LoanApprovalStatus.QUEUE.getValue());
+                this.metricsRepositoryWrapper.saveAndFlush(metrics);
+                saveMetricsHistory(metrics, LoanApprovalStatus.QUEUE.getValue());
+            }
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException dve) {
+            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+            handleDataIntegrityIssues(command, throwable, dve);
+            return CommandProcessingResult.empty();
+        }
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(metricsId).withSavingsId(savingsAccount.getId())
+                .withSubEntityId(overdraftId)
+                .build();
+    }
+
+    @Override
+    public CommandProcessingResult rejectOverdraft(Long metricsId, JsonCommand command) {
+        this.context.authenticatedUser();
+        this.fromApiJsonDeserializer.validateForOverdraftApprovalUndoReject(command.json());
+        final Metrics metrics = this.metricsRepositoryWrapper.findOneWithNotFoundDetection(metricsId);
+        final JsonElement element = this.fromApiJsonHelper.parse(command.json());
+        final Long overdraftId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.OVERDRAFT_ID, element);
+        final Overdraft overdraft = this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftId);
+        final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
+        final String noteText = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.noteParamName, element);
+        metricsOverdraftStateCheck(metrics, overdraftId);
+
+        try {
+            UpdateOverdraftStatus(overdraft, LoanApprovalStatus.REJECTED.getValue());
+
+            saveNoteSavingsMetrics(noteText + "-" + overdraftId, savingsAccount);
+            metrics.setStatus(LoanApprovalStatus.REJECTED.getValue());
+            this.metricsRepositoryWrapper.saveAndFlush(metrics);
+            saveMetricsHistory(metrics, LoanApprovalStatus.REJECTED.getValue());
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException dve) {
+            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+            handleDataIntegrityIssues(command, throwable, dve);
+            return CommandProcessingResult.empty();
+        }
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(metricsId).withSavingsId(savingsAccount.getId()).withSubEntityId(overdraftId)
+                .build();
+    }
+
+    @Override
+    public CommandProcessingResult assignOverdraft(Long metricsId, JsonCommand command) {
+        this.context.authenticatedUser();
+        this.fromApiJsonDeserializer.validateForOverdraftAssign(command.json());
+        final Metrics metrics = this.metricsRepositoryWrapper.findOneWithNotFoundDetection(metricsId);
+        final JsonElement element = this.fromApiJsonHelper.parse(command.json());
+        final Long overdraftId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.OVERDRAFT_ID, element);
+        this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftId);
+        final Long staffId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.STAFF_DATA, element);
+        metricsOverdraftStateCheck(metrics, overdraftId);
+        try {
+            final Loan loan = metrics.getLoan();
+            final Staff oldStaff = metrics.getAssignedUser();
+            final Staff newStaff = this.staffRepositoryWrapper.findOneWithNotFoundDetection(staffId);
+            if (!Objects.equals(oldStaff.getId(), newStaff.getId())) {
+
+                saveNoteMetrics("Reassign overdraft from " + oldStaff.displayName() + "to a new approval officer" + newStaff.displayName(),
+                        loan);
+
+                metrics.setAssignedUser(newStaff);
+                this.metricsRepositoryWrapper.saveAndFlush(metrics);
+                saveMetricsHistory(metrics, LoanApprovalStatus.REASSIGNED.getValue());
+
+            }
+
+        } catch (final JpaSystemException | DataIntegrityViolationException dve) {
+            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
+            return CommandProcessingResult.empty();
+        } catch (final PersistenceException dve) {
+            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
+            handleDataIntegrityIssues(command, throwable, dve);
+            return CommandProcessingResult.empty();
+        }
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(metricsId).withSubEntityId(overdraftId)
+                .build();
     }
 }

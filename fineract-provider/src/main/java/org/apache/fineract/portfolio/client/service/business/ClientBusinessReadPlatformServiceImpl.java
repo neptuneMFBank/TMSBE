@@ -150,7 +150,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     }
 
     @Override
-    public ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final boolean staffInSelectedOfficeOnly) {
+    public ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final Boolean staffInSelectedOfficeOnly) {
         try {
             final String hierarchy = this.context.officeHierarchy();
             final String hierarchySearchString = hierarchy + "%";
@@ -198,7 +198,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     }
 
     @Override
-    public ClientBusinessData retrieveTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly, final Integer legalFormId) {
+    public ClientBusinessData retrieveTemplate(final Long officeId, final Boolean staffInSelectedOfficeOnly, final Integer legalFormId) {
         this.context.authenticatedUser();
 
         final Long defaultOfficeId = defaultToUsersOfficeIfNull(officeId);
@@ -221,11 +221,13 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         Collection<StaffData> staffOptions = null;
 
         final boolean loanOfficersOnly = false;
-        if (staffInSelectedOfficeOnly) {
-            staffOptions = this.staffReadPlatformService.retrieveAllStaffForDropdown(defaultOfficeId);
-        } else {
-            staffOptions = this.staffReadPlatformService.retrieveAllStaffInOfficeAndItsParentOfficeHierarchy(defaultOfficeId,
-                    loanOfficersOnly);
+        if (staffInSelectedOfficeOnly != null) {
+            if (staffInSelectedOfficeOnly) {
+                staffOptions = this.staffReadPlatformService.retrieveAllStaffForDropdown(defaultOfficeId);
+            } else {
+                staffOptions = this.staffReadPlatformService.retrieveAllStaffInOfficeAndItsParentOfficeHierarchy(defaultOfficeId,
+                        loanOfficersOnly);
+            }
         }
         if (CollectionUtils.isEmpty(staffOptions)) {
             staffOptions = null;

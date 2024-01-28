@@ -79,7 +79,7 @@ public class OverdraftApiResource {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK")
     })
-    public String retreiveFund(@PathParam("overdraftId") @Parameter(description = "overdraftId") final Long overdraftId, @Context final UriInfo uriInfo) {
+    public String retreiveOverdraft(@PathParam("overdraftId") @Parameter(description = "overdraftId") final Long overdraftId, @Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(OverdraftApiResourceConstants.RESOURCENAME);
 
@@ -98,7 +98,7 @@ public class OverdraftApiResource {
         // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
         // MetricsApiResourceSwagger.GetMetricssResponse.class)))
         )})
-    public String getLoanMetrics(@Context final UriInfo uriInfo,
+    public String retreiveAllOverdraft(@Context final UriInfo uriInfo,
             @QueryParam("savingsId") @Parameter(description = "savingsId") final Long savingsId,
             @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
             @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,

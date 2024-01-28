@@ -30,6 +30,7 @@ import java.util.Objects;
 import javax.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -50,7 +51,9 @@ import org.apache.fineract.portfolio.business.overdraft.exception.OverdraftNotFo
 import org.apache.fineract.portfolio.businessevent.service.BusinessEventNotifierService;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanChargeRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
+import org.apache.fineract.portfolio.note.domain.Note;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
+import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -219,6 +222,7 @@ public class OverdraftWriteServiceImpl implements OverdraftWriteService {
     public CommandProcessingResult stopOverdraft(Long overdraftId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForStop(command.json());
+        final JsonElement element = this.fromApiJsonHelper.parse(command.json());
         final Overdraft overdraft = this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftId);
         if (Objects.equals(overdraft.getStatus(), LoanApprovalStatus.ACTIVE.getValue())) {
             final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
@@ -228,6 +232,13 @@ public class OverdraftWriteServiceImpl implements OverdraftWriteService {
             final Long savingsAccountId = savingsAccount.getId();
             String sql = "UPDATE m_savings_account ms SET ms.allow_overdraft=?, ms.overdraft_limit=?, ms.nominal_annual_interest_rate_overdraft=? WHERE ms.id=?";
             this.jdbcTemplate.update(sql, false, 0, 0, savingsAccountId);
+
+            final String noteText = this.fromApiJsonHelper.extractStringNamed(SavingsApiConstants.noteParamName, element);
+            if (StringUtils.isNotBlank(noteText)) {
+                final Note note = Note.savingNote(savingsAccount, noteText + "-" + overdraftId);
+                this.noteRepository.save(note);
+            }
+
             overdraft.setStatus(LoanApprovalStatus.CLOSED.getValue());
             this.overdraftRepositoryWrapper.saveAndFlush(overdraft);
         } else {

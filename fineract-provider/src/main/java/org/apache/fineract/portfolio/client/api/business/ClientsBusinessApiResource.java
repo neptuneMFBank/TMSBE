@@ -218,7 +218,7 @@ public class ClientsBusinessApiResource {
     public String retrieveTemplate(@Context final UriInfo uriInfo,
             @Parameter(description = "officeId") @QueryParam("officeId") final Long officeId,
             // @QueryParam("commandParam") @Parameter(description = "commandParam") final String commandParam,
-            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
+            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final Boolean staffInSelectedOfficeOnly,
             @QueryParam("legalFormId") final Integer legalFormId) {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);

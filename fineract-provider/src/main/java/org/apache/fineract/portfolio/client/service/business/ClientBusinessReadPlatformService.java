@@ -27,9 +27,9 @@ import org.apache.fineract.portfolio.client.data.business.KycBusinessData;
 
 public interface ClientBusinessReadPlatformService {
 
-    ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final boolean staffInSelectedOfficeOnly);
+    ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final Boolean staffInSelectedOfficeOnly);
 
-    ClientBusinessData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly, final Integer legalFormId);
+    ClientBusinessData retrieveTemplate(Long officeId, Boolean staffInSelectedOfficeOnly, final Integer legalFormId);
 
     Page<ClientData> retrieveAll(SearchParametersBusiness searchParameters);
 

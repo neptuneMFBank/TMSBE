@@ -18,4 +18,4 @@
 --
 
 INSERT INTO `job` (`id`, `name`, `display_name`, `cron_expression`, `create_time`, `task_priority`, `group_name`, `previous_run_start_time`, `next_run_time`, `job_key`, `initializing_errorlog`, `is_active`, `currently_running`, `updates_allowed`, `scheduler_group`, `is_misfired`, `node_id`)
-VALUES (NULL, 'Reminder Overdraft Approval Checks', 'Reminder Overdraft Approval Checks', '0 0/5 * * * ?', curdate(), 5, NULL, NULL, '2017-02-25 00:01:00', 'Reminder Overdraft Approval ChecksJobDetail1 _ DEFAULT', NULL, 1, 0, 1, 0, 0,1)
+VALUES (NULL, 'Queue Overdraft Approval Checks', 'Queue Overdraft Approval Checks', '0 0/5 * * * ?', curdate(), 5, NULL, NULL, '2017-02-25 00:01:00', 'Queue Overdraft Approval ChecksJobDetail1 _ DEFAULT', NULL, 1, 0, 1, 0, 0,1)

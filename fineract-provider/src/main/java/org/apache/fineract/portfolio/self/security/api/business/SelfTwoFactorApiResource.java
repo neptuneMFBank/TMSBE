@@ -37,6 +37,7 @@ import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
 import org.apache.fineract.portfolio.self.client.service.AppuserClientMapperReadService;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +45,7 @@ import org.springframework.stereotype.Component;
 @Scope("singleton")
 @Path("/self/twofactor/{clientId}")
 @Tag(name = "Self Two Factor", description = "")
-
+@ConditionalOnProperty("fineract.security.2fa.enabled")
 public class SelfTwoFactorApiResource {
 
     private final PlatformSecurityContext context;

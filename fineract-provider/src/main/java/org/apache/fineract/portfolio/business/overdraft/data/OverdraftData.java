@@ -19,84 +19,52 @@
 package org.apache.fineract.portfolio.business.overdraft.data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import lombok.Data;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
-import org.apache.fineract.organisation.staff.data.StaffData;
-import org.apache.fineract.portfolio.client.data.ClientData;
 
+@Data
 @SuppressWarnings("unused")
 public class OverdraftData implements Serializable {
 
-    private final Long id;
-    private final Long loanId;
-    private final Long savingsId;
-    private final EnumOptionData status;
-    private final ClientData clientData;
-    private final StaffData loanOfficerData;
-    private final StaffData staffData;
-    private final StaffData supervisorStaffData;
+    private final BigDecimal amount;
+
+    private final BigDecimal nominalAnnualInterestRateOverdraft;
+
+    private final LocalDate startDate;
+
+    private final LocalDate expiryDate;
+    private final Integer numberOfDays;
+
+    private final String createdByUser;
+    private final String modifiedByUser;
     private final LocalDate createdOn;
     private final LocalDate modifiedOn;
 
-    public static OverdraftData instance(Long id, Long loanId, final Long savingsId, EnumOptionData status, StaffData staffData,
-            StaffData supervisorStaffData, LocalDate createdOn, LocalDate modifiedOn, final ClientData clientData,
-            final StaffData loanOfficerData) {
-        return new OverdraftData(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData,
-                loanOfficerData);
+    private final Long id;
+    private final Long savingsId;
+    private final EnumOptionData status;
+
+    public static OverdraftData instance(
+            BigDecimal amount, BigDecimal nominalAnnualInterestRateOverdraft, LocalDate startDate, LocalDate expiryDate, String createdByUser, String modifiedByUser, LocalDate createdOn, LocalDate modifiedOn, Long id, Long savingsId, EnumOptionData status, final Integer numberOfDays) {
+        return new OverdraftData(amount, nominalAnnualInterestRateOverdraft, startDate, expiryDate, createdByUser, modifiedByUser, createdOn, modifiedOn, id, savingsId, status, numberOfDays);
     }
 
-    public OverdraftData(Long id, Long loanId, Long savingsId, EnumOptionData status, StaffData staffData, StaffData supervisorStaffData,
-            LocalDate createdOn, LocalDate modifiedOn, ClientData clientData, StaffData loanOfficerData) {
-        this.id = id;
-        this.loanId = loanId;
-        this.savingsId = savingsId;
-        this.status = status;
-        this.staffData = staffData;
-        this.supervisorStaffData = supervisorStaffData;
+    public OverdraftData(
+            BigDecimal amount, BigDecimal nominalAnnualInterestRateOverdraft, LocalDate startDate, LocalDate expiryDate, String createdByUser, String modifiedByUser, LocalDate createdOn, LocalDate modifiedOn, Long id, Long savingsId, EnumOptionData status, final Integer numberOfDays) {
+        this.amount = amount;
+        this.nominalAnnualInterestRateOverdraft = nominalAnnualInterestRateOverdraft;
+        this.startDate = startDate;
+        this.expiryDate = expiryDate;
+        this.createdByUser = createdByUser;
+        this.modifiedByUser = modifiedByUser;
         this.createdOn = createdOn;
         this.modifiedOn = modifiedOn;
-        this.clientData = clientData;
-        this.loanOfficerData = loanOfficerData;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getLoanId() {
-        return loanId;
-    }
-
-    public Long getSavingsId() {
-        return savingsId;
-    }
-
-    public EnumOptionData getStatus() {
-        return status;
-    }
-
-    public StaffData getStaffData() {
-        return staffData;
-    }
-
-    public StaffData getSupervisorStaffData() {
-        return supervisorStaffData;
-    }
-
-    public LocalDate getCreatedOn() {
-        return createdOn;
-    }
-
-    public LocalDate getModifiedOn() {
-        return modifiedOn;
-    }
-
-    public ClientData getClientData() {
-        return clientData;
-    }
-
-    public StaffData getLoanOfficerData() {
-        return loanOfficerData;
+        this.id = id;
+        this.savingsId = savingsId;
+        this.status = status;
+        this.numberOfDays = numberOfDays;
     }
 
 }

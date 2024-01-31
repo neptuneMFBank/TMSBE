@@ -19,7 +19,7 @@
 
 CREATE TABLE `m_overdraft`(
       `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-      `status_enum` SMALLINT NOT NULL DEFAULT 50,
+      `status_enum` SMALLINT NOT NULL DEFAULT 10,
       `amount` decimal(19,6) NOT NULL,
       `nominal_annual_interest_rate_overdraft` decimal(19,6) NOT NULL,
       `savings_id` BIGINT NOT NULL,

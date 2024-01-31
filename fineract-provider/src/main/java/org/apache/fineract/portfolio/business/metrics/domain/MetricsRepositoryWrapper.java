@@ -66,4 +66,9 @@ public class MetricsRepositoryWrapper {
         return this.repository.findByLoanId(loanId);
     }
 
+    @Transactional(readOnly = true)
+    public List<Metrics> findByOverdraftId(final Long overdraftId) {
+        return this.repository.findByOverdraftId(overdraftId);
+    }
+
 }

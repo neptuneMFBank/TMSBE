@@ -86,6 +86,11 @@ public class GeneralConstants {
         return IntStream.rangeClosed(start, end).boxed().collect(Collectors.toList());
     }
 
+    public static Integer numberOfDays(LocalDate startDate, LocalDate endDate) {
+        Period period = Period.between(startDate, endDate);
+        return period.getDays();
+    }
+
     public static Integer calculateYearsFromDate(LocalDate date) {
         LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
         Period period = Period.between(date, today);

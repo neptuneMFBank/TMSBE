@@ -114,7 +114,7 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
             // user
             final Document documentForUpdate = this.documentRepository.findById(documentCommand.getId())
                     .orElseThrow(() -> new DocumentNotFoundException(documentCommand.getParentEntityType(),
-                            documentCommand.getParentEntityId(), documentCommand.getId()));
+                    documentCommand.getParentEntityId(), documentCommand.getId()));
 
             final StorageType documentStoreType = documentForUpdate.storageType();
             oldLocation = documentForUpdate.getLocation();
@@ -153,7 +153,7 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
         // TODO: Check document is present under this entity Id
         final Document document = this.documentRepository.findById(documentCommand.getId())
                 .orElseThrow(() -> new DocumentNotFoundException(documentCommand.getParentEntityType(), documentCommand.getParentEntityId(),
-                        documentCommand.getId()));
+                documentCommand.getId()));
         this.documentRepository.delete(document);
 
         final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository(document.storageType());
@@ -176,10 +176,12 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
         return false;
     }
 
-    /*** Entities for document Management **/
+    /**
+     * * Entities for document Management *
+     */
     public enum DocumentManagementEntity {
 
-        CLIENTS, CLIENT_IDENTIFIERS, STAFF, LOANS, SAVINGS, GROUPS, IMPORT;
+        CLIENTS, CLIENT_IDENTIFIERS, STAFF, LOANS, SAVINGS, GROUPS, IMPORT, OVERDRAFT;
 
         @Override
         public String toString() {

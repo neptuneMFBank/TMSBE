@@ -26,13 +26,15 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
 import org.apache.fineract.organisation.staff.domain.Staff;
+import org.apache.fineract.portfolio.business.overdraft.domain.Overdraft;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 
 @Entity
 @Table(name = "m_metrics", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "`loan_id", "rank`" }, name = "metrics_UNIQUE_rank_loan"),
-        @UniqueConstraint(columnNames = { "`savings_id", "rank`" }, name = "metrics_UNIQUE_rank_saving"), })
+    @UniqueConstraint(columnNames = {"`loan_id", "rank`"}, name = "metrics_UNIQUE_rank_loan"),
+    @UniqueConstraint(columnNames = {"`savings_id", "rank`"}, name = "metrics_UNIQUE_rank_saving"),
+    @UniqueConstraint(columnNames = {"`overdraft_id", "rank`"}, name = "metrics_UNIQUE_rank_overdraft"),})
 public class Metrics extends AbstractAuditableWithUTCDateTimeCustom {
 
     @ManyToOne
@@ -53,24 +55,38 @@ public class Metrics extends AbstractAuditableWithUTCDateTimeCustom {
     @JoinColumn(name = "savings_id")
     private SavingsAccount savingsAccount;
 
-    protected Metrics() {}
+    @ManyToOne
+    @JoinColumn(name = "overdraft_id")
+    private Overdraft overdraft;
 
-    public Metrics(Staff assignedUser, Integer status, Integer rank, Loan loan, SavingsAccount savingsAccount) {
+    protected Metrics() {
+    }
+
+    public Metrics(Staff assignedUser, Integer status, Integer rank, Loan loan, SavingsAccount savingsAccount, Overdraft overdraft) {
         this.assignedUser = assignedUser;
         this.status = status;
         this.rank = rank;
         this.loan = loan;
         this.savingsAccount = savingsAccount;
+        this.overdraft = overdraft;
     }
 
     public static Metrics createLoanMetrics(Staff assignedUser, Integer status, Integer rank, Loan loan) {
         final SavingsAccount savingsAccount = null;
-        return new Metrics(assignedUser, status, rank, loan, savingsAccount);
+        final Overdraft overdraft = null;
+        return new Metrics(assignedUser, status, rank, loan, savingsAccount, overdraft);
     }
 
     public static Metrics createSavingsMetrics(Staff assignedUser, Integer status, Integer rank, SavingsAccount savingsAccount) {
         final Loan loan = null;
-        return new Metrics(assignedUser, status, rank, loan, savingsAccount);
+        final Overdraft overdraft = null;
+        return new Metrics(assignedUser, status, rank, loan, savingsAccount, overdraft);
+    }
+
+    public static Metrics createOverdraftMetrics(Staff assignedUser, Integer status, Integer rank, Overdraft overdraft) {
+        final Loan loan = null;
+        final SavingsAccount savingsAccount = null;
+        return new Metrics(assignedUser, status, rank, loan, savingsAccount, overdraft);
     }
 
     public Staff getAssignedUser() {
@@ -111,6 +127,14 @@ public class Metrics extends AbstractAuditableWithUTCDateTimeCustom {
 
     public void setSavingsAccount(SavingsAccount savingsAccount) {
         this.savingsAccount = savingsAccount;
+    }
+
+    public Overdraft getOverdraft() {
+        return overdraft;
+    }
+
+    public void setOverdraft(Overdraft overdraft) {
+        this.overdraft = overdraft;
     }
 
 }

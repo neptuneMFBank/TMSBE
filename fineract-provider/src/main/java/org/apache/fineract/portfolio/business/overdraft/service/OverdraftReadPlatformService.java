@@ -24,6 +24,8 @@ import org.apache.fineract.portfolio.business.overdraft.data.OverdraftData;
 
 public interface OverdraftReadPlatformService {
 
+    void updateDueOverdraft();
+
     Page<OverdraftData> retrieveAll(final SearchParametersBusiness searchParameters);
 
     OverdraftData retrieveOne(final Long overdraftId);

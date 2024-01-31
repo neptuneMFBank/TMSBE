@@ -31,9 +31,12 @@ public interface MetricsWriteService {
 
     CommandProcessingResult assignLoanMetrics(Long metricsId, JsonCommand command);
 
-    CommandProcessingResult approveOverdraft(Long overdraftId, JsonCommand command);
+    CommandProcessingResult approveOverdraft(Long metricsId, JsonCommand command);
 
-    CommandProcessingResult undoOverdraft(Long overdraftId, JsonCommand command);
+    CommandProcessingResult undoOverdraft(Long metricsId, JsonCommand command);
 
-    CommandProcessingResult rejectOverdraft(Long overdraftId, JsonCommand command);
+    CommandProcessingResult rejectOverdraft(Long metricsId, JsonCommand command);
+
+    CommandProcessingResult assignOverdraft(Long metricsId, JsonCommand command);
+
 }

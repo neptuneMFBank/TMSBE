@@ -90,6 +90,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 @Slf4j
@@ -146,6 +147,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         log.error("MetricsErrorOccured: {}", dve);
     }
 
+    @Transactional
     @Override
     public CommandProcessingResult approveLoanMetrics(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
@@ -459,6 +461,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
     }
 
+    @Transactional
     @Override
     public CommandProcessingResult undoLoanMetrics(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
@@ -544,7 +547,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
     }
 
-    @Override
+ @Transactional
+ @Override
     public CommandProcessingResult rejectLoanMetrics(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
@@ -590,7 +594,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 .withEntityId(metricsId).withLoanId(loanId).build();
     }
 
-    @Override
+   @Transactional
+   @Override
     public CommandProcessingResult assignLoanMetrics(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForLoanAssign(command.json());
@@ -646,7 +651,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
     }
 
-    @Override
+   @Transactional
+   @Override
     public CommandProcessingResult approveOverdraft(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForOverdraftApprovalUndoReject(command.json());
@@ -709,7 +715,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 .build();
     }
 
-    @Override
+  @Transactional
+  @Override
     public CommandProcessingResult undoOverdraft(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForOverdraftApprovalUndoReject(command.json());
@@ -775,7 +782,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 .build();
     }
 
-    @Override
+  @Transactional
+  @Override
     public CommandProcessingResult rejectOverdraft(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForOverdraftApprovalUndoReject(command.json());
@@ -808,7 +816,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 .build();
     }
 
-    @Override
+ @Transactional
+ @Override
     public CommandProcessingResult assignOverdraft(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForOverdraftAssign(command.json());

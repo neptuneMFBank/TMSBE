@@ -24,5 +24,5 @@ public interface AuthenticationBusinessWritePlatformService {
 
     ApiResponseMessage resetPassword(String apiRequestBodyAsJson);
 
-    void loggedUserLogIn(final String json);
+    void loggedUserLogIn(final String json, final Long userId);
 }

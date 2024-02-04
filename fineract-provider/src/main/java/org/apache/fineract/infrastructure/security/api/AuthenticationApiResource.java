@@ -165,7 +165,7 @@ public class AuthenticationApiResource {
         }
 
         //log the current user
-        this.authenticationBusinessWritePlatformService.loggedUserLogIn(apiRequestBodyAsJson);
+        this.authenticationBusinessWritePlatformService.loggedUserLogIn(apiRequestBodyAsJson,userId);
         return this.apiJsonSerializerService.serialize(authenticatedUserData);
     }
 }

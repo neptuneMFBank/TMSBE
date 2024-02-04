@@ -19,6 +19,7 @@
 package org.apache.fineract.infrastructure.security.api;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -166,8 +167,10 @@ public class AuthenticationApiResource {
         }
 
         if (userId != null) {
+            final JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("username", request.username);
             //log the current user
-            this.authenticationBusinessWritePlatformService.loggedUserLogIn(apiRequestBodyAsJson, userId);
+            this.authenticationBusinessWritePlatformService.loggedUserLogIn(jsonObject.toString(), userId);
         }
         return this.apiJsonSerializerService.serialize(authenticatedUserData);
     }

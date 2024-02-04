@@ -16,11 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.infrastructure.security.service;
+package org.apache.fineract.infrastructure.security.service.business;
 
 import org.apache.fineract.simplifytech.data.ApiResponseMessage;
 
 public interface AuthenticationBusinessWritePlatformService {
 
     ApiResponseMessage resetPassword(String apiRequestBodyAsJson);
+
+    void loggedUserLogIn(final String json);
 }

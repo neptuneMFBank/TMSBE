@@ -48,6 +48,6 @@ public final class OverdraftApiResourceConstants {
             STARTDATE, CREATED_ON, MODIFIED_ON, EXPIRYDATE, CREATEDBYUSER, MODIFIEDBYUSER, NUMBER_OF_DAYS));
 
     public static final Set<String> REQUEST_ACTION_DATA_PARAMETERS = new HashSet<>(Arrays.asList(SAVINGS_ID, AMOUNT, LoanApiConstants.localeParameterName,
-            NOMINALINTEREST, STARTDATE, NUMBER_OF_DAYS,SavingsApiConstants.noteParamName));
+            NOMINALINTEREST, STARTDATE, NUMBER_OF_DAYS, SavingsApiConstants.noteParamName, SavingsApiConstants.dateFormatParamName));
 
 }

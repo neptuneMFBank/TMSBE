@@ -220,16 +220,16 @@ public class MetricsApiResource {
         CommandProcessingResult result = null;
         CommandWrapper commandRequest;
         if (is(commandParam, "approve")) {
-            commandRequest = builder.approveLoanMetrics(metricsId).build();
+            commandRequest = builder.approveOverdraftMetrics(metricsId).build();
             result = this.commandWritePlatformService.logCommandSource(commandRequest);
         } else if (is(commandParam, "undo")) {
-            commandRequest = builder.undoLoanMetrics(metricsId).build();
+            commandRequest = builder.undoOverdraftMetrics(metricsId).build();
             result = this.commandWritePlatformService.logCommandSource(commandRequest);
         } else if (is(commandParam, "reject")) {
-            commandRequest = builder.rejectLoanMetrics(metricsId).build();
+            commandRequest = builder.rejectOverdraftMetrics(metricsId).build();
             result = this.commandWritePlatformService.logCommandSource(commandRequest);
         } else if (is(commandParam, "assign")) {
-            commandRequest = builder.assignLoanMetrics(metricsId).build();
+            commandRequest = builder.assignOverdraftMetrics(metricsId).build();
             result = this.commandWritePlatformService.logCommandSource(commandRequest);
         }
 

@@ -151,14 +151,17 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
     @Override
     public ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final Boolean staffInSelectedOfficeOnly) {
+        this.context.authenticatedUser();
         try {
-            final String hierarchy = this.context.officeHierarchy();
-            final String hierarchySearchString = hierarchy + "%";
+            //final String hierarchy = this.context.officeHierarchy();
+            //final String hierarchySearchString = hierarchy + "%";
 
             final String sql = "select " + this.clientBusinessMapper.schema()
-                    + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
+                    //                    + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
+                    + " where c.id = ?";
             ClientBusinessData clientData = this.jdbcTemplate.queryForObject(sql, this.clientBusinessMapper, // NOSONAR
-                    hierarchySearchString, hierarchySearchString, clientId);
+                    //hierarchySearchString, hierarchySearchString, 
+                    clientId);
 
             // Get client collaterals
             final Collection<ClientCollateralManagement> clientCollateralManagements = this.clientCollateralManagementRepositoryWrapper

@@ -213,4 +213,26 @@ public class OverdraftApiResource {
         return this.jsonSerializer.serialize(result);
     }
 
+    @POST
+    @Path("/submit/{overdraftId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Stop an Overdraft", description = "")
+    @RequestBody(required = true)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        )})
+    public String submitOverdraft(@Parameter(description = "overdraftId") @PathParam("overdraftId") final Long overdraftId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .submitOverdraft(overdraftId) //
+                .withJson(apiRequestBodyAsJson) //
+                .build(); //
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.jsonSerializer.serialize(result);
+    }
+
 }

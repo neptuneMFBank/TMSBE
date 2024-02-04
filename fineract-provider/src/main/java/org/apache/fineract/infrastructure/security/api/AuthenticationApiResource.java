@@ -123,6 +123,7 @@ public class AuthenticationApiResource {
         final Collection<String> permissions = new ArrayList<>();
         AuthenticatedUserData authenticatedUserData = new AuthenticatedUserData(request.username, permissions);
 
+        Long userId = null;
         if (authenticationCheck.isAuthenticated()) {
             final Collection<GrantedAuthority> authorities = new ArrayList<>(authenticationCheck.getAuthorities());
             for (final GrantedAuthority grantedAuthority : authorities) {
@@ -149,7 +150,7 @@ public class AuthenticationApiResource {
 
             boolean isTwoFactorRequired = this.twoFactorEnabled
                     && !principal.hasSpecificPermissionTo(TwoFactorConstants.BYPASS_TWO_FACTOR_PERMISSION);
-            Long userId = principal.getId();
+            userId = principal.getId();
             if (this.springSecurityPlatformSecurityContext.doesPasswordHasToBeRenewed(principal)) {
                 authenticatedUserData = new AuthenticatedUserData(request.username, userId,
                         new String(base64EncodedAuthenticationKey, StandardCharsets.UTF_8), isTwoFactorRequired);
@@ -164,8 +165,10 @@ public class AuthenticationApiResource {
 
         }
 
-        //log the current user
-        this.authenticationBusinessWritePlatformService.loggedUserLogIn(apiRequestBodyAsJson);
+        if (userId != null) {
+            //log the current user
+            this.authenticationBusinessWritePlatformService.loggedUserLogIn(apiRequestBodyAsJson, userId);
+        }
         return this.apiJsonSerializerService.serialize(authenticatedUserData);
     }
 }

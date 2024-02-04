@@ -172,8 +172,8 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
     }
 
     @Override
-    public void loggedUserLogIn(final String json) {
-        final AppUser appUser = this.context.authenticatedUser();
+    public void loggedUserLogIn(final String json, final Long userId) {
+        final AppUser appUser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
         final Long appUserId = appUser.getId();
         final String actionName = "LOGIN";
         final String entityName = "USER";

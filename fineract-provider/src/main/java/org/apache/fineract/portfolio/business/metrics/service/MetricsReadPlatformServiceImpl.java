@@ -117,6 +117,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     private void createOverdraftMetrics(Long overdraftApprovalScheduleId) {
         boolean updateOverdraft = false;
         final Overdraft overdraft = this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftApprovalScheduleId);
+        final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
 
         final Collection<LoanProductApprovalConfigData> overdraftApprovalConfigDatas = this.retrieveOverdraftRoleApprovalConfig();
 
@@ -170,7 +171,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                                 nextRank = nextRank > 0 ? nextRank-- : 0;
                                 continue;
                             }
-                            final Metrics metrics = Metrics.createOverdraftMetrics(staff, status, rank, overdraft);
+                            final Metrics metrics = Metrics.createOverdraftMetrics(staff, status, rank, overdraft, savingsAccount);
                             this.metricsRepositoryWrapper.saveAndFlush(metrics);
                             final Long metricsId = metrics.getId();
                             if (metricsId != null) {
@@ -581,8 +582,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                     + " mm.status_enum statusEnum, mm.loan_id loanId, mm.savings_id savingsId, mm.overdraft_id overdraftId, mm.created_on_utc createdOn, mm.last_modified_on_utc modifiedOn, "
                     + " mlv.loan_officer_id as loanOfficerId, msl.display_name as loanOfficerName, "
                     + " mlv.client_id as loanClientId, mcv.display_name as loanClientName " + "  from m_metrics mm "
-                    + " LEFT JOIN m_loan_view mlv ON mlv.id=mm.loan_id" + " LEFT JOIN m_staff msl ON msl.id=mlv.loan_officer_id"
-                    + " LEFT JOIN m_client_view mcv ON mcv.id=mlv.client_id" + " LEFT JOIN m_staff ms ON ms.id=mm.assigned_user_id"
+                    + " LEFT JOIN m_loan_view mlv ON mlv.id=mm.loan_id"
+                    + " LEFT JOIN m_staff msl ON msl.id=mlv.loan_officer_id"
+                    + " LEFT JOIN m_client_view mcv ON mcv.id=mlv.client_id"
+                    + " LEFT JOIN m_staff ms ON ms.id=mm.assigned_user_id"
                     + " LEFT JOIN m_staff mss ON mss.id=ms.organisational_role_parent_staff_id";
         }
 
@@ -595,14 +598,14 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
             ClientData clientData = null;
             final Long loanClientId = JdbcSupport.getLong(rs, "loanClientId");
-            if (loanClientId > 0) {
+            if (loanClientId != null && loanClientId > 0) {
                 final String loanClientName = rs.getString("loanClientName");
                 clientData = ClientData.instance(id, loanClientName);
             }
 
             StaffData loanOfficerData = null;
             final Long loanOfficerId = JdbcSupport.getLong(rs, "loanOfficerId");
-            if (loanClientId > 0) {
+            if (loanOfficerId != null && loanOfficerId > 0) {
                 final String loanOfficerName = rs.getString("loanOfficerName");
                 loanOfficerData = StaffData.lookup(loanOfficerId, loanOfficerName);
             }
@@ -705,8 +708,11 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             return " mm.id, '100' statusEnum, mm.loan_id loanId, mm.assigned_user_id staffId, mm.savings_id savingsId, mm.staff_display_name staffDisplayName, "
                     + " mm.organisational_role_parent_staff_id, mm.organisational_role_parent_staff_display_name supervisorStaffDisplayName, mm.created_on_utc createdOn, "
                     + " mlv.loan_officer_id as loanOfficerId, msl.display_name as loanOfficerName, mm.overdraft_id overdraftId, "
-                    + " mlv.client_id as loanClientId, mcv.display_name as loanClientName " + " FROM m_metrics_view mm "
-                    + " LEFT JOIN m_loan_view mlv ON mlv.id=mm.loan_id" + " LEFT JOIN m_staff msl ON msl.id=mlv.loan_officer_id"
+                    + " COALESCE(mlv.client_id,msv.client_id, '') as clientId, COALESCE(mcv.display_name,msv.display_name, '') as clientName "
+                    + " FROM m_metrics_view mm "
+                    + " LEFT JOIN m_loan_view mlv ON mlv.id=mm.loan_id"
+                    + " LEFT JOIN m_saving_view msv ON msv.id=mm.savings_id"
+                    + " LEFT JOIN m_staff msl ON msl.id=mlv.loan_officer_id"
                     + " LEFT JOIN m_client_view mcv ON mcv.id=mlv.client_id";
         }
 
@@ -718,15 +724,15 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             final Long id = rs.getLong("id");
 
             ClientData clientData = null;
-            final Long loanClientId = JdbcSupport.getLong(rs, "loanClientId");
-            if (loanClientId > 0) {
-                final String loanClientName = rs.getString("loanClientName");
-                clientData = ClientData.instance(loanClientId, loanClientName);
+            final Long clientId = JdbcSupport.getLong(rs, "clientId");
+            if (clientId != null && clientId > 0) {
+                final String clientName = rs.getString("clientName");
+                clientData = ClientData.instance(clientId, clientName);
             }
 
             StaffData loanOfficerData = null;
             final Long loanOfficerId = JdbcSupport.getLong(rs, "loanOfficerId");
-            if (loanClientId > 0) {
+            if (loanOfficerId != null && loanOfficerId > 0) {
                 final String loanOfficerName = rs.getString("loanOfficerName");
                 loanOfficerData = StaffData.lookup(loanOfficerId, loanOfficerName);
             }

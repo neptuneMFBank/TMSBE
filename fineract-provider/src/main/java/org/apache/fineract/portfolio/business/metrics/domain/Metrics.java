@@ -83,9 +83,8 @@ public class Metrics extends AbstractAuditableWithUTCDateTimeCustom {
         return new Metrics(assignedUser, status, rank, loan, savingsAccount, overdraft);
     }
 
-    public static Metrics createOverdraftMetrics(Staff assignedUser, Integer status, Integer rank, Overdraft overdraft) {
+    public static Metrics createOverdraftMetrics(Staff assignedUser, Integer status, Integer rank, Overdraft overdraft, final SavingsAccount savingsAccount) {
         final Loan loan = null;
-        final SavingsAccount savingsAccount = null;
         return new Metrics(assignedUser, status, rank, loan, savingsAccount, overdraft);
     }
 

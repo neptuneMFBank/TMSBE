@@ -189,7 +189,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             }
             if (updateOverdraft) {
                 // update dataTable overdraft approvalCheck
-                String overdraftApprovalCheckSql = "UPDATE m_overdraft ov SET ov.status=? WHERE ov.id=?";
+                String overdraftApprovalCheckSql = "UPDATE m_overdraft ov SET ov.status_enum=? WHERE ov.id=?";
                 jdbcTemplate.update(overdraftApprovalCheckSql, LoanApprovalStatus.PENDING.getValue(), overdraftApprovalScheduleId);
             }
         }

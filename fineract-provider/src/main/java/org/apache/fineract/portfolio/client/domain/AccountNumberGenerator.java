@@ -21,6 +21,7 @@ package org.apache.fineract.portfolio.client.domain;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormat;
@@ -46,6 +47,7 @@ import org.springframework.stereotype.Component;
  * auto generated database id and zero fills it ensuring the identifier is
  * always of a given <code>maxLength</code>.
  */
+@Slf4j
 @Component
 public class AccountNumberGenerator {
 
@@ -295,9 +297,13 @@ public class AccountNumberGenerator {
         // find if the custom NIBSS SORTCODE is defined
         String nibssSortcode = null;
         final GlobalConfigurationPropertyData nibssSortcodeConfig = this.configurationReadPlatformService
-                .retrieveGlobalConfiguration("nibss-sortcode");
+                .retrieveGlobalConfigurationX("nibss-sortcode");
         if (nibssSortcodeConfig.isEnabled()) {
             nibssSortcode = nibssSortcodeConfig.getStringValue();
+        }
+        log.error("NUBAN accountNumber Check: {}", accountNumber);
+        if (accountNumber != null && accountNumber.length() > 9) {
+            accountNumber = accountNumber.substring(0, 9);
         }
         // add CDL NIBSS NUBAN logic
         accountNumber = new AccountNumberNuban(accountNumber, this.environment, nibssSortcode).NUBAN();

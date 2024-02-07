@@ -16,11 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.infrastructure.security.service;
+package org.apache.fineract.portfolio.loanproduct.business.data;
 
-import org.apache.fineract.simplifytech.data.ApiResponseMessage;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import lombok.Data;
 
-public interface AuthenticationBusinessWritePlatformService {
+@SuppressWarnings("unused")
+@Data
+public class LoanProductInterestConfigData implements Serializable {
 
-    ApiResponseMessage resetPassword(String apiRequestBodyAsJson);
+    private final Long id;
+    private final BigDecimal minTenor;
+    private final BigDecimal maxTenor;
+    private final BigDecimal nominalInterestRatePerPeriod;
+
+    public static LoanProductInterestConfigData instance(Long id, BigDecimal minTenor,
+            BigDecimal maxTenor, BigDecimal nominalInterestRatePerPeriod) {
+        return new LoanProductInterestConfigData(id, minTenor, maxTenor, nominalInterestRatePerPeriod);
+    }
+
 }

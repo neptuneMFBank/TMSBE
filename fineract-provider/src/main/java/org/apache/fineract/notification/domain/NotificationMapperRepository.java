@@ -18,6 +18,11 @@
  */
 package org.apache.fineract.notification.domain;
 
+import java.util.Optional;
+import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface NotificationMapperRepository extends JpaRepository<NotificationMapper, Long> {}
+public interface NotificationMapperRepository extends JpaRepository<NotificationMapper, Long> {
+
+    Optional<NotificationMapper> findOneByNotificationIdAndUserId(final Long notificationId, final AppUser userId);
+}

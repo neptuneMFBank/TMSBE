@@ -28,6 +28,8 @@ public interface MetricsRepository extends JpaRepository<Metrics, Long>, JpaSpec
 
     List<Metrics> findByLoanId(Long loanId);
 
+    List<Metrics> findByOverdraftId(Long overdraftId);
+
     boolean existsByLoanId(Long loanId);
 
     List<Metrics> findBySavingsAccountId(Long savingsAccountId);

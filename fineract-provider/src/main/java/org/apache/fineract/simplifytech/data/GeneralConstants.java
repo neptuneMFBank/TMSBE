@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.lang3.StringUtils;
@@ -39,9 +40,13 @@ import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
+import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterest;
+import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestConfig;
+import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 /**
  *
@@ -79,6 +84,11 @@ public class GeneralConstants {
             return null;
         }
         return IntStream.rangeClosed(start, end).boxed().collect(Collectors.toList());
+    }
+
+    public static Integer numberOfDays(LocalDate startDate, LocalDate endDate) {
+        Period period = Period.between(startDate, endDate);
+        return period.getDays();
     }
 
     public static Integer calculateYearsFromDate(LocalDate date) {
@@ -203,6 +213,25 @@ public class GeneralConstants {
         return value.compareTo(min) >= 0 && value.compareTo(max) <= 0;
     }
 
+    public static Long withdrawAmount(final BigDecimal amount, final Long savingsId,
+            final String note, final String accountNumber, final Long paymentTypeId,
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+        LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
+        final JsonObject withdrawAmountJson = new JsonObject();
+        withdrawAmountJson.addProperty(SavingsApiConstants.transactionDateParamName, today.toString());
+        withdrawAmountJson.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
+        withdrawAmountJson.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
+        withdrawAmountJson.addProperty(SavingsApiConstants.transactionAmountParamName, amount);
+        withdrawAmountJson.addProperty(SavingsApiConstants.noteParamName, note);
+        withdrawAmountJson.addProperty(SavingsApiConstants.accountNumberParamName, accountNumber);
+        withdrawAmountJson.addProperty(SavingsApiConstants.paymentTypeIdParamName, paymentTypeId);
+        final String apiRequestBodyAsJson = withdrawAmountJson.toString();
+        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
+        final CommandWrapper commandRequest = builder.savingsAccountWithdrawal(savingsId).build();
+        final CommandProcessingResult result = commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        return result.resourceId();
+    }
+
     public static Long holdAmount(final BigDecimal amountToHold, final Long loanId, final Long savingsId,
             final String note,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
@@ -219,5 +248,31 @@ public class GeneralConstants {
         final CommandWrapper commandRequest = builder.holdAmount(savingsId).build();
         final CommandProcessingResult result = commandsSourceWritePlatformService.logCommandSource(commandRequest);
         return result.resourceId();
+    }
+
+    public static Long releaseAmount(final Long savingsId, final Long transactionId,
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withNoJsonBody();
+        final CommandWrapper commandRequest = builder.releaseAmount(savingsId, transactionId).build();
+        final CommandProcessingResult result = commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        return result.resourceId();
+    }
+
+    public static BigDecimal loanProductInterestGeneration(final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper, final Long productId, Integer loanTermFrequency, BigDecimal interestRatePerPeriod) {
+        //connect to Loan Product Interest to pick business interest rate if configured
+        final LoanProductInterest loanProductInterest = loanProductInterestRepositoryWrapper.findByLoanProductIdAndActive(productId, true);
+        if (loanProductInterest != null) {
+            final Set<LoanProductInterestConfig> loanProductInterestConfig = loanProductInterest.getLoanProductInterestConfig();
+            if (!CollectionUtils.isEmpty(loanProductInterestConfig)) {
+                final BigDecimal interestRatePerPeriodCheck = loanProductInterestConfig.stream()
+                        .filter(predicate -> GeneralConstants.isWithinRange(new BigDecimal(loanTermFrequency), predicate.getMinTenor(), predicate.getMaxTenor()))
+                        .map(LoanProductInterestConfig::getNominalInterestRatePerPeriod)
+                        .findFirst().orElse(null);
+                if (interestRatePerPeriodCheck != null) {
+                    interestRatePerPeriod = interestRatePerPeriodCheck;
+                }
+            }
+        }
+        return interestRatePerPeriod;
     }
 }

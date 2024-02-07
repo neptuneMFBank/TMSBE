@@ -150,15 +150,18 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     }
 
     @Override
-    public ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final boolean staffInSelectedOfficeOnly) {
+    public ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final Boolean staffInSelectedOfficeOnly) {
+        this.context.authenticatedUser();
         try {
-            final String hierarchy = this.context.officeHierarchy();
-            final String hierarchySearchString = hierarchy + "%";
+            //final String hierarchy = this.context.officeHierarchy();
+            //final String hierarchySearchString = hierarchy + "%";
 
             final String sql = "select " + this.clientBusinessMapper.schema()
-                    + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
+                    //                    + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
+                    + " where c.id = ?";
             ClientBusinessData clientData = this.jdbcTemplate.queryForObject(sql, this.clientBusinessMapper, // NOSONAR
-                    hierarchySearchString, hierarchySearchString, clientId);
+                    //hierarchySearchString, hierarchySearchString, 
+                    clientId);
 
             // Get client collaterals
             final Collection<ClientCollateralManagement> clientCollateralManagements = this.clientCollateralManagementRepositoryWrapper
@@ -198,7 +201,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     }
 
     @Override
-    public ClientBusinessData retrieveTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly, final Integer legalFormId) {
+    public ClientBusinessData retrieveTemplate(final Long officeId, final Boolean staffInSelectedOfficeOnly, final Integer legalFormId) {
         this.context.authenticatedUser();
 
         final Long defaultOfficeId = defaultToUsersOfficeIfNull(officeId);
@@ -221,11 +224,13 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         Collection<StaffData> staffOptions = null;
 
         final boolean loanOfficersOnly = false;
-        if (staffInSelectedOfficeOnly) {
-            staffOptions = this.staffReadPlatformService.retrieveAllStaffForDropdown(defaultOfficeId);
-        } else {
-            staffOptions = this.staffReadPlatformService.retrieveAllStaffInOfficeAndItsParentOfficeHierarchy(defaultOfficeId,
-                    loanOfficersOnly);
+        if (staffInSelectedOfficeOnly != null) {
+            if (staffInSelectedOfficeOnly) {
+                staffOptions = this.staffReadPlatformService.retrieveAllStaffForDropdown(defaultOfficeId);
+            } else {
+                staffOptions = this.staffReadPlatformService.retrieveAllStaffInOfficeAndItsParentOfficeHierarchy(defaultOfficeId,
+                        loanOfficersOnly);
+            }
         }
         if (CollectionUtils.isEmpty(staffOptions)) {
             staffOptions = null;
@@ -309,33 +314,18 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             throw new PlatformApiDataValidationException(dataValidationErrors);
         }
 
-        final String userOfficeHierarchy = this.context.officeHierarchy();
-        final String underHierarchySearchString = userOfficeHierarchy + "%";
-        final String appUserID = String.valueOf(context.authenticatedUser().getId());
-
-        // if (searchParameters.isScopedByOfficeHierarchy()) {
-        // this.context.validateAccessRights(searchParameters.getHierarchy());
-        // underHierarchySearchString = searchParameters.getHierarchy() + "%";
-        // }
-        List<Object> paramList = new ArrayList<>(Arrays.asList(underHierarchySearchString, underHierarchySearchString));
+        List<Object> paramList = new ArrayList<>();
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append("select ");
         sqlBuilder.append(sqlGenerator.calcFoundRows());
         sqlBuilder.append(" ");
         sqlBuilder.append(this.clientMapper.schema());
-        sqlBuilder.append(" where (o.hierarchy like ? or transferToOffice.hierarchy like ?) ");
 
         if (searchParameters != null) {
-            if (searchParameters.isSelfUser()) {
-                sqlBuilder.append(
-                        " and c.id in (select umap.client_id from m_selfservice_user_client_mapping as umap where umap.appuser_id = ? ) ");
-                paramList.add(appUserID);
-            }
-
             final String extraCriteria = buildSqlStringFromClientCriteria(searchParameters, paramList);
 
             if (StringUtils.isNotBlank(extraCriteria)) {
-                sqlBuilder.append(" and (").append(extraCriteria).append(")");
+                sqlBuilder.append(" WHERE (").append(extraCriteria).append(")");
             }
 
             if (searchParameters.isOrderByRequested()) {
@@ -376,6 +366,13 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         // limit, orderBy, sortOrder, staffId,
         // accountNo, fromDate, toDate, displayName, orphansOnly, isSelfUser
         String extraCriteria = "";
+
+        if (searchParameters.isSelfUser()) {
+            final String appUserID = String.valueOf(context.authenticatedUser().getId());
+            extraCriteria
+                    += " and c.id in (select umap.client_id from m_selfservice_user_client_mapping as umap where umap.appuser_id = ? ) ";
+            paramList.add(appUserID);
+        }
 
         if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
             final LocalDate startPeriod = searchParameters.getFromDate();
@@ -419,8 +416,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
 
         if (displayName != null) {
-            paramList.add("%" + displayName + "%");
-            extraCriteria += " and c.display_name like ? ";
+            final String displayNameFinal = StringUtils.lowerCase(displayName);
+            paramList.add("%" + displayNameFinal + "%");
+            extraCriteria += " and LOWER(c.display_name) like ? ";
         }
 
         if (searchParameters.isStatusIdPassed()) {
@@ -600,6 +598,15 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             jsonObjectBalance.add("currentDeposit", jsonObjectCurrent);
         }
         return jsonObjectBalance;
+    }
+
+    @Override
+    public KycBusinessData isClientExisting(String email, String mobileNo, String altMobileNo, String bvn, String nin, String tin) {
+        Integer cnt = this.jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM client_unique_view WHERE mc.email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ", Integer.class,
+                email, mobileNo, altMobileNo, bvn, nin, tin);
+        Boolean agreement = cnt != null && cnt > 0;
+        return new KycBusinessData(null, null, null, null, null, null, null, agreement, null);
     }
 
     private static final class ClientLookupKycLevelMapper implements RowMapper<KycBusinessData> {

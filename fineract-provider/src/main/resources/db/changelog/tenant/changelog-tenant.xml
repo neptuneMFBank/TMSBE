@@ -136,4 +136,28 @@
     <include file="parts/0120_limit_loan_age_config.sql" relativeToChangelogFile="true" />
     <include file="parts/0121_nibss_sortcode_config.sql" relativeToChangelogFile="true" />
     <include file="parts/0122_multiple_platform_login.sql" relativeToChangelogFile="true" />
+    <include file="parts/0123_product_id_loan_payment_type_unique.sql" relativeToChangelogFile="true" />
+    <include file="parts/0124_m_product_loan_interest.sql" relativeToChangelogFile="true" />
+    <include file="parts/0125_m_product_loan_interest_config.sql" relativeToChangelogFile="true" />
+    <include file="parts/0126_m_create_loan_product_interest_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0127_m_read_loan_product_interest_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0128_m_update_loan_product_interest_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0129_m_create_checker_loan_product_interest_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0130_m_update_checker_loan_product_interest_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0131_m_read_notification_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0132_m_update_notification.sql" relativeToChangelogFile="true" />
+    <include file="parts/0133_m_read_module.xml" relativeToChangelogFile="true" />
+    <include file="parts/0134_m_loan_pending_disbursement.sql" relativeToChangelogFile="true" />
+    <include file="parts/0135_m_overdraft.sql" relativeToChangelogFile="true" />
+    <include file="parts/0136_app_base_url.sql" relativeToChangelogFile="true" />
+    <include file="parts/0137_m_overdraft_permission.xml" relativeToChangelogFile="true" />
+    <include file="parts/0138_client_unique_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0139_m_overdraft_schedule_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0140_m_metrics_overdraft_update.sql" relativeToChangelogFile="true" />
+    <include file="parts/0141_job_reminder_overdraft_approval.sql" relativeToChangelogFile="true" />
+    <include file="parts/0142_job_queue_overdraft_approval.sql" relativeToChangelogFile="true" />
+    <include file="parts/0143_m_metrics_update_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0144_m_role_overdraft_approval_config.sql" relativeToChangelogFile="true" />
+    <include file="parts/0145_m_overdraft_expired_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0146_m_audit_view.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

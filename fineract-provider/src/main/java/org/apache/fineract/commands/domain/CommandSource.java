@@ -102,6 +102,11 @@ public class CommandSource extends AbstractPersistableCustom {
                 command.json(), maker, ZonedDateTime.now(DateUtils.getDateTimeZoneOfTenant()));
     }
 
+    public static CommandSource fullBusinessEntryFrom(final String actionName, final String entityName, final String href, final Long entityId, final String json, final AppUser maker) {
+        return new CommandSource(actionName, entityName, href, entityId, null,
+                json, maker, ZonedDateTime.now(DateUtils.getDateTimeZoneOfTenant()));
+    }
+
     protected CommandSource() {
         //
     }

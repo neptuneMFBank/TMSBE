@@ -230,7 +230,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
         }
 
         if (searchParameters.isOrphansOnlyPassed() && BooleanUtils.isTrue(accountWithBalance)) {
-            extraCriteria += " AND ms.ledger_balance > 0 ";
+            extraCriteria += " AND ms.available_balance > 0 ";
         }
 
         if (searchParameters.isClientIdPassed()) {

@@ -22,6 +22,7 @@ import java.util.Collection;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.business.metrics.data.MetricsData;
+import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductApprovalConfigData;
 
 public interface MetricsReadPlatformService {
 
@@ -35,4 +36,11 @@ public interface MetricsReadPlatformService {
 
     Collection<MetricsData> retrieveLoanMetrics(final Long loanId);
 
+    void queueOverdraftApprovals();
+
+    void reminderOverdraftApprovals();
+
+    Collection<MetricsData> retrieveOverdraftMetrics(final Long overdraftId);
+
+    Collection<LoanProductApprovalConfigData> retrieveOverdraftRoleApprovalConfig();
 }

@@ -24,7 +24,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
-import org.apache.fineract.infrastructure.security.service.AuthenticationBusinessWritePlatformService;
+import org.apache.fineract.infrastructure.security.service.business.AuthenticationBusinessWritePlatformService;
 import org.apache.fineract.simplifytech.data.ApiResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -51,7 +51,7 @@ public class AuthenticationBusinessApiResource {
 
     @POST
     @Path("reset-password")
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON})
     public String resetCustomerPassword(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.authenticationBusinessWritePlatformService.resetPassword(apiRequestBodyAsJson);
         return this.apiJsonSerializerService.serialize(apiResponseMessage);

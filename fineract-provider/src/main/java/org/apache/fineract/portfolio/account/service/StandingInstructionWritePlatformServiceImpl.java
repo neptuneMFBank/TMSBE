@@ -44,6 +44,7 @@ import org.apache.fineract.infrastructure.jobs.service.JobName;
 import org.apache.fineract.portfolio.account.PortfolioAccountType;
 import org.apache.fineract.portfolio.account.api.StandingInstructionApiConstants;
 import org.apache.fineract.portfolio.account.data.AccountTransferDTO;
+import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
 import org.apache.fineract.portfolio.account.data.StandingInstructionData;
 import org.apache.fineract.portfolio.account.data.StandingInstructionDataValidator;
 import org.apache.fineract.portfolio.account.data.StandingInstructionDuesData;
@@ -60,6 +61,7 @@ import org.apache.fineract.portfolio.common.domain.PeriodFrequencyType;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.DefaultScheduledDateGenerator;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.ScheduledDateGenerator;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.exception.InsufficientAccountBalanceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +86,7 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
     private final AccountTransfersWritePlatformService accountTransfersWritePlatformService;
     private final JdbcTemplate jdbcTemplate;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
+    private final SavingsAccountRepositoryWrapper savingsAccountRepository;
 
     @Autowired
     public StandingInstructionWritePlatformServiceImpl(final StandingInstructionDataValidator standingInstructionDataValidator,
@@ -92,7 +95,7 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
             final StandingInstructionRepository standingInstructionRepository,
             final StandingInstructionReadPlatformService standingInstructionReadPlatformService,
             final AccountTransfersWritePlatformService accountTransfersWritePlatformService, final JdbcTemplate jdbcTemplate,
-            DatabaseSpecificSQLGenerator sqlGenerator) {
+            DatabaseSpecificSQLGenerator sqlGenerator, final SavingsAccountRepositoryWrapper savingsAccountRepository) {
         this.standingInstructionDataValidator = standingInstructionDataValidator;
         this.standingInstructionAssembler = standingInstructionAssembler;
         this.accountTransferDetailRepository = accountTransferDetailRepository;
@@ -101,6 +104,7 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
         this.accountTransfersWritePlatformService = accountTransfersWritePlatformService;
         this.jdbcTemplate = jdbcTemplate;
         this.sqlGenerator = sqlGenerator;
+        this.savingsAccountRepository = savingsAccountRepository;
     }
 
     @Transactional
@@ -199,6 +203,18 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
         List<Throwable> errors = new ArrayList<>();
         LocalDate transactionDate = DateUtils.getBusinessLocalDate();
         for (StandingInstructionData data : instructionDatas) {
+            final PortfolioAccountType fromAccountType = data.fromAccountType();
+            if (fromAccountType.isSavingsAccount()) {
+                final PortfolioAccountData fromAccount = data.fromAccount();
+                final Long savingsId = fromAccount.accountId();
+                final SavingsAccount savingsAccount = this.savingsAccountRepository.findOneWithNotFoundDetection(savingsId);
+                final BigDecimal accountBalance = savingsAccount.getAccountBalance();
+                if (accountBalance.compareTo(BigDecimal.ZERO) <= 0) {
+                    //throw new InsufficientAccountBalanceException("standingInstructionAmount", accountBalance, null, null);
+                    LOG.warn("InsufficientAccountBalanceException for standingInstructionAmount with savingsId: {}", savingsId);
+                    continue;
+                }
+            }
             boolean isDueForTransfer = false;
             AccountTransferRecurrenceType recurrenceType = data.recurrenceType();
             StandingInstructionType instructionType = data.instructionType();
@@ -237,7 +253,8 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
             if (isDueForTransfer && transactionAmount != null && transactionAmount.compareTo(BigDecimal.ZERO) > 0) {
                 final SavingsAccount fromSavingsAccount = null;
                 final boolean isRegularTransaction = true;
-                final boolean isExceptionForBalanceCheck = false;
+                //final boolean isExceptionForBalanceCheck = true;//this would ensure account balance is positive (even if overDraft is allowed) - 14/12/2023
+                final boolean isExceptionForBalanceCheck = false;//this allow money to be withdrawn from overDraft account - 14/12/2023
                 AccountTransferDTO accountTransferDTO = new AccountTransferDTO(transactionDate, transactionAmount, data.fromAccountType(),
                         data.toAccountType(), data.fromAccount().accountId(), data.toAccount().accountId(),
                         data.name() + " Standing instruction trasfer ", null, null, null, null, data.toTransferType(), null, null,
@@ -262,7 +279,7 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
         StringBuilder errorLog = new StringBuilder();
         StringBuilder updateQuery = new StringBuilder(
                 "INSERT INTO m_account_transfer_standing_instructions_history (standing_instruction_id, " + sqlGenerator.escape("status")
-                        + ", amount, execution_time, error_log) VALUES (");
+                + ", amount, execution_time, error_log) VALUES (");
         try {
             this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
         } catch (final PlatformApiDataValidationException e) {

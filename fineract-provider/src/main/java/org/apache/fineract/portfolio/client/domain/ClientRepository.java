@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.client.domain;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -35,4 +36,7 @@ interface ClientRepository extends JpaRepository<Client, Long>, JpaSpecification
     Client findByMobileNo(String mobileNo);
 
     Client findByEmailAddress(String emailAddress);
+
+    Optional<Client> findFirstByOfficeId(Long officeId);
+
 }

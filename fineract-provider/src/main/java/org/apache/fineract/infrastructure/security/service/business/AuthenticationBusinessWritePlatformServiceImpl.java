@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.infrastructure.security.service;
+package org.apache.fineract.infrastructure.security.service.business;
 
 import com.google.gson.JsonElement;
 import java.security.SecureRandom;
@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.commands.domain.CommandSource;
+import org.apache.fineract.commands.domain.CommandSourceRepository;
 import org.apache.fineract.infrastructure.campaigns.sms.data.SmsProviderData;
 import org.apache.fineract.infrastructure.campaigns.sms.domain.SmsCampaign;
 import org.apache.fineract.infrastructure.campaigns.sms.service.SmsCampaignDropdownReadPlatformService;
@@ -32,6 +34,8 @@ import org.apache.fineract.infrastructure.core.domain.EmailDetail;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.GmailBackedPlatformEmailService;
+import org.apache.fineract.infrastructure.security.service.AuthenticationBusinessCommandFromApiJsonDeserializer;
+import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.sms.domain.SmsMessage;
 import org.apache.fineract.infrastructure.sms.domain.SmsMessageRepository;
 import org.apache.fineract.infrastructure.sms.domain.SmsMessageStatusType;
@@ -60,6 +64,8 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
     private static final SecureRandom secureRandom = new SecureRandom();
     final AuthenticationBusinessCommandFromApiJsonDeserializer authenticationBusinessCommandFromApiJsonDeserializer;
     private final AppUserRepositoryWrapper appUserRepositoryWrapper;
+    private final PlatformSecurityContext context;
+    private final CommandSourceRepository commandSourceRepository;
 
     @Autowired
     public AuthenticationBusinessWritePlatformServiceImpl(final FromJsonHelper fromApiJsonHelper, final UserDomainService userDomainService,
@@ -67,7 +73,7 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
             SmsMessageScheduledJobService smsMessageScheduledJobService,
             final SmsCampaignDropdownReadPlatformService smsCampaignDropdownReadPlatformService,
             final AuthenticationBusinessCommandFromApiJsonDeserializer authenticationBusinessCommandFromApiJsonDeserializer,
-            final AppUserRepositoryWrapper appUserRepositoryWrapper) {
+            final AppUserRepositoryWrapper appUserRepositoryWrapper, final PlatformSecurityContext context, final CommandSourceRepository commandSourceRepository) {
         this.appUserRepositoryWrapper = appUserRepositoryWrapper;
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.userDomainService = userDomainService;
@@ -76,6 +82,8 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
         this.smsMessageScheduledJobService = smsMessageScheduledJobService;
         this.smsCampaignDropdownReadPlatformService = smsCampaignDropdownReadPlatformService;
         this.authenticationBusinessCommandFromApiJsonDeserializer = authenticationBusinessCommandFromApiJsonDeserializer;
+        this.context = context;
+        this.commandSourceRepository = commandSourceRepository;
     }
 
     @Override
@@ -94,8 +102,8 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
             // appUser = this.appUserRepositoryWrapper.findAppUserByName(value);
             appUser = this.appUserRepositoryWrapper.findAppUserByEmail(value);
         } // else if (isMobileAuthenticationMode) {
-          // check mobile
-          // }
+        // check mobile
+        // }
         else {
             throw new PlatformDataIntegrityException("error.msg.reset.mode", "Password reset mode not supported");
         }
@@ -161,6 +169,17 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
     public static String randomAuthorizationTokenGeneration() {
         Integer randomPIN = (int) (secureRandom.nextDouble() * 9000) + 1000;
         return randomPIN.toString();
+    }
+
+    @Override
+    public void loggedUserLogIn(final String json, final Long userId) {
+        final AppUser appUser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
+        final Long appUserId = appUser.getId();
+        final String actionName = "LOGIN";
+        final String entityName = "USER";
+        final String href = "/authentication";
+        CommandSource commandSourceResult = CommandSource.fullBusinessEntryFrom(actionName, entityName, href, appUserId, json, appUser);
+        this.commandSourceRepository.saveAndFlush(commandSourceResult);
     }
 
 }

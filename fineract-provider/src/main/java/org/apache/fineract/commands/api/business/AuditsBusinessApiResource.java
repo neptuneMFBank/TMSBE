@@ -134,7 +134,7 @@ public class AuditsBusinessApiResource {
         final AuditSearchData auditSearchData = this.auditReadPlatformService.retrieveSearchTemplate("audit");
 
         final Set<String> RESPONSE_DATA_PARAMETERS_SEARCH_TEMPLATE = new HashSet<>(
-                Arrays.asList("appUsers", "actionNames", "entityNames", "processingResults"));
+                Arrays.asList("offices", "actionNames", "entityNames", "processingResults"));
 
         return this.toApiJsonSerializerSearchTemplate.serialize(settings, auditSearchData, RESPONSE_DATA_PARAMETERS_SEARCH_TEMPLATE);
     }

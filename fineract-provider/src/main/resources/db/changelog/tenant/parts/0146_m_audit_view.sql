@@ -19,7 +19,8 @@
 
 CREATE OR REPLACE VIEW m_audit_view AS
 SELECT
-    pcs.id, pcs.action_name, pcs.entity_name, pcs.office_id, pcs.office_name, pcs.api_get_url, pcs.resource_id, pcs.maker_id,
+    pcs.id, pcs.action_name, pcs.entity_name, pcs.office_id, o.name office_name, pcs.api_get_url, pcs.resource_id, pcs.maker_id,
     pcs.made_on_date, pcs.checker_id, pcs.checked_on_date, pcs.processing_result_enum,
     pcs.group_id, pcs.client_id, pcs.loan_id, pcs.savings_account_id
 FROM m_portfolio_command_source pcs
+LEFT JOIN m_office o ON o.id=pcs.office_id

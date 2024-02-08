@@ -69,6 +69,7 @@ import org.apache.fineract.portfolio.business.overdraft.domain.OverdraftReposito
 import org.apache.fineract.portfolio.businessevent.domain.loan.business.LoanMetricsApprovalBusinessEvent;
 import org.apache.fineract.portfolio.businessevent.domain.savings.business.OverdraftMetricsApprovalBusinessEvent;
 import org.apache.fineract.portfolio.businessevent.service.BusinessEventNotifierService;
+import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.collectionsheet.CollectionSheetConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
@@ -603,7 +604,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         final JsonElement element = this.fromApiJsonHelper.parse(command.json());
         final Long loanId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.LOAN_ID, element);
         this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
-        final Long staffId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.STAFF_DATA, element);
+        final Long staffId = this.fromApiJsonHelper.extractLongNamed(ClientApiConstants.staffIdParamName, element);
         metricsLoanStateCheck(metrics, loanId);
         try {
             final Loan loan = metrics.getLoan();
@@ -825,7 +826,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         final JsonElement element = this.fromApiJsonHelper.parse(command.json());
         final Long overdraftId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.OVERDRAFT_ID, element);
         this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftId);
-        final Long staffId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.STAFF_DATA, element);
+        final Long staffId = this.fromApiJsonHelper.extractLongNamed(ClientApiConstants.staffIdParamName, element);
         metricsOverdraftStateCheck(metrics, overdraftId);
         try {
             final Loan loan = metrics.getLoan();

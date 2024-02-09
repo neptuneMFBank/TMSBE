@@ -144,7 +144,6 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
             final Long resourceId = JdbcSupport.getLong(rs, "resourceId");
             final Long clientId = JdbcSupport.getLong(rs, "clientId");
             final Long loanId = JdbcSupport.getLong(rs, "loanId");
-            final Long subresourceId = JdbcSupport.getLong(rs, "subresourceId");
             final String maker = rs.getString("maker");
             final ZonedDateTime madeOnDate = JdbcSupport.getDateTime(rs, "madeOnDate");
             final String checker = rs.getString("checker");
@@ -160,7 +159,7 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
             final String loanAccountNo = rs.getString("loanAccountNo");
             final String savingsAccountNo = rs.getString("savingsAccountNo");
 
-            return new AuditData(id, actionName, entityName, resourceId, subresourceId, maker, madeOnDate, checker, checkedOnDate,
+            return new AuditData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate,
                     processingResult, commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo,
                     clientId, loanId, resourceGetUrl);
         }

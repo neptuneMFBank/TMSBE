@@ -21,7 +21,7 @@ CREATE OR REPLACE VIEW m_audit_view AS
 SELECT
     pcs.id, pcs.action_name, pcs.entity_name, pcs.office_id, o.name office_name, pcs.api_get_url, pcs.resource_id, pcs.maker_id,
     pcs.made_on_date, pcs.checker_id, pcs.checked_on_date, pcs.processing_result_enum,
-    pcs.group_id, pcs.client_id, pcs.loan_id, pcs.savings_account_id,
+    pcs.group_id, pcs.client_id, pcs.loan_id, pcs.savings_account_id, mk.username as maker,
     ck.username as checker, ev.enum_message_property as processingResult, 
     o.name as officeName, gl.level_name as groupLevelName, g.display_name as groupName, c.display_name as clientName, 
     l.account_no as loanAccountNo, s.account_no as savingsAccountNo

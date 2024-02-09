@@ -81,6 +81,56 @@ public final class SearchParametersBusiness {
     private final Boolean isSupervisor;
     private final Boolean isLoanOfficer;
 
+    public static SearchParametersBusiness forAudit(final LocalDate fromDate, final LocalDate toDate, Boolean isChecker, String actionName, String entityName, Long resourceId, Long makerCheckerId,
+             Integer processingResult, Long officeId, Long groupId, Long clientId,
+            Long loanId, Long savingsAccountId, Integer offset, Integer limit, String orderBy, String sortOrder) {
+        final String name = entityName;
+
+        final Integer maxLimitAllowed = getCheckedLimit(limit);
+        final Long classificationId = null;
+        final String accountNo = null;
+        final Integer statusId = null;
+        final String externalId = actionName;
+        final Integer depositTypeId = null;
+        final Boolean active = null;
+        final Long organisationalRoleEnumId = null;
+        final Long industryId = groupId;
+        final Boolean orphansOnly = null;
+        final String email = null;
+        final String mobile = null;
+        final Integer legalFormId = null;
+        final Boolean isSelfUser = null;
+        final Boolean showLoanProducts = null;
+        final Boolean showSavingsProducts = null;
+        final Long savingsId = savingsAccountId;
+        final String status = null;
+        final Long categoryId = resourceId;
+        final Long provisioningEntryId = null;
+        final String currencyCode = null;
+        final String firstname = null;
+        final String lastname = null;
+
+        final String sqlSearch = null;
+        final String bvn = null;
+
+        final String hierarchy = null;
+        final String username = null;
+        final Integer type = processingResult;
+        final Long documentConfigId = null;
+        final Boolean isSupervisor = isChecker;
+        final Boolean isLoanOfficer = null;
+        final Long overdraftId = null;
+        final Long productId = null;
+        final Long staffId = makerCheckerId;
+        final Long staffSupervisorId = null;
+        return new SearchParametersBusiness(sqlSearch, officeId, externalId, name,
+                hierarchy, firstname, lastname, offset, maxLimitAllowed, orderBy,
+                sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
+                productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
+                showLoanProducts, showSavingsProducts, documentConfigId, bvn, industryId, classificationId, organisationalRoleEnumId, username,
+                depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer, overdraftId);
+    }
+
     public static SearchParametersBusiness forNotification(final Integer offset, final Integer limit, final String orderBy, final String sortOrder,
             final String actionType, final LocalDate fromDate, final LocalDate toDate) {
         final String name = actionType;

@@ -47,7 +47,6 @@ import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSer
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.infrastructure.security.utils.SQLBuilder;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -142,30 +141,4 @@ public class AuditsBusinessApiResource {
         return this.toApiJsonSerializerSearchTemplate.serialize(settings, auditSearchData, RESPONSE_DATA_PARAMETERS_SEARCH_TEMPLATE);
     }
 
-    private SQLBuilder getExtraCriteria(final String actionName, final String entityName, final Long resourceId, final Long makerId,
-            final String makerDateTimeFrom, final String makerDateTimeTo, final Long checkerId, final String checkerDateTimeFrom,
-            final String checkerDateTimeTo, final Integer processingResult, final Integer officeId, final Integer groupId,
-            final Integer clientId, final Integer loanId, final Integer savingsAccountId) {
-
-        SQLBuilder extraCriteria = new SQLBuilder();
-        extraCriteria.addNonNullCriteria("aud.action_name = ", actionName);
-        if (entityName != null) {
-            extraCriteria.addCriteria("aud.entity_name like", entityName + "%");
-        }
-        extraCriteria.addNonNullCriteria("aud.resource_id = ", resourceId);
-        extraCriteria.addNonNullCriteria("aud.maker_id = ", makerId);
-        extraCriteria.addNonNullCriteria("aud.checker_id = ", checkerId);
-        extraCriteria.addNonNullCriteria("aud.made_on_date >= ", makerDateTimeFrom);
-        extraCriteria.addNonNullCriteria("aud.made_on_date <= ", makerDateTimeTo);
-        extraCriteria.addNonNullCriteria("aud.checked_on_date >= ", checkerDateTimeFrom);
-        extraCriteria.addNonNullCriteria("aud.checked_on_date <= ", checkerDateTimeTo);
-        extraCriteria.addNonNullCriteria("aud.processing_result_enum = ", processingResult);
-        extraCriteria.addNonNullCriteria("aud.office_id = ", officeId);
-        extraCriteria.addNonNullCriteria("aud.group_id = ", groupId);
-        extraCriteria.addNonNullCriteria("aud.client_id = ", clientId);
-        extraCriteria.addNonNullCriteria("aud.loan_id = ", loanId);
-        extraCriteria.addNonNullCriteria("aud.savings_account_id = ", savingsAccountId);
-
-        return extraCriteria;
-    }
 }

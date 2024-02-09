@@ -130,7 +130,8 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
                     + "aud.checker, aud.checked_on_date as checkedOnDate, aud.processingResult, "
                     + " aud.officeName, aud.groupLevelName, aud.groupName, aud.clientName, "
                     + " aud.loanAccountNo, aud.savingsAccountNo "
-                    + " from m_audit_view aud ";
+                    + " from m_audit_view aud "
+                    + " LEFT JOIN m_office o ON o.id=aud.office_id ";
             return partSql;
         }
 

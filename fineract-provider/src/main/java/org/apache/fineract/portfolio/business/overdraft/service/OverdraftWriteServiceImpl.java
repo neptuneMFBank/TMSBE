@@ -131,6 +131,9 @@ public class OverdraftWriteServiceImpl implements OverdraftWriteService {
             if (!savingsAccount.isActive()) {
                 throw new OverdraftNotFoundException("Attached savings is not active.");
             }
+            if (!savingsAccount.isAllowOverdraft()) {
+                throw new OverdraftNotFoundException("Savings account does not support overdraft.");
+            }
 
             List<Overdraft> overdrafts = this.overdraftRepositoryWrapper.findBySavingsAccountId(savingsId);
             if (!CollectionUtils.isEmpty(overdrafts)) {
@@ -230,8 +233,8 @@ public class OverdraftWriteServiceImpl implements OverdraftWriteService {
                 throw new OverdraftNotFoundException("Attached savings is not active.");
             }
             final Long savingsAccountId = savingsAccount.getId();
-            String sql = "UPDATE m_savings_account ms SET ms.allow_overdraft=?, ms.overdraft_limit=?, ms.nominal_annual_interest_rate_overdraft=? WHERE ms.id=?";
-            this.jdbcTemplate.update(sql, false, 0, 0, savingsAccountId);
+            String sql = "UPDATE m_savings_account ms SET ms.overdraft_limit=?, ms.nominal_annual_interest_rate_overdraft=? WHERE ms.id=?";
+            this.jdbcTemplate.update(sql, 0, 0, savingsAccountId);
 
             final String noteText = this.fromApiJsonHelper.extractStringNamed(SavingsApiConstants.noteParamName, element);
             if (StringUtils.isNotBlank(noteText)) {

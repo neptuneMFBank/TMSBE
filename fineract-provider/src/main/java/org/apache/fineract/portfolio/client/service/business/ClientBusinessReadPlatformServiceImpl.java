@@ -603,7 +603,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     @Override
     public KycBusinessData isClientExisting(String email, String mobileNo, String altMobileNo, String bvn, String nin, String tin) {
         Integer cnt = this.jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM client_unique_view WHERE mc.email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ", Integer.class,
+                "SELECT count(*) FROM client_unique_view WHERE email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ", Integer.class,
                 email, mobileNo, altMobileNo, bvn, nin, tin);
         Boolean agreement = cnt != null && cnt > 0;
         if (cnt != null && cnt > 1) {
@@ -612,7 +612,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         Long clientId = null;
         if (agreement) {
             clientId = this.jdbcTemplate.queryForObject(
-                    "SELECT id FROM client_unique_view WHERE mc.email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ", Long.class,
+                    "SELECT id FROM client_unique_view WHERE email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ", Long.class,
                     email, mobileNo, altMobileNo, bvn, nin, tin);
         }
         return new KycBusinessData(clientId, null, null, null, null, null, null, agreement, null);

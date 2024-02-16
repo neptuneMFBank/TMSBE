@@ -578,7 +578,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     private static final class MetricsMapper implements RowMapper<MetricsData> {
 
         public String schema() {
-            return " mm.id, mm.assigned_user_id staffId, ms.display_name staffDisplayName, ms.organisational_role_parent_staff_id, mss.display_name supervisorStaffDisplayName, "
+            return " mm.id, mm.rank, mm.assigned_user_id staffId, ms.display_name staffDisplayName, ms.organisational_role_parent_staff_id, mss.display_name supervisorStaffDisplayName, "
                     + " mm.status_enum statusEnum, mm.loan_id loanId, mm.savings_id savingsId, mm.overdraft_id overdraftId, mm.created_on_utc createdOn, mm.last_modified_on_utc modifiedOn, "
                     + " mlv.loan_officer_id as loanOfficerId, msl.display_name as loanOfficerName, "
                     + " mlv.client_id as loanClientId, mcv.display_name as loanClientName " + "  from m_metrics mm "
@@ -592,6 +592,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
         @Override
         public MetricsData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
             final Long loanId = rs.getLong("loanId");
+            final Integer rank = rs.getInt("rank");
             final Long savingsId = rs.getLong("savingsId");
             final Long overdraftId = rs.getLong("overdraftId");
             final Long id = rs.getLong("id");
@@ -632,7 +633,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             final LocalDate modifiedOn = modifiedOnTime != null ? modifiedOnTime.toLocalDate() : null;
 
             return MetricsData.instance(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData,
-                    loanOfficerData, overdraftId);
+                    loanOfficerData, overdraftId, rank);
         }
 
     }
@@ -718,6 +719,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
         @Override
         public MetricsData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+            final Integer rank = null;
             final Long loanId = rs.getLong("loanId");
             final Long savingsId = rs.getLong("savingsId");
             final Long overdraftId = rs.getLong("overdraftId");
@@ -758,7 +760,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             final LocalDate modifiedOn = null;
 
             return MetricsData.instance(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData,
-                    loanOfficerData, overdraftId);
+                    loanOfficerData, overdraftId, rank);
         }
 
     }

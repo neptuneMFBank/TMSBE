@@ -28,6 +28,7 @@ import org.apache.fineract.portfolio.client.data.ClientData;
 public class MetricsData implements Serializable {
 
     private final Long id;
+    private final Integer rank;
     private final Long overdraftId;
     private final Long loanId;
     private final Long savingsId;
@@ -41,14 +42,15 @@ public class MetricsData implements Serializable {
 
     public static MetricsData instance(Long id, Long loanId, final Long savingsId, EnumOptionData status, StaffData staffData,
             StaffData supervisorStaffData, LocalDate createdOn, LocalDate modifiedOn, final ClientData clientData,
-            final StaffData loanOfficerData, final Long overdraftId) {
+            final StaffData loanOfficerData, final Long overdraftId, final Integer rank) {
         return new MetricsData(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData,
-                loanOfficerData, overdraftId);
+                loanOfficerData, overdraftId, rank);
     }
 
     public MetricsData(Long id, Long loanId, Long savingsId, EnumOptionData status, StaffData staffData, StaffData supervisorStaffData,
-            LocalDate createdOn, LocalDate modifiedOn, ClientData clientData, StaffData loanOfficerData, Long overdraftId) {
+            LocalDate createdOn, LocalDate modifiedOn, ClientData clientData, StaffData loanOfficerData, Long overdraftId, final Integer rank) {
         this.id = id;
+        this.rank = rank;
         this.loanId = loanId;
         this.savingsId = savingsId;
         this.status = status;
@@ -103,6 +105,10 @@ public class MetricsData implements Serializable {
 
     public Long getOverdraftId() {
         return overdraftId;
+    }
+
+    public Integer getRank() {
+        return rank;
     }
 
 }

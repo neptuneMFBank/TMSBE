@@ -103,7 +103,7 @@ public class SelfClientsBusinessApiResource {
     @Path("kyc-level")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Retrieve a Client", description = """
+    @Operation(summary = "Retrieve a Client Checker", description = """
             Example Requests:""")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK"

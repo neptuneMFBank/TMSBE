@@ -515,6 +515,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         // loanActiveSummaryMapper savingActiveSummaryMapper fixedActiveSummaryMapper recurringActiveSummaryMapper
         // currentActiveSummaryMapper
         JsonObject jsonObjectLoan = new JsonObject();
+        jsonObjectLoan.addProperty("name", "Loan");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -531,6 +532,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // savings
         JsonObject jsonObjectSaving = new JsonObject();
+        jsonObjectSaving.addProperty("name", "Savings");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -548,6 +550,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // fixed
         JsonObject jsonObjectFixed = new JsonObject();
+        jsonObjectFixed.addProperty("name", "Fixed Deposit");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -565,6 +568,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // recurring
         JsonObject jsonObjectRecurring = new JsonObject();
+        jsonObjectRecurring.addProperty("name", "Recurring Deposit");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -582,6 +586,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // current
         JsonObject jsonObjectCurrent = new JsonObject();
+        jsonObjectCurrent.addProperty("name", "Current Deposit");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");

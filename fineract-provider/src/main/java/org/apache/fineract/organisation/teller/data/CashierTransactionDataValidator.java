@@ -98,7 +98,7 @@ public class CashierTransactionDataValidator {
         if (!cashier.isFullDay()) {
             String startTime = cashier.getStartTime();
             String endTime = cashier.getEndTime();
-            sql = sql + " AND ( Time(c.start_time) BETWEEN TIME('" + startTime + ") and TIME('" + endTime
+            sql = sql + " AND ( Time(c.start_time) BETWEEN TIME('" + startTime + "') and TIME('" + endTime
                     + "') or Time(c.end_time) BETWEEN TIME('" + startTime + "') and TIME('" + endTime + "')) ";
         }
         int count = this.jdbcTemplate.queryForObject(sql, Integer.class); // NOSONAR

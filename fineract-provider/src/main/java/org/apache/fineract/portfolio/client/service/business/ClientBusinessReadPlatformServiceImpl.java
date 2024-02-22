@@ -515,6 +515,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         // loanActiveSummaryMapper savingActiveSummaryMapper fixedActiveSummaryMapper recurringActiveSummaryMapper
         // currentActiveSummaryMapper
         JsonObject jsonObjectLoan = new JsonObject();
+        jsonObjectLoan.addProperty("name", "Loan");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -531,6 +532,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // savings
         JsonObject jsonObjectSaving = new JsonObject();
+        jsonObjectSaving.addProperty("name", "Savings");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -548,6 +550,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // fixed
         JsonObject jsonObjectFixed = new JsonObject();
+        jsonObjectFixed.addProperty("name", "Fixed Deposit");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -565,6 +568,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // recurring
         JsonObject jsonObjectRecurring = new JsonObject();
+        jsonObjectRecurring.addProperty("name", "Recurring Deposit");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -582,6 +586,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // current
         JsonObject jsonObjectCurrent = new JsonObject();
+        jsonObjectCurrent.addProperty("name", "Current Deposit");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -603,10 +608,19 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     @Override
     public KycBusinessData isClientExisting(String email, String mobileNo, String altMobileNo, String bvn, String nin, String tin) {
         Integer cnt = this.jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM client_unique_view WHERE mc.email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ", Integer.class,
+                "SELECT count(*) FROM client_unique_view WHERE email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ", Integer.class,
                 email, mobileNo, altMobileNo, bvn, nin, tin);
         Boolean agreement = cnt != null && cnt > 0;
-        return new KycBusinessData(null, null, null, null, null, null, null, agreement, null);
+        if (cnt != null && cnt > 1) {
+            throw new ClientNotFoundException("error.msg.client.duplicate", "Customer account is not profiled correcrtly, please contact support");
+        }
+        Long clientId = null;
+        if (agreement) {
+            clientId = this.jdbcTemplate.queryForObject(
+                    "SELECT id FROM client_unique_view WHERE email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ", Long.class,
+                    email, mobileNo, altMobileNo, bvn, nin, tin);
+        }
+        return new KycBusinessData(clientId, null, null, null, null, null, null, agreement, null);
     }
 
     private static final class ClientLookupKycLevelMapper implements RowMapper<KycBusinessData> {

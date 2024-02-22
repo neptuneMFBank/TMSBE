@@ -18,22 +18,14 @@
  */
 package org.apache.fineract.commands.service.business;
 
-import java.util.Collection;
 import org.apache.fineract.commands.data.AuditData;
 import org.apache.fineract.commands.data.business.AuditBusinessSearchData;
-import org.apache.fineract.infrastructure.core.data.PaginationParameters;
 import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.security.utils.SQLBuilder;
+import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 
 public interface AuditBusinessReadPlatformService {
 
-    Collection<AuditData> retrieveAuditEntries(SQLBuilder extraCriteria, boolean includeJson);
-
-    Page<AuditData> retrievePaginatedAuditEntries(SQLBuilder extraCriteria, boolean includeJson, PaginationParameters parameters);
-
-    Collection<AuditData> retrieveAllEntriesToBeChecked(SQLBuilder extraCriteria, boolean includeJson);
-
-    AuditData retrieveAuditEntry(Long auditId);
+    Page<AuditData> retrieveAll(SearchParametersBusiness searchParameters);
 
     AuditBusinessSearchData retrieveSearchTemplate(String useType);
 }

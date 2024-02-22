@@ -1198,7 +1198,7 @@
             <column name="lastname" value="system"/>
             <column name="password"
                     value="{SHA-256}{2}5787039480429368bf94732aacc771cd0a3ea02bcf504ffe1185ab94213bc63a"/>
-            <column name="email" value="demomfi1@mifos.org"/>
+            <column name="email" value="demomfi@mifos.org"/>
             <column name="firsttime_login_remaining" valueBoolean="false"/>
             <column name="nonexpired" valueBoolean="true"/>
             <column name="nonlocked" valueBoolean="true"/>

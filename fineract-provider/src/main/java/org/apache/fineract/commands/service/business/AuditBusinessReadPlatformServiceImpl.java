@@ -24,7 +24,6 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -82,14 +81,15 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
     @Override
     public Page<AuditData> retrieveAll(SearchParametersBusiness searchParameters) {
 
-        final String userOfficeHierarchy = this.context.officeHierarchy();
-        final String underHierarchySearchString = userOfficeHierarchy + "%";
-
-        List<Object> paramList = new ArrayList<>(Arrays.asList(underHierarchySearchString));
+        //final String userOfficeHierarchy = this.context.officeHierarchy();
+        //final String underHierarchySearchString = userOfficeHierarchy + "%";
+        //List<Object> paramList = new ArrayList<>(Arrays.asList(underHierarchySearchString));
+        List<Object> paramList = new ArrayList<>();
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append("select ").append(sqlGenerator.calcFoundRows()).append(" ");
         sqlBuilder.append(this.auditMapper.schema());
-        sqlBuilder.append(" where (o.hierarchy like ?) ");
+        sqlBuilder.append(" where ");
+        //sqlBuilder.append(" where (o.hierarchy like ?) ");
 
         if (searchParameters != null) {
 

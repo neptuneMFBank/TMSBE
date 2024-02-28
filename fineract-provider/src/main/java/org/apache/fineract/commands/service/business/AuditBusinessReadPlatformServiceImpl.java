@@ -88,7 +88,6 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append("select ").append(sqlGenerator.calcFoundRows()).append(" ");
         sqlBuilder.append(this.auditMapper.schema());
-        sqlBuilder.append(" where ");
         //sqlBuilder.append(" where (o.hierarchy like ?) ");
 
         if (searchParameters != null) {
@@ -96,7 +95,7 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
             final String extraCriteria = buildSqlStringFromAuditCriteria(searchParameters, paramList);
 
             if (StringUtils.isNotBlank(extraCriteria)) {
-                sqlBuilder.append(" and (").append(extraCriteria).append(")");
+                sqlBuilder.append(" where (").append(extraCriteria).append(")");
             }
 
             if (searchParameters.isOrderByRequested()) {

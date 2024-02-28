@@ -515,7 +515,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 saveMetricsHistory(metrics, LoanApprovalStatus.QUEUE.getValue());
 
                 final Integer status = loan.status().getValue();
-                if (pickTheLastMetricApproval.getRank() == 0 && Objects.equals(status, LoanStatus.APPROVED.getValue())) {
+                if (Objects.equals(pickTheLastMetricApproval.getRank(), 0) && Objects.equals(status, LoanStatus.APPROVED.getValue())) {
                     // call defaul mifos real Undo if loan is in approved state
                     loanUndo(loan, noteText);
                 }

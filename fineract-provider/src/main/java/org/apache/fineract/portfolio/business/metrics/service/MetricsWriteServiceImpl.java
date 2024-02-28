@@ -476,11 +476,6 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
 
         try {
             final Loan loan = metrics.getLoan();
-            final Integer status = loan.status().getValue();
-            if (Objects.equals(status, LoanStatus.APPROVED.getValue())) {
-                // call defaul mifos real Undo if loan is in approved state
-                loanUndo(loan, noteText);
-            }
             final Integer rank = metrics.getRank();
             if (rank <= 0) {
                 throw new PlatformDataIntegrityException("error.msg.metrics", "Undo not allowed for approval level.");
@@ -518,6 +513,12 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 metrics.setStatus(LoanApprovalStatus.QUEUE.getValue());
                 this.metricsRepositoryWrapper.saveAndFlush(metrics);
                 saveMetricsHistory(metrics, LoanApprovalStatus.QUEUE.getValue());
+
+                final Integer status = loan.status().getValue();
+                if (pickTheLastMetricApproval.getRank() == 0 && Objects.equals(status, LoanStatus.APPROVED.getValue())) {
+                    // call defaul mifos real Undo if loan is in approved state
+                    loanUndo(loan, noteText);
+                }
             }
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
@@ -548,8 +549,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
     }
 
- @Transactional
- @Override
+    @Transactional
+    @Override
     public CommandProcessingResult rejectLoanMetrics(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
@@ -595,8 +596,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 .withEntityId(metricsId).withLoanId(loanId).build();
     }
 
-   @Transactional
-   @Override
+    @Transactional
+    @Override
     public CommandProcessingResult assignLoanMetrics(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForLoanAssign(command.json());
@@ -652,8 +653,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
     }
 
-   @Transactional
-   @Override
+    @Transactional
+    @Override
     public CommandProcessingResult approveOverdraft(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForOverdraftApprovalUndoReject(command.json());
@@ -716,8 +717,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 .build();
     }
 
-  @Transactional
-  @Override
+    @Transactional
+    @Override
     public CommandProcessingResult undoOverdraft(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForOverdraftApprovalUndoReject(command.json());
@@ -783,8 +784,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 .build();
     }
 
-  @Transactional
-  @Override
+    @Transactional
+    @Override
     public CommandProcessingResult rejectOverdraft(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForOverdraftApprovalUndoReject(command.json());
@@ -817,8 +818,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 .build();
     }
 
- @Transactional
- @Override
+    @Transactional
+    @Override
     public CommandProcessingResult assignOverdraft(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForOverdraftAssign(command.json());

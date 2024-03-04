@@ -467,11 +467,6 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
 
         try {
             final Loan loan = metrics.getLoan();
-            final Integer status = loan.status().getValue();
-            if (Objects.equals(status, LoanStatus.APPROVED.getValue())) {
-                // call defaul mifos real Undo if loan is in approved state
-                loanUndo(loan, noteText);
-            }
             final Integer rank = metrics.getRank();
             if (rank <= 0) {
                 throw new PlatformDataIntegrityException("error.msg.metrics", "Undo not allowed for approval level.");
@@ -510,6 +505,12 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 metrics.setStatus(LoanApprovalStatus.QUEUE.getValue());
                 this.metricsRepositoryWrapper.saveAndFlush(metrics);
                 saveMetricsHistory(metrics, LoanApprovalStatus.QUEUE.getValue());
+
+                final Integer status = loan.status().getValue();
+                if (Objects.equals(pickTheLastMetricApproval.getRank(), 0) && Objects.equals(status, LoanStatus.APPROVED.getValue())) {
+                    // call defaul mifos real Undo if loan is in approved state
+                    loanUndo(loan, noteText);
+                }
             }
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);

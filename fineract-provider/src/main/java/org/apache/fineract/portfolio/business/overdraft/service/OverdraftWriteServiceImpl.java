@@ -137,30 +137,30 @@ public class OverdraftWriteServiceImpl implements OverdraftWriteService {
 
             List<Overdraft> overdrafts = this.overdraftRepositoryWrapper.findBySavingsAccountId(savingsId);
             if (!CollectionUtils.isEmpty(overdrafts)) {
-                final boolean doNotAllowMultiple = overdrafts.stream()
-                        .anyMatch(predicate -> overdraftStatusCheck(predicate));
+                final boolean doNotAllowMultiple = overdrafts.stream().anyMatch(predicate -> overdraftStatusCheck(predicate));
                 if (doNotAllowMultiple) {
                     throw new OverdraftNotFoundException("Close all pending Overdraft on the system.");
                 }
             }
 
-            final BigDecimal amount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(OverdraftApiResourceConstants.AMOUNT, element);
+            final BigDecimal amount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(OverdraftApiResourceConstants.AMOUNT,
+                    element);
 
-            final BigDecimal nominalAnnualInterestRateOverdraft = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(OverdraftApiResourceConstants.NOMINALINTEREST, element);
+            final BigDecimal nominalAnnualInterestRateOverdraft = this.fromApiJsonHelper
+                    .extractBigDecimalWithLocaleNamed(OverdraftApiResourceConstants.NOMINALINTEREST, element);
 
             final Long numberOfDays = this.fromApiJsonHelper.extractLongNamed(OverdraftApiResourceConstants.NUMBER_OF_DAYS, element);
 
             final LocalDate startDate = this.fromApiJsonHelper.extractLocalDateNamed(OverdraftApiResourceConstants.STARTDATE, element);
             final LocalDate expiryDate = startDate.plusDays(numberOfDays);
 
-            final Overdraft overdraft = Overdraft.createOverdraft(amount, nominalAnnualInterestRateOverdraft, startDate, expiryDate, savingsAccount);
+            final Overdraft overdraft = Overdraft.createOverdraft(amount, nominalAnnualInterestRateOverdraft, startDate, expiryDate,
+                    savingsAccount);
 
             this.overdraftRepositoryWrapper.saveAndFlush(overdraft);
 
-            return new CommandProcessingResultBuilder().withCommandId(command.commandId())
-                    .withEntityId(overdraft.getId())
-                    .withSavingsId(savingsId)
-                    .build();
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(overdraft.getId())
+                    .withSavingsId(savingsId).build();
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
             return CommandProcessingResult.empty();
@@ -191,10 +191,8 @@ public class OverdraftWriteServiceImpl implements OverdraftWriteService {
                 this.overdraftRepositoryWrapper.saveAndFlush(overdraft);
             }
 
-            return new CommandProcessingResultBuilder().withCommandId(command.commandId())
-                    .withEntityId(overdraft.getId())
-                    .withSavingsId(overdraft.getSavingsAccount().getId())
-                    .build();
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(overdraft.getId())
+                    .withSavingsId(overdraft.getSavingsAccount().getId()).build();
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
             return CommandProcessingResult.empty();
@@ -215,9 +213,7 @@ public class OverdraftWriteServiceImpl implements OverdraftWriteService {
         } else {
             throw new OverdraftNotFoundException("Overdraft cannot be removed in it current status.");
         }
-        return new CommandProcessingResultBuilder()
-                .withEntityId(overdraftId)
-                .build();
+        return new CommandProcessingResultBuilder().withEntityId(overdraftId).build();
     }
 
     @Transactional
@@ -247,9 +243,7 @@ public class OverdraftWriteServiceImpl implements OverdraftWriteService {
         } else {
             throw new OverdraftNotFoundException("Overdraft cannot be removed in it current status.");
         }
-        return new CommandProcessingResultBuilder()
-                .withEntityId(overdraftId)
-                .build();
+        return new CommandProcessingResultBuilder().withEntityId(overdraftId).build();
     }
 
     @Transactional
@@ -263,16 +257,13 @@ public class OverdraftWriteServiceImpl implements OverdraftWriteService {
         } else {
             throw new OverdraftNotFoundException("Overdraft cannot be sent for approval in it current status.");
         }
-        return new CommandProcessingResultBuilder()
-                .withEntityId(overdraftId)
-                .build();
+        return new CommandProcessingResultBuilder().withEntityId(overdraftId).build();
     }
 
     private boolean overdraftStatusCheck(Overdraft predicate) {
         final Collection<Integer> overdraftStatus = new ArrayList<>(
-                Arrays.asList(LoanApprovalStatus.APPROVED.getValue(), LoanApprovalStatus.DRAFT.getValue(), LoanApprovalStatus.QUEUE.getValue(),
-                        LoanApprovalStatus.PENDING.getValue(), LoanApprovalStatus.ACTIVE.getValue()
-                ));
+                Arrays.asList(LoanApprovalStatus.APPROVED.getValue(), LoanApprovalStatus.DRAFT.getValue(),
+                        LoanApprovalStatus.QUEUE.getValue(), LoanApprovalStatus.PENDING.getValue(), LoanApprovalStatus.ACTIVE.getValue()));
         return overdraftStatus.stream().anyMatch(val -> Objects.equals(val, predicate.getStatus()));
     }
 }

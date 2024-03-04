@@ -48,7 +48,8 @@ public class MetricsData implements Serializable {
     }
 
     public MetricsData(Long id, Long loanId, Long savingsId, EnumOptionData status, StaffData staffData, StaffData supervisorStaffData,
-            LocalDate createdOn, LocalDate modifiedOn, ClientData clientData, StaffData loanOfficerData, Long overdraftId, final Integer rank) {
+            LocalDate createdOn, LocalDate modifiedOn, ClientData clientData, StaffData loanOfficerData, Long overdraftId,
+            final Integer rank) {
         this.id = id;
         this.rank = rank;
         this.loanId = loanId;

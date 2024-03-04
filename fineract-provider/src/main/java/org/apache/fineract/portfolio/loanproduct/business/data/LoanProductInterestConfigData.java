@@ -31,8 +31,8 @@ public class LoanProductInterestConfigData implements Serializable {
     private final BigDecimal maxTenor;
     private final BigDecimal nominalInterestRatePerPeriod;
 
-    public static LoanProductInterestConfigData instance(Long id, BigDecimal minTenor,
-            BigDecimal maxTenor, BigDecimal nominalInterestRatePerPeriod) {
+    public static LoanProductInterestConfigData instance(Long id, BigDecimal minTenor, BigDecimal maxTenor,
+            BigDecimal nominalInterestRatePerPeriod) {
         return new LoanProductInterestConfigData(id, minTenor, maxTenor, nominalInterestRatePerPeriod);
     }
 

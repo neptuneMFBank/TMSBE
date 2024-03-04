@@ -54,16 +54,15 @@ public class OverdraftDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
 
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, REQUEST_ACTION_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
 
-        //SAVINGS_ID, AMOUNT, LoanApiConstants.localeParameterName,
-//            NOMINALINTEREST, STARTDATE, NUMBER_OF_DAYS
+        // SAVINGS_ID, AMOUNT, LoanApiConstants.localeParameterName,
+        // NOMINALINTEREST, STARTDATE, NUMBER_OF_DAYS
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
                 .resource(OverdraftApiResourceConstants.RESOURCENAME);
 
@@ -73,14 +72,18 @@ public class OverdraftDataValidator {
         final BigDecimal amount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(OverdraftApiResourceConstants.AMOUNT, element);
         baseDataValidator.reset().parameter(OverdraftApiResourceConstants.AMOUNT).value(amount).notNull().zeroOrPositiveAmount();
 
-        final BigDecimal nominalAnnualInterestRateOverdraft = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(OverdraftApiResourceConstants.NOMINALINTEREST, element);
-        baseDataValidator.reset().parameter(OverdraftApiResourceConstants.NOMINALINTEREST).value(nominalAnnualInterestRateOverdraft).notNull().zeroOrPositiveAmount();
+        final BigDecimal nominalAnnualInterestRateOverdraft = this.fromApiJsonHelper
+                .extractBigDecimalWithLocaleNamed(OverdraftApiResourceConstants.NOMINALINTEREST, element);
+        baseDataValidator.reset().parameter(OverdraftApiResourceConstants.NOMINALINTEREST).value(nominalAnnualInterestRateOverdraft)
+                .notNull().zeroOrPositiveAmount();
 
         final Long numberOfDays = this.fromApiJsonHelper.extractLongNamed(OverdraftApiResourceConstants.NUMBER_OF_DAYS, element);
-        baseDataValidator.reset().parameter(OverdraftApiResourceConstants.NUMBER_OF_DAYS).value(numberOfDays).notBlank().integerGreaterThanZero();
+        baseDataValidator.reset().parameter(OverdraftApiResourceConstants.NUMBER_OF_DAYS).value(numberOfDays).notBlank()
+                .integerGreaterThanZero();
 
         final LocalDate startDate = this.fromApiJsonHelper.extractLocalDateNamed(OverdraftApiResourceConstants.STARTDATE, element);
-        baseDataValidator.reset().parameter(OverdraftApiResourceConstants.STARTDATE).value(startDate).notNull().validateDateBefore(DateUtils.getBusinessLocalDate());
+        baseDataValidator.reset().parameter(OverdraftApiResourceConstants.STARTDATE).value(startDate).notNull()
+                .validateDateBefore(DateUtils.getBusinessLocalDate());
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }
@@ -89,8 +92,7 @@ public class OverdraftDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
 
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, REQUEST_ACTION_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -101,20 +103,25 @@ public class OverdraftDataValidator {
                 .resource(OverdraftApiResourceConstants.RESOURCENAME);
 
         if (this.fromApiJsonHelper.parameterExists(OverdraftApiResourceConstants.AMOUNT, element)) {
-            final BigDecimal amount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(OverdraftApiResourceConstants.AMOUNT, element);
+            final BigDecimal amount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(OverdraftApiResourceConstants.AMOUNT,
+                    element);
             baseDataValidator.reset().parameter(OverdraftApiResourceConstants.AMOUNT).value(amount).notNull().zeroOrPositiveAmount();
         }
         if (this.fromApiJsonHelper.parameterExists(OverdraftApiResourceConstants.NOMINALINTEREST, element)) {
-            final BigDecimal nominalAnnualInterestRateOverdraft = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(OverdraftApiResourceConstants.NOMINALINTEREST, element);
-            baseDataValidator.reset().parameter(OverdraftApiResourceConstants.NOMINALINTEREST).value(nominalAnnualInterestRateOverdraft).notNull().zeroOrPositiveAmount();
+            final BigDecimal nominalAnnualInterestRateOverdraft = this.fromApiJsonHelper
+                    .extractBigDecimalWithLocaleNamed(OverdraftApiResourceConstants.NOMINALINTEREST, element);
+            baseDataValidator.reset().parameter(OverdraftApiResourceConstants.NOMINALINTEREST).value(nominalAnnualInterestRateOverdraft)
+                    .notNull().zeroOrPositiveAmount();
         }
         if (this.fromApiJsonHelper.parameterExists(OverdraftApiResourceConstants.NUMBER_OF_DAYS, element)) {
             final Long numberOfDays = this.fromApiJsonHelper.extractLongNamed(OverdraftApiResourceConstants.NUMBER_OF_DAYS, element);
-            baseDataValidator.reset().parameter(OverdraftApiResourceConstants.NUMBER_OF_DAYS).value(numberOfDays).notBlank().integerGreaterThanZero();
+            baseDataValidator.reset().parameter(OverdraftApiResourceConstants.NUMBER_OF_DAYS).value(numberOfDays).notBlank()
+                    .integerGreaterThanZero();
         }
         if (this.fromApiJsonHelper.parameterExists(OverdraftApiResourceConstants.STARTDATE, element)) {
             final LocalDate startDate = this.fromApiJsonHelper.extractLocalDateNamed(OverdraftApiResourceConstants.STARTDATE, element);
-            baseDataValidator.reset().parameter(OverdraftApiResourceConstants.STARTDATE).value(startDate).notNull().validateDateBefore(DateUtils.getBusinessLocalDate());
+            baseDataValidator.reset().parameter(OverdraftApiResourceConstants.STARTDATE).value(startDate).notNull()
+                    .validateDateBefore(DateUtils.getBusinessLocalDate());
         }
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }
@@ -123,8 +130,7 @@ public class OverdraftDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
 
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, REQUEST_ACTION_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);

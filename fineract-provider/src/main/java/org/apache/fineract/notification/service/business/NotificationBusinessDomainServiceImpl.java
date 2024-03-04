@@ -52,8 +52,10 @@ public class NotificationBusinessDomainServiceImpl implements NotificationBusine
 
     @PostConstruct
     public void addListeners() {
-        businessEventNotifierService.addPostBusinessEventListener(LoanMetricsApprovalBusinessEvent.class, new LoanMetricsApprovalListener());
-        businessEventNotifierService.addPostBusinessEventListener(OverdraftMetricsApprovalBusinessEvent.class, new OverdraftMetricsApprovalListener());
+        businessEventNotifierService.addPostBusinessEventListener(LoanMetricsApprovalBusinessEvent.class,
+                new LoanMetricsApprovalListener());
+        businessEventNotifierService.addPostBusinessEventListener(OverdraftMetricsApprovalBusinessEvent.class,
+                new OverdraftMetricsApprovalListener());
     }
 
     private class OverdraftMetricsApprovalListener implements BusinessEventListener<OverdraftMetricsApprovalBusinessEvent> {
@@ -62,8 +64,8 @@ public class NotificationBusinessDomainServiceImpl implements NotificationBusine
         public void onBusinessEvent(OverdraftMetricsApprovalBusinessEvent event) {
             final Overdraft overdraft = event.get();
             final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
-            buildNotification("APPROVE_OVERDRAFT", "overdraft", overdraft.getId(), "Overdraft Pending Approval", "created", context.authenticatedUser().getId(),
-                    savingsAccount.officeId());
+            buildNotification("APPROVE_OVERDRAFT", "overdraft", overdraft.getId(), "Overdraft Pending Approval", "created",
+                    context.authenticatedUser().getId(), savingsAccount.officeId());
         }
     }
 

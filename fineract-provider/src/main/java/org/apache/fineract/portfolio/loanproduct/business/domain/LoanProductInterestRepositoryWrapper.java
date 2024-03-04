@@ -45,8 +45,8 @@ public class LoanProductInterestRepositoryWrapper {
 
     @Transactional(readOnly = true)
     public LoanProductInterest findByLoanProductId(final Long loanProductId) {
-        return this.repository.findByLoanProductId(loanProductId).orElseThrow(() -> new LoanProductInterestNotFoundException(
-                "No configuration for loan product interest with id :" + loanProductId));
+        return this.repository.findByLoanProductId(loanProductId).orElseThrow(
+                () -> new LoanProductInterestNotFoundException("No configuration for loan product interest with id :" + loanProductId));
     }
 
     @Transactional(readOnly = true)

@@ -66,13 +66,13 @@ public class NotificationBusinessApiResource {
     private final PortfolioCommandSourceWritePlatformService commandWritePlatformService;
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        //, content = @Content(schema = @Schema(implementation = NotificationApiResourceSwagger.GetNotificationsResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // NotificationApiResourceSwagger.GetNotificationsResponse.class))
+    ) })
     public String getAllNotifications(@Context final UriInfo uriInfo,
             @QueryParam("type") @Parameter(description = "type") final String type,
             @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
@@ -84,7 +84,8 @@ public class NotificationBusinessApiResource {
             @DefaultValue("en") @QueryParam("locale") final String locale,
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
 
-        this.context.authenticatedUser().validateHasReadPermission(RESOURCENAME);;
+        this.context.authenticatedUser().validateHasReadPermission(RESOURCENAME);
+        ;
 
         LocalDate fromDate = null;
         if (startPeriod != null) {
@@ -95,7 +96,8 @@ public class NotificationBusinessApiResource {
             toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
         }
 
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forNotification(offset, limit, orderBy, sortOrder, type, fromDate, toDate);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forNotification(offset, limit, orderBy, sortOrder, type,
+                fromDate, toDate);
         final Page<NotificationData> notificationData = this.notificationReadPlatformService.getAllUnreadNotifications(searchParameters);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
@@ -103,26 +105,20 @@ public class NotificationBusinessApiResource {
     }
 
     @PUT
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String updateAllNotification() {
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().
-                updateNotification(null)
-                .withNoJsonBody()
-                .build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateNotification(null).withNoJsonBody().build();
         final CommandProcessingResult result = this.commandWritePlatformService.logCommandSource(commandRequest);
         return this.toApiJsonSerializer.serialize(result);
     }
 
     @PUT
     @Path("{notificationId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String updateOneNotification(@PathParam("notificationId") @Parameter(description = "notificationId") final Long notificationId) {
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().
-                updateNotification(notificationId)
-                .withNoJsonBody()
-                .build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateNotification(notificationId).withNoJsonBody().build();
         final CommandProcessingResult result = this.commandWritePlatformService.logCommandSource(commandRequest);
         return this.toApiJsonSerializer.serialize(result);
     }

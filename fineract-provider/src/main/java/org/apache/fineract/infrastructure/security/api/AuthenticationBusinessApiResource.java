@@ -51,7 +51,7 @@ public class AuthenticationBusinessApiResource {
 
     @POST
     @Path("reset-password")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
     public String resetCustomerPassword(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.authenticationBusinessWritePlatformService.resetPassword(apiRequestBodyAsJson);
         return this.apiJsonSerializerService.serialize(apiResponseMessage);

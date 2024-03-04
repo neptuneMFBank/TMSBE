@@ -153,14 +153,14 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     public ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final Boolean staffInSelectedOfficeOnly) {
         this.context.authenticatedUser();
         try {
-            //final String hierarchy = this.context.officeHierarchy();
-            //final String hierarchySearchString = hierarchy + "%";
+            // final String hierarchy = this.context.officeHierarchy();
+            // final String hierarchySearchString = hierarchy + "%";
 
             final String sql = "select " + this.clientBusinessMapper.schema()
-                    //                    + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
+            // + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
                     + " where c.id = ?";
             ClientBusinessData clientData = this.jdbcTemplate.queryForObject(sql, this.clientBusinessMapper, // NOSONAR
-                    //hierarchySearchString, hierarchySearchString, 
+                    // hierarchySearchString, hierarchySearchString,
                     clientId);
 
             // Get client collaterals
@@ -293,8 +293,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
                 // , lgaValuesOptions
-                ,
-                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions
         // , industryOptions
         );
@@ -346,7 +345,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 }
             }
         }
-        //log.info("clientRetrieveAl: {}-{}", sqlBuilder.toString(), ArrayUtils.toString(paramList.toArray()));
+        // log.info("clientRetrieveAl: {}-{}", sqlBuilder.toString(), ArrayUtils.toString(paramList.toArray()));
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.clientMapper);
     }
 
@@ -369,8 +368,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
         if (searchParameters.isSelfUser()) {
             final String appUserID = String.valueOf(context.authenticatedUser().getId());
-            extraCriteria
-                    += " and c.id in (select umap.client_id from m_selfservice_user_client_mapping as umap where umap.appuser_id = ? ) ";
+            extraCriteria += " and c.id in (select umap.client_id from m_selfservice_user_client_mapping as umap where umap.appuser_id = ? ) ";
             paramList.add(appUserID);
         }
 
@@ -603,17 +601,18 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     @Override
     public KycBusinessData isClientExisting(String email, String mobileNo, String altMobileNo, String bvn, String nin, String tin) {
         Integer cnt = this.jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM client_unique_view WHERE email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ", Integer.class,
-                email, mobileNo, altMobileNo, bvn, nin, tin);
+                "SELECT count(*) FROM client_unique_view WHERE email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ",
+                Integer.class, email, mobileNo, altMobileNo, bvn, nin, tin);
         Boolean agreement = cnt != null && cnt > 0;
         if (cnt != null && cnt > 1) {
-            throw new ClientNotFoundException("error.msg.client.duplicate", "Customer account is not profiled correcrtly, please contact support");
+            throw new ClientNotFoundException("error.msg.client.duplicate",
+                    "Customer account is not profiled correcrtly, please contact support");
         }
         Long clientId = null;
         if (agreement) {
             clientId = this.jdbcTemplate.queryForObject(
-                    "SELECT id FROM client_unique_view WHERE email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ", Long.class,
-                    email, mobileNo, altMobileNo, bvn, nin, tin);
+                    "SELECT id FROM client_unique_view WHERE email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ",
+                    Long.class, email, mobileNo, altMobileNo, bvn, nin, tin);
         }
         return new KycBusinessData(clientId, null, null, null, null, null, null, agreement, null);
     }

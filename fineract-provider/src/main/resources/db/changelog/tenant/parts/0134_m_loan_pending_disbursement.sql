@@ -22,13 +22,13 @@
 CREATE OR REPLACE VIEW m_loan_pending_disbursement_view AS
 SELECT A.*
 FROM m_loan_view A
-JOIN m_metrics B ON A.id = B.loan_id 
-WHERE 
-A.loan_status_id = 200 AND 
+JOIN m_metrics B ON A.id = B.loan_id
+WHERE
+A.loan_status_id = 200 AND
 B.status_enum  = 100
 AND NOT EXISTS (
     SELECT 1
     FROM m_metrics C
-    WHERE C.loan_id = A.id  
+    WHERE C.loan_id = A.id
     AND C.status_enum = 50
 );

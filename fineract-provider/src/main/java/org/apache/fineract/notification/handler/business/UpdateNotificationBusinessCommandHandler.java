@@ -34,7 +34,8 @@ public class UpdateNotificationBusinessCommandHandler implements NewCommandSourc
     private final NotificationBusinessWritePlatformService notificationBusinessWritePlatformService;
 
     @Autowired
-    public UpdateNotificationBusinessCommandHandler(final NotificationBusinessWritePlatformService notificationBusinessWritePlatformService) {
+    public UpdateNotificationBusinessCommandHandler(
+            final NotificationBusinessWritePlatformService notificationBusinessWritePlatformService) {
         this.notificationBusinessWritePlatformService = notificationBusinessWritePlatformService;
     }
 

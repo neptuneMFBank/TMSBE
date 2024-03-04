@@ -142,7 +142,7 @@ public class TwoFactorServiceImpl implements TwoFactorService {
                 .retrieveGlobalConfiguration("multiple-platform-login");
         // remove old token still active, as recommended by EY company 2022-09-23
         if (!multiplePlatformLogin.isEnabled()) {
-            //disAble all other apps if multiplePlatformLogin=false
+            // disAble all other apps if multiplePlatformLogin=false
             final List<TFAccessToken> tFAccessTokens = this.tfAccessTokenRepository.findByUserAndEnabled(user, true);
             tFAccessTokens.stream().map(tFAccessToken -> {
                 tFAccessToken.setEnabled(false);

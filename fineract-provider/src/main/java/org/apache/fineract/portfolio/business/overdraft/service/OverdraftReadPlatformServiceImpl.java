@@ -80,8 +80,7 @@ public class OverdraftReadPlatformServiceImpl implements OverdraftReadPlatformSe
             String sql = "UPDATE m_savings_account ms SET ms.allow_overdraft=?, ms.overdraft_limit=?, ms.nominal_annual_interest_rate_overdraft=? WHERE ms.id=?";
             this.jdbcTemplate.update(sql, false, 0, 0, savingsAccountId);
         }
-        log.info("{}: Records overdraft due: {}", ThreadLocalContextUtil.getTenant().getName(),
-                overdraftDue.size());
+        log.info("{}: Records overdraft due: {}", ThreadLocalContextUtil.getTenant().getName(), overdraftDue.size());
     }
 
     @Override
@@ -125,7 +124,7 @@ public class OverdraftReadPlatformServiceImpl implements OverdraftReadPlatformSe
             this.context.authenticatedUser();
             final OverdraftMapper rm = new OverdraftMapper();
             final String sql = "select " + rm.schema() + " where ov.id = ?";
-            return this.jdbcTemplate.queryForObject(sql, rm, new Object[]{overdraftId});
+            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { overdraftId });
         } catch (final EmptyResultDataAccessException e) {
             throw new OverdraftNotFoundException(overdraftId);
         }
@@ -133,7 +132,8 @@ public class OverdraftReadPlatformServiceImpl implements OverdraftReadPlatformSe
 
     @Override
     public OverdraftData retrieveTemplate() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from
+                                                                       // nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     private String buildSqlStringFromMetricsCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
@@ -182,10 +182,8 @@ public class OverdraftReadPlatformServiceImpl implements OverdraftReadPlatformSe
             return " ov.id, ov.status_enum statusEnum, ov.amount, ov.nominal_annual_interest_rate_overdraft nominalAnnualInterestRateOverdraft, "
                     + " ov.start_date startDate, ov.expiry_date expiryDate, ov.savings_id savingsId, "
                     + " ov.created_on_utc createdOn, ov.last_modified_on_utc modifiedOn, "
-                    + " sbu.username as submittedByUsername, sbum.username as modifiedByUsername "
-                    + " from m_overdraft ov "
-                    + " left join m_appuser sbu on sbu.id = ov.created_by "
-                    + " left join m_appuser sbum on sbum.id = ov.last_modified_by ";
+                    + " sbu.username as submittedByUsername, sbum.username as modifiedByUsername " + " from m_overdraft ov "
+                    + " left join m_appuser sbu on sbu.id = ov.created_by " + " left join m_appuser sbum on sbum.id = ov.last_modified_by ";
         }
 
         @Override
@@ -195,7 +193,8 @@ public class OverdraftReadPlatformServiceImpl implements OverdraftReadPlatformSe
             final Integer statusEnum = JdbcSupport.getInteger(rs, "statusEnum");
             final EnumOptionData status = LoanApprovalStatus.status(statusEnum);
             final BigDecimal amount = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "amount");
-            final BigDecimal nominalAnnualInterestRateOverdraft = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "nominalAnnualInterestRateOverdraft");
+            final BigDecimal nominalAnnualInterestRateOverdraft = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs,
+                    "nominalAnnualInterestRateOverdraft");
             final LocalDate startDate = JdbcSupport.getLocalDate(rs, "startDate");
             final LocalDate expiryDate = JdbcSupport.getLocalDate(rs, "expiryDate");
             final Integer numberOfDays = GeneralConstants.numberOfDays(startDate, expiryDate);
@@ -210,7 +209,8 @@ public class OverdraftReadPlatformServiceImpl implements OverdraftReadPlatformSe
             final String createdByUser = rs.getString("submittedByUsername");
             final String modifiedByUser = rs.getString("modifiedByUsername");
 
-            return OverdraftData.instance(amount, nominalAnnualInterestRateOverdraft, startDate, expiryDate, createdByUser, modifiedByUser, createdOn, modifiedOn, id, savingsId, status, numberOfDays);
+            return OverdraftData.instance(amount, nominalAnnualInterestRateOverdraft, startDate, expiryDate, createdByUser, modifiedByUser,
+                    createdOn, modifiedOn, id, savingsId, status, numberOfDays);
         }
 
     }

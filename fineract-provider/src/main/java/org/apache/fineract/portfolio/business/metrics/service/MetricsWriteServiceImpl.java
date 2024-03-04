@@ -18,8 +18,12 @@
  */
 package org.apache.fineract.portfolio.business.metrics.service;
 
+import static org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants.expectedDisbursementDateParameterName;
 import static org.apache.fineract.simplifytech.data.GeneralConstants.DATEFORMET_DEFAULT;
 import static org.apache.fineract.simplifytech.data.GeneralConstants.LOCALE_EN_DEFAULT;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.holdAmount;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.releaseAmount;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.withdrawAmount;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -73,7 +77,6 @@ import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.collectionsheet.CollectionSheetConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
-import static org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants.expectedDisbursementDateParameterName;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCharge;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanChargeRepository;
@@ -84,9 +87,6 @@ import org.apache.fineract.portfolio.note.domain.Note;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
-import static org.apache.fineract.simplifytech.data.GeneralConstants.holdAmount;
-import static org.apache.fineract.simplifytech.data.GeneralConstants.releaseAmount;
-import static org.apache.fineract.simplifytech.data.GeneralConstants.withdrawAmount;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -166,7 +166,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             today = this.fromApiJsonHelper.extractLocalDateNamed(expectedDisbursementDateParameterName, element);
         }
 
-        final Integer paymentTypeId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.paymentTypeIdParamName, element);
+        final Integer paymentTypeId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.paymentTypeIdParamName,
+                element);
 
         metricsLoanStateCheck(metrics, loanId);
         try {
@@ -284,13 +285,9 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     protected void loanDisbursalAccountLien(final Long loanId, final Loan loan, final LocalDate today) {
         final Set<LoanCharge> loanCharges = loan.charges();
         if (!CollectionUtils.isEmpty(loanCharges)) {
-            //check if upFront iswithdrawal is available else leave Fee onHoldAmount
-            long countUpfrontCharges = loanCharges
-                    .stream()
-                    .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
-                    && chg.isChargePending()
-                    && chg.isActive()
-                    && (chg.isUpfrontCharge() || chg.isUpfrontWithdrawalCharge())).count();
+            // check if upFront iswithdrawal is available else leave Fee onHoldAmount
+            long countUpfrontCharges = loanCharges.stream().filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
+                    && chg.isChargePending() && chg.isActive() && (chg.isUpfrontCharge() || chg.isUpfrontWithdrawalCharge())).count();
 
             if (countUpfrontCharges <= 0) {
                 return;
@@ -299,63 +296,57 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             final String accountNumber = loan.getAccountNumber();
             final Long savingsId = getLoanLinkedSavingsId(loanId);
 
-            //withdraw upFrontWithdrawal Fees/Interest
-            BigDecimal sumUpfrontWithdrawalCharges = loanCharges
-                    .stream()
-                    .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
-                    && chg.isChargePending()
-                    && chg.isActive()
-                    && chg.isUpfrontWithdrawalCharge())
-                    .map(mapper -> mapper.amountOutstanding())
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            // withdraw upFrontWithdrawal Fees/Interest
+            BigDecimal sumUpfrontWithdrawalCharges = loanCharges.stream()
+                    .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer() && chg.isChargePending() && chg.isActive()
+                            && chg.isUpfrontWithdrawalCharge())
+                    .map(mapper -> mapper.amountOutstanding()).reduce(BigDecimal.ZERO, BigDecimal::add);
             sumUpfrontWithdrawalCharges = sumUpfrontWithdrawalCharges.setScale(2, RoundingMode.HALF_EVEN);
             if (sumUpfrontWithdrawalCharges.compareTo(BigDecimal.ZERO) > 0) {
-                final Long withdrawAmountId = withdrawAmount(sumUpfrontWithdrawalCharges, savingsId, "Withdraw Loan Upfront Charges", accountNumber, 1L, commandsSourceWritePlatformService);
-                saveNoteMetrics("Withdraw Loan Interest/Fees Upfront Withdrawal Charges " + sumUpfrontWithdrawalCharges + " with savings transaction Id-" + withdrawAmountId, loan);
+                final Long withdrawAmountId = withdrawAmount(sumUpfrontWithdrawalCharges, savingsId, "Withdraw Loan Upfront Charges",
+                        accountNumber, 1L, commandsSourceWritePlatformService);
+                saveNoteMetrics("Withdraw Loan Interest/Fees Upfront Withdrawal Charges " + sumUpfrontWithdrawalCharges
+                        + " with savings transaction Id-" + withdrawAmountId, loan);
             }
 
-            //check if upFront Charges via
-            //withdraw upFront charges and lien the upFront hold Fee before disbursal
+            // check if upFront Charges via
+            // withdraw upFront charges and lien the upFront hold Fee before disbursal
             final Long lienSavingsTransactionId = getLienSavingsTransactionIdLinkToLoan(loanId);
 
-            //we need to update the charges status to paid
+            // we need to update the charges status to paid
             if (lienSavingsTransactionId != null) {
 
-                //release the lien/hold amount
-                //CommandWrapperBuilder builder = new CommandWrapperBuilder().withNoJsonBody();
-                //CommandWrapper commandRequest = builder.releaseAmount(savingsId, lienSavingsTransactionId).build();
-                //this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+                // release the lien/hold amount
+                // CommandWrapperBuilder builder = new CommandWrapperBuilder().withNoJsonBody();
+                // CommandWrapper commandRequest = builder.releaseAmount(savingsId, lienSavingsTransactionId).build();
+                // this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
                 releaseAmount(savingsId, lienSavingsTransactionId, this.commandsSourceWritePlatformService);
 
-                //withdraw upFrontFees
-                BigDecimal sumUpfrontCharges = loanCharges
-                        .stream()
-                        .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
-                        && chg.isChargePending()
-                        && chg.isActive()
-                        && chg.isUpfrontCharge())
-                        .map(mapper -> mapper.amountOutstanding())
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                // withdraw upFrontFees
+                BigDecimal sumUpfrontCharges = loanCharges.stream()
+                        .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer() && chg.isChargePending() && chg.isActive()
+                                && chg.isUpfrontCharge())
+                        .map(mapper -> mapper.amountOutstanding()).reduce(BigDecimal.ZERO, BigDecimal::add);
                 sumUpfrontCharges = sumUpfrontCharges.setScale(2, RoundingMode.HALF_EVEN);
                 if (sumUpfrontCharges.compareTo(BigDecimal.ZERO) > 0) {
-                    final Long withdrawAmountId = withdrawAmount(sumUpfrontCharges, savingsId, "Withdraw Loan Upfront Charges", accountNumber, 1L, commandsSourceWritePlatformService);
-                    saveNoteMetrics("Withdraw Loan Upfront Charges " + sumUpfrontCharges + " with savings transaction Id-" + withdrawAmountId, loan);
+                    final Long withdrawAmountId = withdrawAmount(sumUpfrontCharges, savingsId, "Withdraw Loan Upfront Charges",
+                            accountNumber, 1L, commandsSourceWritePlatformService);
+                    saveNoteMetrics(
+                            "Withdraw Loan Upfront Charges " + sumUpfrontCharges + " with savings transaction Id-" + withdrawAmountId,
+                            loan);
                 }
-                //then hold the rest
-                BigDecimal sumUpfrontChargesHold = loanCharges
-                        .stream()
-                        .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer()
-                        && chg.isChargePending()
-                        && chg.isActive()
-                        && chg.isUpfrontHoldCharge())
-                        .map(mapper -> mapper.amountOutstanding())
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                // then hold the rest
+                BigDecimal sumUpfrontChargesHold = loanCharges.stream()
+                        .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer() && chg.isChargePending() && chg.isActive()
+                                && chg.isUpfrontHoldCharge())
+                        .map(mapper -> mapper.amountOutstanding()).reduce(BigDecimal.ZERO, BigDecimal::add);
                 sumUpfrontChargesHold = sumUpfrontChargesHold.setScale(2, RoundingMode.HALF_EVEN);
                 if (sumUpfrontChargesHold.compareTo(BigDecimal.ZERO) > 0) {
                     final Long lienTransactionId = holdAmount(sumUpfrontChargesHold, loanId, savingsId,
-                            "lien amount for upFront charges of loan Id-" + loanId,
-                            this.commandsSourceWritePlatformService);
-                    saveNoteMetrics("Lien Loan Upfront Charges " + sumUpfrontChargesHold + " with savings transaction Id-" + lienTransactionId, loan);
+                            "lien amount for upFront charges of loan Id-" + loanId, this.commandsSourceWritePlatformService);
+                    saveNoteMetrics(
+                            "Lien Loan Upfront Charges " + sumUpfrontChargesHold + " with savings transaction Id-" + lienTransactionId,
+                            loan);
                 }
             }
             List<LoanCharge> charges = new ArrayList<>();
@@ -373,8 +364,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     }
 
     protected Long getLoanLinkedSavingsId(final Long loanId) {
-        final PortfolioAccountData portfolioAccountData = this.accountAssociationsReadPlatformService
-                .retriveLoanLinkedAssociation(loanId);
+        final PortfolioAccountData portfolioAccountData = this.accountAssociationsReadPlatformService.retriveLoanLinkedAssociation(loanId);
         if (portfolioAccountData == null) {
             final String errorMessage = "Loan with id:" + loanId + " is not linked to savings account";
             throw new LinkedAccountRequiredException("loan.link.to.savings", errorMessage, loanId);
@@ -392,7 +382,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 try {
                     final Object objectLienSavingsTransactionIdParam = res.getRow().get(7);
                     if (ObjectUtils.isNotEmpty(objectLienSavingsTransactionIdParam)) {
-                        final String lienSavingsTransactionIdDT = StringUtils.defaultIfBlank(String.valueOf(objectLienSavingsTransactionIdParam), null);
+                        final String lienSavingsTransactionIdDT = StringUtils
+                                .defaultIfBlank(String.valueOf(objectLienSavingsTransactionIdParam), null);
                         lienSavingsTransactionId = Long.valueOf(lienSavingsTransactionIdDT);
                     }
                 } catch (NumberFormatException e) {
@@ -497,7 +488,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
 
                 Metrics undoToMetrics = null;
                 if (this.fromApiJsonHelper.parameterExists(MetricsApiResourceConstants.UNDO_TO_METRICS_ID, element)) {
-                    final Long undoToMetricsId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.UNDO_TO_METRICS_ID, element);
+                    final Long undoToMetricsId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.UNDO_TO_METRICS_ID,
+                            element);
                     undoToMetrics = this.metricsRepositoryWrapper.findOneWithNotFoundDetection(undoToMetricsId);
                     undoToMetricsStateCheck(undoToMetrics, loanId);
                 }
@@ -535,21 +527,19 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     protected void undoToMetricsStateCheck(Metrics undoToMetrics, final Long loanId) throws PlatformDataIntegrityException {
         if (!Objects.equals(undoToMetrics.getStatus(), LoanApprovalStatus.APPROVED.getValue())
                 || !Objects.equals(loanId, undoToMetrics.getLoan().getId())) {
-            throw new PlatformDataIntegrityException("error.loan.metrics",
-                    "Loan Approval cannot be returned to selected state.");
+            throw new PlatformDataIntegrityException("error.loan.metrics", "Loan Approval cannot be returned to selected state.");
         }
     }
 
     protected void undoToMetricsOverdraftStateCheck(Metrics undoToMetrics, final Long overdraftId) throws PlatformDataIntegrityException {
         if (!Objects.equals(undoToMetrics.getStatus(), LoanApprovalStatus.APPROVED.getValue())
                 || !Objects.equals(overdraftId, undoToMetrics.getOverdraft().getId())) {
-            throw new PlatformDataIntegrityException("error.overdraft.metrics",
-                    "Overdraft Approval cannot be returned to selected state.");
+            throw new PlatformDataIntegrityException("error.overdraft.metrics", "Overdraft Approval cannot be returned to selected state.");
         }
     }
 
- @Transactional
- @Override
+    @Transactional
+    @Override
     public CommandProcessingResult rejectLoanMetrics(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
@@ -574,9 +564,9 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
 
             final Long lienSavingsTransactionId = getLienSavingsTransactionIdLinkToLoan(loanId);
             if (lienSavingsTransactionId != null) {
-                //unLien all held Amount
+                // unLien all held Amount
                 final Long savingsId = getLoanLinkedSavingsId(loanId);
-                //release Amount if loan is rejected
+                // release Amount if loan is rejected
                 releaseAmount(savingsId, lienSavingsTransactionId, this.commandsSourceWritePlatformService);
             }
             metrics.setStatus(LoanApprovalStatus.REJECTED.getValue());
@@ -595,8 +585,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 .withEntityId(metricsId).withLoanId(loanId).build();
     }
 
-   @Transactional
-   @Override
+    @Transactional
+    @Override
     public CommandProcessingResult assignLoanMetrics(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForLoanAssign(command.json());
@@ -652,8 +642,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
     }
 
-   @Transactional
-   @Override
+    @Transactional
+    @Override
     public CommandProcessingResult approveOverdraft(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForOverdraftApprovalUndoReject(command.json());
@@ -679,7 +669,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 log.info("second overdraftDisbursal");
                 final Long savingsAccountId = savingsAccount.getId();
                 String sql = "UPDATE m_savings_account ms SET ms.allow_overdraft=?, ms.overdraft_limit=?, ms.nominal_annual_interest_rate_overdraft=? WHERE ms.id=?";
-                this.jdbcTemplate.update(sql, true, overdraft.getAmount(), overdraft.getNominalAnnualInterestRateOverdraft(), savingsAccountId);
+                this.jdbcTemplate.update(sql, true, overdraft.getAmount(), overdraft.getNominalAnnualInterestRateOverdraft(),
+                        savingsAccountId);
                 UpdateOverdraftStatus(overdraft, LoanApprovalStatus.ACTIVE.getValue());
             } else {
                 final Metrics pickTheNextMetricApproval = metricsesAhead.stream().findFirst().orElseThrow(
@@ -711,13 +702,11 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
 
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
-                .withEntityId(metricsId).withSavingsId(savingsAccount.getId())
-                .withSubEntityId(overdraftId)
-                .build();
+                .withEntityId(metricsId).withSavingsId(savingsAccount.getId()).withSubEntityId(overdraftId).build();
     }
 
-  @Transactional
-  @Override
+    @Transactional
+    @Override
     public CommandProcessingResult undoOverdraft(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForOverdraftApprovalUndoReject(command.json());
@@ -746,7 +735,8 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
 
                 Metrics undoToMetrics = null;
                 if (this.fromApiJsonHelper.parameterExists(MetricsApiResourceConstants.UNDO_TO_METRICS_ID, element)) {
-                    final Long undoToMetricsId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.UNDO_TO_METRICS_ID, element);
+                    final Long undoToMetricsId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.UNDO_TO_METRICS_ID,
+                            element);
                     undoToMetrics = this.metricsRepositoryWrapper.findOneWithNotFoundDetection(undoToMetricsId);
                     undoToMetricsOverdraftStateCheck(undoToMetrics, overdraftId);
                 }
@@ -778,13 +768,11 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
-                .withEntityId(metricsId).withSavingsId(savingsAccount.getId())
-                .withSubEntityId(overdraftId)
-                .build();
+                .withEntityId(metricsId).withSavingsId(savingsAccount.getId()).withSubEntityId(overdraftId).build();
     }
 
-  @Transactional
-  @Override
+    @Transactional
+    @Override
     public CommandProcessingResult rejectOverdraft(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForOverdraftApprovalUndoReject(command.json());
@@ -813,12 +801,11 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
-                .withEntityId(metricsId).withSavingsId(savingsAccount.getId()).withSubEntityId(overdraftId)
-                .build();
+                .withEntityId(metricsId).withSavingsId(savingsAccount.getId()).withSubEntityId(overdraftId).build();
     }
 
- @Transactional
- @Override
+    @Transactional
+    @Override
     public CommandProcessingResult assignOverdraft(Long metricsId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForOverdraftAssign(command.json());
@@ -853,7 +840,6 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         }
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
-                .withEntityId(metricsId).withSubEntityId(overdraftId)
-                .build();
+                .withEntityId(metricsId).withSubEntityId(overdraftId).build();
     }
 }

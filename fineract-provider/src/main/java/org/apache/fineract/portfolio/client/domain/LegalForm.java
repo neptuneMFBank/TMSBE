@@ -23,7 +23,8 @@ package org.apache.fineract.portfolio.client.domain;
  */
 public enum LegalForm {
 
-    PERSON(1, "legalFormType.person"), ENTITY(2, "legalFormType.entity"), VENDOR(37, "legalFormType.vendor");
+    PERSON(1, "legalFormType.person"), ENTITY(2, "legalFormType.entity"), VENDOR(37, "legalFormType.vendor"), MERCHANT(38,
+            "legalFormType.vendor");
 
     private final Integer value;
     private final String code;
@@ -48,6 +49,7 @@ public enum LegalForm {
             case 1 -> legalForm = LegalForm.PERSON;
             case 2 -> legalForm = LegalForm.ENTITY;
             case 37 -> legalForm = LegalForm.VENDOR;
+            case 38 -> legalForm = LegalForm.MERCHANT;
         }
         return legalForm;
     }

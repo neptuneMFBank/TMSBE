@@ -44,6 +44,7 @@ public final class SelfServiceApiConstants {
     public static final String mobileModeParamName = "mobile";
     public static final String bothModeParamName = "both";
     public static final String requestIdParamName = "requestId";
+    public static final String fullNameParamName = "fullName";
     public static final String createRequestSuccessMessage = "Welcome onboard, we have sent your login credentails to your email and mobile.";
     public static final String resendRequestSuccessMessage = "We have sent your credentials to your mail.";
     public static final Set<String> REGISTRATION_REQUEST_DATA_PARAMETERS = Collections
@@ -54,7 +55,7 @@ public final class SelfServiceApiConstants {
     public static final List<Object> SUPPORTED_AUTHENTICATION_MODE_PARAMETERS = List
             .copyOf(Arrays.asList(emailModeParamName, mobileModeParamName, bothModeParamName));
     public static final String SELF_SERVICE_USER_ROLE = "Self Service User";
-
+    public static final String MERCHANT_USER_ROLE = "Merchant User";
     public static final Set<String> GETSTARTED_REQUEST_DATA_PARAMETERS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(firstNameParamName, mobileNumberParamName, lastNameParamName, emailParamName)));
 

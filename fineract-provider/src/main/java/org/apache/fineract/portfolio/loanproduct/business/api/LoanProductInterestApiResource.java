@@ -71,15 +71,14 @@ public class LoanProductInterestApiResource {
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Loan Product Interest Template", description = """
             """)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
+    ) })
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(LoanProductInterestApiResourceConstants.RESOURCENAME);
@@ -92,14 +91,13 @@ public class LoanProductInterestApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve all Loan Product Interest", description = "Retrieve list of Loan Product Interest")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
-        // EmployerApiResourceSwagger.GetEmployersResponse.class)))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+    // EmployerApiResourceSwagger.GetEmployersResponse.class)))
+    ) })
     public String getAllLoanProductInterest(@Context final UriInfo uriInfo,
             @QueryParam("productId") @Parameter(description = "productId") final Long productId,
             @QueryParam("name") @Parameter(description = "name") final String name,
@@ -134,14 +132,13 @@ public class LoanProductInterestApiResource {
 
     @GET
     @Path("{loanProductInterestId}")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve a loan Product Interest", description = "Retrieves a loan Product Interest")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // EmployerApiResourceSwagger.GetEmployersEmployerIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // EmployerApiResourceSwagger.GetEmployersEmployerIdResponse.class))
+    ) })
     public String retrieveOneLoanProductInterest(
             @PathParam("loanProductInterestId") @Parameter(description = "loanProductInterestId") final Long loanProductInterestId,
             @Context final UriInfo uriInfo) {
@@ -153,17 +150,16 @@ public class LoanProductInterestApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create Loan Product Interest", description = """
             Creates a new Loan Product Interest""")
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
+    ) })
     public String createLoanProductInterest(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .createLoanProductInterest()//
@@ -175,18 +171,17 @@ public class LoanProductInterestApiResource {
 
     @PUT
     @Path("{loanProductInterestId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update Loan Product Interest", description = "Update Loan Product Interest")
     @RequestBody(required = true
     // ,content = @Content(schema = @Schema(implementation =
     // EmployerApiResourceSwagger.PutEmployersEmployerIdRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // EmployerApiResourceSwagger.PutEmployersEmployerIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // EmployerApiResourceSwagger.PutEmployersEmployerIdResponse.class))
+    ) })
     public String updateLoanProductInterest(
             @PathParam("loanProductInterestId") @Parameter(description = "loanProductInterestId") final Long loanProductInterestId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {

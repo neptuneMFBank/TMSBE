@@ -157,7 +157,7 @@ public class LoanProductInterestReadPlatformServiceImpl implements LoanProductIn
         try {
             final String sql = "select " + loanProductInterestMapper.schema() + " where lpi.id = ?";
             LoanProductInterestData loanProductInterestData = this.jdbcTemplate.queryForObject(sql, loanProductInterestMapper,
-                    new Object[]{loanProductInterestId});
+                    new Object[] { loanProductInterestId });
             Collection<LoanProductInterestConfigData> retrieveConfig = retrieveConfig(loanProductInterestId);
             if (!CollectionUtils.isEmpty(retrieveConfig)) {
                 loanProductInterestData = LoanProductInterestData.lookUpFinal(retrieveConfig, loanProductInterestData);
@@ -175,7 +175,7 @@ public class LoanProductInterestReadPlatformServiceImpl implements LoanProductIn
         try {
             final String sql = "select " + loanProductInterestMapper.schema() + " where lpi.loan_product_id = ?";
             LoanProductInterestData loanProductInterestData = this.jdbcTemplate.queryForObject(sql, loanProductInterestMapper,
-                    new Object[]{loanProductId});
+                    new Object[] { loanProductId });
             if (loanProductInterestData != null) {
                 Collection<LoanProductInterestConfigData> retrieveConfig = retrieveConfig(loanProductInterestData.getId());
                 if (!CollectionUtils.isEmpty(retrieveConfig)) {
@@ -193,7 +193,7 @@ public class LoanProductInterestReadPlatformServiceImpl implements LoanProductIn
     public Collection<LoanProductInterestConfigData> retrieveConfig(Long loanProductInterestId) {
         this.context.authenticatedUser();
         final String sql = "select " + loanProductInterestConfigMapper.schema() + " WHERE lpic.rlpi_id = ? ORDER BY lpic.min_tenor ASC ";
-        return this.jdbcTemplate.query(sql, loanProductInterestConfigMapper, new Object[]{loanProductInterestId}); // NOSONAR
+        return this.jdbcTemplate.query(sql, loanProductInterestConfigMapper, new Object[] { loanProductInterestId }); // NOSONAR
     }
 
     private static final class LoanProductInterestMapper implements RowMapper<LoanProductInterestData> {

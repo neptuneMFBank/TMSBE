@@ -44,15 +44,15 @@ public class LoanProductInterestConfig extends AbstractPersistableCustom {
     @Column(name = "nominal_interest_rate_per_period", scale = 6, precision = 19, nullable = true)
     private BigDecimal nominalInterestRatePerPeriod;
 
-    protected LoanProductInterestConfig() {
-    }
+    protected LoanProductInterestConfig() {}
 
     public static LoanProductInterestConfig create(BigDecimal minTenor, BigDecimal maxTenor, BigDecimal nominalInterestRatePerPeriod) {
         final LoanProductInterest loanProductInterest = null;
         return new LoanProductInterestConfig(loanProductInterest, minTenor, maxTenor, nominalInterestRatePerPeriod);
     }
 
-    public LoanProductInterestConfig(LoanProductInterest loanProductInterest, BigDecimal minTenor, BigDecimal maxTenor, BigDecimal nominalInterestRatePerPeriod) {
+    public LoanProductInterestConfig(LoanProductInterest loanProductInterest, BigDecimal minTenor, BigDecimal maxTenor,
+            BigDecimal nominalInterestRatePerPeriod) {
         this.loanProductInterest = loanProductInterest;
         this.minTenor = minTenor;
         this.maxTenor = maxTenor;

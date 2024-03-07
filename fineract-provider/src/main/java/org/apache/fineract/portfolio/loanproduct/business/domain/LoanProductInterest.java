@@ -35,9 +35,8 @@ import org.springframework.stereotype.Component;
 
 @Entity
 @Component
-@Table(name = "m_product_loan_interest", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"name"}, name = "name_UQ_pli"),
-    @UniqueConstraint(columnNames = {"loan_product_id"}, name = "loan_product_id_UQ_pli")})
+@Table(name = "m_product_loan_interest", uniqueConstraints = { @UniqueConstraint(columnNames = { "name" }, name = "name_UQ_pli"),
+        @UniqueConstraint(columnNames = { "loan_product_id" }, name = "loan_product_id_UQ_pli") })
 public class LoanProductInterest extends AbstractAuditableWithUTCDateTimeCustom {
 
     @Column(name = "active", nullable = false)
@@ -56,10 +55,10 @@ public class LoanProductInterest extends AbstractAuditableWithUTCDateTimeCustom 
     @JoinColumn(name = "loan_product_id", nullable = false)
     private LoanProduct loanProduct;
 
-    protected LoanProductInterest() {
-    }
+    protected LoanProductInterest() {}
 
-    private LoanProductInterest(String name, final String description, LoanProduct loanProduct, Set<LoanProductInterestConfig> loanProductInterestConfig, final boolean active) {
+    private LoanProductInterest(String name, final String description, LoanProduct loanProduct,
+            Set<LoanProductInterestConfig> loanProductInterestConfig, final boolean active) {
         this.name = name;
         this.description = description;
         this.loanProduct = loanProduct;
@@ -117,24 +116,25 @@ public class LoanProductInterest extends AbstractAuditableWithUTCDateTimeCustom 
 
     public void addLoanProductInterestConfig(LoanProductInterestConfig singleLoanProductInterestConfig) {
         singleLoanProductInterestConfig.setLoanProductInterest(this);
-//        if (!CollectionUtils.isEmpty(this.loanProductInterestConfig)) {
-//            String msg = null;
-//            for (LoanProductInterestConfig loanProductInterestConfig1 : loanProductInterestConfig) {
-//                if (!loanProductInterestConfig1.isNoOtherRangeWithin(loanProductInterestConfig)) {
-//                    msg = "Other range(s) exist within the range: " + loanProductInterestConfig1.getMinTenor() + " to " + loanProductInterestConfig1.getMaxTenor();
-//                    break;
-//                }
-//            }
-//            //check if any match false-> means duplicate
-////            final boolean rangeExmsgist = this.loanProductInterestConfig.stream()
-////                    .allMatch(predicate -> predicate.isNoOtherRangeWithin(this.loanProductInterestConfig));
-////            if (rangeExist == false) {
-//            if (StringUtils.isNotBlank(msg)) {
-//                throw new PlatformDataIntegrityException("error.msg.loanproduct.interest.config.duplicate",
-//                        msg);
-//            }
-//
-//        }
+        // if (!CollectionUtils.isEmpty(this.loanProductInterestConfig)) {
+        // String msg = null;
+        // for (LoanProductInterestConfig loanProductInterestConfig1 : loanProductInterestConfig) {
+        // if (!loanProductInterestConfig1.isNoOtherRangeWithin(loanProductInterestConfig)) {
+        // msg = "Other range(s) exist within the range: " + loanProductInterestConfig1.getMinTenor() + " to " +
+        // loanProductInterestConfig1.getMaxTenor();
+        // break;
+        // }
+        // }
+        // //check if any match false-> means duplicate
+        //// final boolean rangeExmsgist = this.loanProductInterestConfig.stream()
+        //// .allMatch(predicate -> predicate.isNoOtherRangeWithin(this.loanProductInterestConfig));
+        //// if (rangeExist == false) {
+        // if (StringUtils.isNotBlank(msg)) {
+        // throw new PlatformDataIntegrityException("error.msg.loanproduct.interest.config.duplicate",
+        // msg);
+        // }
+        //
+        // }
 
         this.loanProductInterestConfig.add(singleLoanProductInterestConfig);
     }

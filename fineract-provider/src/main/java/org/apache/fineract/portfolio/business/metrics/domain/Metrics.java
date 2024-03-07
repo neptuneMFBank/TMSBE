@@ -32,9 +32,9 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 
 @Entity
 @Table(name = "m_metrics", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"`loan_id", "rank`"}, name = "metrics_UNIQUE_rank_loan"),
-    @UniqueConstraint(columnNames = {"`savings_id", "rank`"}, name = "metrics_UNIQUE_rank_saving"),
-    @UniqueConstraint(columnNames = {"`overdraft_id", "rank`"}, name = "metrics_UNIQUE_rank_overdraft"),})
+        @UniqueConstraint(columnNames = { "`loan_id", "rank`" }, name = "metrics_UNIQUE_rank_loan"),
+        @UniqueConstraint(columnNames = { "`savings_id", "rank`" }, name = "metrics_UNIQUE_rank_saving"),
+        @UniqueConstraint(columnNames = { "`overdraft_id", "rank`" }, name = "metrics_UNIQUE_rank_overdraft"), })
 public class Metrics extends AbstractAuditableWithUTCDateTimeCustom {
 
     @ManyToOne
@@ -59,8 +59,7 @@ public class Metrics extends AbstractAuditableWithUTCDateTimeCustom {
     @JoinColumn(name = "overdraft_id")
     private Overdraft overdraft;
 
-    protected Metrics() {
-    }
+    protected Metrics() {}
 
     public Metrics(Staff assignedUser, Integer status, Integer rank, Loan loan, SavingsAccount savingsAccount, Overdraft overdraft) {
         this.assignedUser = assignedUser;
@@ -83,7 +82,8 @@ public class Metrics extends AbstractAuditableWithUTCDateTimeCustom {
         return new Metrics(assignedUser, status, rank, loan, savingsAccount, overdraft);
     }
 
-    public static Metrics createOverdraftMetrics(Staff assignedUser, Integer status, Integer rank, Overdraft overdraft, final SavingsAccount savingsAccount) {
+    public static Metrics createOverdraftMetrics(Staff assignedUser, Integer status, Integer rank, Overdraft overdraft,
+            final SavingsAccount savingsAccount) {
         final Loan loan = null;
         return new Metrics(assignedUser, status, rank, loan, savingsAccount, overdraft);
     }

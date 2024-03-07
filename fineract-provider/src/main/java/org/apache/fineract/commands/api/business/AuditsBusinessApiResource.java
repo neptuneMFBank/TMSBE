@@ -71,12 +71,10 @@ public class AuditsBusinessApiResource {
     private final DefaultToApiJsonSerializer<AuditBusinessSearchData> toApiJsonSerializerSearchTemplate;
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Audits", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveAllAuditEntries(@Context final UriInfo uriInfo,
             @QueryParam("isChecker") @Parameter(description = "isChecker") final Boolean isChecker,
             @QueryParam("actionName") @Parameter(description = "actionName") final String actionName,
@@ -109,8 +107,9 @@ public class AuditsBusinessApiResource {
             toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
         }
 
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forAudit(fromDate, toDate, isChecker, actionName, entityName, resourceId, makerCheckerId,
-                processingResult, officeId, groupId, clientId, loanId, savingsAccountId, offset, limit, orderBy, sortOrder);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forAudit(fromDate, toDate, isChecker, actionName,
+                entityName, resourceId, makerCheckerId, processingResult, officeId, groupId, clientId, loanId, savingsAccountId, offset,
+                limit, orderBy, sortOrder);
 
         final Page<AuditData> auditData = this.auditBusinessReadPlatformService.retrieveAll(searchParameters);
 
@@ -120,13 +119,10 @@ public class AuditsBusinessApiResource {
 
     @GET
     @Path("/template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Audit Search Template", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )
-    })
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveAuditSearchTemplate(@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);

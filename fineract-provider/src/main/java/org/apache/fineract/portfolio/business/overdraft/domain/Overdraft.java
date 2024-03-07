@@ -57,10 +57,10 @@ public class Overdraft extends AbstractAuditableWithUTCDateTimeCustom {
     @JoinColumn(name = "savings_id")
     private SavingsAccount savingsAccount;
 
-    protected Overdraft() {
-    }
+    protected Overdraft() {}
 
-    public Overdraft(BigDecimal amount, BigDecimal nominalAnnualInterestRateOverdraft, Integer status, LocalDate startDate, LocalDate expiryDate, SavingsAccount savingsAccount) {
+    public Overdraft(BigDecimal amount, BigDecimal nominalAnnualInterestRateOverdraft, Integer status, LocalDate startDate,
+            LocalDate expiryDate, SavingsAccount savingsAccount) {
         this.amount = amount;
         this.nominalAnnualInterestRateOverdraft = nominalAnnualInterestRateOverdraft;
         this.status = status;
@@ -108,7 +108,8 @@ public class Overdraft extends AbstractAuditableWithUTCDateTimeCustom {
         return actualChanges;
     }
 
-    public static Overdraft createOverdraft(BigDecimal amount, BigDecimal nominalAnnualInterestRateOverdraft, LocalDate startDate, LocalDate expiryDate, SavingsAccount savingsAccount) {
+    public static Overdraft createOverdraft(BigDecimal amount, BigDecimal nominalAnnualInterestRateOverdraft, LocalDate startDate,
+            LocalDate expiryDate, SavingsAccount savingsAccount) {
         final Integer status = LoanApprovalStatus.DRAFT.getValue();
         return new Overdraft(amount, nominalAnnualInterestRateOverdraft, status, startDate, expiryDate, savingsAccount);
     }

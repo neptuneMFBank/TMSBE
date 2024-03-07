@@ -20,8 +20,8 @@
 CREATE OR REPLACE VIEW m_cashier_view AS
 SELECT mc.id, mc.staff_id, mc.start_date, mc.end_date, mc.teller_id, mt.name teller_name,
 mt.state teller_state, mt.office_id, mo.name office_name, ms.organisational_role_parent_staff_id
-FROM m_cashiers mc 
-JOIN m_tellers mt ON mt.id = mc.teller_id 
-JOIN m_office mo ON mo.id = mt.office_id 
-LEFT JOIN m_staff ms ON ms.id = mc.staff_id 
+FROM m_cashiers mc
+JOIN m_tellers mt ON mt.id = mc.teller_id
+JOIN m_office mo ON mo.id = mt.office_id
+LEFT JOIN m_staff ms ON ms.id = mc.staff_id
 GROUP BY mc.staff_id, mt.id;

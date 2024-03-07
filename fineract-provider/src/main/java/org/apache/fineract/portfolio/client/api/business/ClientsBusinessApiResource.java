@@ -94,8 +94,8 @@ public class ClientsBusinessApiResource {
     private final GuarantorReadPlatformService guarantorReadPlatformService;
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Clients", description = """
             The list capability of clients can support pagination and sorting.
 
@@ -108,10 +108,9 @@ public class ClientsBusinessApiResource {
             clients\business?offset=10&limit=50
 
             clients\business?orderBy=displayName&sortOrder=DESC""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+    ) })
     public String retrieveAll(@Context final UriInfo uriInfo, @QueryParam("bvn") @Parameter(description = "bvn") final String bvn,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
             @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
@@ -166,8 +165,8 @@ public class ClientsBusinessApiResource {
 
     @GET
     @Path("{clientId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Client", description = """
             Example Requests:
 
@@ -178,11 +177,10 @@ public class ClientsBusinessApiResource {
 
 
             clients/1?fields=id,displayName,officeName""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+    ) })
     public String retrieveOne(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Context final UriInfo uriInfo,
             @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final Boolean staffInSelectedOfficeOnly) {
@@ -199,8 +197,8 @@ public class ClientsBusinessApiResource {
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Client Details Template", description = """
             This is a convenience resource. It can be useful when building maintenance user interface screens for client applications. The template data returned consists of any or all of:
 
@@ -210,11 +208,10 @@ public class ClientsBusinessApiResource {
             Example Request:
 
             clients/template""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
+    ) })
     public String retrieveTemplate(@Context final UriInfo uriInfo,
             @Parameter(description = "officeId") @QueryParam("officeId") final Long officeId,
             // @QueryParam("commandParam") @Parameter(description = "commandParam") final String commandParam,
@@ -244,8 +241,8 @@ public class ClientsBusinessApiResource {
     // return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
     // }
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create a Client", description = """
             Note:
 
@@ -259,10 +256,9 @@ public class ClientsBusinessApiResource {
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
+    ) })
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
@@ -277,8 +273,8 @@ public class ClientsBusinessApiResource {
 
     @PUT
     @Path("{clientId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update a Client", description = """
             Note: You can update any of the basic attributes of a client (but not its associations) using this API.
 
@@ -289,11 +285,10 @@ public class ClientsBusinessApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // ClientsApiResourceSwagger.PutClientsClientIdRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.PutClientsClientIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.PutClientsClientIdResponse.class))
+    ) })
     public String update(@Parameter(description = "clientId") @PathParam("clientId") final Long clientId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -309,8 +304,8 @@ public class ClientsBusinessApiResource {
 
     @POST
     @Path("/find")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create a Client", description = """
             Note: Search by mobile_no,email_address,account_no
                                                                 {"key":"email_address","value":"kunlethompson2@gmail.com"}
@@ -318,10 +313,9 @@ public class ClientsBusinessApiResource {
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
+    ) })
     public String findClient(@Context final UriInfo uriInfo, @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
@@ -336,15 +330,14 @@ public class ClientsBusinessApiResource {
 
     @GET
     @Path("{clientId}/kyc-level")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Client", description = """
             Example Requests:""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+    ) })
     public String retrieveKycLevel(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
@@ -358,14 +351,13 @@ public class ClientsBusinessApiResource {
 
     @GET
     @Path("pend")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Pend Clients", description = """
             Example Requests:""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+    ) })
     public String retrievePendingActivation(@Context final UriInfo uriInfo,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
             @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
@@ -404,22 +396,20 @@ public class ClientsBusinessApiResource {
 
     @GET
     @Path("{clientId}/balance")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve client accounts balance", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation =
-        // ClientsApiResourceSwagger.GetClientsClientIdAccountsResponse.class))
-        ),
-        @ApiResponse(responseCode = "400", description = "Bad Request")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.GetClientsClientIdAccountsResponse.class))
+    ), @ApiResponse(responseCode = "400", description = "Bad Request") })
     public String retrieveAssociatedAccounts(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
         final JsonObject retrieveBalance = this.clientBusinessReadPlatformService.retrieveBalance(clientId);
         final Set<String> CLIENT_BALANCE_DATA_PARAMETERS = new HashSet<>(
                 Arrays.asList("loanAccount", "savingDeposit", "fixedDeposit", "recurringDeposit"
-                //, "currentDeposit"
+                // , "currentDeposit"
                 ));
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.clientAccountBalanceSummary.serialize(settings, retrieveBalance, CLIENT_BALANCE_DATA_PARAMETERS);
@@ -427,22 +417,17 @@ public class ClientsBusinessApiResource {
 
     @GET
     @Path("exist")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "is Client Existing", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        ),
-        @ApiResponse(responseCode = "400", description = "Bad Request")})
-    public String isClientExisting(
-            @QueryParam("email") final String email,
-            @QueryParam("mobileNo") final String mobileNo,
-            @QueryParam("altMobileNo") final String altMobileNo,
-            @QueryParam("bvn") final String bvn,
-            @QueryParam("nin") final String nin,
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request") })
+    public String isClientExisting(@QueryParam("email") final String email, @QueryParam("mobileNo") final String mobileNo,
+            @QueryParam("altMobileNo") final String altMobileNo, @QueryParam("bvn") final String bvn, @QueryParam("nin") final String nin,
             @QueryParam("tin") final String tin) {
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
-        final KycBusinessData businessData = this.clientBusinessReadPlatformService.isClientExisting(email, mobileNo, altMobileNo, bvn, nin, tin);
+        final KycBusinessData businessData = this.clientBusinessReadPlatformService.isClientExisting(email, mobileNo, altMobileNo, bvn, nin,
+                tin);
         return this.clientAccountBalanceSummary.serialize(businessData);
 
     }

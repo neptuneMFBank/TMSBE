@@ -24,6 +24,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.floatingrates.data.InterestRatePeriodData;
+import org.apache.fineract.portfolio.loanaccount.data.LoanTransactionData;
 import org.apache.fineract.portfolio.loanaccount.data.business.LoanBusinessAccountData;
 
 public interface LoanBusinessReadPlatformService {
@@ -37,4 +38,6 @@ public interface LoanBusinessReadPlatformService {
     LoanBusinessAccountData retrieveOne(Long loanId);
 
     Collection<InterestRatePeriodData> retrieveLoanInterestRatePeriodData(LoanBusinessAccountData loanData);
+
+    public Page<LoanTransactionData> retrieveAllTransactionsByLoanId(Long loanId, final SearchParametersBusiness searchParameters);
 }

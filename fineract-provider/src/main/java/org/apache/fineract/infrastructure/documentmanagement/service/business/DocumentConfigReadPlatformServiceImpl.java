@@ -170,7 +170,7 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
             final String sql = "select " + codeMapper.codeClientDocumentSchema()
                     + " where mdca.code_allow=1 group by c.id order by c.code_name ";
 
-            return this.jdbcTemplate.query(sql, rm, new Object[]{clientDocumentId});
+            return this.jdbcTemplate.query(sql, rm, new Object[] { clientDocumentId });
 
         } catch (DataAccessException e) {
             log.warn("retrieveAllCodesForClientDocument: {}", e);
@@ -237,14 +237,14 @@ public class DocumentConfigReadPlatformServiceImpl implements DocumentConfigRead
                     + " from m_code as c join m_document_code_allow mdca ON mdca.code_id=c.id "
                     + " left join m_code_value cv on cv.code_id=c.id "
                     + " join m_document_client_config_code rp on rp.code_id = c.id and rp.m_document_client_config_id=? " // +
-                    // "
-                    // group
-                    // by
-                    // c.id
-                    // order
-                    // by
-                    // c.code_name"
-                    ;
+            // "
+            // group
+            // by
+            // c.id
+            // order
+            // by
+            // c.code_name"
+            ;
         }
 
         // public String schema() {

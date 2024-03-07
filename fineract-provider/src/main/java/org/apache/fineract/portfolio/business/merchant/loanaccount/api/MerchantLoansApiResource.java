@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.self.savings.api.business;
+package org.apache.fineract.portfolio.business.merchant.loanaccount.api;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,40 +32,40 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import org.apache.fineract.accounting.journalentry.api.DateParam;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.portfolio.savings.api.business.SavingsAccountTransactionsBusinessApiResource;
-import org.apache.fineract.portfolio.savings.exception.SavingsAccountNotFoundException;
-import org.apache.fineract.portfolio.self.savings.service.AppuserSavingsMapperReadService;
+import org.apache.fineract.portfolio.business.merchant.loanaccount.service.MerchantLoansMapperReadService;
+import org.apache.fineract.portfolio.loanaccount.api.business.LoanTransactionsBusinessApiResource;
+import org.apache.fineract.portfolio.loanaccount.exception.LoanNotFoundException;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Path("/self/savingsaccounts/business")
+@Path("/merchant/loans")
 @Component
 @Scope("singleton")
+@Tag(name = "Merchant Loans", description = "")
 
-@Tag(name = "Self Savings Account", description = "")
-public class SelfSavingsBusinessApiResource {
+public class MerchantLoansApiResource {
 
     private final PlatformSecurityContext context;
-    private final SavingsAccountTransactionsBusinessApiResource savingsAccountTransactionsBusinessApiResource;
-    private final AppuserSavingsMapperReadService appuserSavingsMapperReadService;
+    private final LoanTransactionsBusinessApiResource loanTransactionsBusinessApiResource;
+    private final MerchantLoansMapperReadService merchantLoansMapperReadService;
 
     @Autowired
-    public SelfSavingsBusinessApiResource(final PlatformSecurityContext context,
-            final SavingsAccountTransactionsBusinessApiResource savingsAccountTransactionsBusinessApiResource,
-            final AppuserSavingsMapperReadService appuserSavingsMapperReadService) {
+    public MerchantLoansApiResource(final PlatformSecurityContext context,
+            final LoanTransactionsBusinessApiResource loanTransactionsBusinessApiResource,
+            final MerchantLoansMapperReadService merchantLoansMapperReadService) {
         this.context = context;
-        this.savingsAccountTransactionsBusinessApiResource = savingsAccountTransactionsBusinessApiResource;
-        this.appuserSavingsMapperReadService = appuserSavingsMapperReadService;
+        this.loanTransactionsBusinessApiResource = loanTransactionsBusinessApiResource;
+        this.merchantLoansMapperReadService = merchantLoansMapperReadService;
 
     }
 
     @GET
-    @Path("{savingsId}/transactions")
+    @Path("{loanId}/transactions")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
+    public String retrieveAllTransactionsByLoanId(@PathParam("loanId") final Long loanId, @Context final UriInfo uriInfo,
             @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
             @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId") final Long transactionTypeId,
@@ -77,19 +77,17 @@ public class SelfSavingsBusinessApiResource {
             @DefaultValue("en") @QueryParam("locale") final String locale,
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
 
-        validateAppuserSavingsAccountMapping(savingsId);
+        validateAppuserLoanMapping(loanId);
 
-        return this.savingsAccountTransactionsBusinessApiResource.retrieveAllBySavingsId(savingsId, uriInfo, startPeriod, endPeriod,
+        return this.loanTransactionsBusinessApiResource.retrieveAllTransactionsByLoanId(loanId, uriInfo, startPeriod, endPeriod,
                 transactionTypeId, transactionId, offset, limit, orderBy, sortOrder, locale, dateFormat);
-
     }
 
-    private void validateAppuserSavingsAccountMapping(final Long accountId) {
+    private void validateAppuserLoanMapping(final Long loanId) {
         AppUser user = this.context.authenticatedUser();
-        final boolean isMappedSavings = this.appuserSavingsMapperReadService.isSavingsMappedToUser(accountId, user.getId());
-        if (!isMappedSavings) {
-            throw new SavingsAccountNotFoundException(accountId);
+        final boolean isLoanMappedToUser = this.merchantLoansMapperReadService.isLoanMappedToMerchant(loanId, user.getId());
+        if (!isLoanMappedToUser) {
+            throw new LoanNotFoundException(loanId);
         }
     }
-
 }

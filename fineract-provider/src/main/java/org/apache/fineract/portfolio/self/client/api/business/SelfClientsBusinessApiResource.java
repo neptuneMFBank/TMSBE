@@ -101,8 +101,8 @@ public class SelfClientsBusinessApiResource {
     @GET
     @Path("kyc-level")
 
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Client Checker", description = """
 
             Example Requests:""")

@@ -30,6 +30,7 @@ import java.util.List;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
@@ -123,8 +124,9 @@ public class MerchantRegistrationWriteServiceImp implements MerchantRegistration
 
         System.out.println("firstName " + firstName);
 
-        String lastName = str.size() > 1 ? str.get(1) : "Merchant";
+        String lastName = str.size() > 1 && StringUtils.isNotBlank(str.get(1)) ? str.get(1) : "Merchant";
         System.out.println("lastName" + lastName);
+        System.out.println("str" + str);
 
         this.selfServiceRegistrationWritePlatformService.validateForDuplicateUsername(email);
 

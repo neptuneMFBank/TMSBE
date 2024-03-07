@@ -409,7 +409,7 @@ public class ClientsBusinessApiResource {
         final JsonObject retrieveBalance = this.clientBusinessReadPlatformService.retrieveBalance(clientId);
         final Set<String> CLIENT_BALANCE_DATA_PARAMETERS = new HashSet<>(
                 Arrays.asList("loanAccount", "savingDeposit", "fixedDeposit", "recurringDeposit"
-                //, "currentDeposit"
+                // , "currentDeposit"
                 ));
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.clientAccountBalanceSummary.serialize(settings, retrieveBalance, CLIENT_BALANCE_DATA_PARAMETERS);

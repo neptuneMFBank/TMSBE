@@ -206,7 +206,7 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
     protected boolean restrictAppAccessWhenPasswordResetNotChanged(String pathURL, AppUser user, HttpServletResponse response) {
         LOG.info("pathURL: {}", pathURL);
         List<String> listOfFreeEndPoints = Arrays.asList("/authentication", "/self/authentication", "/self/registration", "/twofactor",
-                "/self/twofactor", "/self/user", "users", "/merchant/user");
+                "/self/twofactor", "/self/user", "users", "/merchant/user", "/merchant/twofactor");
         return listOfFreeEndPoints.stream().noneMatch(action -> StringUtils.containsIgnoreCase(pathURL, action));
     }
 }

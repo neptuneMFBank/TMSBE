@@ -74,8 +74,10 @@ public class LoanProductInterestWriteServiceImpl implements LoanProductInterestW
             changes.put(LoanProductInterestApiResourceConstants.NAME, name);
             loanProductInterest.setName(name);
         }
-        if (command.isChangeInStringParameterNamed(LoanProductInterestApiResourceConstants.DESCRIPTION, loanProductInterest.getDescription())) {
-            final String description = this.fromApiJsonHelper.extractStringNamed(LoanProductInterestApiResourceConstants.DESCRIPTION, element);
+        if (command.isChangeInStringParameterNamed(LoanProductInterestApiResourceConstants.DESCRIPTION,
+                loanProductInterest.getDescription())) {
+            final String description = this.fromApiJsonHelper.extractStringNamed(LoanProductInterestApiResourceConstants.DESCRIPTION,
+                    element);
             changes.put(LoanProductInterestApiResourceConstants.DESCRIPTION, description);
             loanProductInterest.setDescription(description);
         }
@@ -154,20 +156,18 @@ public class LoanProductInterestWriteServiceImpl implements LoanProductInterestW
                 BigDecimal minTenor = BigDecimal.ZERO;
                 if (jsonObject.has(LoanProductInterestApiResourceConstants.MINTENOR)
                         && jsonObject.get(LoanProductInterestApiResourceConstants.MINTENOR).isJsonPrimitive()) {
-                    minTenor = jsonObject.getAsJsonPrimitive(LoanProductInterestApiResourceConstants.MINTENOR)
-                            .getAsBigDecimal();
+                    minTenor = jsonObject.getAsJsonPrimitive(LoanProductInterestApiResourceConstants.MINTENOR).getAsBigDecimal();
                 }
                 BigDecimal maxTenor = BigDecimal.ZERO;
                 if (jsonObject.has(LoanProductInterestApiResourceConstants.MAXTENOR)
                         && jsonObject.get(LoanProductInterestApiResourceConstants.MAXTENOR).isJsonPrimitive()) {
-                    maxTenor = jsonObject.getAsJsonPrimitive(LoanProductInterestApiResourceConstants.MAXTENOR)
-                            .getAsBigDecimal();
+                    maxTenor = jsonObject.getAsJsonPrimitive(LoanProductInterestApiResourceConstants.MAXTENOR).getAsBigDecimal();
                 }
                 BigDecimal nominalInterestRatePerPeriod = BigDecimal.ZERO;
                 if (jsonObject.has(LoanProductInterestApiResourceConstants.INTERESTRATEPERPERIOD)
                         && jsonObject.get(LoanProductInterestApiResourceConstants.INTERESTRATEPERPERIOD).isJsonPrimitive()) {
-                    nominalInterestRatePerPeriod = jsonObject.getAsJsonPrimitive(LoanProductInterestApiResourceConstants.INTERESTRATEPERPERIOD)
-                            .getAsBigDecimal();
+                    nominalInterestRatePerPeriod = jsonObject
+                            .getAsJsonPrimitive(LoanProductInterestApiResourceConstants.INTERESTRATEPERPERIOD).getAsBigDecimal();
                 }
                 Long id = null;
                 if (jsonObject.has(LoanProductInterestApiResourceConstants.ID)
@@ -218,8 +218,8 @@ public class LoanProductInterestWriteServiceImpl implements LoanProductInterestW
         }
 
         logAsErrorUnexpectedDataIntegrityException(dve);
-        throw new PlatformDataIntegrityException("error.msg.loanproduct.interest.unknown.data.integrity.issue",
-                msg, "Unknown data integrity issue with resource.");
+        throw new PlatformDataIntegrityException("error.msg.loanproduct.interest.unknown.data.integrity.issue", msg,
+                "Unknown data integrity issue with resource.");
     }
 
     private void logAsErrorUnexpectedDataIntegrityException(final Exception dve) {

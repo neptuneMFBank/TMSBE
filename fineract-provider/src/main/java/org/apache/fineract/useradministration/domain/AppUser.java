@@ -52,6 +52,7 @@ import org.apache.fineract.infrastructure.security.utils.LogParameterEscapeUtil;
 import org.apache.fineract.organisation.office.domain.Office;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.portfolio.client.domain.Client;
+import org.apache.fineract.useradministration.domain.business.AppUserMerchantMapping;
 import org.apache.fineract.useradministration.service.AppUserConstants;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -121,6 +122,12 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "appUser")
     private Set<AppUserClientMapping> appUserClientMappings = new HashSet<>();
+
+    @Column(name = "is_merchant", nullable = false)
+    private boolean isMerchant;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "appUser")
+    private Set<AppUserMerchantMapping> appUserMerchantMappings = new HashSet<>();
 
     @Column(name = "cannot_change_password", nullable = true)
     private Boolean cannotChangePassword;
@@ -727,7 +734,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     private Set<AppUserClientMapping> createAppUserClientMappings(Collection<Client> clients) {
         Set<AppUserClientMapping> newAppUserClientMappings = null;
-        if (clients != null && clients.size() > 0) {
+        if (clients != null && clients.size() > 0 && isSelfServiceUser()) {
             newAppUserClientMappings = new HashSet<>();
             for (Client client : clients) {
                 // log.info("createAppUserClientMappings: {}", client.getId());
@@ -757,4 +764,30 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     public void enableUser() {
         this.enabled = true;
     }
+
+    public void setIsMerchant(boolean isMerchant) {
+        this.isMerchant = isMerchant;
+    }
+
+    private Set<AppUserMerchantMapping> createAppUserMerchantMappings(Collection<Client> clients) {
+        Set<AppUserMerchantMapping> newAppUserMerchantMappings = null;
+        if (clients != null && !clients.isEmpty() && isMerchant()) {
+            newAppUserMerchantMappings = new HashSet<>();
+            for (Client client : clients) {
+                newAppUserMerchantMappings.add(new AppUserMerchantMapping(this, client));
+            }
+        }
+        return newAppUserMerchantMappings;
+
+    }
+
+    public void setAppUserMerchantMappings(Collection<Client> clients) {
+        Set<AppUserMerchantMapping> newAppUserMerchantMappings = createAppUserMerchantMappings(clients);
+        this.appUserMerchantMappings = newAppUserMerchantMappings;
+    }
+
+    public boolean isMerchant() {
+        return isMerchant;
+    }
+
 }

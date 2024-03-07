@@ -43,13 +43,16 @@ public class LoanProductInterestData implements Serializable {
         Boolean active = null;
         LoanProductData loanProductData = null;
         Collection<LoanProductInterestConfigData> loanProductInterestConfigData = null;
-        return new LoanProductInterestData(id, name, loanProductData, loanProductInterestConfigData, loanProductOptions, description, active);
+        return new LoanProductInterestData(id, name, loanProductData, loanProductInterestConfigData, loanProductOptions, description,
+                active);
     }
 
-    public static LoanProductInterestData lookUp(Long id, String name, LoanProductData loanProductData, String description, final Boolean active) {
+    public static LoanProductInterestData lookUp(Long id, String name, LoanProductData loanProductData, String description,
+            final Boolean active) {
         Collection<LoanProductInterestConfigData> loanProductInterestConfigData = null;
         Collection<LoanProductData> loanProductOptions = null;
-        return new LoanProductInterestData(id, name, loanProductData, loanProductInterestConfigData, loanProductOptions, description, active);
+        return new LoanProductInterestData(id, name, loanProductData, loanProductInterestConfigData, loanProductOptions, description,
+                active);
     }
 
     public static LoanProductInterestData lookUpFinal(Collection<LoanProductInterestConfigData> loanProductInterestConfigData,
@@ -60,13 +63,15 @@ public class LoanProductInterestData implements Serializable {
         final Boolean active = loanProductApprovalData.getActive();
         final LoanProductData loanProductData = loanProductApprovalData.getLoanProductData();
         Collection<LoanProductData> loanProductOptions = null;
-        return new LoanProductInterestData(id, name, loanProductData, loanProductInterestConfigData, loanProductOptions, description, active);
+        return new LoanProductInterestData(id, name, loanProductData, loanProductInterestConfigData, loanProductOptions, description,
+                active);
     }
 
     public static LoanProductInterestData instance(Long id, String name, LoanProductData loanProductData,
             Collection<LoanProductInterestConfigData> loanProductInterestConfigData, Collection<LoanProductData> loanProductOptions,
             LocalDate createdOn, LocalDate modifiedOn, String description, Boolean active) {
-        return new LoanProductInterestData(id, name, loanProductData, loanProductInterestConfigData, loanProductOptions, description, active);
+        return new LoanProductInterestData(id, name, loanProductData, loanProductInterestConfigData, loanProductOptions, description,
+                active);
     }
 
 }

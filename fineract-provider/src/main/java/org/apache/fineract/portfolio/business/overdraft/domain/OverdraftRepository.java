@@ -33,7 +33,7 @@ public interface OverdraftRepository extends JpaRepository<Overdraft, Long>, Jpa
 
     boolean existsBySavingsAccountIdAndStatus(Long savingsAccountId, Long status);
 
-//    @Query("select ov from Overdraft ov where ov.savingsAccount.id = :savingsId and status IN :status")
-//    List<Ov> findBySavingsIdAndStatus(@Param("savingsId") Long savingsId,
-//            @Param("status") Collection<Integer> status);
+    // @Query("select ov from Overdraft ov where ov.savingsAccount.id = :savingsId and status IN :status")
+    // List<Ov> findBySavingsIdAndStatus(@Param("savingsId") Long savingsId,
+    // @Param("status") Collection<Integer> status);
 }

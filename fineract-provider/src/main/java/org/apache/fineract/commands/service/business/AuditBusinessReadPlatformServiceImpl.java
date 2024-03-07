@@ -81,14 +81,14 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
     @Override
     public Page<AuditData> retrieveAll(SearchParametersBusiness searchParameters) {
 
-        //final String userOfficeHierarchy = this.context.officeHierarchy();
-        //final String underHierarchySearchString = userOfficeHierarchy + "%";
-        //List<Object> paramList = new ArrayList<>(Arrays.asList(underHierarchySearchString));
+        // final String userOfficeHierarchy = this.context.officeHierarchy();
+        // final String underHierarchySearchString = userOfficeHierarchy + "%";
+        // List<Object> paramList = new ArrayList<>(Arrays.asList(underHierarchySearchString));
         List<Object> paramList = new ArrayList<>();
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append("select ").append(sqlGenerator.calcFoundRows()).append(" ");
         sqlBuilder.append(this.auditMapper.schema());
-        //sqlBuilder.append(" where (o.hierarchy like ?) ");
+        // sqlBuilder.append(" where (o.hierarchy like ?) ");
 
         if (searchParameters != null) {
 
@@ -127,10 +127,8 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
                     + " aud.resource_id as resourceId,aud.client_id as clientId, aud.loan_id as loanId,"
                     + " aud.maker, aud.made_on_date as madeOnDate, " + " aud.api_get_url as resourceGetUrl, "
                     + "aud.checker, aud.checked_on_date as checkedOnDate, aud.processingResult, "
-                    + " aud.officeName, aud.groupLevelName, aud.groupName, aud.clientName, "
-                    + " aud.loanAccountNo, aud.savingsAccountNo "
-                    + " from m_audit_view aud "
-                    + " LEFT JOIN m_office o ON o.id=aud.office_id ";
+                    + " aud.officeName, aud.groupLevelName, aud.groupName, aud.clientName, " + " aud.loanAccountNo, aud.savingsAccountNo "
+                    + " from m_audit_view aud " + " LEFT JOIN m_office o ON o.id=aud.office_id ";
             return partSql;
         }
 
@@ -158,9 +156,9 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
             final String loanAccountNo = rs.getString("loanAccountNo");
             final String savingsAccountNo = rs.getString("savingsAccountNo");
 
-            return new AuditData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate,
-                    processingResult, commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo,
-                    clientId, loanId, resourceGetUrl);
+            return new AuditData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate, processingResult,
+                    commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo, clientId, loanId,
+                    resourceGetUrl);
         }
     }
 
@@ -257,19 +255,20 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
 
     private String buildSqlStringFromAuditCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
 
-//    pcs.id, pcs.action_name, pcs.entity_name, pcs.office_id, o.name office_name, pcs.api_get_url, pcs.resource_id, pcs.maker_id,
-//    pcs.made_on_date, pcs.checker_id, pcs.checked_on_date, pcs.processing_result_enum,
-//    pcs.group_id, pcs.client_id, pcs.loan_id, pcs.savings_account_id
-//aud.
+        // pcs.id, pcs.action_name, pcs.entity_name, pcs.office_id, o.name office_name, pcs.api_get_url,
+        // pcs.resource_id, pcs.maker_id,
+        // pcs.made_on_date, pcs.checker_id, pcs.checked_on_date, pcs.processing_result_enum,
+        // pcs.group_id, pcs.client_id, pcs.loan_id, pcs.savings_account_id
+        // aud.
         final Long officeId = searchParameters.getOfficeId();
         final Long makerCheckerId = searchParameters.getStaffId();
-        final Long groupId = searchParameters.getIndustryId();//groupId
+        final Long groupId = searchParameters.getIndustryId();// groupId
         final Long loanId = searchParameters.getLoanId();
         final Long clientId = searchParameters.getClientId();
         final Long savingsAccountId = searchParameters.getSavingsId();
-        final String externalId = searchParameters.getExternalId();//actionName
-        final String displayName = searchParameters.getName();//entityName
-        final Integer type = searchParameters.getType();//processingResult
+        final String externalId = searchParameters.getExternalId();// actionName
+        final String displayName = searchParameters.getName();// entityName
+        final Integer type = searchParameters.getType();// processingResult
         final Boolean isChecker = searchParameters.getIsSupervisor();
 
         String dateColumn;

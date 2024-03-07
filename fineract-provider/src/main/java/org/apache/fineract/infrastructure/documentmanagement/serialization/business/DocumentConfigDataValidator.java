@@ -53,8 +53,7 @@ public final class DocumentConfigDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DocumentConfigApiConstants.DOCUMENT_CONFIG_CREATE_RESPONSE_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);

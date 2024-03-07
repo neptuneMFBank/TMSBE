@@ -36,7 +36,8 @@ public class ConfigurationBusinessDomainServiceJpa implements ConfigurationBusin
 
     @Override
     public Integer isLimitLoanAge() {
-        final GlobalConfigurationPropertyData property = this.configurationDomainServiceJpa.getGlobalConfigurationPropertyData(LIMIT_LOAN_AGE);
+        final GlobalConfigurationPropertyData property = this.configurationDomainServiceJpa
+                .getGlobalConfigurationPropertyData(LIMIT_LOAN_AGE);
         final boolean isLimitLoanAgeEnabled = property.isEnabled();
         final Long value = property.getValue();
         if (isLimitLoanAgeEnabled && value != null) {

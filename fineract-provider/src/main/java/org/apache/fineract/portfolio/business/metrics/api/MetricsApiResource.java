@@ -72,14 +72,13 @@ public class MetricsApiResource {
 
     @GET
     @Path("loan")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve loan Metricss", description = "Retrieve loan Metricss")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
-        // MetricsApiResourceSwagger.GetMetricssResponse.class)))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+    // MetricsApiResourceSwagger.GetMetricssResponse.class)))
+    ) })
     public String getLoanMetrics(@Context final UriInfo uriInfo,
             @QueryParam("staffSupervisorId") @Parameter(description = "staffSupervisorId") final Long staffSupervisorId,
             @QueryParam("staffId") @Parameter(description = "staffId") final Long staffId,
@@ -117,17 +116,16 @@ public class MetricsApiResource {
 
     @POST
     @Path("loan/{metricsId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Actions on Loan Approval", description = """
             """)
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = EmployerApiResourceSwagger.PostEmployersResponse.class))
+    ) })
     public String actions(@PathParam("metricsId") @Parameter(description = "metricsId") final Long metricsId,
             @QueryParam("command") @Parameter(description = "command") final String commandParam,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
@@ -151,7 +149,7 @@ public class MetricsApiResource {
         }
 
         if (result == null) {
-            throw new UnrecognizedQueryParamException("command", commandParam, new Object[]{"approve", "undo", "reject", "assign"});
+            throw new UnrecognizedQueryParamException("command", commandParam, new Object[] { "approve", "undo", "reject", "assign" });
         }
 
         return this.jsonSerializer.serialize(result);
@@ -159,12 +157,10 @@ public class MetricsApiResource {
 
     @GET
     @Path("overdraft")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve overdraft Metricss", description = "Retrieve overdraft Metrics")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String getOverdraftMetrics(@Context final UriInfo uriInfo,
             @QueryParam("staffSupervisorId") @Parameter(description = "staffSupervisorId") final Long staffSupervisorId,
             @QueryParam("staffId") @Parameter(description = "staffId") final Long staffId,
@@ -191,8 +187,8 @@ public class MetricsApiResource {
             toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
         }
 
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forMetricsOverdraft(overdraftId, offset, limit, orderBy, sortOrder,
-                productId, fromDate, toDate, officeId, staffId, staffSupervisorId);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forMetricsOverdraft(overdraftId, offset, limit, orderBy,
+                sortOrder, productId, fromDate, toDate, officeId, staffId, staffSupervisorId);
 
         final Page<MetricsData> metricsData = this.readPlatformService.retrieveAll(searchParameters);
 
@@ -202,15 +198,12 @@ public class MetricsApiResource {
 
     @POST
     @Path("overdraft/{metricsId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Actions on overdraft Approval", description = """
             """)
-    @RequestBody(required = true
-    )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
+    @RequestBody(required = true)
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String actionsOverdraft(@PathParam("metricsId") @Parameter(description = "metricsId") final Long metricsId,
             @QueryParam("command") @Parameter(description = "command") final String commandParam,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
@@ -234,7 +227,7 @@ public class MetricsApiResource {
         }
 
         if (result == null) {
-            throw new UnrecognizedQueryParamException("command", commandParam, new Object[]{"approve", "undo", "reject", "assign"});
+            throw new UnrecognizedQueryParamException("command", commandParam, new Object[] { "approve", "undo", "reject", "assign" });
         }
 
         return this.jsonSerializer.serialize(result);

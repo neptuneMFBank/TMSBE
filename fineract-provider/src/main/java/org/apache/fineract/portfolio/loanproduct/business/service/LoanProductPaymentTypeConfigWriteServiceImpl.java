@@ -193,7 +193,8 @@ public class LoanProductPaymentTypeConfigWriteServiceImpl implements LoanProduct
             if (getCause.contains("product_id")) {
                 final String loanProductData = command.stringValueOfParameterNamed(LoanProductPaymentTypeConfigConstants.loanProductData);
                 throw new PlatformDataIntegrityException("error.msg.loanproduct.payment.duplicate",
-                        "Loan Product Payment `" + loanProductData + "` already exists", LoanProductPaymentTypeConfigConstants.loanProductData, loanProductData);
+                        "Loan Product Payment `" + loanProductData + "` already exists",
+                        LoanProductPaymentTypeConfigConstants.loanProductData, loanProductData);
             }
         } catch (PlatformDataIntegrityException e) {
             log.error("handleDataIntegrityIssues LoanProductPaymentErrorOccured: {}", e);

@@ -80,9 +80,9 @@ public class NotificationBusinessReadPlatformServiceImpl implements Notification
             paramList.add(type);
         }
 
-        //if (StringUtils.isNotBlank(extraCriteria)) {
-        //  extraCriteria = extraCriteria.substring(4);
-        //}
+        // if (StringUtils.isNotBlank(extraCriteria)) {
+        // extraCriteria = extraCriteria.substring(4);
+        // }
         return extraCriteria;
     }
 
@@ -93,8 +93,20 @@ public class NotificationBusinessReadPlatformServiceImpl implements Notification
                 + "ng.object_identifier as objectId, ng.actor as actor, ng." + sqlGenerator.escape("action")
                 + " as action, ng.notification_content "
                 + "as content, ng.is_system_generated as isSystemGenerated, nm.is_read isRead, nm.created_at as createdAt "
-                + "FROM notification_mapper nm INNER JOIN notification_generator ng ON nm.notification_id = ng.id " //+ "WHERE nm.user_id = ? AND nm.is_read = false order by nm.created_at desc"
-                ;
+                + "FROM notification_mapper nm INNER JOIN notification_generator ng ON nm.notification_id = ng.id " // +
+                                                                                                                    // "WHERE
+                                                                                                                    // nm.user_id
+                                                                                                                    // =
+                                                                                                                    // ?
+                                                                                                                    // AND
+                                                                                                                    // nm.is_read
+                                                                                                                    // =
+                                                                                                                    // false
+                                                                                                                    // order
+                                                                                                                    // by
+                                                                                                                    // nm.created_at
+                                                                                                                    // desc"
+        ;
 
         return getNotificationDataPage(searchParameters, appUserId, sql);
     }
@@ -130,7 +142,7 @@ public class NotificationBusinessReadPlatformServiceImpl implements Notification
             }
         }
 
-        //Object[] params = new Object[]{appUserId};
+        // Object[] params = new Object[]{appUserId};
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.notificationDataRow);
     }
 

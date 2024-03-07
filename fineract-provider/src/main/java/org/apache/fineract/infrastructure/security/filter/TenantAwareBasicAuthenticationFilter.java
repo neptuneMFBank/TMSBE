@@ -56,17 +56,14 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 /**
  * A customised version of spring security's {@link BasicAuthenticationFilter}.
  *
- * This filter is responsible for extracting multi-tenant and basic auth
- * credentials from the request and checking that the details provided are
- * valid.
+ * This filter is responsible for extracting multi-tenant and basic auth credentials from the request and checking that
+ * the details provided are valid.
  *
- * If multi-tenant and basic auth credentials are valid, the details of the
- * tenant are stored in {@link FineractPlatformTenant} and stored in a
- * {@link ThreadLocal} variable for this request using
+ * If multi-tenant and basic auth credentials are valid, the details of the tenant are stored in
+ * {@link FineractPlatformTenant} and stored in a {@link ThreadLocal} variable for this request using
  * {@link ThreadLocalContextUtil}.
  *
- * If multi-tenant and basic auth credentials are invalid, a http error response
- * is returned.
+ * If multi-tenant and basic auth credentials are invalid, a http error response is returned.
  */
 @ConditionalOnProperty("fineract.security.basicauth.enabled")
 public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFilter {
@@ -195,18 +192,21 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
 
         // String pathURL = request.getRequestURI();
         boolean isSelfServiceRequest = pathURL != null && pathURL.contains("/self/");
+        boolean isMerchanrtServiceRequest = pathURL != null && pathURL.contains("/merchant/");
 
         boolean notAllowed = (isSelfServiceRequest && !user.isSelfServiceUser()) || (!isSelfServiceRequest && user.isSelfServiceUser());
+        boolean notAllowedIfnotMerchant = (isMerchanrtServiceRequest && !user.isMerchant())
+                || (!isMerchanrtServiceRequest && user.isMerchant());
 
-        if (notAllowed) {
+        if (notAllowed || notAllowedIfnotMerchant) {
             throw new BadCredentialsException("User not authorised to use the requested resource.");
         }
     }
 
     protected boolean restrictAppAccessWhenPasswordResetNotChanged(String pathURL, AppUser user, HttpServletResponse response) {
         LOG.info("pathURL: {}", pathURL);
-        List<String> listOfFreeEndPoints = Arrays.asList("/authentication", "/self/authentication", "/self/registration", "/twofactor", "/self/twofactor",
-                "/self/user","users");
+        List<String> listOfFreeEndPoints = Arrays.asList("/authentication", "/self/authentication", "/self/registration", "/twofactor",
+                "/self/twofactor", "/self/user", "users", "/merchant/user", "/merchant/twofactor");
         return listOfFreeEndPoints.stream().noneMatch(action -> StringUtils.containsIgnoreCase(pathURL, action));
     }
 }

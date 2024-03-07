@@ -210,6 +210,23 @@ public class SelfClientsBusinessApiResource {
         return this.clientAddressBusinessApiResources.getAddress(id, clientId, uriInfo);
     }
 
+    @GET
+    @Path("addresses")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Get All active address for a Client", description = "")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        )})
+    public String getAddresses(
+            @PathParam("clientId") @Parameter(description = "clientId") final long clientId,
+            @QueryParam("type") @Parameter(description = "type") final long addressTypeId,
+            @Context final UriInfo uriInfo) {
+        validateAppuserClientsMapping(clientId);
+        final String status = "true";
+        return this.clientAddressBusinessApiResources.getAddresses(status, addressTypeId, clientId, uriInfo);
+    }
+
     @POST
     @Path("addresses")
     @Consumes({MediaType.APPLICATION_JSON})

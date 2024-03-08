@@ -18,13 +18,12 @@
 --
 
 CREATE TABLE `m_appuser_merchant_mapping` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `appuser_id` bigint NOT NULL,
   `client_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `appuser_id_client_id` (`appuser_id`,`client_id`),
   UNIQUE KEY `unique_self_client` (`client_id`),
-  CONSTRAINT `m_merchant_appuser_id` FOREIGN KEY (`appuser_id`) REFERENCES `m_appuser` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `m_merchant_client_id` FOREIGN KEY (`client_id`) REFERENCES `m_client` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-
+  CONSTRAINT `m_merchant_appuser_id` FOREIGN KEY (`appuser_id`) REFERENCES `m_appuser` (`id`),
+  CONSTRAINT `m_merchant_client_id` FOREIGN KEY (`client_id`) REFERENCES `m_client` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

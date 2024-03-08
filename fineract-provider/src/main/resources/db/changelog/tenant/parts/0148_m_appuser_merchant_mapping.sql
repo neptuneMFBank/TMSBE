@@ -21,7 +21,6 @@ CREATE TABLE `m_appuser_merchant_mapping` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `appuser_id` bigint NOT NULL,
   `client_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
   UNIQUE KEY `appuser_id_client_id` (`appuser_id`,`client_id`),
   UNIQUE KEY `unique_self_client` (`client_id`),
   CONSTRAINT `m_merchant_appuser_id` FOREIGN KEY (`appuser_id`) REFERENCES `m_appuser` (`id`),

@@ -68,7 +68,7 @@ public class MerchantRegistrationApiResource {
     @Path("getstarted/resend")
     @Produces({ MediaType.APPLICATION_JSON })
     public String resendCustomeronRequest(final String apiRequestBodyAsJson) {
-        final ApiResponseMessage apiResponseMessage = this.selfServiceRegistrationWritePlatformService
+        final ApiResponseMessage apiResponseMessage = this.merchantRegistrationWriteService
                 .resendCustomeronRequest(apiRequestBodyAsJson);
         return toApiJsonSerializer.serializeResult(apiResponseMessage);
     }

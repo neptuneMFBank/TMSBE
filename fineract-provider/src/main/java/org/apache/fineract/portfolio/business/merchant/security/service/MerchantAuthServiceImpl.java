@@ -32,6 +32,8 @@ import org.apache.fineract.portfolio.self.registration.SelfServiceApiConstants;
 import org.apache.fineract.portfolio.self.registration.domain.SelfServiceRegistrationRepository;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
+import org.apache.fineract.useradministration.domain.business.AppUserExtension;
+import org.apache.fineract.useradministration.domain.business.AppUserExtensionRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.business.AppUserMerchantMapping;
 import org.apache.fineract.useradministration.domain.business.AppUserMerchantMappingRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,19 +50,21 @@ public class MerchantAuthServiceImpl implements MerchantAuthService {
     private final AppUserMerchantMappingRepositoryWrapper appUserMerchantMappingRepositoryWrapper;
     private final AppUserRepositoryWrapper appUserRepositoryWrapper;
     private final SelfServiceRegistrationRepository selfServiceRegistrationRepository;
+    private final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper;
 
     @Autowired
     public MerchantAuthServiceImpl(final AuthenticationApiResource authenticationApiResource, final FromJsonHelper fromJsonHelper,
             final ClientRepositoryWrapper clientRepositoryWrapper,
             final AppUserMerchantMappingRepositoryWrapper appUserMerchantMappingRepositoryWrapper,
             final SelfServiceRegistrationRepository selfServiceRegistrationRepository,
-            final AppUserRepositoryWrapper appUserRepositoryWrapper) {
+            final AppUserRepositoryWrapper appUserRepositoryWrapper, final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper) {
         this.authenticationApiResource = authenticationApiResource;
         this.fromJsonHelper = fromJsonHelper;
         this.clientRepositoryWrapper = clientRepositoryWrapper;
         this.appUserMerchantMappingRepositoryWrapper = appUserMerchantMappingRepositoryWrapper;
         this.appUserRepositoryWrapper = appUserRepositoryWrapper;
         this.selfServiceRegistrationRepository = selfServiceRegistrationRepository;
+        this.appUserExtensionRepositoryWrapper = appUserExtensionRepositoryWrapper;
     }
 
     @Transactional
@@ -76,17 +80,18 @@ public class MerchantAuthServiceImpl implements MerchantAuthService {
         }
 
         // check if user is Merchant
-        List<AppUserMerchantMapping> appUserIdFromClientMappings = appUserMerchantMappingRepositoryWrapper.findByClientId(client.getId());
-        if (CollectionUtils.isEmpty(appUserIdFromClientMappings)) {
+        List<AppUserMerchantMapping> appUserIdFromMerchantMappings = appUserMerchantMappingRepositoryWrapper.findByClientId(client.getId());
+        if (CollectionUtils.isEmpty(appUserIdFromMerchantMappings)) {
             throw new NoAuthorizationException("Your account has been disabled, contact customer service support.");
         }
 
-        AppUserMerchantMapping appUserClientMapping = appUserIdFromClientMappings.get(0);
-        Long appUserId = appUserClientMapping.getAppUser().getId();
+        AppUserMerchantMapping appUserMerchantMapping = appUserIdFromMerchantMappings.get(0);
+        Long appUserId = appUserMerchantMapping.getAppUser().getId();
         AppUser appUser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(appUserId);
 
+        AppUserExtension appUserExtension = this.appUserExtensionRepositoryWrapper.findByAppuserId(appUserMerchantMapping.getAppUser());
         // check if user is not merchant
-        if (!appUser.isMerchant()) {
+        if (!appUserExtension.isMerchant()) {
             throw new NoAuthorizationException("Your account has been locked, contact customer service support.");
         }
 

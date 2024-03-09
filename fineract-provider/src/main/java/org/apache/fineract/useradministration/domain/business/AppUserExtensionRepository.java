@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.business.merchant.registration.service;
+package org.apache.fineract.useradministration.domain.business;
 
-import org.apache.fineract.simplifytech.data.ApiResponseMessage;
+import org.apache.fineract.useradministration.domain.AppUser;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MerchantRegistrationWriteService {
+public interface AppUserExtensionRepository extends JpaRepository<AppUserExtension, Long> {
 
-    ApiResponseMessage createMerchant(String apiRequestBodyAsJson);
 
-    ApiResponseMessage resetMerchantPassword(String apiRequestBodyAsJson);
+        AppUserExtension findByAppUser(AppUser appuserid);
 
-    ApiResponseMessage resendCustomeronRequest(String apiRequestBodyAsJson);
+    ;
 }

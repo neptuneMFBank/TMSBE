@@ -18,13 +18,8 @@
  */
 package org.apache.fineract.portfolio.business.merchant.registration.service;
 
-import org.apache.fineract.simplifytech.data.ApiResponseMessage;
+public interface MerchantRegistrationReadPlatformService {
 
-public interface MerchantRegistrationWriteService {
+    boolean isClientExist(String accountNumber, String email, String mobileNumber, boolean isEmailAuthenticationMode);
 
-    ApiResponseMessage createMerchant(String apiRequestBodyAsJson);
-
-    ApiResponseMessage resetMerchantPassword(String apiRequestBodyAsJson);
-
-    ApiResponseMessage resendCustomeronRequest(String apiRequestBodyAsJson);
 }

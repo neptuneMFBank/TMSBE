@@ -84,6 +84,8 @@ import org.apache.fineract.useradministration.domain.PasswordValidationPolicyRep
 import org.apache.fineract.useradministration.domain.Role;
 import org.apache.fineract.useradministration.domain.RoleRepository;
 import org.apache.fineract.useradministration.domain.UserDomainService;
+import org.apache.fineract.useradministration.domain.business.AppUserExtension;
+import org.apache.fineract.useradministration.domain.business.AppUserExtensionRepositoryWrapper;
 import org.apache.fineract.useradministration.exception.RoleNotFoundException;
 import org.apache.fineract.useradministration.service.AppUserReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,6 +129,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
     private final DataSource dataSource;
     private final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository;
     private final AccountNumberGenerator accountNumberGenerator;
+    private final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper;
 
     @Autowired
     public SelfServiceRegistrationWritePlatformServiceImpl(final RoutingDataSource dataSource,
@@ -139,7 +142,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
             final AppUserReadPlatformService appUserReadPlatformService, final RoleRepository roleRepository,
             final AppUserClientMappingRepository appUserClientMappingRepository, final ApplicationContext context,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final AccountNumberGenerator accountNumberGenerator,
-            final SelfServiceRegistrationCommandFromApiJsonDeserializer selfServiceRegistrationCommandFromApiJsonDeserializer) {
+            final SelfServiceRegistrationCommandFromApiJsonDeserializer selfServiceRegistrationCommandFromApiJsonDeserializer,
+            final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper) {
         this.selfServiceRegistrationRepository = selfServiceRegistrationRepository;
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.selfServiceRegistrationReadPlatformService = selfServiceRegistrationReadPlatformService;
@@ -161,6 +165,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         this.jdbcTemplate = new JdbcTemplate(this.dataSource);
         this.accountNumberFormatRepository = accountNumberFormatRepository;
         this.accountNumberGenerator = accountNumberGenerator;
+        this.appUserExtensionRepositoryWrapper = appUserExtensionRepositoryWrapper;
     }
 
     private String deriveDisplayName(String firstname, String lastname, String fullname, Integer legalForm) {
@@ -713,12 +718,15 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
             AppUser appUser = new AppUser(client.getOffice(), user, allRoles, selfServiceRegistration.getEmail(),
                     selfServiceRegistration.getFirstName(), selfServiceRegistration.getLastName(), null, passwordNeverExpire,
                     isSelfServiceUser, clients, null);
-            appUser.setIsMerchant(isMerchant);
-
-            if (isMerchant) {
-                appUser.setAppUserMerchantMappings(clients);
+            
+            if(isMerchant){
+            appUser.setAppUserMerchantMappings(clients, isMerchant);
             }
+                   AppUserExtension appUserExtension = new AppUserExtension(appUser,isMerchant);
+            
+                   appUser.setAppUserExtension(appUserExtension);
 
+          
             this.userDomainService.createCustomer(appUser, true);
             return appUser;
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
@@ -731,6 +739,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         }
 
     }
+    
 
     private void handleDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve, String username) {
         if (realCause.getMessage().contains("'username_org'")) {

@@ -163,5 +163,6 @@
     <include file="parts/0147_m_cashier_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0148_m_appuser_merchant_mapping.sql" relativeToChangelogFile="true" />
     <include file="parts/0149_create_merchant_role.sql" relativeToChangelogFile="true" />
-    <include file="parts/0150_m_appuser_extension.sql" relativeToChangelogFile="true" />
+    <include file="parts/0150_m_codes_update.xml" relativeToChangelogFile="true" />
+    <include file="parts/0151_m_appuser_extension.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

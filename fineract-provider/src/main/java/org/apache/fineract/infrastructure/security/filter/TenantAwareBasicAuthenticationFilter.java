@@ -27,6 +27,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.fineract.infrastructure.businessdate.domain.BusinessDateType;
@@ -42,6 +43,8 @@ import org.apache.fineract.infrastructure.security.exception.InvalidTenantIdenti
 import org.apache.fineract.infrastructure.security.service.BasicAuthTenantDetailsService;
 import org.apache.fineract.notification.service.NotificationReadPlatformService;
 import org.apache.fineract.useradministration.domain.AppUser;
+import org.apache.fineract.useradministration.domain.business.AppUserExtension;
+import org.apache.fineract.useradministration.domain.business.AppUserExtensionRepositoryWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,14 +59,17 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 /**
  * A customised version of spring security's {@link BasicAuthenticationFilter}.
  *
- * This filter is responsible for extracting multi-tenant and basic auth credentials from the request and checking that
- * the details provided are valid.
+ * This filter is responsible for extracting multi-tenant and basic auth
+ * credentials from the request and checking that the details provided are
+ * valid.
  *
- * If multi-tenant and basic auth credentials are valid, the details of the tenant are stored in
- * {@link FineractPlatformTenant} and stored in a {@link ThreadLocal} variable for this request using
+ * If multi-tenant and basic auth credentials are valid, the details of the
+ * tenant are stored in {@link FineractPlatformTenant} and stored in a
+ * {@link ThreadLocal} variable for this request using
  * {@link ThreadLocalContextUtil}.
  *
- * If multi-tenant and basic auth credentials are invalid, a http error response is returned.
+ * If multi-tenant and basic auth credentials are invalid, a http error response
+ * is returned.
  */
 @ConditionalOnProperty("fineract.security.basicauth.enabled")
 public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFilter {
@@ -88,6 +94,9 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
 
     @Autowired
     private BusinessDateReadPlatformService businessDateReadPlatformService;
+
+    @Autowired
+    private AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper;
 
     private final String tenantRequestHeader = "Fineract-Platform-TenantId";
     private final boolean exceptionIfHeaderMissing = true;
@@ -192,11 +201,13 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
 
         // String pathURL = request.getRequestURI();
         boolean isSelfServiceRequest = pathURL != null && pathURL.contains("/self/");
-        boolean isMerchanrtServiceRequest = pathURL != null && pathURL.contains("/merchant/");
+        boolean isMerchantServiceRequest = pathURL != null && pathURL.contains("/merchant/");
 
         boolean notAllowed = (isSelfServiceRequest && !user.isSelfServiceUser()) || (!isSelfServiceRequest && user.isSelfServiceUser());
-        boolean notAllowedIfnotMerchant = (isMerchanrtServiceRequest && !user.isMerchant())
-                || (!isMerchanrtServiceRequest && user.isMerchant());
+        AppUserExtension appUserExtension = this.appUserExtensionRepositoryWrapper.findByAppuserId(user);
+        Boolean isMerchant = ObjectUtils.isNotEmpty(appUserExtension) ? appUserExtension.isMerchant() : false;
+        boolean notAllowedIfnotMerchant = (isMerchantServiceRequest && !isMerchant)
+                || (!isMerchantServiceRequest && isMerchant);
 
         if (notAllowed || notAllowedIfnotMerchant) {
             throw new BadCredentialsException("User not authorised to use the requested resource.");

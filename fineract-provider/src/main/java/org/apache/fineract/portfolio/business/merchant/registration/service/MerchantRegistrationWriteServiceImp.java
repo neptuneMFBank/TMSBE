@@ -42,6 +42,8 @@ import org.apache.fineract.portfolio.client.domain.LegalForm;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
 import org.apache.fineract.portfolio.self.registration.SelfServiceApiConstants;
 import org.apache.fineract.portfolio.self.registration.domain.SelfServiceRegistration;
+import org.apache.fineract.portfolio.self.registration.domain.SelfServiceRegistrationRepository;
+import org.apache.fineract.portfolio.self.registration.exception.SelfServiceRegistrationNotFoundException;
 import org.apache.fineract.portfolio.self.registration.service.SelfServiceRegistrationCommandFromApiJsonDeserializer;
 import org.apache.fineract.portfolio.self.registration.service.SelfServiceRegistrationReadPlatformService;
 import org.apache.fineract.portfolio.self.registration.service.SelfServiceRegistrationWritePlatformServiceImpl;
@@ -77,6 +79,8 @@ public class MerchantRegistrationWriteServiceImp implements MerchantRegistration
     private final AppUserMerchantMappingRepository appUserMerchantMappingRepository;
     private final SelfServiceRegistrationCommandFromApiJsonDeserializer selfServiceRegistrationCommandFromApiJsonDeserializer;
     private final UserDomainService userDomainService;
+    private final SelfServiceRegistrationRepository selfServiceRegistrationRepository;
+    private final MerchantRegistrationReadPlatformService merchantRegistrationReadPlatformService;
 
     @Autowired
     public MerchantRegistrationWriteServiceImp(
@@ -86,7 +90,8 @@ public class MerchantRegistrationWriteServiceImp implements MerchantRegistration
             final SelfServiceRegistrationReadPlatformService selfServiceRegistrationReadPlatformService, final ApplicationContext context,
             final ClientRepositoryWrapper clientRepository, final AppUserMerchantMappingRepository appUserMerchantMappingRepository,
             final SelfServiceRegistrationCommandFromApiJsonDeserializer selfServiceRegistrationCommandFromApiJsonDeserializer,
-            final UserDomainService userDomainService) {
+            final UserDomainService userDomainService,final SelfServiceRegistrationRepository selfServiceRegistrationRepository,
+            final MerchantRegistrationReadPlatformService merchantRegistrationReadPlatformService) {
         this.selfServiceRegistrationWritePlatformService = selfServiceRegistrationWritePlatformService;
         this.merchantServiceRegistrationCommandFromApiJsonDeserializer = merchantServiceRegistrationCommandFromApiJsonDeserializer;
         this.fromApiJsonHelper = fromApiJsonHelper;
@@ -102,6 +107,8 @@ public class MerchantRegistrationWriteServiceImp implements MerchantRegistration
         this.appUserMerchantMappingRepository = appUserMerchantMappingRepository;
         this.selfServiceRegistrationCommandFromApiJsonDeserializer = selfServiceRegistrationCommandFromApiJsonDeserializer;
         this.userDomainService = userDomainService;
+        this.selfServiceRegistrationRepository = selfServiceRegistrationRepository;
+        this.merchantRegistrationReadPlatformService = merchantRegistrationReadPlatformService;
     }
 
     @SuppressWarnings("unchecked")
@@ -243,4 +250,30 @@ public class MerchantRegistrationWriteServiceImp implements MerchantRegistration
         }
     }
 
+    
+    @Override
+    public ApiResponseMessage resendCustomeronRequest(String apiRequestBodyAsJson) {
+        this.selfServiceRegistrationCommandFromApiJsonDeserializer.validateForResend(apiRequestBodyAsJson);
+        Gson gson = new Gson();
+        JsonElement element = gson.fromJson(apiRequestBodyAsJson, JsonElement.class);
+
+        Long requestId = this.fromApiJsonHelper.extractLongNamed(SelfServiceApiConstants.requestIdParamName, element);
+        SelfServiceRegistration selfServiceRegistration = this.selfServiceRegistrationRepository.findById(requestId)
+                .orElseThrow(() -> new SelfServiceRegistrationNotFoundException(requestId));
+
+        boolean isClientExist = this.merchantRegistrationReadPlatformService.isClientExist(selfServiceRegistration.getAccountNumber(),
+                selfServiceRegistration.getEmail(), selfServiceRegistration.getMobileNumber(),
+                false);
+        if (!isClientExist) {
+            throw new ClientNotFoundException();
+        }
+
+        this.selfServiceRegistrationWritePlatformService.sendAuthorizationToken(selfServiceRegistration.getClient(), selfServiceRegistration.getPassword(),
+                selfServiceRegistration.getEmail(), selfServiceRegistration.getMobileNumber(), selfServiceRegistration.getFirstName(),
+                "Onboarding-Resent");
+
+        final ApiResponseMessage apiResponseMessage = new ApiResponseMessage(HttpStatus.OK.value(),
+                SelfServiceApiConstants.resendRequestSuccessMessage, selfServiceRegistration.getId(), null);
+        return apiResponseMessage;
+    }
 }

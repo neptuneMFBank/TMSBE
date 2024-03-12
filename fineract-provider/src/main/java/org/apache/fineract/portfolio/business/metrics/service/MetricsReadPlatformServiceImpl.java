@@ -416,10 +416,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                 log.warn("createLoanMetrics maxApprovalAmount: {}", maxApprovalAmount);
                 final boolean isWithinRange = GeneralConstants.isWithinRange(value, minApprovalAmount, maxApprovalAmount);
                 if ( // loanProductApprovalConfigData.getMaxApprovalAmount() == null
-                     // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
-                     // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal())
-                     // >= 0
-                isWithinRange) {
+                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
+                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal())
+                        // >= 0
+                        isWithinRange) {
                     // create loan movement approval if this condition is met
                     final RoleData roleData = loanProductApprovalConfigData.getRoleData();
                     final Long roleId = roleData.getId();
@@ -573,8 +573,9 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
     @Override
     public Collection<MetricsData> retrieveOverdraftMetrics(Long overdraftId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from
-                                                                       // nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.context.authenticatedUser();
+        final String sql = "select " + metricsMapper.schema() + " WHERE mm.overdraft_id = ? ORDER BY mm.rank ASC ";
+        return this.jdbcTemplate.query(sql, metricsMapper, overdraftId);
     }
 
     private static final class MetricsMapper implements RowMapper<MetricsData> {
@@ -632,8 +633,11 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             final LocalDateTime modifiedOnTime = JdbcSupport.getLocalDateTime(rs, "modifiedOn");
             final LocalDate modifiedOn = modifiedOnTime != null ? modifiedOnTime.toLocalDate() : null;
 
-            return MetricsData.instance(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData,
+            final MetricsData metricsData = MetricsData.instance(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData,
                     loanOfficerData, overdraftId, rank);
+            metricsData.setCreatedOnTime(createdOnTime);
+            metricsData.setModifiedOnTime(modifiedOnTime);
+            return metricsData;
         }
 
     }

@@ -25,11 +25,11 @@
     <!--m_permission-->
     <changeSet author="fineract" id="1">
         <insert tableName="m_code">
-            <column name="code_name" value="Social Media"/>
+            <column name="code_name" value="SocialMedia"/>
             <column name="is_system_defined" value="1"/>
         </insert>
         <insert tableName="m_code">
-            <column name="code_name" value="Link Core System"/>
+            <column name="code_name" value="CoreSystem"/>
             <column name="is_system_defined" value="1"/>
         </insert>
     </changeSet>

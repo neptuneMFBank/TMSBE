@@ -564,8 +564,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                     DepositAccountType.FIXED_DEPOSIT.getValue());
             if (jsonObjectFixed != null && !jsonObjectFixed.isJsonNull()) {
                 jsonObjectFixed.addProperty("name", "Fixed Deposit");
-                jsonObjectBalance.add("fixedDeposit", jsonObjectFixed);
             }
+            jsonObjectBalance.add("fixedDeposit", jsonObjectFixed);
         } catch (DataAccessException e) {
             log.warn("retrieveBalance fixedDeposit: {}", e);
             jsonObjectFixed.addProperty(statusParameterName, Boolean.FALSE);
@@ -584,8 +584,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                     DepositAccountType.RECURRING_DEPOSIT.getValue());
             if (jsonObjectRecurring != null && !jsonObjectRecurring.isJsonNull()) {
                 jsonObjectRecurring.addProperty("name", "Recurring Deposit");
-                jsonObjectBalance.add("recurringDeposit", jsonObjectRecurring);
             }
+            jsonObjectBalance.add("recurringDeposit", jsonObjectRecurring);
         } catch (DataAccessException e) {
             log.warn("retrieveBalance recurringDeposit: {}", e);
             jsonObjectRecurring.addProperty(statusParameterName, Boolean.FALSE);
@@ -604,8 +604,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                     DepositAccountType.CURRENT_DEPOSIT.getValue());
             if (jsonObjectCurrent != null && !jsonObjectCurrent.isJsonNull()) {
                 jsonObjectCurrent.addProperty("name", "Current Deposit");
-                jsonObjectBalance.add("currentDeposit", jsonObjectCurrent);
             }
+            jsonObjectBalance.add("currentDeposit", jsonObjectCurrent);
         } catch (DataAccessException e) {
             log.warn("retrieveBalance currentDeposit: {}", e);
             jsonObjectCurrent.addProperty(statusParameterName, Boolean.FALSE);

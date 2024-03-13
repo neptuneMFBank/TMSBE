@@ -252,9 +252,14 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                     .collect(Collectors.groupingBy(MetricsData::getStaffData));
 
             for (Map.Entry<StaffData, List<MetricsData>> entry : metricsDatasGroupAssigned.entrySet()) {
-                StaffData key = entry.getKey(); //holds Assigned Staff Details
-                List<MetricsData> val = entry.getValue();
                 List<String> notifybusinessUsers = new ArrayList<>();
+                final StaffData staff = entry.getKey();
+                final Long staffId = staff.getId();
+                final AppUser appUser = this.appUserRepositoryWrapper.findFirstByStaffId(staffId);
+                if (ObjectUtils.isNotEmpty(appUser)) {
+                    getEmailAddress(appUser, notifybusinessUsers);
+                }
+                List<MetricsData> val = entry.getValue();
                 String body;
                 final StringBuilder linkBuilder = new StringBuilder();
                 for (MetricsData metricsData : val) {
@@ -283,12 +288,6 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                     final String clientName = client.getDisplayName();
                     final String mobileNo = StringUtils.defaultIfBlank(client.mobileNo(), "N/A");
 
-                    final StaffData staff = metricsData.getStaffData();
-                    final Long staffId = staff.getId();
-                    final AppUser appUser = this.appUserRepositoryWrapper.findFirstByStaffId(staffId);
-                    if (ObjectUtils.isNotEmpty(appUser)) {
-                        getEmailAddress(appUser, notifybusinessUsers);
-                    }
                     final StaffData organisationalRoleParentStaff = metricsData.getSupervisorStaffData();
                     if (ObjectUtils.isNotEmpty(organisationalRoleParentStaff)) {
                         final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();

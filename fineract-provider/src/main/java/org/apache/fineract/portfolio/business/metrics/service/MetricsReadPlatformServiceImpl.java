@@ -253,7 +253,6 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
             for (Map.Entry<StaffData, List<MetricsData>> entry : metricsDatasGroupAssigned.entrySet()) {
                 StaffData key = entry.getKey(); //holds Assigned Staff Details
-                log.info("StaffDataKey: {}", key.getId());
                 List<MetricsData> val = entry.getValue();
                 List<String> notifybusinessUsers = new ArrayList<>();
                 String body;
@@ -320,7 +319,6 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                             navigationUrl = navigationBuilder.toString();
 
                             linkBuilder.append(navigationUrl);
-                            log.info("linkBuilder: {}", linkBuilder.toString());
                         }
 
                         //final String subject = String.format(subjectValue, transactionId);

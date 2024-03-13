@@ -228,8 +228,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     public void reminderLoanApprovals() {
 
         final String columnName = "mm.loan_id";
-        final String subject = "Notification of Pending Loan Id `%s` Approval";
-        final String body = "%s with mobile %s have a loan (`%s`) pending approval.%s";
+        final String subject = "Notification of Loan(s) Pending Approval";
+        //final String subject = "Notification of Pending Loan Id `%s` Approval";
+        //final String body = "%s with mobile %s have a loan (`%s`) pending approval.%s";
+        final String body = "The loan(s) below are pending approval:%s";
         final String link = "/loans/details?loanId=";
         final int type = 0;
 
@@ -241,10 +243,18 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
         final String sql = "select " + metricsMapper.schema() + " WHERE " + columnName + " IS NOT NULL AND mm.status_enum=100 ";
         // + " WHERE mm.loan_id IS NOT NULL AND mm.status_enum=100 AND mm.created_on_utc >= DATE_SUB(NOW(), INTERVAL 24
         // HOUR) ";
+        final StringBuilder linkBuilder = new StringBuilder();
         Collection<MetricsData> metricsDatas = this.jdbcTemplate.query(sql, metricsMapper);
         if (!CollectionUtils.isEmpty(metricsDatas)) {
+            //groupby assigned staff
+            Collection<MetricsData> metricsDatasGroupAssigned = metricsDatas.stream()
+                    .collect(Collectors.groupingBy(MetricsData::getStaffData)).entrySet()
+                    .stream()
+                    .map(entry -> new GroupedObject(entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList());
             List<String> notifybusinessUsers;
-            for (MetricsData metricsData : metricsDatas) {
+//            for (MetricsData metricsData : metricsDatas) {
+            for (MetricsData metricsData : metricsDatasGroupAssigned) {
                 notifybusinessUsers = new ArrayList<>();
                 Client client;
                 Long transactionId;
@@ -293,16 +303,27 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                             .retrieveGlobalConfiguration("app-base-url");
                     if (appBaseUrl.isEnabled() && StringUtils.isNotBlank(appBaseUrl.getStringValue())) {
                         StringBuilder navigationBuilder = new StringBuilder();
-                        navigationBuilder.append("\n\nClick here: ");
+                        navigationBuilder
+                                .append("\n\nClick here (")
+                                .append(clientName)
+                                .append("-")
+                                .append(mobileNo)
+                                .append("-")
+                                .append(productName)
+                                .append("): ");
                         navigationBuilder.append(appBaseUrl.getStringValue());
                         navigationBuilder.append(link);
                         navigationBuilder.append(transactionId);
                         navigationUrl = navigationBuilder.toString();
+
+                        linkBuilder.append(navigationUrl);
                     }
 
-                    final String subject = String.format(subjectValue, transactionId);
-                    final String body = String.format(bodyValue, clientName, mobileNo, productName, navigationUrl);
-                    notificationToUsers(notifybusinessUsers, subject, body);
+                    //final String subject = String.format(subjectValue, transactionId);
+                    //final String body = String.format(bodyValue, clientName, mobileNo, productName, navigationUrl);
+                    final String body = String.format(bodyValue, clientName, mobileNo, productName, linkBuilder.toString());
+                    notificationToUsers(notifybusinessUsers, subjectValue, body);
+                    //notificationToUsers(notifybusinessUsers, subjectValue, body);
                 }
             }
         }

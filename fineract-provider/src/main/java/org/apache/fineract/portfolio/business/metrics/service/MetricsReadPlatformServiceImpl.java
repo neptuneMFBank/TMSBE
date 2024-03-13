@@ -251,7 +251,12 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             Map<StaffData, List<MetricsData>> metricsDatasGroupAssigned = metricsDatas.stream()
                     .collect(Collectors.groupingBy(MetricsData::getStaffData));
             for (Map.Entry<StaffData, List<MetricsData>> entry : metricsDatasGroupAssigned.entrySet()) {
-                //Object key = entry.getKey(); //holds Assigned Staff Details
+                StaffData key = entry.getKey(); //holds Assigned Staff Details
+                log.info("checkStaffDataKey: {}", key.getId());
+            }
+            for (Map.Entry<StaffData, List<MetricsData>> entry : metricsDatasGroupAssigned.entrySet()) {
+                StaffData key = entry.getKey(); //holds Assigned Staff Details
+                log.info("StaffDataKey: {}", key.getId());
                 List<MetricsData> val = entry.getValue();
                 List<String> notifybusinessUsers = new ArrayList<>();
                 String body;
@@ -305,7 +310,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                         if (appBaseUrl.isEnabled() && StringUtils.isNotBlank(appBaseUrl.getStringValue())) {
                             StringBuilder navigationBuilder = new StringBuilder();
                             navigationBuilder
-                                    .append("\n\nClick here (")
+                                    .append("\n\n(")
                                     .append(clientName)
                                     .append("-")
                                     .append(mobileNo)
@@ -318,6 +323,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                             navigationUrl = navigationBuilder.toString();
 
                             linkBuilder.append(navigationUrl);
+                            log.info("linkBuilder: {}", linkBuilder.toString());
                         }
 
                         //final String subject = String.format(subjectValue, transactionId);

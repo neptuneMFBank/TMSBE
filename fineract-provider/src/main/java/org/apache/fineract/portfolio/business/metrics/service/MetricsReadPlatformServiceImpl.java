@@ -214,8 +214,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     public void reminderOverdraftApprovals() {
 
         final String columnName = "mm.overdraft_id";
-        final String subject = "Notification of Pending Overdraft Id `%s` Approval";
-        final String body = "%s with mobile %s have an overdraft (`%s`) pending approval.%s";
+        final String subject = "Notification of Overdraft(s) Pending Approval";
+//        final String subject = "Notification of Pending Overdraft Id `%s` Approval";
+//        final String body = "%s with mobile %s have an overdraft (`%s`) pending approval.%s";
+        final String body = "The overdraft(s) below are pending approval:%s";
         final String link = "/savings/overdraft/details?overdraftId=";
         final int type = 1;
 
@@ -243,87 +245,89 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
         final String sql = "select " + metricsMapper.schema() + " WHERE " + columnName + " IS NOT NULL AND mm.status_enum=100 ";
         // + " WHERE mm.loan_id IS NOT NULL AND mm.status_enum=100 AND mm.created_on_utc >= DATE_SUB(NOW(), INTERVAL 24
         // HOUR) ";
-        final StringBuilder linkBuilder = new StringBuilder();
         Collection<MetricsData> metricsDatas = this.jdbcTemplate.query(sql, metricsMapper);
         if (!CollectionUtils.isEmpty(metricsDatas)) {
             //groupby assigned staff
-            Collection<MetricsData> metricsDatasGroupAssigned = metricsDatas.stream()
-                    .collect(Collectors.groupingBy(MetricsData::getStaffData)).entrySet()
-                    .stream()
-                    .map(entry -> new GroupedObject(entry.getKey(), entry.getValue()))
-                    .collect(Collectors.toList());
-            List<String> notifybusinessUsers;
-//            for (MetricsData metricsData : metricsDatas) {
-            for (MetricsData metricsData : metricsDatasGroupAssigned) {
-                notifybusinessUsers = new ArrayList<>();
-                Client client;
-                Long transactionId;
-                final String productName;
-                if (type == 0) {
-                    // check loan
-                    final Long loanId = metricsData.getLoanId();
-                    transactionId = loanId;
-                    final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
-                    client = loan.getClient();
-                    final LoanProduct loanProduct = loan.getLoanProduct();
-                    productName = loanProduct.getName();
-                } else {
-                    // check overdraft
-                    final Long overdraftId = metricsData.getOverdraftId();
-                    transactionId = overdraftId;
-                    final Overdraft overdraft = this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftId);
-                    final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
-                    client = savingsAccount.getClient();
-                    final SavingsProduct savingsProduct = savingsAccount.savingsProduct();
-                    productName = savingsProduct.getName();
-                }
+            Map<StaffData, List<MetricsData>> metricsDatasGroupAssigned = metricsDatas.stream()
+                    .collect(Collectors.groupingBy(MetricsData::getStaffData));
+            for (Map.Entry<StaffData, List<MetricsData>> entry : metricsDatasGroupAssigned.entrySet()) {
+                //Object key = entry.getKey(); //holds Assigned Staff Details
+                List<MetricsData> val = entry.getValue();
+                List<String> notifybusinessUsers = new ArrayList<>();
+                String body;
+                final StringBuilder linkBuilder = new StringBuilder();
+                for (MetricsData metricsData : val) {
+                    Client client;
+                    Long transactionId;
+                    final String productName;
+                    if (type == 0) {
+                        // check loan
+                        final Long loanId = metricsData.getLoanId();
+                        transactionId = loanId;
+                        final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
+                        client = loan.getClient();
+                        final LoanProduct loanProduct = loan.getLoanProduct();
+                        productName = loanProduct.getName();
+                    } else {
+                        // check overdraft
+                        final Long overdraftId = metricsData.getOverdraftId();
+                        transactionId = overdraftId;
+                        final Overdraft overdraft = this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftId);
+                        final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
+                        client = savingsAccount.getClient();
+                        final SavingsProduct savingsProduct = savingsAccount.savingsProduct();
+                        productName = savingsProduct.getName();
+                    }
 
-                final String clientName = client.getDisplayName();
-                final String mobileNo = StringUtils.defaultIfBlank(client.mobileNo(), "N/A");
+                    final String clientName = client.getDisplayName();
+                    final String mobileNo = StringUtils.defaultIfBlank(client.mobileNo(), "N/A");
 
-                final StaffData staff = metricsData.getStaffData();
-                final Long staffId = staff.getId();
-                final AppUser appUser = this.appUserRepositoryWrapper.findFirstByStaffId(staffId);
-                if (ObjectUtils.isNotEmpty(appUser)) {
-                    getEmailAddress(appUser, notifybusinessUsers);
-                }
-                final StaffData organisationalRoleParentStaff = metricsData.getSupervisorStaffData();
-                if (ObjectUtils.isNotEmpty(organisationalRoleParentStaff)) {
-                    final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();
-                    final AppUser appUserSupervisor = this.appUserRepositoryWrapper.findFirstByStaffId(organisationalRoleParentStaffId);
-                    if (ObjectUtils.isNotEmpty(appUserSupervisor)) {
-                        // set email of approval supervisor
-                        getEmailAddress(appUserSupervisor, notifybusinessUsers);
+                    final StaffData staff = metricsData.getStaffData();
+                    final Long staffId = staff.getId();
+                    final AppUser appUser = this.appUserRepositoryWrapper.findFirstByStaffId(staffId);
+                    if (ObjectUtils.isNotEmpty(appUser)) {
+                        getEmailAddress(appUser, notifybusinessUsers);
+                    }
+                    final StaffData organisationalRoleParentStaff = metricsData.getSupervisorStaffData();
+                    if (ObjectUtils.isNotEmpty(organisationalRoleParentStaff)) {
+                        final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();
+                        final AppUser appUserSupervisor = this.appUserRepositoryWrapper.findFirstByStaffId(organisationalRoleParentStaffId);
+                        if (ObjectUtils.isNotEmpty(appUserSupervisor)) {
+                            // set email of approval supervisor
+                            getEmailAddress(appUserSupervisor, notifybusinessUsers);
+                        }
+                    }
+
+                    if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
+                        String navigationUrl;
+                        final GlobalConfigurationPropertyData appBaseUrl = this.configurationReadPlatformService
+                                .retrieveGlobalConfiguration("app-base-url");
+                        if (appBaseUrl.isEnabled() && StringUtils.isNotBlank(appBaseUrl.getStringValue())) {
+                            StringBuilder navigationBuilder = new StringBuilder();
+                            navigationBuilder
+                                    .append("\n\nClick here (")
+                                    .append(clientName)
+                                    .append("-")
+                                    .append(mobileNo)
+                                    .append("-")
+                                    .append(productName)
+                                    .append("): ");
+                            navigationBuilder.append(appBaseUrl.getStringValue());
+                            navigationBuilder.append(link);
+                            navigationBuilder.append(transactionId);
+                            navigationUrl = navigationBuilder.toString();
+
+                            linkBuilder.append(navigationUrl);
+                        }
+
+                        //final String subject = String.format(subjectValue, transactionId);
+                        //final String body = String.format(bodyValue, clientName, mobileNo, productName, navigationUrl);
+                        //notificationToUsers(notifybusinessUsers, subjectValue, body);
                     }
                 }
-
                 if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
-                    String navigationUrl = "";
-                    final GlobalConfigurationPropertyData appBaseUrl = this.configurationReadPlatformService
-                            .retrieveGlobalConfiguration("app-base-url");
-                    if (appBaseUrl.isEnabled() && StringUtils.isNotBlank(appBaseUrl.getStringValue())) {
-                        StringBuilder navigationBuilder = new StringBuilder();
-                        navigationBuilder
-                                .append("\n\nClick here (")
-                                .append(clientName)
-                                .append("-")
-                                .append(mobileNo)
-                                .append("-")
-                                .append(productName)
-                                .append("): ");
-                        navigationBuilder.append(appBaseUrl.getStringValue());
-                        navigationBuilder.append(link);
-                        navigationBuilder.append(transactionId);
-                        navigationUrl = navigationBuilder.toString();
-
-                        linkBuilder.append(navigationUrl);
-                    }
-
-                    //final String subject = String.format(subjectValue, transactionId);
-                    //final String body = String.format(bodyValue, clientName, mobileNo, productName, navigationUrl);
-                    final String body = String.format(bodyValue, clientName, mobileNo, productName, linkBuilder.toString());
+                    body = String.format(bodyValue, linkBuilder.toString());
                     notificationToUsers(notifybusinessUsers, subjectValue, body);
-                    //notificationToUsers(notifybusinessUsers, subjectValue, body);
                 }
             }
         }

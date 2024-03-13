@@ -46,13 +46,16 @@ public class OverdraftData implements Serializable {
     private final Long savingsId;
     private final EnumOptionData status;
 
-    public static OverdraftData instance(
-            BigDecimal amount, BigDecimal nominalAnnualInterestRateOverdraft, LocalDate startDate, LocalDate expiryDate, String createdByUser, String modifiedByUser, LocalDate createdOn, LocalDate modifiedOn, Long id, Long savingsId, EnumOptionData status, final Integer numberOfDays) {
-        return new OverdraftData(amount, nominalAnnualInterestRateOverdraft, startDate, expiryDate, createdByUser, modifiedByUser, createdOn, modifiedOn, id, savingsId, status, numberOfDays);
+    public static OverdraftData instance(BigDecimal amount, BigDecimal nominalAnnualInterestRateOverdraft, LocalDate startDate,
+            LocalDate expiryDate, String createdByUser, String modifiedByUser, LocalDate createdOn, LocalDate modifiedOn, Long id,
+            Long savingsId, EnumOptionData status, final Integer numberOfDays) {
+        return new OverdraftData(amount, nominalAnnualInterestRateOverdraft, startDate, expiryDate, createdByUser, modifiedByUser,
+                createdOn, modifiedOn, id, savingsId, status, numberOfDays);
     }
 
-    public OverdraftData(
-            BigDecimal amount, BigDecimal nominalAnnualInterestRateOverdraft, LocalDate startDate, LocalDate expiryDate, String createdByUser, String modifiedByUser, LocalDate createdOn, LocalDate modifiedOn, Long id, Long savingsId, EnumOptionData status, final Integer numberOfDays) {
+    public OverdraftData(BigDecimal amount, BigDecimal nominalAnnualInterestRateOverdraft, LocalDate startDate, LocalDate expiryDate,
+            String createdByUser, String modifiedByUser, LocalDate createdOn, LocalDate modifiedOn, Long id, Long savingsId,
+            EnumOptionData status, final Integer numberOfDays) {
         this.amount = amount;
         this.nominalAnnualInterestRateOverdraft = nominalAnnualInterestRateOverdraft;
         this.startDate = startDate;

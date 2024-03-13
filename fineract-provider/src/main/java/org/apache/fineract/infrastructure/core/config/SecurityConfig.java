@@ -82,6 +82,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/*/self/twofactor/*").fullyAuthenticated() //
                 .antMatchers(HttpMethod.GET, "/api/*/self/twofactor/*").fullyAuthenticated() //
                 .antMatchers(HttpMethod.POST, "/api/*/self/twofactor/*/validate").fullyAuthenticated() //
+                .antMatchers(HttpMethod.POST, "/api/*/merchant/registration/getstarted").permitAll() //
+                .antMatchers(HttpMethod.POST, "/api/*/merchant/registration/getstarted/resend").permitAll() //
+                .antMatchers(HttpMethod.POST, "/api/*/merchant/registration/validate").permitAll() //
+                .antMatchers(HttpMethod.POST, "/api/*/merchant/registration/reset-password").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/*/merchant/authentication/login").permitAll() //
+                .antMatchers(HttpMethod.GET, "/api/*/merchant/twofactor/*").fullyAuthenticated() //
+                .antMatchers(HttpMethod.POST, "/api/*/merchant/twofactor/*").fullyAuthenticated() //
+                .antMatchers(HttpMethod.POST, "/api/*/merchant/twofactor/*/validate").fullyAuthenticated() //
                 .antMatchers(HttpMethod.PUT, "/api/*/instance-mode").permitAll() //
                 .antMatchers(HttpMethod.POST, "/api/*/twofactor/validate").fullyAuthenticated() //
                 .antMatchers("/api/*/twofactor").fullyAuthenticated() //

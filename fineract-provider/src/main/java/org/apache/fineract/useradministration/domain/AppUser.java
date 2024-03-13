@@ -36,6 +36,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,8 @@ import org.apache.fineract.infrastructure.security.utils.LogParameterEscapeUtil;
 import org.apache.fineract.organisation.office.domain.Office;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.portfolio.client.domain.Client;
+import org.apache.fineract.useradministration.domain.business.AppUserExtension;
+import org.apache.fineract.useradministration.domain.business.AppUserMerchantMapping;
 import org.apache.fineract.useradministration.service.AppUserConstants;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -61,8 +64,9 @@ import org.springframework.security.core.userdetails.User;
 @Entity
 @Table(name = "m_appuser",
         // uniqueConstraints = @UniqueConstraint(columnNames = { "username" }, name = "username_org")
-        uniqueConstraints = { @UniqueConstraint(columnNames = { "username" }, name = "username_org"),
-                @UniqueConstraint(columnNames = { "email" }, name = "email_org") })
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"username"}, name = "username_org"),
+            @UniqueConstraint(columnNames = {"email"}, name = "email_org")})
 public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     @Column(name = "email", nullable = false, length = 100)
@@ -121,6 +125,12 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "appUser")
     private Set<AppUserClientMapping> appUserClientMappings = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "appUser")
+    private Set<AppUserMerchantMapping> appUserMerchantMappings = new HashSet<>();
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "appUser", orphanRemoval = true, fetch = FetchType.EAGER)
+    private AppUserExtension appUserExtension;
 
     @Column(name = "cannot_change_password", nullable = true)
     private Boolean cannotChangePassword;
@@ -365,7 +375,8 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     }
 
     /**
-     * Delete is a <i>soft delete</i>. Updates flag so it wont appear in query/report results.
+     * Delete is a <i>soft delete</i>. Updates flag so it wont appear in
+     * query/report results.
      *
      * Any fields with unique constraints and prepended with id of record.
      */
@@ -548,8 +559,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     /**
      * Checks whether the user has a given permission explicitly.
      *
-     * @param permissionCode
-     *            the permission code to check for.
+     * @param permissionCode the permission code to check for.
      * @return whether the user has the specified permission
      */
     public boolean hasSpecificPermissionTo(final String permissionCode) {
@@ -727,7 +737,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     private Set<AppUserClientMapping> createAppUserClientMappings(Collection<Client> clients) {
         Set<AppUserClientMapping> newAppUserClientMappings = null;
-        if (clients != null && clients.size() > 0) {
+        if (clients != null && clients.size() > 0 && isSelfServiceUser()) {
             newAppUserClientMappings = new HashSet<>();
             for (Client client : clients) {
                 // log.info("createAppUserClientMappings: {}", client.getId());
@@ -756,5 +766,27 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     public void enableUser() {
         this.enabled = true;
+    }
+
+    public void setAppUserMerchantMappings(Collection<Client> clients, Boolean isMerchant) {
+        Set<AppUserMerchantMapping> newAppUserMerchantMappings = createAppUserMerchantMappings(clients, isMerchant);
+        this.appUserMerchantMappings = newAppUserMerchantMappings;
+    }
+
+    public void setAppUserExtension(AppUserExtension appUserExtension) {
+        this.appUserExtension = appUserExtension;
+    }
+
+    private Set<AppUserMerchantMapping> createAppUserMerchantMappings(Collection<Client> clients, Boolean isMerchant) {
+        Set<AppUserMerchantMapping> newAppUserMerchantMappings = null;
+        if (clients != null && !clients.isEmpty() && isMerchant) {
+            newAppUserMerchantMappings = new HashSet<>();
+            for (Client client : clients) {
+                newAppUserMerchantMappings.add(new AppUserMerchantMapping(this, client));
+            }
+        }
+
+        return newAppUserMerchantMappings;
+
     }
 }

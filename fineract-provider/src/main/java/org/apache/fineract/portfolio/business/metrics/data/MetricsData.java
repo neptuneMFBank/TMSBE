@@ -20,6 +20,7 @@ package org.apache.fineract.portfolio.business.metrics.data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.portfolio.client.data.ClientData;
@@ -39,6 +40,8 @@ public class MetricsData implements Serializable {
     private final StaffData supervisorStaffData;
     private final LocalDate createdOn;
     private final LocalDate modifiedOn;
+    private LocalDateTime createdOnTime;
+    private LocalDateTime modifiedOnTime;
 
     public static MetricsData instance(Long id, Long loanId, final Long savingsId, EnumOptionData status, StaffData staffData,
             StaffData supervisorStaffData, LocalDate createdOn, LocalDate modifiedOn, final ClientData clientData,
@@ -48,7 +51,8 @@ public class MetricsData implements Serializable {
     }
 
     public MetricsData(Long id, Long loanId, Long savingsId, EnumOptionData status, StaffData staffData, StaffData supervisorStaffData,
-            LocalDate createdOn, LocalDate modifiedOn, ClientData clientData, StaffData loanOfficerData, Long overdraftId, final Integer rank) {
+            LocalDate createdOn, LocalDate modifiedOn, ClientData clientData, StaffData loanOfficerData, Long overdraftId,
+            final Integer rank) {
         this.id = id;
         this.rank = rank;
         this.loanId = loanId;
@@ -109,6 +113,22 @@ public class MetricsData implements Serializable {
 
     public Integer getRank() {
         return rank;
+    }
+
+    public LocalDateTime getCreatedOnTime() {
+        return createdOnTime;
+    }
+
+    public void setCreatedOnTime(LocalDateTime createdOnTime) {
+        this.createdOnTime = createdOnTime;
+    }
+
+    public LocalDateTime getModifiedOnTime() {
+        return modifiedOnTime;
+    }
+
+    public void setModifiedOnTime(LocalDateTime modifiedOnTime) {
+        this.modifiedOnTime = modifiedOnTime;
     }
 
 }

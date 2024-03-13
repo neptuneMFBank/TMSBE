@@ -27,6 +27,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.fineract.infrastructure.businessdate.domain.BusinessDateType;
@@ -42,6 +43,8 @@ import org.apache.fineract.infrastructure.security.exception.InvalidTenantIdenti
 import org.apache.fineract.infrastructure.security.service.BasicAuthTenantDetailsService;
 import org.apache.fineract.notification.service.NotificationReadPlatformService;
 import org.apache.fineract.useradministration.domain.AppUser;
+import org.apache.fineract.useradministration.domain.business.AppUserExtension;
+import org.apache.fineract.useradministration.domain.business.AppUserExtensionRepositoryWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +94,9 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
 
     @Autowired
     private BusinessDateReadPlatformService businessDateReadPlatformService;
+
+    @Autowired
+    private AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper;
 
     private final String tenantRequestHeader = "Fineract-Platform-TenantId";
     private final boolean exceptionIfHeaderMissing = true;
@@ -195,18 +201,23 @@ public class TenantAwareBasicAuthenticationFilter extends BasicAuthenticationFil
 
         // String pathURL = request.getRequestURI();
         boolean isSelfServiceRequest = pathURL != null && pathURL.contains("/self/");
+        boolean isMerchantServiceRequest = pathURL != null && pathURL.contains("/merchant/");
 
         boolean notAllowed = (isSelfServiceRequest && !user.isSelfServiceUser()) || (!isSelfServiceRequest && user.isSelfServiceUser());
+        AppUserExtension appUserExtension = this.appUserExtensionRepositoryWrapper.findByAppuserId(user);
+        Boolean isMerchant = ObjectUtils.isNotEmpty(appUserExtension) ? appUserExtension.isMerchant() : false;
+        boolean notAllowedIfnotMerchant = (isMerchantServiceRequest && !isMerchant)
+                || (!isMerchantServiceRequest && isMerchant);
 
-        if (notAllowed) {
+        if (notAllowed || notAllowedIfnotMerchant) {
             throw new BadCredentialsException("User not authorised to use the requested resource.");
         }
     }
 
     protected boolean restrictAppAccessWhenPasswordResetNotChanged(String pathURL, AppUser user, HttpServletResponse response) {
         LOG.info("pathURL: {}", pathURL);
-        List<String> listOfFreeEndPoints = Arrays.asList("/authentication", "/self/authentication", "/self/registration", "/twofactor", "/self/twofactor",
-                "/self/user","users");
+        List<String> listOfFreeEndPoints = Arrays.asList("/authentication", "/self/authentication", "/self/registration", "/twofactor",
+                "/self/twofactor", "/self/user", "users", "/merchant/user", "/merchant/twofactor");
         return listOfFreeEndPoints.stream().noneMatch(action -> StringUtils.containsIgnoreCase(pathURL, action));
     }
 }

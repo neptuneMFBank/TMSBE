@@ -143,4 +143,26 @@ public final class StaffData implements Serializable {
     public String getMobileNo() {
         return mobileNo;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (null == obj) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof StaffData)) {
+            return false;
+        }
+        StaffData that = (StaffData) obj;
+        return null == this.id ? false : this.id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        int hashCode = 17;
+        hashCode += null == this.id ? 0 : this.id.hashCode() * 31;
+        return hashCode;
+    }
 }

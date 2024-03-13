@@ -106,7 +106,8 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
 
             log.info("jsonObjectLoanArrearsSummaryInfo SQL: {}", sql);
             log.info("jsonObjectLoanArrearsSummaryInfo PARAM: {}", Arrays.toString(paramListSummary.toArray()));
-            final Collection<JsonObject> jsonObjectLoanArrearsSummaryInfo = this.jdbcTemplate.query(sql, this.loanArrearsSummaryMapper, paramListSummary.toArray());
+            final Collection<JsonObject> jsonObjectLoanArrearsSummaryInfo = this.jdbcTemplate.query(sql, this.loanArrearsSummaryMapper,
+                    paramListSummary.toArray());
 
             if (!CollectionUtils.isEmpty(jsonObjectLoanArrearsSummaryInfo)) {
                 final String jsonElementString = this.fromJsonHelper.toJson(jsonObjectLoanArrearsSummaryInfo);
@@ -115,7 +116,7 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
             jsonObjectArrearsSummary.add("summaryInfo", jsonElement);
         } catch (DataAccessException e) {
             log.warn("jsonObjectLoanArrearsSummaryInfo Error: {}", e);
-            //jsonObjectArrearsSummary.add("summaryInfo", jsonElement);
+            // jsonObjectArrearsSummary.add("summaryInfo", jsonElement);
         }
 
         JsonObject jsonObjectLoanArrearsSummary;
@@ -138,9 +139,9 @@ public class LoanArrearsBusinessReadPlatformServiceImpl implements LoanArrearsBu
             jsonObjectArrearsSummary.add("summary", jsonObjectLoanArrearsSummary);
         } catch (DataAccessException e) {
             log.warn("jsonObjectLoanArrearsSummary Error: {}", e);
-            //jsonObjectLoanArrearsSummary.addProperty(statusParameterName, Boolean.FALSE);
-            //jsonObjectLoanArrearsSummary.addProperty(messageParameterName, "Empty Data");
-            //jsonObjectArrearsSummary.add("summary", jsonObjectLoanArrearsSummary);
+            // jsonObjectLoanArrearsSummary.addProperty(statusParameterName, Boolean.FALSE);
+            // jsonObjectLoanArrearsSummary.addProperty(messageParameterName, "Empty Data");
+            // jsonObjectArrearsSummary.add("summary", jsonObjectLoanArrearsSummary);
         }
 
         return jsonObjectArrearsSummary;

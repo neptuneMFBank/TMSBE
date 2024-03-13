@@ -18,9 +18,10 @@
  */
 package org.apache.fineract.simplifytech.data;
 
+import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.NIBSS_SORTCODE;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.NIBSS_SORTCODE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
@@ -71,7 +72,7 @@ public class AccountNumberNuban {
             Integer algoSeven = SEVEN;
             Integer algoTen = TEN;
             if (StringUtils.isBlank(sortCode)) {
-                //use default in app properties
+                // use default in app properties
                 sortCode = this.environment.getProperty(NIBSS_SORTCODE);
             }
 

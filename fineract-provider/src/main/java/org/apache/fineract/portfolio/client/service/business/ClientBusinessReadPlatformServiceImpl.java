@@ -153,14 +153,14 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     public ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final Boolean staffInSelectedOfficeOnly) {
         this.context.authenticatedUser();
         try {
-            //final String hierarchy = this.context.officeHierarchy();
-            //final String hierarchySearchString = hierarchy + "%";
+            // final String hierarchy = this.context.officeHierarchy();
+            // final String hierarchySearchString = hierarchy + "%";
 
             final String sql = "select " + this.clientBusinessMapper.schema()
-                    //                    + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
+                    // + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
                     + " where c.id = ?";
             ClientBusinessData clientData = this.jdbcTemplate.queryForObject(sql, this.clientBusinessMapper, // NOSONAR
-                    //hierarchySearchString, hierarchySearchString, 
+                    // hierarchySearchString, hierarchySearchString,
                     clientId);
 
             // Get client collaterals
@@ -346,7 +346,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 }
             }
         }
-        //log.info("clientRetrieveAl: {}-{}", sqlBuilder.toString(), ArrayUtils.toString(paramList.toArray()));
+        // log.info("clientRetrieveAl: {}-{}", sqlBuilder.toString(), ArrayUtils.toString(paramList.toArray()));
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.clientMapper);
     }
 
@@ -369,8 +369,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
         if (searchParameters.isSelfUser()) {
             final String appUserID = String.valueOf(context.authenticatedUser().getId());
-            extraCriteria
-                    += " and c.id in (select umap.client_id from m_selfservice_user_client_mapping as umap where umap.appuser_id = ? ) ";
+            extraCriteria += " and c.id in (select umap.client_id from m_selfservice_user_client_mapping as umap where umap.appuser_id = ? ) ";
             paramList.add(appUserID);
         }
 
@@ -515,7 +514,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         // loanActiveSummaryMapper savingActiveSummaryMapper fixedActiveSummaryMapper recurringActiveSummaryMapper
         // currentActiveSummaryMapper
         JsonObject jsonObjectLoan = new JsonObject();
-        jsonObjectLoan.addProperty("name", "Loan");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -524,6 +522,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
             String sql = sqlBuilder.toString();
             jsonObjectLoan = this.jdbcTemplate.queryForObject(sql, this.loanActiveSummaryMapper, clientId);
+            if (jsonObjectLoan != null && !jsonObjectLoan.isJsonNull()) {
+                jsonObjectLoan.addProperty("name", "Loan");
+            }
             jsonObjectBalance.add("loanAccount", jsonObjectLoan);
         } catch (DataAccessException e) {
             log.warn("retrieveBalance Loan: {}", e);
@@ -532,7 +533,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // savings
         JsonObject jsonObjectSaving = new JsonObject();
-        jsonObjectSaving.addProperty("name", "Savings");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -542,6 +542,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             String sql = sqlBuilder.toString();
             jsonObjectSaving = this.jdbcTemplate.queryForObject(sql, this.savingActiveSummaryMapper, clientId,
                     DepositAccountType.SAVINGS_DEPOSIT.getValue());
+            if (jsonObjectSaving != null && !jsonObjectSaving.isJsonNull()) {
+                jsonObjectSaving.addProperty("name", "Savings");
+            }
             jsonObjectBalance.add("savingDeposit", jsonObjectSaving);
         } catch (DataAccessException e) {
             log.warn("retrieveBalance savingDeposit: {}", e);
@@ -550,7 +553,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // fixed
         JsonObject jsonObjectFixed = new JsonObject();
-        jsonObjectFixed.addProperty("name", "Fixed Deposit");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -560,6 +562,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             String sql = sqlBuilder.toString();
             jsonObjectFixed = this.jdbcTemplate.queryForObject(sql, this.savingActiveSummaryMapper, clientId,
                     DepositAccountType.FIXED_DEPOSIT.getValue());
+            if (jsonObjectFixed != null && !jsonObjectFixed.isJsonNull()) {
+                jsonObjectFixed.addProperty("name", "Fixed Deposit");
+            }
             jsonObjectBalance.add("fixedDeposit", jsonObjectFixed);
         } catch (DataAccessException e) {
             log.warn("retrieveBalance fixedDeposit: {}", e);
@@ -568,7 +573,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // recurring
         JsonObject jsonObjectRecurring = new JsonObject();
-        jsonObjectRecurring.addProperty("name", "Recurring Deposit");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -578,6 +582,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             String sql = sqlBuilder.toString();
             jsonObjectRecurring = this.jdbcTemplate.queryForObject(sql, this.savingActiveSummaryMapper, clientId,
                     DepositAccountType.RECURRING_DEPOSIT.getValue());
+            if (jsonObjectRecurring != null && !jsonObjectRecurring.isJsonNull()) {
+                jsonObjectRecurring.addProperty("name", "Recurring Deposit");
+            }
             jsonObjectBalance.add("recurringDeposit", jsonObjectRecurring);
         } catch (DataAccessException e) {
             log.warn("retrieveBalance recurringDeposit: {}", e);
@@ -586,7 +593,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // current
         JsonObject jsonObjectCurrent = new JsonObject();
-        jsonObjectCurrent.addProperty("name", "Current Deposit");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -596,6 +602,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             String sql = sqlBuilder.toString();
             jsonObjectCurrent = this.jdbcTemplate.queryForObject(sql, this.savingActiveSummaryMapper, clientId,
                     DepositAccountType.CURRENT_DEPOSIT.getValue());
+            if (jsonObjectCurrent != null && !jsonObjectCurrent.isJsonNull()) {
+                jsonObjectCurrent.addProperty("name", "Current Deposit");
+            }
             jsonObjectBalance.add("currentDeposit", jsonObjectCurrent);
         } catch (DataAccessException e) {
             log.warn("retrieveBalance currentDeposit: {}", e);
@@ -608,17 +617,18 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     @Override
     public KycBusinessData isClientExisting(String email, String mobileNo, String altMobileNo, String bvn, String nin, String tin) {
         Integer cnt = this.jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM client_unique_view WHERE email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ", Integer.class,
-                email, mobileNo, altMobileNo, bvn, nin, tin);
+                "SELECT count(*) FROM client_unique_view WHERE email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ",
+                Integer.class, email, mobileNo, altMobileNo, bvn, nin, tin);
         Boolean agreement = cnt != null && cnt > 0;
         if (cnt != null && cnt > 1) {
-            throw new ClientNotFoundException("error.msg.client.duplicate", "Customer account is not profiled correcrtly, please contact support");
+            throw new ClientNotFoundException("error.msg.client.duplicate",
+                    "Customer account is not profiled correcrtly, please contact support");
         }
         Long clientId = null;
         if (agreement) {
             clientId = this.jdbcTemplate.queryForObject(
-                    "SELECT id FROM client_unique_view WHERE email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ", Long.class,
-                    email, mobileNo, altMobileNo, bvn, nin, tin);
+                    "SELECT id FROM client_unique_view WHERE email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ",
+                    Long.class, email, mobileNo, altMobileNo, bvn, nin, tin);
         }
         return new KycBusinessData(clientId, null, null, null, null, null, null, agreement, null);
     }

@@ -67,8 +67,11 @@ public class SelfClientsBusinessApiResource {
     private final ClientIdentifiersBusinessApiResource clientIdentifiersBusinessApiResource;
 
     @Autowired
-    public SelfClientsBusinessApiResource(final PlatformSecurityContext context, final ClientAddressBusinessApiResources clientAddressBusinessApiResources, final ClientIdentifiersBusinessApiResource clientIdentifiersBusinessApiResource,
-            final ImagesBusinessApiResource imagesApiResource, final ClientsBusinessApiResource clientsBusinessApiResource, final ClientFamilyMembersApiResources clientFamilyMembersApiResources,
+    public SelfClientsBusinessApiResource(final PlatformSecurityContext context,
+            final ClientAddressBusinessApiResources clientAddressBusinessApiResources,
+            final ClientIdentifiersBusinessApiResource clientIdentifiersBusinessApiResource,
+            final ImagesBusinessApiResource imagesApiResource, final ClientsBusinessApiResource clientsBusinessApiResource,
+            final ClientFamilyMembersApiResources clientFamilyMembersApiResources,
             final AppuserClientMapperReadService appUserClientMapperReadService, final SelfClientDataValidator dataValidator) {
         this.context = context;
         this.imagesApiResource = imagesApiResource;
@@ -82,16 +85,12 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Client Details Template", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
-    public String retrieveTemplate(
-            @PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
-            @Context final UriInfo uriInfo
-    ) {
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String retrieveTemplate(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
+            @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
         final Integer legalFormId = LegalForm.PERSON.getValue();
         final Boolean staffInSelectedOfficeOnly = null;
@@ -101,13 +100,13 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("kyc-level")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Client Checker", description = """
+
             Example Requests:""")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveKycLevel(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
@@ -115,11 +114,10 @@ public class SelfClientsBusinessApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Client", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveOne(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Context final UriInfo uriInfo) {
         this.dataValidator.validateRetrieveOne(uriInfo);
@@ -130,12 +128,10 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("balance")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve client accounts overview", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveAssociatedAccounts(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
@@ -144,11 +140,10 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("avatar")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Avatar", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveAvatar(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
         validateAppuserClientsMapping(clientId);
         final String entityName = "clients";
@@ -157,10 +152,9 @@ public class SelfClientsBusinessApiResource {
 
     @POST
     @Path("avatar")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    public String addNewClientImage(@PathParam("clientId") final Long clientId,
-            final String jsonRequestBody) {
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String addNewClientImage(@PathParam("clientId") final Long clientId, final String jsonRequestBody) {
         validateAppuserClientsMapping(clientId);
         final String entityName = "clients";
         return this.imagesApiResource.addNewClientImage(entityName, clientId, jsonRequestBody);
@@ -175,12 +169,10 @@ public class SelfClientsBusinessApiResource {
     }
 
     @PUT
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String update(@Parameter(description = "clientId") @PathParam("clientId") final Long clientId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         validateAppuserClientsMapping(clientId);
@@ -189,37 +181,50 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("addresses/template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    public String getAddressesTemplate(@Parameter(description = "clientId") @PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo) {
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String getAddressesTemplate(@Parameter(description = "clientId") @PathParam("clientId") final Long clientId,
+            @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
         return this.clientAddressBusinessApiResources.getAddressesTemplate(uriInfo);
     }
 
     @GET
     @Path("addresses/{id}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get Single address for a Client", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String getAddress(@PathParam("id") @Parameter(description = "id") final long id,
             @PathParam("clientId") @Parameter(description = "clientId") final long clientId, @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
         return this.clientAddressBusinessApiResources.getAddress(id, clientId, uriInfo);
     }
 
-    @POST
+    @GET
     @Path("addresses")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Create an address for a Client", description = "")
-    @RequestBody(required = true
-    )
+    @Operation(summary = "Get All active address for a Client", description = "")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK"
         )})
+    public String getAddresses(
+            @PathParam("clientId") @Parameter(description = "clientId") final long clientId,
+            @QueryParam("type") @Parameter(description = "type") final long addressTypeId,
+            @Context final UriInfo uriInfo) {
+        validateAppuserClientsMapping(clientId);
+        final String status = "true";
+        return this.clientAddressBusinessApiResources.getAddresses(status, addressTypeId, clientId, uriInfo);
+    }
+
+    @POST
+    @Path("addresses")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Create an address for a Client", description = "")
+    @RequestBody(required = true)
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String addClientAddress(@QueryParam("type") @Parameter(description = "type") final long addressTypeId,
             @PathParam("clientId") @Parameter(description = "clientId") final long clientId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
@@ -229,8 +234,8 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("familymembers/template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String getTemplate(@Context final UriInfo uriInfo, @PathParam("clientId") final long clientId) {
         validateAppuserClientsMapping(clientId);
         return this.clientFamilyMembersApiResources.getTemplate(uriInfo, clientId);
@@ -238,9 +243,10 @@ public class SelfClientsBusinessApiResource {
 
     @POST
     @Path("familymembers")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    public String addClientFamilyMembers(@PathParam("clientId") final long clientId, @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String addClientFamilyMembers(@PathParam("clientId") final long clientId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         validateAppuserClientsMapping(clientId);
         return this.clientFamilyMembersApiResources.addClientFamilyMembers(clientId, apiRequestBodyAsJson);
 
@@ -248,8 +254,8 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("familymembers/{familyMemberId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String getFamilyMember(@Context final UriInfo uriInfo, @PathParam("familyMemberId") final Long familyMemberId,
             @PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
         validateAppuserClientsMapping(clientId);
@@ -258,8 +264,8 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("familymembers")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String getFamilyMembers(@Context final UriInfo uriInfo, @PathParam("clientId") final long clientId) {
         validateAppuserClientsMapping(clientId);
         return this.clientFamilyMembersApiResources.getFamilyMembers(uriInfo, clientId);
@@ -267,14 +273,11 @@ public class SelfClientsBusinessApiResource {
 
     @POST
     @Path("identifiers")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create an Identifier for a Client", description = "")
-    @RequestBody(required = true
-    )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
+    @RequestBody(required = true)
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String createClientIdentifier(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         validateAppuserClientsMapping(clientId);
@@ -283,12 +286,10 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("identifiers")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List all Identifiers for a Client", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveAllClientIdentifiers(@Context final UriInfo uriInfo,
             @PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
         validateAppuserClientsMapping(clientId);

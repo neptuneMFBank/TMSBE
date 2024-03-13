@@ -62,8 +62,7 @@ public class NotificationBusinessWritePlatformServiceImpl implements Notificatio
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(notificationId) //
-                    .withSubEntityId(appUserId)
-                    .build();
+                    .withSubEntityId(appUserId).build();
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleOfficeDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
             return CommandProcessingResult.empty();

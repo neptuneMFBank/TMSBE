@@ -18,7 +18,7 @@
  */
 package org.apache.fineract.portfolio.savings;
 
-@SuppressWarnings({"HideUtilityClassConstructor"})
+@SuppressWarnings({ "HideUtilityClassConstructor" })
 public class SavingsApiConstants {
 
     public static final String SAVINGS_PRODUCT_RESOURCE_NAME = "savingsproduct";

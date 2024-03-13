@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.portfolio.loanaccount.api.business;
 
+import static org.apache.fineract.simplifytech.data.GeneralConstants.loanProductInterestGeneration;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -36,7 +38,6 @@ import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoansApiResource;
 import org.apache.fineract.portfolio.loanproduct.LoanProductConstants;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestRepositoryWrapper;
-import static org.apache.fineract.simplifytech.data.GeneralConstants.loanProductInterestGeneration;
 
 public interface LoanBusinessApiConstants {
 
@@ -211,7 +212,8 @@ public interface LoanBusinessApiConstants {
      */
     public static String loanTemplateConfig(final LoansApiResource loansApiResource, final String apiRequestBodyAsJson,
             final FromJsonHelper fromApiJsonHelper, final Long clientDefaultId, final boolean staffInSelectedOfficeOnly,
-            @Context final UriInfo uriInfo, final Long loanId, final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper) {
+            @Context final UriInfo uriInfo, final Long loanId,
+            final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper) {
 
         final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
 
@@ -384,9 +386,8 @@ public interface LoanBusinessApiConstants {
                     loanTemplateElement);
         }
 
-        interestRatePerPeriod = loanProductInterestGeneration(
-                loanProductInterestRepositoryWrapper,
-                productId, loanTermFrequency, interestRatePerPeriod);
+        interestRatePerPeriod = loanProductInterestGeneration(loanProductInterestRepositoryWrapper, productId, loanTermFrequency,
+                interestRatePerPeriod);
         jsonObjectLoan.addProperty(LoanApiConstants.interestRatePerPeriodParameterName, interestRatePerPeriod);
 
         Integer amortizationType;

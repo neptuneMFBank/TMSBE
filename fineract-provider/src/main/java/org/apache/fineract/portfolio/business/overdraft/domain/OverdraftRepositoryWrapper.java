@@ -54,7 +54,8 @@ public class OverdraftRepositoryWrapper {
 
     @Transactional(readOnly = true)
     public Overdraft findByIdAndSavingsAccountIdWithNotFoundDetection(final Long id, final Long savingsAccountId) {
-        return this.repository.findByIdAndSavingsAccountId(id, savingsAccountId).orElseThrow(() -> new OverdraftNotFoundException("Overdraft does not exist."));
+        return this.repository.findByIdAndSavingsAccountId(id, savingsAccountId)
+                .orElseThrow(() -> new OverdraftNotFoundException("Overdraft does not exist."));
     }
 
 }

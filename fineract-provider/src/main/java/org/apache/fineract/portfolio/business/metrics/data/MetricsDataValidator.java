@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.portfolio.business.metrics.data;
 
+import static org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants.expectedDisbursementDateParameterName;
+
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -35,7 +37,6 @@ import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.portfolio.business.metrics.api.MetricsApiResourceConstants;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
-import static org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants.expectedDisbursementDateParameterName;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -56,8 +57,7 @@ public class MetricsDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
 
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, LOAN_ACTION_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -86,7 +86,8 @@ public class MetricsDataValidator {
                     element);
             baseDataValidator.reset().parameter(expectedDisbursementDateParameterName).value(expectedDisbursementDateStr).notBlank();
 
-            final LocalDate expectedDisbursementDate = this.fromApiJsonHelper.extractLocalDateNamed(expectedDisbursementDateParameterName, element);
+            final LocalDate expectedDisbursementDate = this.fromApiJsonHelper.extractLocalDateNamed(expectedDisbursementDateParameterName,
+                    element);
             baseDataValidator.reset().parameter(expectedDisbursementDateParameterName).value(expectedDisbursementDate).notNull();
         }
 
@@ -100,8 +101,7 @@ public class MetricsDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
 
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, LOAN_ACTION_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -126,8 +126,7 @@ public class MetricsDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
 
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, OVERDRAFT_ACTION_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -147,7 +146,8 @@ public class MetricsDataValidator {
         }
 
         final Long overdraftId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.OVERDRAFT_ID, element);
-        baseDataValidator.reset().parameter(MetricsApiResourceConstants.OVERDRAFT_ID).value(overdraftId).notBlank().integerGreaterThanZero();
+        baseDataValidator.reset().parameter(MetricsApiResourceConstants.OVERDRAFT_ID).value(overdraftId).notBlank()
+                .integerGreaterThanZero();
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }
@@ -156,8 +156,7 @@ public class MetricsDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
 
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, OVERDRAFT_ACTION_DATA_PARAMETERS);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -168,7 +167,8 @@ public class MetricsDataValidator {
                 .resource(MetricsApiResourceConstants.RESOURCENAME);
 
         final Long overdraftId = this.fromApiJsonHelper.extractLongNamed(MetricsApiResourceConstants.OVERDRAFT_ID, element);
-        baseDataValidator.reset().parameter(MetricsApiResourceConstants.OVERDRAFT_ID).value(overdraftId).notBlank().integerGreaterThanZero();
+        baseDataValidator.reset().parameter(MetricsApiResourceConstants.OVERDRAFT_ID).value(overdraftId).notBlank()
+                .integerGreaterThanZero();
 
         final Long staffId = this.fromApiJsonHelper.extractLongNamed(ClientApiConstants.staffIdParamName, element);
         baseDataValidator.reset().parameter(ClientApiConstants.staffIdParamName).value(staffId).notBlank().integerGreaterThanZero();

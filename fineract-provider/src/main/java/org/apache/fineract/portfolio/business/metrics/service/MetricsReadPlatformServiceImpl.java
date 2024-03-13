@@ -250,10 +250,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             //groupby assigned staff
             Map<StaffData, List<MetricsData>> metricsDatasGroupAssigned = metricsDatas.stream()
                     .collect(Collectors.groupingBy(MetricsData::getStaffData));
-            for (Map.Entry<StaffData, List<MetricsData>> entry : metricsDatasGroupAssigned.entrySet()) {
-                StaffData key = entry.getKey(); //holds Assigned Staff Details
-                log.info("checkStaffDataKey: {}", key.getId());
-            }
+
             for (Map.Entry<StaffData, List<MetricsData>> entry : metricsDatasGroupAssigned.entrySet()) {
                 StaffData key = entry.getKey(); //holds Assigned Staff Details
                 log.info("StaffDataKey: {}", key.getId());

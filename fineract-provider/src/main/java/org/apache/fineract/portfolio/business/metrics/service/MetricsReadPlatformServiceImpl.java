@@ -214,8 +214,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     public void reminderOverdraftApprovals() {
 
         final String columnName = "mm.overdraft_id";
-        final String subject = "Notification of Pending Overdraft Id `%s` Approval";
-        final String body = "%s with mobile %s have an overdraft (`%s`) pending approval.%s";
+        final String subject = "Notification of Overdraft(s) Pending Approval";
+//        final String subject = "Notification of Pending Overdraft Id `%s` Approval";
+//        final String body = "%s with mobile %s have an overdraft (`%s`) pending approval.%s";
+        final String body = "The overdraft(s) below are pending approval:%s";
         final String link = "/savings/overdraft/details?overdraftId=";
         final int type = 1;
 
@@ -228,8 +230,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
     public void reminderLoanApprovals() {
 
         final String columnName = "mm.loan_id";
-        final String subject = "Notification of Pending Loan Id `%s` Approval";
-        final String body = "%s with mobile %s have a loan (`%s`) pending approval.%s";
+        final String subject = "Notification of Loan(s) Pending Approval";
+        //final String subject = "Notification of Pending Loan Id `%s` Approval";
+        //final String body = "%s with mobile %s have a loan (`%s`) pending approval.%s";
+        final String body = "The loan(s) below are pending approval:%s";
         final String link = "/loans/details?loanId=";
         final int type = 0;
 
@@ -243,66 +247,87 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
         // HOUR) ";
         Collection<MetricsData> metricsDatas = this.jdbcTemplate.query(sql, metricsMapper);
         if (!CollectionUtils.isEmpty(metricsDatas)) {
-            List<String> notifybusinessUsers;
-            for (MetricsData metricsData : metricsDatas) {
-                notifybusinessUsers = new ArrayList<>();
-                Client client;
-                Long transactionId;
-                final String productName;
-                if (type == 0) {
-                    // check loan
-                    final Long loanId = metricsData.getLoanId();
-                    transactionId = loanId;
-                    final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
-                    client = loan.getClient();
-                    final LoanProduct loanProduct = loan.getLoanProduct();
-                    productName = loanProduct.getName();
-                } else {
-                    // check overdraft
-                    final Long overdraftId = metricsData.getOverdraftId();
-                    transactionId = overdraftId;
-                    final Overdraft overdraft = this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftId);
-                    final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
-                    client = savingsAccount.getClient();
-                    final SavingsProduct savingsProduct = savingsAccount.savingsProduct();
-                    productName = savingsProduct.getName();
-                }
+            //groupby assigned staff
+            Map<StaffData, List<MetricsData>> metricsDatasGroupAssigned = metricsDatas.stream()
+                    .collect(Collectors.groupingBy(MetricsData::getStaffData));
 
-                final String clientName = client.getDisplayName();
-                final String mobileNo = StringUtils.defaultIfBlank(client.mobileNo(), "N/A");
-
-                final StaffData staff = metricsData.getStaffData();
+            for (Map.Entry<StaffData, List<MetricsData>> entry : metricsDatasGroupAssigned.entrySet()) {
+                List<String> notifybusinessUsers = new ArrayList<>();
+                final StaffData staff = entry.getKey();
                 final Long staffId = staff.getId();
                 final AppUser appUser = this.appUserRepositoryWrapper.findFirstByStaffId(staffId);
                 if (ObjectUtils.isNotEmpty(appUser)) {
                     getEmailAddress(appUser, notifybusinessUsers);
                 }
-                final StaffData organisationalRoleParentStaff = metricsData.getSupervisorStaffData();
-                if (ObjectUtils.isNotEmpty(organisationalRoleParentStaff)) {
-                    final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();
-                    final AppUser appUserSupervisor = this.appUserRepositoryWrapper.findFirstByStaffId(organisationalRoleParentStaffId);
-                    if (ObjectUtils.isNotEmpty(appUserSupervisor)) {
-                        // set email of approval supervisor
-                        getEmailAddress(appUserSupervisor, notifybusinessUsers);
+                List<MetricsData> val = entry.getValue();
+                String body;
+                final StringBuilder linkBuilder = new StringBuilder();
+                for (MetricsData metricsData : val) {
+                    Client client;
+                    Long transactionId;
+                    final String productName;
+                    if (type == 0) {
+                        // check loan
+                        final Long loanId = metricsData.getLoanId();
+                        transactionId = loanId;
+                        final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
+                        client = loan.getClient();
+                        final LoanProduct loanProduct = loan.getLoanProduct();
+                        productName = loanProduct.getName();
+                    } else {
+                        // check overdraft
+                        final Long overdraftId = metricsData.getOverdraftId();
+                        transactionId = overdraftId;
+                        final Overdraft overdraft = this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftId);
+                        final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
+                        client = savingsAccount.getClient();
+                        final SavingsProduct savingsProduct = savingsAccount.savingsProduct();
+                        productName = savingsProduct.getName();
+                    }
+
+                    final String clientName = client.getDisplayName();
+                    final String mobileNo = StringUtils.defaultIfBlank(client.mobileNo(), "N/A");
+
+                    final StaffData organisationalRoleParentStaff = metricsData.getSupervisorStaffData();
+                    if (ObjectUtils.isNotEmpty(organisationalRoleParentStaff)) {
+                        final Long organisationalRoleParentStaffId = organisationalRoleParentStaff.getId();
+                        final AppUser appUserSupervisor = this.appUserRepositoryWrapper.findFirstByStaffId(organisationalRoleParentStaffId);
+                        if (ObjectUtils.isNotEmpty(appUserSupervisor)) {
+                            // set email of approval supervisor
+                            getEmailAddress(appUserSupervisor, notifybusinessUsers);
+                        }
+                    }
+
+                    if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
+                        String navigationUrl;
+                        final GlobalConfigurationPropertyData appBaseUrl = this.configurationReadPlatformService
+                                .retrieveGlobalConfiguration("app-base-url");
+                        if (appBaseUrl.isEnabled() && StringUtils.isNotBlank(appBaseUrl.getStringValue())) {
+                            StringBuilder navigationBuilder = new StringBuilder();
+                            navigationBuilder
+                                    .append("\n\n(")
+                                    .append(clientName)
+                                    .append("-")
+                                    .append(mobileNo)
+                                    .append("-")
+                                    .append(productName)
+                                    .append("): ");
+                            navigationBuilder.append(appBaseUrl.getStringValue());
+                            navigationBuilder.append(link);
+                            navigationBuilder.append(transactionId);
+                            navigationUrl = navigationBuilder.toString();
+
+                            linkBuilder.append(navigationUrl);
+                        }
+
+                        //final String subject = String.format(subjectValue, transactionId);
+                        //final String body = String.format(bodyValue, clientName, mobileNo, productName, navigationUrl);
+                        //notificationToUsers(notifybusinessUsers, subjectValue, body);
                     }
                 }
-
                 if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
-                    String navigationUrl = "";
-                    final GlobalConfigurationPropertyData appBaseUrl = this.configurationReadPlatformService
-                            .retrieveGlobalConfiguration("app-base-url");
-                    if (appBaseUrl.isEnabled() && StringUtils.isNotBlank(appBaseUrl.getStringValue())) {
-                        StringBuilder navigationBuilder = new StringBuilder();
-                        navigationBuilder.append("\n\nClick here: ");
-                        navigationBuilder.append(appBaseUrl.getStringValue());
-                        navigationBuilder.append(link);
-                        navigationBuilder.append(transactionId);
-                        navigationUrl = navigationBuilder.toString();
-                    }
-
-                    final String subject = String.format(subjectValue, transactionId);
-                    final String body = String.format(bodyValue, clientName, mobileNo, productName, navigationUrl);
-                    notificationToUsers(notifybusinessUsers, subject, body);
+                    body = String.format(bodyValue, linkBuilder.toString());
+                    notificationToUsers(notifybusinessUsers, subjectValue, body);
                 }
             }
         }
@@ -416,10 +441,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                 log.warn("createLoanMetrics maxApprovalAmount: {}", maxApprovalAmount);
                 final boolean isWithinRange = GeneralConstants.isWithinRange(value, minApprovalAmount, maxApprovalAmount);
                 if ( // loanProductApprovalConfigData.getMaxApprovalAmount() == null
-                     // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
-                     // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal())
-                     // >= 0
-                isWithinRange) {
+                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
+                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal())
+                        // >= 0
+                        isWithinRange) {
                     // create loan movement approval if this condition is met
                     final RoleData roleData = loanProductApprovalConfigData.getRoleData();
                     final Long roleId = roleData.getId();
@@ -573,8 +598,9 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
     @Override
     public Collection<MetricsData> retrieveOverdraftMetrics(Long overdraftId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from
-                                                                       // nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.context.authenticatedUser();
+        final String sql = "select " + metricsMapper.schema() + " WHERE mm.overdraft_id = ? ORDER BY mm.rank ASC ";
+        return this.jdbcTemplate.query(sql, metricsMapper, overdraftId);
     }
 
     private static final class MetricsMapper implements RowMapper<MetricsData> {
@@ -632,8 +658,11 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             final LocalDateTime modifiedOnTime = JdbcSupport.getLocalDateTime(rs, "modifiedOn");
             final LocalDate modifiedOn = modifiedOnTime != null ? modifiedOnTime.toLocalDate() : null;
 
-            return MetricsData.instance(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData,
+            final MetricsData metricsData = MetricsData.instance(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData,
                     loanOfficerData, overdraftId, rank);
+            metricsData.setCreatedOnTime(createdOnTime);
+            metricsData.setModifiedOnTime(modifiedOnTime);
+            return metricsData;
         }
 
     }

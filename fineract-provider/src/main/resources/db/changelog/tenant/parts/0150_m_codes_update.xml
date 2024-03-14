@@ -26,11 +26,11 @@
     <changeSet author="fineract" id="1">
         <insert tableName="m_code">
             <column name="code_name" value="Social Media"/>
-            <column name="is_system_defined" value="1"/>
+            <column name="is_system_defined" valueBoolean="true"/>
         </insert>
         <insert tableName="m_code">
-            <column name="code_name" value="Link Core System"/>
-            <column name="is_system_defined" value="1"/>
+            <column name="code_name" value="Core System"/>
+            <column name="is_system_defined" valueBoolean="true"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

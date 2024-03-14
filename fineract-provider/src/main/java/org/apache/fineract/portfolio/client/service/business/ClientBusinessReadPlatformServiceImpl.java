@@ -157,7 +157,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             // final String hierarchySearchString = hierarchy + "%";
 
             final String sql = "select " + this.clientBusinessMapper.schema()
-            // + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
+                    // + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
                     + " where c.id = ?";
             ClientBusinessData clientData = this.jdbcTemplate.queryForObject(sql, this.clientBusinessMapper, // NOSONAR
                     // hierarchySearchString, hierarchySearchString,
@@ -293,7 +293,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
                 // , lgaValuesOptions
-                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                ,
+                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions
         // , industryOptions
         );
@@ -513,7 +514,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         // loanActiveSummaryMapper savingActiveSummaryMapper fixedActiveSummaryMapper recurringActiveSummaryMapper
         // currentActiveSummaryMapper
         JsonObject jsonObjectLoan = new JsonObject();
-        jsonObjectLoan.addProperty("name", "Loan");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -522,6 +522,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
             String sql = sqlBuilder.toString();
             jsonObjectLoan = this.jdbcTemplate.queryForObject(sql, this.loanActiveSummaryMapper, clientId);
+            if (jsonObjectLoan != null && !jsonObjectLoan.isJsonNull()) {
+                jsonObjectLoan.addProperty("name", "Loan");
+            }
             jsonObjectBalance.add("loanAccount", jsonObjectLoan);
         } catch (DataAccessException e) {
             log.warn("retrieveBalance Loan: {}", e);
@@ -530,7 +533,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // savings
         JsonObject jsonObjectSaving = new JsonObject();
-        jsonObjectSaving.addProperty("name", "Savings");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -540,6 +542,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             String sql = sqlBuilder.toString();
             jsonObjectSaving = this.jdbcTemplate.queryForObject(sql, this.savingActiveSummaryMapper, clientId,
                     DepositAccountType.SAVINGS_DEPOSIT.getValue());
+            if (jsonObjectSaving != null && !jsonObjectSaving.isJsonNull()) {
+                jsonObjectSaving.addProperty("name", "Savings");
+            }
             jsonObjectBalance.add("savingDeposit", jsonObjectSaving);
         } catch (DataAccessException e) {
             log.warn("retrieveBalance savingDeposit: {}", e);
@@ -548,7 +553,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // fixed
         JsonObject jsonObjectFixed = new JsonObject();
-        jsonObjectFixed.addProperty("name", "Fixed Deposit");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -558,6 +562,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             String sql = sqlBuilder.toString();
             jsonObjectFixed = this.jdbcTemplate.queryForObject(sql, this.savingActiveSummaryMapper, clientId,
                     DepositAccountType.FIXED_DEPOSIT.getValue());
+            if (jsonObjectFixed != null && !jsonObjectFixed.isJsonNull()) {
+                jsonObjectFixed.addProperty("name", "Fixed Deposit");
+            }
             jsonObjectBalance.add("fixedDeposit", jsonObjectFixed);
         } catch (DataAccessException e) {
             log.warn("retrieveBalance fixedDeposit: {}", e);
@@ -566,7 +573,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // recurring
         JsonObject jsonObjectRecurring = new JsonObject();
-        jsonObjectRecurring.addProperty("name", "Recurring Deposit");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -576,6 +582,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             String sql = sqlBuilder.toString();
             jsonObjectRecurring = this.jdbcTemplate.queryForObject(sql, this.savingActiveSummaryMapper, clientId,
                     DepositAccountType.RECURRING_DEPOSIT.getValue());
+            if (jsonObjectRecurring != null && !jsonObjectRecurring.isJsonNull()) {
+                jsonObjectRecurring.addProperty("name", "Recurring Deposit");
+            }
             jsonObjectBalance.add("recurringDeposit", jsonObjectRecurring);
         } catch (DataAccessException e) {
             log.warn("retrieveBalance recurringDeposit: {}", e);
@@ -584,7 +593,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         // current
         JsonObject jsonObjectCurrent = new JsonObject();
-        jsonObjectCurrent.addProperty("name", "Current Deposit");
         try {
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
@@ -594,6 +602,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             String sql = sqlBuilder.toString();
             jsonObjectCurrent = this.jdbcTemplate.queryForObject(sql, this.savingActiveSummaryMapper, clientId,
                     DepositAccountType.CURRENT_DEPOSIT.getValue());
+            if (jsonObjectCurrent != null && !jsonObjectCurrent.isJsonNull()) {
+                jsonObjectCurrent.addProperty("name", "Current Deposit");
+            }
             jsonObjectBalance.add("currentDeposit", jsonObjectCurrent);
         } catch (DataAccessException e) {
             log.warn("retrieveBalance currentDeposit: {}", e);

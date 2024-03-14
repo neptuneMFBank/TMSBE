@@ -719,12 +719,13 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
                     selfServiceRegistration.getFirstName(), selfServiceRegistration.getLastName(), null, passwordNeverExpire,
                     isSelfServiceUser, clients, null);
             
-            if(isMerchant){
-            appUser.setAppUserMerchantMappings(clients, isMerchant);
+            if (isMerchant) {
+                appUser.setAppUserMerchantMappings(clients, isMerchant);
+                AppUserExtension appUserExtension = new AppUserExtension(appUser, isMerchant);
+
+                appUser.setAppUserExtension(appUserExtension);
             }
-                   AppUserExtension appUserExtension = new AppUserExtension(appUser,isMerchant);
-            
-                   appUser.setAppUserExtension(appUserExtension);
+
 
           
             this.userDomainService.createCustomer(appUser, true);

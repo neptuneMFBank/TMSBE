@@ -32,7 +32,7 @@ public interface SelfServiceRegistrationWritePlatformService {
 
     ApiResponseMessage resendCustomeronRequest(String apiRequestBodyAsJson);
 
-    ApiResponseMessage validateCustomer(String apiRequestBodyAsJson);
+    ApiResponseMessage validateCustomer(String apiRequestBodyAsJson, Boolean isMerchant);
 
     ApiResponseMessage resetCustomerPassword(String apiRequestBodyAsJson);
 }

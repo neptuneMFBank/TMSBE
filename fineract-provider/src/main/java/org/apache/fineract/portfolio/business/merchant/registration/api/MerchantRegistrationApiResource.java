@@ -56,8 +56,8 @@ public class MerchantRegistrationApiResource {
 
     @POST
     @Path("getstarted")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public String createMerchant(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
         ApiResponseMessage apiResponseMessage = this.merchantRegistrationWriteService.createMerchant(apiRequestBodyAsJson);
         return toApiJsonSerializer.serializeResult(apiResponseMessage);
@@ -66,7 +66,7 @@ public class MerchantRegistrationApiResource {
 
     @POST
     @Path("getstarted/resend")
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON})
     public String resendCustomeronRequest(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.merchantRegistrationWriteService
                 .resendCustomeronRequest(apiRequestBodyAsJson);
@@ -75,16 +75,16 @@ public class MerchantRegistrationApiResource {
 
     @POST
     @Path("validate")
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON})
     public String validateCustomer(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.selfServiceRegistrationWritePlatformService
-                .validateCustomer(apiRequestBodyAsJson);
+                .validateCustomer(apiRequestBodyAsJson, true);
         return toApiJsonSerializer.serializeResult(apiResponseMessage);
     }
 
     @POST
     @Path("reset-password")
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON})
     public String resetCustomerPassword(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.merchantRegistrationWriteService.resetMerchantPassword(apiRequestBodyAsJson);
         return toApiJsonSerializer.serializeResult(apiResponseMessage);

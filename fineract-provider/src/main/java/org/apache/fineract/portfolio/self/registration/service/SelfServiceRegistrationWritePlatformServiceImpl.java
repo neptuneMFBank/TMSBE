@@ -39,6 +39,7 @@ import java.util.Set;
 import javax.persistence.PersistenceException;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -86,6 +87,8 @@ import org.apache.fineract.useradministration.domain.RoleRepository;
 import org.apache.fineract.useradministration.domain.UserDomainService;
 import org.apache.fineract.useradministration.domain.business.AppUserExtension;
 import org.apache.fineract.useradministration.domain.business.AppUserExtensionRepositoryWrapper;
+import org.apache.fineract.useradministration.domain.business.AppUserMerchantMapping;
+import org.apache.fineract.useradministration.domain.business.AppUserMerchantMappingRepositoryWrapper;
 import org.apache.fineract.useradministration.exception.RoleNotFoundException;
 import org.apache.fineract.useradministration.service.AppUserReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,6 +126,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
     private static final SecureRandom secureRandom = new SecureRandom();
     final SelfServiceRegistrationCommandFromApiJsonDeserializer selfServiceRegistrationCommandFromApiJsonDeserializer;
     final AppUserClientMappingRepository appUserClientMappingRepository;
+    final AppUserMerchantMappingRepositoryWrapper appUserMerchantMappingRepositoryWrapper;
     private final Long savingsProductId;
     private final Long officeId;
     private final JdbcTemplate jdbcTemplate;
@@ -143,7 +147,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
             final AppUserClientMappingRepository appUserClientMappingRepository, final ApplicationContext context,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final AccountNumberGenerator accountNumberGenerator,
             final SelfServiceRegistrationCommandFromApiJsonDeserializer selfServiceRegistrationCommandFromApiJsonDeserializer,
-            final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper) {
+            final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper, final AppUserMerchantMappingRepositoryWrapper appUserMerchantMappingRepositoryWrapper) {
         this.selfServiceRegistrationRepository = selfServiceRegistrationRepository;
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.selfServiceRegistrationReadPlatformService = selfServiceRegistrationReadPlatformService;
@@ -166,6 +170,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         this.accountNumberFormatRepository = accountNumberFormatRepository;
         this.accountNumberGenerator = accountNumberGenerator;
         this.appUserExtensionRepositoryWrapper = appUserExtensionRepositoryWrapper;
+        this.appUserMerchantMappingRepositoryWrapper = appUserMerchantMappingRepositoryWrapper;
     }
 
     private String deriveDisplayName(String firstname, String lastname, String fullname, Integer legalForm) {
@@ -341,7 +346,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
     }
 
     @Override
-    public ApiResponseMessage validateCustomer(String apiRequestBodyAsJson) {
+    public ApiResponseMessage validateCustomer(String apiRequestBodyAsJson, Boolean isMerchant) {
         final ApiResponseMessage apiResponseMessage = new ApiResponseMessage();
         apiResponseMessage.setStatus(HttpStatus.NOT_FOUND.value());
         apiResponseMessage.setMessage("Record not found");
@@ -353,7 +358,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         String value = this.fromApiJsonHelper.extractStringNamed(SelfServiceApiConstants.valueParamName, element);
         boolean isEmailAuthenticationMode = authenticationMode.equalsIgnoreCase(SelfServiceApiConstants.emailModeParamName);
         boolean isMobileAuthenticationMode = authenticationMode.equalsIgnoreCase(SelfServiceApiConstants.mobileModeParamName);
-        ClientData clientData = null;
+        ClientData clientData;
         Client client = null;
         if (isEmailAuthenticationMode) {
             // check email
@@ -377,6 +382,19 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
             clientData = ClientData.lookup(client.getId(), client.getDisplayName(), client.getMiddlename(), client.mobileNo(),
                     client.emailAddress(), client.getLastname());
             // apiResponseMessage.setData(clientData);
+
+            boolean appUserIsEmpty;
+            if (BooleanUtils.isTrue(isMerchant)) {
+                List<AppUserMerchantMapping> appUserMerchantMappings = appUserMerchantMappingRepositoryWrapper.findByClientId(client.getId());
+                appUserIsEmpty = CollectionUtils.isEmpty(appUserMerchantMappings);
+            } else {
+                List<AppUserClientMapping> appUserClientMappings = this.appUserClientMappingRepository.findByClientId(client.getId());
+                appUserIsEmpty = CollectionUtils.isEmpty(appUserClientMappings);
+            }
+            if (appUserIsEmpty) {
+                apiResponseMessage.setStatus(HttpStatus.CREATED.value());
+                apiResponseMessage.setMessage("Hi " + clientData.displayName() + ", to activate your app, kindly visit any of our office close to you or call our contact center.");
+            }
         }
 
         return apiResponseMessage;
@@ -428,7 +446,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
     @Override
     public SelfServiceRegistration createRegistrationRequest(String apiRequestBodyAsJson) {
         Gson gson = new Gson();
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, apiRequestBodyAsJson,
@@ -608,7 +627,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         String username = null;
         try {
             Gson gson = new Gson();
-            final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+            final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+            }.getType();
             final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
             final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, apiRequestBodyAsJson,
@@ -669,7 +689,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         String username = null;
         try {
             Gson gson = new Gson();
-            final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+            final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+            }.getType();
             final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
             final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, apiRequestBodyAsJson,
@@ -718,7 +739,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
             AppUser appUser = new AppUser(client.getOffice(), user, allRoles, selfServiceRegistration.getEmail(),
                     selfServiceRegistration.getFirstName(), selfServiceRegistration.getLastName(), null, passwordNeverExpire,
                     isSelfServiceUser, clients, null);
-            
+
             if (isMerchant) {
                 appUser.setAppUserMerchantMappings(clients, isMerchant);
                 AppUserExtension appUserExtension = new AppUserExtension(appUser, isMerchant);
@@ -726,8 +747,6 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
                 appUser.setAppUserExtension(appUserExtension);
             }
 
-
-          
             this.userDomainService.createCustomer(appUser, true);
             return appUser;
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
@@ -740,7 +759,6 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         }
 
     }
-    
 
     private void handleDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve, String username) {
         if (realCause.getMessage().contains("'username_org'")) {

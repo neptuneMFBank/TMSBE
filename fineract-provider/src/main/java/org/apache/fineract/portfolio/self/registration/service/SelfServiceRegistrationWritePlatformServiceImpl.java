@@ -538,8 +538,11 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
                     + "You will be required to change your password on first login.\n" + "Thanks for choosing.";
 
             final EmailDetail emailDetail = new EmailDetail(subject, body, email, firstname);
-            this.gmailBackedPlatformEmailService.sendDefinedEmail(emailDetail);
-
+            try {
+                this.gmailBackedPlatformEmailService.sendDefinedEmail(emailDetail);
+            } catch (Exception e) {
+                log.warn("email service error: {}", e);
+            }
         }
         if (StringUtils.isNotBlank(mobile)) {
             try {

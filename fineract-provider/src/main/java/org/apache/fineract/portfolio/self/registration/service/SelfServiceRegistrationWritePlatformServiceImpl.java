@@ -806,8 +806,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
 
         validateForDuplicateUsername(email);
 
-        throwExceptionIfValidationErrorExists(email, mobileNumber);
-
+        //throwExceptionIfValidationErrorExists(email, mobileNumber);
         String authenticationToken = randomAuthorizationTokenGeneration();
         String password = authenticationToken;
 

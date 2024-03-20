@@ -60,6 +60,15 @@ public class SelfServiceRegistrationApiResource {
     }
 
     @POST
+    @Path("getstarted/existing")
+    @Produces({MediaType.APPLICATION_JSON})
+    public String createExistingCustomeronRequest(final String apiRequestBodyAsJson) {
+        final ApiResponseMessage apiResponseMessage = this.selfServiceRegistrationWritePlatformService
+                .createExistingCustomeronRequest(apiRequestBodyAsJson);
+        return toApiJsonSerializer.serializeResult(apiResponseMessage);
+    }
+
+    @POST
     @Path("getstarted/resend")
     @Produces({MediaType.APPLICATION_JSON})
     public String resendCustomeronRequest(final String apiRequestBodyAsJson) {

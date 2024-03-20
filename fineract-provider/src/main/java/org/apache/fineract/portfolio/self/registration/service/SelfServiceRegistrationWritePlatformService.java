@@ -26,6 +26,8 @@ public interface SelfServiceRegistrationWritePlatformService {
 
     ApiResponseMessage createCustomeronRequest(String apiRequestBodyAsJson);
 
+    ApiResponseMessage createExistingCustomeronRequest(String apiRequestBodyAsJson);
+
     SelfServiceRegistration createRegistrationRequest(String apiRequestBodyAsJson);
 
     AppUser createUser(String apiRequestBodyAsJson);

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.fineract.portfolio.self.savings.data.SelfSavingsAccountConstants;
 
 public final class SelfServiceApiConstants {
 
@@ -58,6 +59,9 @@ public final class SelfServiceApiConstants {
     public static final String MERCHANT_USER_ROLE = "Merchant User";
     public static final Set<String> GETSTARTED_REQUEST_DATA_PARAMETERS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(firstNameParamName, mobileNumberParamName, lastNameParamName, emailParamName)));
+
+    public static final Set<String> EXISTING_REQUEST_DATA_PARAMETERS = Collections
+            .unmodifiableSet(new HashSet<>(Arrays.asList(mobileNumberParamName, emailParamName, SelfSavingsAccountConstants.clientIdParameterName)));
 
     public static final Set<String> RESEND_REQUEST_DATA_PARAMETERS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(requestIdParamName)));

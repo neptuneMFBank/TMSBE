@@ -77,6 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/*/self/registration/user").permitAll() //
                 .antMatchers(HttpMethod.POST, "/api/*/self/registration/validate").permitAll() //
                 .antMatchers(HttpMethod.POST, "/api/*/self/registration/getstarted").permitAll() //
+                .antMatchers(HttpMethod.POST, "/api/*/self/registration/getstarted/existing").permitAll() //
                 .antMatchers(HttpMethod.POST, "/api/*/self/registration/getstarted/resend").permitAll() //
                 .antMatchers(HttpMethod.POST, "/api/*/self/registration/reset-password").permitAll() //
                 .antMatchers(HttpMethod.POST, "/api/*/self/twofactor/*").fullyAuthenticated() //

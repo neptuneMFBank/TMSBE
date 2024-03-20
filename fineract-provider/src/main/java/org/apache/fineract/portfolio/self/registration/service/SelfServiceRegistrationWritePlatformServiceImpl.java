@@ -401,7 +401,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
             }
             if (appUserIsEmpty) {
                 apiResponseMessage.setStatus(HttpStatus.CREATED.value());
-                apiResponseMessage.setMessage("Hi " + clientData.displayName() + ", kindly onboard to activate your app.");
+                final String name = StringUtils.isNotBlank(clientData.displayName()) ? clientData.displayName() : clientData.getFirstname();
+                apiResponseMessage.setMessage("Hi " + name + ", kindly onboard to activate your app.");
             }
         }
 

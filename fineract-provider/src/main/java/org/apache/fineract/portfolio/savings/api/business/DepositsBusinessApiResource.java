@@ -85,18 +85,20 @@ public class DepositsBusinessApiResource {
     private final FromJsonHelper fromApiJsonHelper;
 
     @GET
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "List Deposits", description = """
                         The list capability of deposits can support pagination and sorting.
             """)
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+        )})
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("accountWithBalance") @Parameter(description = "accountWithBalance") final Boolean accountWithBalance,
             @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
             @QueryParam("productId") @Parameter(description = "productId") final Long productId,
+            @QueryParam("excludeProductId") @Parameter(description = "excludeProductId") final Long excludeProductId,
             @QueryParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
             @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
@@ -124,7 +126,7 @@ public class DepositsBusinessApiResource {
         }
 
         final SearchParametersBusiness searchParameters = SearchParametersBusiness.forDeposit(offset, limit, orderBy, sortOrder, productId,
-                fromDate, toDate, depositTypeId, accountNo, officeId, statusId, externalId, clientId, displayName, accountWithBalance);
+                fromDate, toDate, depositTypeId, accountNo, officeId, statusId, externalId, clientId, displayName, accountWithBalance, excludeProductId);
 
         final Page<DepositAccountBusinessData> clientData = this.depositsBusinessReadPlatformService.retrieveAll(searchParameters);
 
@@ -134,14 +136,15 @@ public class DepositsBusinessApiResource {
 
     @GET
     @Path("{accountNo}/enquiry")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve account enquiry", description = """
             Example Requests:""")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+        )})
     public String retrieveName(@PathParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
             @Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(DepositsBusinessApiConstants.RESOURCE_NAME);
@@ -155,14 +158,15 @@ public class DepositsBusinessApiResource {
 
     @GET
     @Path("{accountNo}/balance")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve account enquiry", description = """
             Example Requests:""")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+        )})
     public String retrieveBalance(@PathParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
             @Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(DepositsBusinessApiConstants.RESOURCE_NAME);
@@ -175,8 +179,8 @@ public class DepositsBusinessApiResource {
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Submit new savings application", description = """
             Submits new savings application
 
@@ -185,10 +189,11 @@ public class DepositsBusinessApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // SavingsAccountsApiResourceSwagger.PostSavingsAccountsRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // SavingsAccountsApiResourceSwagger.PostSavingsAccountsResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // SavingsAccountsApiResourceSwagger.PostSavingsAccountsResponse.class))
+        )})
     public String submitApplication(@Context final UriInfo uriInfo, @QueryParam("command") final String commandParam,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -217,15 +222,15 @@ public class DepositsBusinessApiResource {
         }
 
         if (result == null) {
-            throw new UnrecognizedQueryParamException("command", commandParam, new Object[] { "savings", "fixed", "approve", "recurring" });
+            throw new UnrecognizedQueryParamException("command", commandParam, new Object[]{"savings", "fixed", "approve", "recurring"});
         }
         return this.toApiJsonSerializer.serialize(result);
     }
 
     @PUT
     @Path("{accountId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Update savings application", description = """
             Update savings application
 
@@ -234,10 +239,11 @@ public class DepositsBusinessApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // SavingsAccountsApiResourceSwagger.PostSavingsAccountsRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // SavingsAccountsApiResourceSwagger.PostSavingsAccountsResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // SavingsAccountsApiResourceSwagger.PostSavingsAccountsResponse.class))
+        )})
     public String updateApplication(@PathParam("accountId") @Parameter(description = "accountId") final Long accountId,
             @Context final UriInfo uriInfo, @QueryParam("command") final String commandParam,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
@@ -273,7 +279,7 @@ public class DepositsBusinessApiResource {
 
         if (result == null) {
             throw new UnrecognizedQueryParamException("command", commandParam,
-                    new Object[] { "savings", "updateWithHoldTax", "fixed", "approve", "recurring" });
+                    new Object[]{"savings", "updateWithHoldTax", "fixed", "approve", "recurring"});
         }
         return this.toApiJsonSerializer.serialize(result);
     }

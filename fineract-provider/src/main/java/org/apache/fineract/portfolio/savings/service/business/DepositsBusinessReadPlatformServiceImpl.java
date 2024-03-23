@@ -209,6 +209,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
         final String accountNo = searchParameters.getAccountNo();
         final String displayName = searchParameters.getName();
         final Boolean accountWithBalance = searchParameters.isOrphansOnly();
+        final Long excludeProductId = searchParameters.getCategoryId();
 
         String extraCriteria = "";
 
@@ -240,6 +241,10 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
         if (searchParameters.isProductIdPassed()) {
             paramList.add(productId);
             extraCriteria += " and ms.product_id = ? ";
+        }
+        if (searchParameters.isCategoryIdPassed()) {
+            paramList.add(excludeProductId);
+            extraCriteria += " and ms.product_id <> ? ";
         }
         if (searchParameters.isDepositTypeIdPassed()) {
             paramList.add(depositTypeId);

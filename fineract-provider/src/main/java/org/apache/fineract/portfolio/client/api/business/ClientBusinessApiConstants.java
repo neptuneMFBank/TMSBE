@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.fineract.portfolio.client.data.ClientData;
 
-@SuppressWarnings({ "HideUtilityClassConstructor" })
+@SuppressWarnings({"HideUtilityClassConstructor"})
 public class ClientBusinessApiConstants {
 
     public static final String keyParam = "key";
@@ -218,14 +218,16 @@ public class ClientBusinessApiConstants {
     public static final String identificationParamName = "identification";
     public static final String agreementParamName = "agreement";
     public static final String directorsParamName = "directors";
+    public static final String socialMediaParamName = "socialMedia";
 
     public static final String iAgreeParamName = "iAgree";
     public static final String bvnParamName = "bvn";
     public static final String supervisorStaffDataParamName = "supervisorStaffData";
 
     /**
-     * These parameters will match the class level parameters of {@link ClientData}. Where possible, we try to get
-     * response parameters to match those of request parameters.
+     * These parameters will match the class level parameters of
+     * {@link ClientData}. Where possible, we try to get response parameters to
+     * match those of request parameters.
      */
     protected static final Set<String> CLIENT_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idParamName, accountNoParamName,
             externalIdParamName, statusParamName, activeParamName, activationDateParamName, firstnameParamName, middlenameParamName,
@@ -250,6 +252,6 @@ public class ClientBusinessApiConstants {
 
     protected static final Set<String> KYC_CHECKERS_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(clientIdParamName, personalParamName, residentialParamName, employmentParamName, nextOfKinParamName,
-                    bankDetailParamName, identificationParamName, agreementParamName, directorsParamName));
+                    bankDetailParamName, identificationParamName, agreementParamName, directorsParamName, socialMediaParamName));
 
 }

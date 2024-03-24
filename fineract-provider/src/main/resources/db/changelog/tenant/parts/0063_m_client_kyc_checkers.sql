@@ -59,7 +59,7 @@ mc.id client_id,
         WHEN
              sk.client_id > 0 THEN '1'
         ELSE '0'
-    END AS has_directors
+    END AS has_directors,
     CASE
         WHEN
              smk.client_id > 0 THEN '1'

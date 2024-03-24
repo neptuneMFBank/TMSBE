@@ -59,12 +59,13 @@ mc.id client_id,
         WHEN
              sk.client_id > 0 THEN '1'
         ELSE '0'
-    END AS has_directors,
-    CASE
-        WHEN
-             smk.client_id > 0 THEN '1'
-        ELSE '0'
-    END AS has_social_media
+    END AS has_directors
+    -- ,
+    -- CASE
+    --     WHEN
+    --          smk.client_id > 0 THEN '1'
+    --     ELSE '0'
+    -- END AS has_social_media
 FROM
     m_client mc
 LEFT JOIN
@@ -81,7 +82,7 @@ LEFT JOIN
     bankKYC bk ON bk.client_id =mc.id
 LEFT JOIN
     signatoryKYC sk ON sk.client_id =mc.id
-LEFT JOIN
-    socialMediaKYC smk ON smk.client_id =mc.id
+-- LEFT JOIN
+--     socialMediaKYC smk ON smk.client_id =mc.id
 WHERE (slk.bvn IS NOT NULL OR slk.tin IS NOT NULL)
 GROUP BY mc.id;

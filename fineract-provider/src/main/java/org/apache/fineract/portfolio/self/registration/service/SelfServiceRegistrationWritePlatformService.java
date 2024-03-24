@@ -26,13 +26,15 @@ public interface SelfServiceRegistrationWritePlatformService {
 
     ApiResponseMessage createCustomeronRequest(String apiRequestBodyAsJson);
 
+    ApiResponseMessage createExistingCustomeronRequest(String apiRequestBodyAsJson);
+
     SelfServiceRegistration createRegistrationRequest(String apiRequestBodyAsJson);
 
     AppUser createUser(String apiRequestBodyAsJson);
 
     ApiResponseMessage resendCustomeronRequest(String apiRequestBodyAsJson);
 
-    ApiResponseMessage validateCustomer(String apiRequestBodyAsJson);
+    ApiResponseMessage validateCustomer(String apiRequestBodyAsJson, Boolean isMerchant);
 
     ApiResponseMessage resetCustomerPassword(String apiRequestBodyAsJson);
 }

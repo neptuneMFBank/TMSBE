@@ -27,6 +27,7 @@ import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductApprovalApiResourceConstants;
 import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductInterestApiResourceConstants;
 import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductPaymentTypeConfigConstants;
+import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductVisibilityApiResourceConstants;
 import org.apache.fineract.portfolio.paymenttype.api.PaymentTypeApiResourceConstants;
 import org.apache.fineract.portfolio.savings.DepositsApiConstants;
 import org.apache.fineract.portfolio.self.pockets.api.PocketApiConstants;
@@ -3812,6 +3813,27 @@ public class CommandWrapperBuilder {
         this.entityId = metricsId;
         this.entityName = MetricsApiResourceConstants.RESOURCENAME;
         this.href = "/metrics/overdraft/" + metricsId + "?command=assign";
+        return this;
+    }
+
+    public CommandWrapperBuilder createLoanProductVisibility() {
+        this.actionName = "CREATE";
+        this.entityName = LoanProductVisibilityApiResourceConstants.RESOURCENAME;
+        this.href = "/loanproducts/visibility";
+        return this;
+    }
+       public CommandWrapperBuilder updateLoanProductVisibility(final Long loanProductVisibilityId) {
+        this.actionName = "UPDATE";
+        this.entityName = LoanProductVisibilityApiResourceConstants.RESOURCENAME;
+        this.entityId = loanProductVisibilityId;
+        this.href = "/loanproducts/visibility/" + loanProductVisibilityId;
+        return this;
+    }
+    public CommandWrapperBuilder deleteLoanProductVisibility(final Long loanProductVisibilityId) {
+        this.actionName = "DELETE";
+        this.entityName = LoanProductVisibilityApiResourceConstants.RESOURCENAME;
+        this.entityId = loanProductVisibilityId;
+        this.href = "/loanproducts/visibility/" + loanProductVisibilityId;
         return this;
     }
 

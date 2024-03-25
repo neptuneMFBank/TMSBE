@@ -295,4 +295,15 @@ public class SelfClientsBusinessApiResource {
         validateAppuserClientsMapping(clientId);
         return this.clientIdentifiersBusinessApiResource.retrieveAllClientIdentifiers(uriInfo, clientId);
     }
+   
+    @GET
+    @Path("loanproductvisibility")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public String retrieveVisibileLoanProduct(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo) {
+
+        validateAppuserClientsMapping(clientId);
+        return this.clientsBusinessApiResource.retrieveVisibileLoanProduct(clientId);
+    }
+
 }

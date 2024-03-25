@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.client.api.business;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,6 +28,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import javax.ws.rs.Consumes;
@@ -64,6 +66,7 @@ import org.apache.fineract.portfolio.client.data.business.KycBusinessData;
 import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
 import org.apache.fineract.portfolio.loanaccount.guarantor.service.GuarantorReadPlatformService;
+import org.apache.fineract.portfolio.loanproduct.business.service.LoanProductVisibilityReadPlatformService;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountReadPlatformService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -92,6 +95,7 @@ public class ClientsBusinessApiResource {
     private final BulkImportWorkbookService bulkImportWorkbookService;
     private final BulkImportWorkbookPopulatorService bulkImportWorkbookPopulatorService;
     private final GuarantorReadPlatformService guarantorReadPlatformService;
+    private final LoanProductVisibilityReadPlatformService loanProductVisibilityReadPlatformService;
 
     @GET
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -431,4 +435,18 @@ public class ClientsBusinessApiResource {
         return this.clientAccountBalanceSummary.serialize(businessData);
 
     }
+
+    @GET
+    @Path("{clientId}/loanproductvisibility")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public String retrieveVisibileLoanProduct(@PathParam("clientId") final Long clientId) {
+
+        this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
+
+        final Collection<JsonArray> LoanProducts = this.loanProductVisibilityReadPlatformService.retrieveVisibileLoanProductForClient(clientId);
+
+        return this.toApiJsonSerializer.serialize(LoanProducts);
+    }
+
 }

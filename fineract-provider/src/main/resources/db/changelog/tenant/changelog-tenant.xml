@@ -165,4 +165,13 @@
     <include file="parts/0149_create_merchant_role.sql" relativeToChangelogFile="true" />
     <include file="parts/0150_m_codes_update.xml" relativeToChangelogFile="true" />
     <include file="parts/0151_m_appuser_extension.sql" relativeToChangelogFile="true" />
+    <include file="parts/0152_m_loanproduct_visibility_config.sql" relativeToChangelogFile="true" />
+    <include file="parts/0153_m_loanproduct_visibility_config_mapping.sql" relativeToChangelogFile="true" />
+    <include file="parts/0154_m_loanproduct_visibility_legalenum_mapping.sql" relativeToChangelogFile="true" />
+    <include file="parts/0155_m_loanproduct_visibility_clientclassification_mapping.sql" relativeToChangelogFile="true" />
+    <include file="parts/0156_m_loanproduct_visibility_clienttype_mapping.sql" relativeToChangelogFile="true" />
+    <include file="parts/0157_m_create_loanproduct_visibility_config_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0158_m_update_loanproduct_visibility_config_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0159_m_delete_loanproduct_visibility_config_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0160_loan_product_visibility_config_view.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

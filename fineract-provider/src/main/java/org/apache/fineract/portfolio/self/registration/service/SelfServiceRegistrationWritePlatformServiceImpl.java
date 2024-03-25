@@ -76,6 +76,7 @@ import org.apache.fineract.portfolio.self.registration.SelfServiceApiConstants;
 import org.apache.fineract.portfolio.self.registration.domain.SelfServiceRegistration;
 import org.apache.fineract.portfolio.self.registration.domain.SelfServiceRegistrationRepository;
 import org.apache.fineract.portfolio.self.registration.exception.SelfServiceRegistrationNotFoundException;
+import org.apache.fineract.portfolio.self.savings.data.SelfSavingsAccountConstants;
 import org.apache.fineract.simplifytech.data.ApiResponseMessage;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserClientMapping;
@@ -96,6 +97,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -258,6 +260,16 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         // generate accountNumber and update client
         String accountNumber = generateAccountNumberUpdateClient(client, clientId);
 
+        Long selfClientId = createRequestAuditTable(clientId, accountNumber, firstName, lastName, mobileNumber, email, password);
+
+        SelfServiceRegistration selfServiceRegistration = RegisterSelfUser(selfClientId, SelfServiceApiConstants.SELF_SERVICE_USER_ROLE);
+
+        final ApiResponseMessage apiResponseMessage = new ApiResponseMessage(HttpStatus.CREATED.value(),
+                SelfServiceApiConstants.createRequestSuccessMessage, selfServiceRegistration.getId(), null);
+        return apiResponseMessage;
+    }
+
+    protected Long createRequestAuditTable(Long clientId, String accountNumber, String firstName, String lastName, String mobileNumber, String email, String password) throws DataAccessException, InvalidDataAccessApiUsageException {
         // SelfServiceRegistration selfServiceRegistration = SelfServiceRegistration.instance(client,
         // client.getAccountNumber(), firstName,
         // lastName, mobileNumber, email, SelfServiceApiConstants.bothModeParamName, email, password);
@@ -279,12 +291,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
             return ps;
         }, keyHolderSelf);
         Long selfClientId = (Long) keyHolderSelf.getKey();
-
-        SelfServiceRegistration selfServiceRegistration = RegisterSelfUser(selfClientId, SelfServiceApiConstants.SELF_SERVICE_USER_ROLE);
-
-        final ApiResponseMessage apiResponseMessage = new ApiResponseMessage(HttpStatus.CREATED.value(),
-                SelfServiceApiConstants.createRequestSuccessMessage, selfServiceRegistration.getId(), null);
-        return apiResponseMessage;
+        return selfClientId;
     }
 
     public String generateAccountNumberUpdateClient(Client client, Long clientId) {
@@ -381,7 +388,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         if (ObjectUtils.isNotEmpty(client)) {
             clientData = ClientData.lookup(client.getId(), client.getDisplayName(), client.getMiddlename(), client.mobileNo(),
                     client.emailAddress(), client.getLastname());
-            // apiResponseMessage.setData(clientData);
+            //final String encryptResponse = this.fromApiJsonHelper.toJson(clientData);
+            apiResponseMessage.setData(clientData);
 
             boolean appUserIsEmpty;
             if (BooleanUtils.isTrue(isMerchant)) {
@@ -393,7 +401,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
             }
             if (appUserIsEmpty) {
                 apiResponseMessage.setStatus(HttpStatus.CREATED.value());
-                apiResponseMessage.setMessage("Hi " + clientData.displayName() + ", to activate your app, kindly visit any of our office close to you or call our contact center.");
+                final String name = StringUtils.isNotBlank(clientData.displayName()) ? clientData.displayName() : clientData.getFirstname();
+                apiResponseMessage.setMessage("Hi " + name + ", kindly onboard to activate your app.");
             }
         }
 
@@ -529,8 +538,11 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
                     + "You will be required to change your password on first login.\n" + "Thanks for choosing.";
 
             final EmailDetail emailDetail = new EmailDetail(subject, body, email, firstname);
-            this.gmailBackedPlatformEmailService.sendDefinedEmail(emailDetail);
-
+            try {
+                this.gmailBackedPlatformEmailService.sendDefinedEmail(emailDetail);
+            } catch (Exception e) {
+                log.warn("email service error: {}", e);
+            }
         }
         if (StringUtils.isNotBlank(mobile)) {
             try {
@@ -768,6 +780,46 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
                     username);
         }
         throw new PlatformDataIntegrityException("error.msg.unknown.data.integrity.issue", "Unknown data integrity issue with resource.");
+    }
+
+    @Override
+    public ApiResponseMessage createExistingCustomeronRequest(String apiRequestBodyAsJson) {
+        this.selfServiceRegistrationCommandFromApiJsonDeserializer.validateForExisting(apiRequestBodyAsJson);
+        Gson gson = new Gson();
+        JsonElement element = gson.fromJson(apiRequestBodyAsJson, JsonElement.class);
+
+        // show client
+        final Long clientId = this.fromApiJsonHelper.extractLongNamed(SelfSavingsAccountConstants.clientIdParameterName, element);
+        final Client client = this.clientRepository.findOneWithNotFoundDetection(clientId);
+        final String firstName = client.getFirstname();
+        final String lastName = client.getLastname();
+        final String accountNumber = client.getAccountNumber();
+
+        String emailCheck = this.fromApiJsonHelper.extractStringNamed(SelfServiceApiConstants.emailParamName, element);
+        if (StringUtils.isNotBlank(client.emailAddress())) {
+            emailCheck = client.emailAddress();
+        }
+        final String email = emailCheck;
+
+        String mobileNumberCheck = this.fromApiJsonHelper.extractStringNamed(SelfServiceApiConstants.mobileNumberParamName, element);
+        if (StringUtils.isNotBlank(client.mobileNo())) {
+            mobileNumberCheck = client.mobileNo();
+        }
+        final String mobileNumber = mobileNumberCheck;
+
+        validateForDuplicateUsername(email);
+
+        //throwExceptionIfValidationErrorExists(email, mobileNumber);
+        String authenticationToken = randomAuthorizationTokenGeneration();
+        String password = authenticationToken;
+
+        Long selfClientId = createRequestAuditTable(clientId, accountNumber, firstName, lastName, mobileNumber, email, password);
+
+        SelfServiceRegistration selfServiceRegistration = RegisterSelfUser(selfClientId, SelfServiceApiConstants.SELF_SERVICE_USER_ROLE);
+
+        final ApiResponseMessage apiResponseMessage = new ApiResponseMessage(HttpStatus.CREATED.value(),
+                SelfServiceApiConstants.createRequestSuccessMessage, selfServiceRegistration.getId(), null);
+        return apiResponseMessage;
     }
 
 }

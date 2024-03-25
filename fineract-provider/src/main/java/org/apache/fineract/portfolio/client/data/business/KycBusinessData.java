@@ -37,11 +37,12 @@ public final class KycBusinessData implements Serializable {
     private final Boolean identification;
     private final Boolean agreement;
     private final Boolean directors;
+    private final Boolean socialMedia;
 
     public static KycBusinessData instance(Long clientId, Boolean personal, Boolean residential, Boolean employment, Boolean nextOfKin,
-            Boolean bankDetail, Boolean identification, Boolean agreement, Boolean directors) {
+            Boolean bankDetail, Boolean identification, Boolean agreement, Boolean directors, Boolean socialMedia) {
         return new KycBusinessData(clientId, personal, residential, employment, nextOfKin, bankDetail, identification, agreement,
-                directors);
+                directors, socialMedia);
     }
 
 }

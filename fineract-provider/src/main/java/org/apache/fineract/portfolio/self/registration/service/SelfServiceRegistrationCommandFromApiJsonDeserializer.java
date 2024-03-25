@@ -31,6 +31,7 @@ import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.portfolio.self.registration.SelfServiceApiConstants;
+import org.apache.fineract.portfolio.self.savings.data.SelfSavingsAccountConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -49,7 +50,8 @@ public final class SelfServiceRegistrationCommandFromApiJsonDeserializer {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, SelfServiceApiConstants.GETSTARTED_REQUEST_DATA_PARAMETERS);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -75,12 +77,46 @@ public final class SelfServiceRegistrationCommandFromApiJsonDeserializer {
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }
 
+    public void validateForExisting(final String json) {
+        if (StringUtils.isBlank(json)) {
+            throw new InvalidJsonException();
+        }
+
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, SelfServiceApiConstants.EXISTING_REQUEST_DATA_PARAMETERS);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("self");
+
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        if (this.fromApiJsonHelper.parameterExists(SelfServiceApiConstants.emailParamName, element)) {
+            String email = this.fromApiJsonHelper.extractStringNamed(SelfServiceApiConstants.emailParamName, element);
+            baseDataValidator.reset().parameter(SelfServiceApiConstants.emailParamName).value(email).notNull().notBlank().isValidEmail()
+                    .notExceedingLengthOf(100);
+        }
+
+        if (this.fromApiJsonHelper.parameterExists(SelfServiceApiConstants.mobileNumberParamName, element)) {
+            String mobileNumber = this.fromApiJsonHelper.extractStringNamed(SelfServiceApiConstants.mobileNumberParamName, element);
+            baseDataValidator.reset().parameter(SelfServiceApiConstants.mobileNumberParamName).value(mobileNumber).notNull()
+                    .notExceedingLengthOf(11).validatePhoneNumber();
+        }
+
+        final Long clientId = this.fromApiJsonHelper.extractLongNamed(SelfSavingsAccountConstants.clientIdParameterName, element);
+        baseDataValidator.reset().parameter(SelfSavingsAccountConstants.clientIdParameterName).value(clientId).notNull()
+                .longGreaterThanZero();
+
+        throwExceptionIfValidationWarningsExist(dataValidationErrors);
+    }
+
     public void validateForResend(final String json) {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, SelfServiceApiConstants.RESEND_REQUEST_DATA_PARAMETERS);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -99,7 +135,8 @@ public final class SelfServiceRegistrationCommandFromApiJsonDeserializer {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, SelfServiceApiConstants.VALIDATE_REQUEST_DATA_PARAMETERS);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();

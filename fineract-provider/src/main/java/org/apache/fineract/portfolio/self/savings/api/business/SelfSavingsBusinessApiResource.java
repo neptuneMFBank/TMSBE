@@ -32,12 +32,18 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import org.apache.fineract.accounting.journalentry.api.DateParam;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
+import org.apache.fineract.portfolio.savings.api.business.DepositsBusinessApiResource;
 import org.apache.fineract.portfolio.savings.api.business.SavingsAccountTransactionsBusinessApiResource;
 import org.apache.fineract.portfolio.savings.exception.SavingsAccountNotFoundException;
+import org.apache.fineract.portfolio.self.client.service.AppuserClientMapperReadService;
 import org.apache.fineract.portfolio.self.savings.service.AppuserSavingsMapperReadService;
+import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.SAVINGS_PRODUCT_RECONCILE_ID_API;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Path("/self/savingsaccounts/business")
@@ -49,22 +55,28 @@ public class SelfSavingsBusinessApiResource {
 
     private final PlatformSecurityContext context;
     private final SavingsAccountTransactionsBusinessApiResource savingsAccountTransactionsBusinessApiResource;
+    private final DepositsBusinessApiResource depositsBusinessApiResource;
+    private final AppuserClientMapperReadService appUserClientMapperReadService;
     private final AppuserSavingsMapperReadService appuserSavingsMapperReadService;
+    private final Long savingsProductId;
 
     @Autowired
-    public SelfSavingsBusinessApiResource(final PlatformSecurityContext context,
-            final SavingsAccountTransactionsBusinessApiResource savingsAccountTransactionsBusinessApiResource,
-            final AppuserSavingsMapperReadService appuserSavingsMapperReadService) {
+    public SelfSavingsBusinessApiResource(final PlatformSecurityContext context, final DepositsBusinessApiResource depositsBusinessApiResource,
+            final SavingsAccountTransactionsBusinessApiResource savingsAccountTransactionsBusinessApiResource, final ApplicationContext applicationContext,
+            final AppuserSavingsMapperReadService appuserSavingsMapperReadService, final AppuserClientMapperReadService appUserClientMapperReadService) {
         this.context = context;
         this.savingsAccountTransactionsBusinessApiResource = savingsAccountTransactionsBusinessApiResource;
         this.appuserSavingsMapperReadService = appuserSavingsMapperReadService;
-
+        this.appUserClientMapperReadService = appUserClientMapperReadService;
+        this.depositsBusinessApiResource = depositsBusinessApiResource;
+        Environment environment = applicationContext.getEnvironment();
+        this.savingsProductId = Long.valueOf(environment.getProperty(SAVINGS_PRODUCT_RECONCILE_ID_API));
     }
 
     @GET
     @Path("{savingsId}/transactions")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
             @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
@@ -84,6 +96,35 @@ public class SelfSavingsBusinessApiResource {
 
     }
 
+    @GET
+    @Path("{clientId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public String retrieveAllAccounts(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo,
+            @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
+            @QueryParam("depositTypeId") @Parameter(description = "depositTypeId") final Integer depositTypeId,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @DefaultValue("en") @QueryParam("locale") final String locale,
+            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
+
+        validateAppuserClientsMapping(clientId);
+        final Boolean accountWithBalance = false;
+        final String displayName = null;
+        final Long productId = null;
+        final Long officeId = null;
+        final String externalId = null;
+        final String accountNo = null;
+        final String orderBy = "ms.id";
+        final String sortOrder = "desc";
+        final Long excludeProductId = savingsProductId;//excludeProduct reconciliationSavings
+
+        return this.depositsBusinessApiResource.retrieveAll(uriInfo, accountWithBalance, displayName, productId, excludeProductId, clientId, officeId, externalId, statusId, depositTypeId, accountNo, offset, limit, orderBy, sortOrder, startPeriod, endPeriod, locale, dateFormat);
+
+    }
+
     private void validateAppuserSavingsAccountMapping(final Long accountId) {
         AppUser user = this.context.authenticatedUser();
         final boolean isMappedSavings = this.appuserSavingsMapperReadService.isSavingsMappedToUser(accountId, user.getId());
@@ -92,4 +133,11 @@ public class SelfSavingsBusinessApiResource {
         }
     }
 
+    private void validateAppuserClientsMapping(final Long clientId) {
+        AppUser user = this.context.authenticatedUser();
+        final boolean mappedClientId = this.appUserClientMapperReadService.isClientMappedToUser(clientId, user.getId());
+        if (!mappedClientId) {
+            throw new ClientNotFoundException(clientId);
+        }
+    }
 }

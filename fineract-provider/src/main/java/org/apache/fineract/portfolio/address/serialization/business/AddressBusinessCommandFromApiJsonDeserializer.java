@@ -70,6 +70,8 @@ public class AddressBusinessCommandFromApiJsonDeserializer {
 
         final Set<String> supportedParameters = configData.stream().map(FieldConfigurationData::getField).collect(Collectors.toSet());
 
+        supportedParameters.add("latitude");
+        supportedParameters.add("longitude");
         supportedParameters.add("dateMovedIn");
         supportedParameters.add("lgaId");
         supportedParameters.add("residenceStatusId");

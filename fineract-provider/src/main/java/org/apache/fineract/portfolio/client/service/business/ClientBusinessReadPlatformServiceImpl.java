@@ -630,7 +630,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                     "SELECT id FROM client_unique_view WHERE email_address=? OR mobile_no=? OR alternateMobileNumber=? OR bvn=? OR nin=? OR tin=?  ",
                     Long.class, email, mobileNo, altMobileNo, bvn, nin, tin);
         }
-        return new KycBusinessData(clientId, null, null, null, null, null, null, agreement, null);
+        return new KycBusinessData(clientId, null, null, null, null, null, null, agreement, null, null);
     }
 
     private static final class ClientLookupKycLevelMapper implements RowMapper<KycBusinessData> {
@@ -641,7 +641,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             final StringBuilder builder = new StringBuilder(200);
 
             builder.append(
-                    "mck.client_id,mck.has_personal,mck.has_residential,mck.has_employment,mck.has_agreement,mck.has_next_of_kin,mck.has_bank_detail,mck.has_identification,mck.has_directors ");
+                    "mck.client_id,mck.has_personal,mck.has_residential,mck.has_employment,mck.has_agreement,mck.has_next_of_kin,mck.has_bank_detail,mck.has_identification,mck.has_directors,mck.has_social_media ");
             builder.append(" from m_client_kyc_checkers mck ");
 
             this.schema = builder.toString();
@@ -664,9 +664,10 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             final Boolean identification = rs.getBoolean("has_identification");
             final Boolean directors = rs.getBoolean("has_directors");
             final Boolean agreement = rs.getBoolean("has_agreement");
+            final Boolean socialMedia = rs.getBoolean("has_social_media");
 
             return KycBusinessData.instance(clientId, personal, residential, employment, nextOfKin, bankDetail, identification, agreement,
-                    directors);
+                    directors, socialMedia);
         }
     }
 

@@ -78,7 +78,7 @@ public class OverdraftReadPlatformServiceImpl implements OverdraftReadPlatformSe
             final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
             final Long savingsAccountId = savingsAccount.getId();
             String sql = "UPDATE m_savings_account ms SET ms.allow_overdraft=?, ms.overdraft_limit=?, ms.nominal_annual_interest_rate_overdraft=? WHERE ms.id=?";
-            this.jdbcTemplate.update(sql, false, 0, 0, savingsAccountId);
+            this.jdbcTemplate.update(sql, true, 0, 0, savingsAccountId);
         }
         log.info("{}: Records overdraft due: {}", ThreadLocalContextUtil.getTenant().getName(), overdraftDue.size());
     }

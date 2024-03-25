@@ -46,7 +46,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-@Path("/self/savingsaccounts/business/{savingsId}")
+@Path("/self/savingsaccounts/business")
 @Component
 @Scope("singleton")
 
@@ -74,7 +74,7 @@ public class SelfSavingsBusinessApiResource {
     }
 
     @GET
-    @Path("/transactions")
+    @Path("/{savingsId}/transactions")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
@@ -97,10 +97,10 @@ public class SelfSavingsBusinessApiResource {
     }
 
     @GET
+    @Path("/{clientId}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public String retrieveAll(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
-            @QueryParam("clientId") @Parameter(description = "clientId") final Long clientId,
+    public String retrieveAllAccounts(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo,
             @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
             @QueryParam("depositTypeId") @Parameter(description = "depositTypeId") final Integer depositTypeId,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
@@ -111,7 +111,6 @@ public class SelfSavingsBusinessApiResource {
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
 
         validateAppuserClientsMapping(clientId);
-        validateAppuserSavingsAccountMapping(savingsId);
         final Boolean accountWithBalance = false;
         final String displayName = null;
         final Long productId = null;

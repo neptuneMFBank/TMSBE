@@ -74,7 +74,7 @@ public class SelfSavingsBusinessApiResource {
     }
 
     @GET
-    @Path("/{savingsId}/transactions")
+    @Path("{savingsId}/transactions")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
@@ -97,7 +97,7 @@ public class SelfSavingsBusinessApiResource {
     }
 
     @GET
-    @Path("/{clientId}")
+    @Path("{clientId}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public String retrieveAllAccounts(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo,

@@ -20,7 +20,7 @@
 CREATE TABLE `m_loanproduct_visibility_config` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(150) NOT NULL,
-  `description` VARCHAR(150) NOT NULL,
+  `description` VARCHAR(255) DEFAULT NULL,
   `created_by` bigint DEFAULT NULL,
   `created_on_utc` datetime DEFAULT NULL,
   `last_modified_by` bigint DEFAULT NULL,

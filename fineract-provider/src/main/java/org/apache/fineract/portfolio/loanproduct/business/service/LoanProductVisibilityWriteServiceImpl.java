@@ -124,7 +124,7 @@ public class LoanProductVisibilityWriteServiceImpl implements LoanProductVisibil
         }
 
         try {
-            LoanProductVisibilityConfig newLoanProductVisibilityConfig = LoanProductVisibilityConfig.createConfig(name, description, loanProductList, clientClassificationList, clientTypeList, legalEnumList);
+            final LoanProductVisibilityConfig newLoanProductVisibilityConfig = LoanProductVisibilityConfig.createConfig(name, description, loanProductList, clientClassificationList, clientTypeList, legalEnumList);
 
             this.repositoryWrapper.saveAndFlush(newLoanProductVisibilityConfig);
 

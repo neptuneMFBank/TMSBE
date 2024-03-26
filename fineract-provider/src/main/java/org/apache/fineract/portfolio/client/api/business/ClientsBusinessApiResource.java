@@ -437,7 +437,7 @@ public class ClientsBusinessApiResource {
     }
 
     @GET
-    @Path("{clientId}/loanproductvisibility")
+    @Path("{clientId}/loanproducts/visibility")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public String retrieveVisibileLoanProduct(@PathParam("clientId") final Long clientId) {

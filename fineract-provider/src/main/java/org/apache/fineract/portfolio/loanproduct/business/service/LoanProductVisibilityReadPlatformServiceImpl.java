@@ -269,6 +269,7 @@ public class LoanProductVisibilityReadPlatformServiceImpl implements LoanProduct
 
     @Override
     public Collection<JsonArray> retrieveVisibileLoanProductForClient(final Long clientId) {
+        this.context.authenticatedUser();
         Client client = this.clientRepository.findOneWithNotFoundDetection(clientId);
         List<Object> paramList = new ArrayList<>(Arrays.asList());
 
@@ -285,26 +286,29 @@ public class LoanProductVisibilityReadPlatformServiceImpl implements LoanProduct
 
         if (clientClassificationId != null) {
             paramList.add("%," + clientClassificationId + ",%");
-            extraCriteria += " where mlpvc.client_classifications collate utf8mb4_unicode_ci like ? ";
+            extraCriteria += " and mlpvc.client_classifications like ? ";
         } else {
-            extraCriteria += " where mlpvc.client_classifications is null ";
+            extraCriteria += " and mlpvc.client_classifications is null ";
         }
 
         if (clientTypeId != null) {
             paramList.add("%," + clientTypeId + ",%");
-
-            extraCriteria += " and mlpvc.client_types  collate utf8mb4_unicode_ci like ? ";
+            extraCriteria += " and mlpvc.client_types  like ? ";
         } else {
             extraCriteria += " and mlpvc.client_types is null ";
         }
+
         if (legalFormId != null) {
             paramList.add("%," + legalFormId + ",%");
-
-            extraCriteria += " and mlpvc.legal_enums collate utf8mb4_unicode_ci like ? ";
+            extraCriteria += " and mlpvc.legal_enums like ? ";
         } else {
             extraCriteria += " and mlpvc.legal_enums is null ";
         }
 
+        if (StringUtils.isNotBlank(extraCriteria)) {
+            extraCriteria = extraCriteria.substring(4);
+            extraCriteria += " where " + extraCriteria;
+        }
         sqlBuilder.append(extraCriteria);
         final Collection<JsonArray> loanProductIds = this.jdbcTemplate.query(sqlBuilder.toString(), this.loanProductsMapper, paramList.toArray());
         return loanProductIds;

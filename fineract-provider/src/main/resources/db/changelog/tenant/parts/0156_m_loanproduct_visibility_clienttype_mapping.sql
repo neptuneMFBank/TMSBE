@@ -25,4 +25,4 @@ CREATE TABLE `m_loanproduct_visibility_clienttype_mapping` (
   UNIQUE KEY `config_id_clienttypeid` (`config_id`,`clienttype_id`),
   CONSTRAINT `m_loanproduct_visibility_clienttypeid_config_id` FOREIGN KEY (`config_id`) REFERENCES `m_loanproduct_visibility_config` (`id`),
     CONSTRAINT `m_code_value_clienttype_id` FOREIGN KEY (`clienttype_id`) REFERENCES `m_code_value` (`id`) 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -174,4 +174,5 @@
     <include file="parts/0158_m_update_loanproduct_visibility_config_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0159_m_delete_loanproduct_visibility_config_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0160_loan_product_visibility_config_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0161_m_read_loanproduct_visibility_config_permission.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

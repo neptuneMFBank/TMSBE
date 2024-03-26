@@ -29,5 +29,5 @@ CREATE TABLE `m_loanproduct_visibility_config` (
   UNIQUE KEY `loanproduct_visibility_config_name` (`name`),
    CONSTRAINT `m_loanproduct_visibility_config_FK_createdby_id` FOREIGN KEY (`created_by`) REFERENCES `m_appuser` (`id`),
   CONSTRAINT `m_loanproduct_visibility_config_FK_lastmodifiedby_id` FOREIGN KEY (`last_modified_by`) REFERENCES `m_appuser` (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
  

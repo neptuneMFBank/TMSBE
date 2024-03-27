@@ -315,4 +315,16 @@ public class SelfClientsBusinessApiResource {
         return this.clientsBusinessApiResource.retrieveVisibileLoanProduct(clientId);
     }
 
+    @GET
+    @Path("exist")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public String isClientExisting(
+            @PathParam("clientId") final Long clientId,
+            @QueryParam("email") final String email, @QueryParam("mobileNo") final String mobileNo,
+            @QueryParam("altMobileNo") final String altMobileNo, @QueryParam("bvn") final String bvn, @QueryParam("nin") final String nin,
+            @QueryParam("tin") final String tin) {
+        validateAppuserClientsMapping(clientId);
+        return this.clientsBusinessApiResource.isClientExisting(email, mobileNo, altMobileNo, bvn, nin, tin);
+    }
 }

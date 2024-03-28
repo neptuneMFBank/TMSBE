@@ -84,7 +84,7 @@ public class SelfDocumentManagementApiResource {
     @Produces({MediaType.APPLICATION_JSON})
     public String createBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
-        validateAppuser(entityType, entityId);
+        validateAppuser(entityType, entityId, null);
         return this.documentBusinessManagementApiResource.createBase64Document(entityType, entityId, apiRequestBodyAsJson);
     }
 
@@ -94,7 +94,7 @@ public class SelfDocumentManagementApiResource {
     @Produces({MediaType.APPLICATION_JSON})
     public String createBulkBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
-        validateAppuser(entityType, entityId);
+        validateAppuser(entityType, entityId, null);
         return this.documentBusinessManagementApiResource.createBulkBase64Document(entityType, entityId, apiRequestBodyAsJson);
     }
 
@@ -105,17 +105,17 @@ public class SelfDocumentManagementApiResource {
     public String retrieveAttachment(@PathParam("documentId") @Parameter(description = "documentId") final Long documentId,
             @PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId) {
-        validateAppuser(entityType, entityId);
+        validateAppuser(entityType, null, documentId);
         return this.documentBusinessManagementApiResource.retrieveAttachment(documentId, entityType, entityId);
     }
 
-    private void validateAppuser(final String entityType, final Long entityId) {
+    private void validateAppuser(final String entityType, final Long entityId, final Long documentId) {
         if (StringUtils.equalsIgnoreCase(entityType, DocumentManagementEntity.LOANS.name())) {
             validateAppuserLoanMapping(entityId);
         } else if (StringUtils.equalsIgnoreCase(entityType, DocumentManagementEntity.CLIENTS.name())) {
             validateAppuserClientsMapping(entityId);
         } else if (StringUtils.equalsIgnoreCase(entityType, DocumentManagementEntity.CLIENT_IDENTIFIERS.name())) {
-            validateAppuserClientIdentfiersMapping(entityId);
+            validateAppuserClientIdentfiersMapping(documentId);
         } else if (StringUtils.equalsIgnoreCase(entityType, DocumentManagementEntity.SAVINGS.name())) {
             validateAppuserSavingsAccountMapping(entityId);
         } else {

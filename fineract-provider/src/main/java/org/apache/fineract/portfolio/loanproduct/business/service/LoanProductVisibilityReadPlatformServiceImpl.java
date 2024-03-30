@@ -307,7 +307,7 @@ public class LoanProductVisibilityReadPlatformServiceImpl implements LoanProduct
 
         if (StringUtils.isNotBlank(extraCriteria)) {
             extraCriteria = extraCriteria.substring(4);
-            extraCriteria += " where " + extraCriteria;
+            extraCriteria = " where " + extraCriteria;
         }
         sqlBuilder.append(extraCriteria);
         final Collection<JsonArray> loanProductIds = this.jdbcTemplate.query(sqlBuilder.toString(), this.loanProductsMapper, paramList.toArray());

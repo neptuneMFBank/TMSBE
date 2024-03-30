@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.infrastructure.security.data;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.useradministration.data.RoleData;
@@ -61,6 +62,9 @@ public class AuthenticatedUserData {
     @SuppressWarnings("unused")
     private Boolean firstTimeLoginRemaining;
 
+     @SuppressWarnings("unused")
+    private LocalDateTime LastLoggedIn;
+     
     public AuthenticatedUserData(final String username, final Collection<String> permissions) {
         this.username = username;
         this.userId = null;
@@ -120,4 +124,7 @@ public class AuthenticatedUserData {
         this.firstTimeLoginRemaining = firstTimeLoginRemaining;
     }
 
+    public void setLastLoggedIn(LocalDateTime LastLoggedIn) {
+        this.LastLoggedIn = LastLoggedIn;
+    }  
 }

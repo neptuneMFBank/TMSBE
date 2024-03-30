@@ -29,6 +29,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -45,6 +46,7 @@ import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer
 import org.apache.fineract.infrastructure.security.constants.TwoFactorConstants;
 import org.apache.fineract.infrastructure.security.data.AuthenticatedUserData;
 import org.apache.fineract.infrastructure.security.service.SpringSecurityPlatformSecurityContext;
+import org.apache.fineract.infrastructure.security.service.business.AuthenticationBusinessReadPlatformService;
 import org.apache.fineract.infrastructure.security.service.business.AuthenticationBusinessWritePlatformService;
 import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
 import org.apache.fineract.useradministration.data.RoleData;
@@ -82,6 +84,7 @@ public class AuthenticationApiResource {
     private final SpringSecurityPlatformSecurityContext springSecurityPlatformSecurityContext;
     private final ClientReadPlatformService clientReadPlatformService;
     private final AuthenticationBusinessWritePlatformService authenticationBusinessWritePlatformService;
+    private final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService;
 
     @Autowired
     public AuthenticationApiResource(
@@ -89,12 +92,14 @@ public class AuthenticationApiResource {
             final ToApiJsonSerializer<AuthenticatedUserData> apiJsonSerializerService,
             final SpringSecurityPlatformSecurityContext springSecurityPlatformSecurityContext,
             ClientReadPlatformService aClientReadPlatformService,
-            final AuthenticationBusinessWritePlatformService authenticationBusinessWritePlatformService) {
+            final AuthenticationBusinessWritePlatformService authenticationBusinessWritePlatformService,
+            final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService) {
         this.customAuthenticationProvider = customAuthenticationProvider;
         this.apiJsonSerializerService = apiJsonSerializerService;
         this.springSecurityPlatformSecurityContext = springSecurityPlatformSecurityContext;
         clientReadPlatformService = aClientReadPlatformService;
         this.authenticationBusinessWritePlatformService = authenticationBusinessWritePlatformService;
+        this.authenticationBusinessReadPlatformService = authenticationBusinessReadPlatformService;
     }
 
     @POST
@@ -166,12 +171,14 @@ public class AuthenticationApiResource {
             authenticatedUserData.setFirstTimeLoginRemaining(principal.isFirstTimeLoginRemaining());
 
         }
-
+        
         if (userId != null) {
             final JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("username", request.username);
             // log the current user
             this.authenticationBusinessWritePlatformService.loggedUserLogIn(jsonObject.toString(), userId);
+            LocalDateTime lastLoginDate = this.authenticationBusinessReadPlatformService.lastLoginDate(userId);
+            authenticatedUserData.setLastLoggedIn(lastLoginDate);
         }
         return this.apiJsonSerializerService.serialize(authenticatedUserData);
     }

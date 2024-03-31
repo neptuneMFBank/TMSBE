@@ -20,12 +20,14 @@ package org.apache.fineract.useradministration.service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.infrastructure.security.service.business.AuthenticationBusinessReadPlatformService;
 import org.apache.fineract.organisation.office.data.OfficeData;
 import org.apache.fineract.organisation.office.service.OfficeReadPlatformService;
 import org.apache.fineract.organisation.staff.data.StaffData;
@@ -54,9 +56,10 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
     private final RoleReadPlatformService roleReadPlatformService;
     private final AppUserRepository appUserRepository;
     private final StaffReadPlatformService staffReadPlatformService;
+    private final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService;
 
     @Autowired
-    public AppUserReadPlatformServiceImpl(final PlatformSecurityContext context, final JdbcTemplate jdbcTemplate,
+    public AppUserReadPlatformServiceImpl(final PlatformSecurityContext context, final JdbcTemplate jdbcTemplate, final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService,
             final OfficeReadPlatformService officeReadPlatformService, final RoleReadPlatformService roleReadPlatformService,
             final AppUserRepository appUserRepository, final StaffReadPlatformService staffReadPlatformService) {
         this.context = context;
@@ -65,6 +68,7 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
         this.appUserRepository = appUserRepository;
         this.jdbcTemplate = jdbcTemplate;
         this.staffReadPlatformService = staffReadPlatformService;
+        this.authenticationBusinessReadPlatformService = authenticationBusinessReadPlatformService;
     }
 
     /*
@@ -85,7 +89,7 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
         final AppUserMapper mapper = new AppUserMapper(this.roleReadPlatformService, this.staffReadPlatformService);
         final String sql = "select " + mapper.schema();
 
-        return this.jdbcTemplate.query(sql, mapper, new Object[] { hierarchySearchString }); // NOSONAR
+        return this.jdbcTemplate.query(sql, mapper, new Object[]{hierarchySearchString}); // NOSONAR
     }
 
     @Override
@@ -97,7 +101,7 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
         final AppUserLookupMapper mapper = new AppUserLookupMapper();
         final String sql = "select " + mapper.schema();
 
-        return this.jdbcTemplate.query(sql, mapper, new Object[] { hierarchySearchString }); // NOSONAR
+        return this.jdbcTemplate.query(sql, mapper, new Object[]{hierarchySearchString}); // NOSONAR
     }
 
     @Override
@@ -151,6 +155,8 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
             retUser.setClients(clients);
         }
         retUser.setFirstTimeLoginRemaining(user.isFirstTimeLoginRemaining());
+        final LocalDateTime lastLoginDate = this.authenticationBusinessReadPlatformService.lastLoginDate(userId);
+        retUser.setLastLoggedIn(lastLoginDate);
         return retUser;
     }
 
@@ -217,7 +223,7 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
     @Override
     public boolean isUsernameExist(String username) {
         String sql = "select count(*) from m_appuser where username = ?";
-        Object[] params = new Object[] { username };
+        Object[] params = new Object[]{username};
         Integer count = this.jdbcTemplate.queryForObject(sql, Integer.class, params);
         if (count == 0) {
             return false;

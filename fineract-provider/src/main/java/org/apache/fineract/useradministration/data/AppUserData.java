@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.useradministration.data;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -58,6 +59,7 @@ public final class AppUserData {
     private Set<ClientData> clients;
 
     private Boolean active;
+    private LocalDateTime lastLoggedIn;
 
     public static AppUserData importInstance(Long officeId, Long staffId, String username, String firstname, String lastname, String email,
             Boolean sendPasswordToEmail, Boolean passwordNeverExpires, List<Long> roleIds, Integer rowIndex) {
@@ -193,6 +195,10 @@ public final class AppUserData {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setLastLoggedIn(LocalDateTime lastLoggedIn) {
+        this.lastLoggedIn = lastLoggedIn;
     }
 
 }

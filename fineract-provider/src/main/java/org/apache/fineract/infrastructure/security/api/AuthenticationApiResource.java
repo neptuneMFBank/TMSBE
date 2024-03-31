@@ -103,13 +103,13 @@ public class AuthenticationApiResource {
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Verify authentication", description = "Authenticates the credentials provided and returns the set roles and permissions allowed.")
     @RequestBody(required = true, content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationRequest.class)))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Unauthenticated. Please login") })
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Unauthenticated. Please login")})
     public String authenticate(@Parameter(hidden = true) final String apiRequestBodyAsJson,
             @QueryParam("returnClientList") @DefaultValue("false") boolean returnClientList) {
         // TODO FINERACT-819: sort out Jersey so JSON conversion does not have
@@ -171,13 +171,13 @@ public class AuthenticationApiResource {
             authenticatedUserData.setFirstTimeLoginRemaining(principal.isFirstTimeLoginRemaining());
 
         }
-        
+
         if (userId != null) {
             final JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("username", request.username);
             // log the current user
             this.authenticationBusinessWritePlatformService.loggedUserLogIn(jsonObject.toString(), userId);
-            LocalDateTime lastLoginDate = this.authenticationBusinessReadPlatformService.lastLoginDate(userId);
+            final LocalDateTime lastLoginDate = this.authenticationBusinessReadPlatformService.lastLoginDate(userId);
             authenticatedUserData.setLastLoggedIn(lastLoginDate);
         }
         return this.apiJsonSerializerService.serialize(authenticatedUserData);

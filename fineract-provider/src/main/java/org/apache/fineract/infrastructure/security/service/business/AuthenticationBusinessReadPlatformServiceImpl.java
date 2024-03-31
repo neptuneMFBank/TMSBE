@@ -23,9 +23,8 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
-import org.apache.fineract.useradministration.domain.AppUser;
-import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -34,30 +33,31 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthenticationBusinessReadPlatformServiceImpl implements AuthenticationBusinessReadPlatformService {
 
-    private final AppUserRepositoryWrapper appUserRepositoryWrapper;
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public AuthenticationBusinessReadPlatformServiceImpl(final AppUserRepositoryWrapper appUserRepositoryWrapper,
+    public AuthenticationBusinessReadPlatformServiceImpl(
             final JdbcTemplate jdbcTemplate) {
-        this.appUserRepositoryWrapper = appUserRepositoryWrapper;
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public LocalDateTime lastLoginDate(final Long userId) {
-        final AppUser appUser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
+        try {
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            final lastLoginDateMapper ptm = new lastLoginDateMapper();
 
-        final StringBuilder sqlBuilder = new StringBuilder(200);
-        final lastLoginDateMapper ptm = new lastLoginDateMapper();
-        
-        String lastLoginSql = "SELECT  mllv.last_login_date  as lastLoginDate"
-                + " FROM fineract_default.m_users_details_view mllv "
-                + " where  user_id = " + userId;
-        sqlBuilder.append(lastLoginSql);
+            String lastLoginSql = "SELECT  mllv.last_login_date  as lastLoginDate"
+                    + " FROM fineract_default.m_users_details_view mllv "
+                    + " where  user_id = " + userId;
+            sqlBuilder.append(lastLoginSql);
 
-        final LocalDateTime lastLoginDate = this.jdbcTemplate.queryForObject(sqlBuilder.toString(), ptm);
-        return lastLoginDate;
+            final LocalDateTime lastLoginDate = this.jdbcTemplate.queryForObject(sqlBuilder.toString(), ptm);
+            return lastLoginDate;
+        } catch (DataAccessException e) {
+            log.warn("lastLoginDateException: {}", e);
+            return null;
+        }
     }
 
     private static final class lastLoginDateMapper implements RowMapper<LocalDateTime> {

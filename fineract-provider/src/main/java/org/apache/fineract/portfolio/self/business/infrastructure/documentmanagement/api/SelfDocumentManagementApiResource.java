@@ -105,7 +105,7 @@ public class SelfDocumentManagementApiResource {
     public String retrieveAttachment(@PathParam("documentId") @Parameter(description = "documentId") final Long documentId,
             @PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId) {
-        validateAppuser(entityType, null, documentId);
+        validateAppuser(entityType, entityId, documentId);
         return this.documentBusinessManagementApiResource.retrieveAttachment(documentId, entityType, entityId);
     }
 

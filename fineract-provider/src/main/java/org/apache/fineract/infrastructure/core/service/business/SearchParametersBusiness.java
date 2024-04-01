@@ -84,6 +84,51 @@ public final class SearchParametersBusiness {
     private final Long transactionTypeId;
     private final Long transactionId;
 
+    public static SearchParametersBusiness forSavingsAmountOnHold(Integer offset, Integer limit, String orderBy, String sortOrder, Long productId, LocalDate fromDate, LocalDate toDate, String accountNo, Long officeId, Long clientId, String displayName) {
+        final Long classificationId = null;
+        final Boolean active = null;
+        final Long organisationalRoleEnumId = null;
+        final Long staffId = null;
+        final Long industryId = null;
+        final String email = null;
+        final String mobile = null;
+        final Integer legalFormId = null;
+        final Boolean isSelfUser = null;
+        final Boolean showLoanProducts = null;
+        final Boolean showSavingsProducts = null;
+        final Long savingsId = null;
+        final String status = null;
+        final Long categoryId = null;
+        final Long provisioningEntryId = null;
+        final String currencyCode = null;
+        final String firstname = null;
+        final String lastname = null;
+        final Long loanId = null;
+        final Long overdraftId = null;
+
+        final String sqlSearch = null;
+
+        final String hierarchy = null;
+        final String username = null;
+        final Integer type = null;
+        final Long documentConfigId = null;
+        final Long staffSupervisorId = null;
+        final Boolean isSupervisor = null;
+        final Boolean isLoanOfficer = null;
+
+        final Long transactionTypeId = null;
+        final Long transactionId = null;
+        final Integer depositTypeId = null;
+        final Integer statusId = null;
+        final String externalId = null;
+        final Boolean orphansOnly = null;
+        return new SearchParametersBusiness(sqlSearch, officeId, externalId, displayName, hierarchy, firstname, lastname, offset, limit,
+                orderBy, sortOrder, staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
+                productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
+                showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId,
+                username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer, overdraftId, transactionTypeId, transactionId);
+    }
+
     public static SearchParametersBusiness forAudit(final LocalDate fromDate, final LocalDate toDate, Boolean isChecker, String actionName,
             String entityName, Long resourceId, Long makerCheckerId, Integer processingResult, Long officeId, Long groupId, Long clientId,
             Long loanId, Long savingsAccountId, Integer offset, Integer limit, String orderBy, String sortOrder) {

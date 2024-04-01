@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.savings.api.business;
 
+import com.google.gson.JsonObject;
 import static org.apache.fineract.portfolio.savings.business.DepositsBusinessApiConstants.DEPOSIT_RESPONSE_DATA_PARAMETERS;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -288,4 +289,67 @@ public class DepositsBusinessApiResource {
         return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
     }
 
+    @GET
+    @Path("interbank/transfer")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "List InterBank Transfer Amount on Hold", description = "The list capability of amount on hold waiting for interBank transfer response")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+        )})
+    public String retrieveAllSavingsAmountOnHold(@Context final UriInfo uriInfo,
+            @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
+            @QueryParam("productId") @Parameter(description = "productId") final Long productId,
+            @QueryParam("clientId") @Parameter(description = "clientId") final Long clientId,
+            @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
+            @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @DefaultValue("en") @QueryParam("locale") final String locale,
+            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
+
+        this.context.authenticatedUser().validateHasReadPermission(DepositsBusinessApiConstants.RESOURCE_NAME);
+
+        LocalDate fromDate = null;
+        if (startPeriod != null) {
+            fromDate = startPeriod.getDate(LoanBusinessApiConstants.startPeriodParameterName, dateFormat, locale);
+        }
+        LocalDate toDate = null;
+        if (endPeriod != null) {
+            toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
+        }
+
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forSavingsAmountOnHold(offset, limit, orderBy, sortOrder, productId,
+                fromDate, toDate, accountNo, officeId, clientId, displayName);
+
+        final Page<JsonObject> allSavingsAmountOnHoldData = this.depositsBusinessReadPlatformService.retrieveAllSavingsAmountOnHold(searchParameters);
+
+        //final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiJsonSerializer.serialize(allSavingsAmountOnHoldData);
+    }
+
+    @GET
+    @Path("interbank/transfer/{savingsAmountOnHoldId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve InterBank Transfer Amount on Hold", description = "")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+        )})
+    public String retrieveSavingsAmountOnHold(@PathParam("savingsAmountOnHoldId") @Parameter(description = "savingsAmountOnHoldId") final Long savingsAmountOnHoldId,
+            @Context final UriInfo uriInfo) {
+        this.context.authenticatedUser().validateHasReadPermission(DepositsBusinessApiConstants.RESOURCE_NAME);
+
+        //final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        final JsonObject savingsAmountOnHoldData = this.depositsBusinessReadPlatformService.retrieveSavingsAmountOnHold(savingsAmountOnHoldId);
+
+        return this.toApiJsonSerializer.serialize(savingsAmountOnHoldData);
+    }
 }

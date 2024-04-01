@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +54,7 @@ import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountStatusEnumData;
 import org.apache.fineract.portfolio.savings.data.business.DepositAccountBusinessData;
 import org.apache.fineract.portfolio.savings.exception.DepositAccountNotFoundException;
+import org.apache.fineract.portfolio.savings.exception.SavingsAccountTransactionNotFoundException;
 import org.apache.fineract.portfolio.savings.service.SavingsEnumerations;
 import org.apache.fineract.simplifytech.data.GeneralConstants;
 import org.springframework.dao.DataAccessException;
@@ -73,6 +75,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
     private final PaginationHelper paginationHelper;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
     private final DepositViewMapper depositViewMapper = new DepositViewMapper();
+    private final SavingsAmountOnHoldDataMapper savingsAmountOnHoldDataMapper = new SavingsAmountOnHoldDataMapper();
     private final ReconciliationWalletSummaryMapper reconciliationWalletSummaryMapper = new ReconciliationWalletSummaryMapper();
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
 
@@ -322,6 +325,173 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
         } catch (DataAccessException e) {
             log.warn("retrieveName: {}", e);
             throw new DepositAccountNotFoundException("Deposit account with account " + accountNo + " does not exist");
+        }
+    }
+
+    @Override
+    public Page<JsonObject> retrieveAllSavingsAmountOnHold(SearchParametersBusiness searchParameters) {
+
+        final String userOfficeHierarchy = this.context.officeHierarchy();
+        final String underHierarchySearchString = userOfficeHierarchy + "%";
+
+        List<Object> paramList = new ArrayList<>(Arrays.asList(underHierarchySearchString));
+        final StringBuilder sqlBuilder = new StringBuilder(200);
+        sqlBuilder.append("select ");
+        sqlBuilder.append(sqlGenerator.calcFoundRows());
+        sqlBuilder.append(" ");
+        sqlBuilder.append(this.savingsAmountOnHoldDataMapper.schema());
+
+        sqlBuilder.append(" where sav.hierarchy like ? ");
+
+        if (searchParameters != null) {
+
+            final String extraCriteria = buildSqlStringFromSavingsAmountOnHoldCriteria(searchParameters, paramList);
+
+            if (StringUtils.isNotBlank(extraCriteria)) {
+                sqlBuilder.append(" and (").append(extraCriteria).append(")");
+            }
+
+            if (searchParameters.isOrderByRequested()) {
+                sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
+                this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getOrderBy());
+                if (searchParameters.isSortOrderProvided()) {
+                    sqlBuilder.append(' ').append(searchParameters.getSortOrder());
+                    this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getSortOrder());
+                }
+            }
+
+            if (searchParameters.isLimited()) {
+                sqlBuilder.append(" ");
+                if (searchParameters.isOffset()) {
+                    sqlBuilder.append(sqlGenerator.limit(searchParameters.getLimit(), searchParameters.getOffset()));
+                } else {
+                    sqlBuilder.append(sqlGenerator.limit(searchParameters.getLimit()));
+                }
+            }
+        }
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.savingsAmountOnHoldDataMapper);
+    }
+
+    private String buildSqlStringFromSavingsAmountOnHoldCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
+        final Long productId = searchParameters.getProductId();
+        final Long clientId = searchParameters.getClientId();
+        final Long officeId = searchParameters.getOfficeId();
+        final String accountNo = searchParameters.getAccountNo();
+        final String displayName = searchParameters.getName();
+
+        String extraCriteria = "";
+
+        if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
+            final LocalDate startPeriod = searchParameters.getFromDate();
+            final LocalDate endPeriod = searchParameters.getToDate();
+            final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
+            if (startPeriod != null && endPeriod != null) {
+                extraCriteria += " and CAST(sav.created_date AS DATE) BETWEEN ? AND ? ";
+                paramList.add(df.format(startPeriod));
+                paramList.add(df.format(endPeriod));
+            } else if (startPeriod != null) {
+                extraCriteria += " and CAST(sav.created_date AS DATE) >= ? ";
+                paramList.add(df.format(startPeriod));
+            } else if (endPeriod != null) {
+                extraCriteria += " and CAST(sav.created_date AS DATE) <= ? ";
+                paramList.add(df.format(endPeriod));
+            }
+        }
+
+        if (searchParameters.isClientIdPassed()) {
+            paramList.add(clientId);
+            extraCriteria += " and sav.client_id = ? ";
+        }
+        if (searchParameters.isProductIdPassed()) {
+            paramList.add(productId);
+            extraCriteria += " and sav.product_id = ? ";
+        }
+        if (searchParameters.isNamePassed()) {
+            paramList.add("%" + displayName + "%");
+            extraCriteria += " and sav.display_name like ? ";
+        }
+
+        if (searchParameters.isAccountNoPassed()) {
+            paramList.add(accountNo);
+            extraCriteria += " and sav.account_no = ? ";
+        }
+        if (searchParameters.isOfficeIdPassed()) {
+            extraCriteria += " and sav.office_id = ? ";
+            paramList.add(officeId);
+        }
+        if (StringUtils.isNotBlank(extraCriteria)) {
+            extraCriteria = extraCriteria.substring(4);
+        }
+        return extraCriteria;
+    }
+
+    @Override
+    public JsonObject retrieveSavingsAmountOnHold(Long savingsAmountOnHoldId) {
+        this.context.authenticatedUser();
+        try {
+            final String sql = "select " + savingsAmountOnHoldDataMapper.schema() + " where sav.id = ?";
+            return this.jdbcTemplate.queryForObject(sql, savingsAmountOnHoldDataMapper, new Object[]{savingsAmountOnHoldId});
+        } catch (DataAccessException e) {
+            log.error("SavingsAmountOnHold not found: {}", e);
+            throw new SavingsAccountTransactionNotFoundException(savingsAmountOnHoldId, savingsAmountOnHoldId);
+        }
+    }
+
+    private static final class SavingsAmountOnHoldDataMapper implements RowMapper<JsonObject> {
+
+        public String schema() {
+            final StringBuilder accountsSummary = new StringBuilder(
+                    " sav.id, sav.savings_account_id, sav.amount, sav.account_no, sav.product_id, sav.product_name, sav.client_id, "
+                    + " sav.display_name, sav.office_id, sav.office_name, sav.mobile_no, sav.email_address, sav.bvn, sav.nin, "
+                    + " sav.tin, sav.alternateMobileNumber, sav.appuser_id, sav.originator, "
+                    + " sav.created_date from m_savings_account_transaction sav ");
+
+            return accountsSummary.toString();
+        }
+
+        @Override
+        public JsonObject mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final Long savingsId = rs.getLong("savings_account_id");
+            final BigDecimal amount = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "amount");
+            final String accountNo = rs.getString("account_no");
+            final Long productId = rs.getLong("product_id");
+            final String productName = rs.getString("product_name");
+            final Long clientId = rs.getLong("client_id");
+            final String displayName = rs.getString("display_name");
+            final String officeName = rs.getString("office_name");
+            final String mobileNo = rs.getString("mobile_no");
+            final String emailAddress = rs.getString("email_address");
+            final String bvn = rs.getString("bvn");
+            final String nin = rs.getString("nin");
+            final String tin = rs.getString("tin");
+            final String alternateMobileNumber = rs.getString("alternateMobileNumber");
+            final Long appuserId = rs.getLong("appuser_id");
+            final String originator = rs.getString("originator");
+            final LocalDateTime createdDateTime = JdbcSupport.getLocalDateTime(rs, "created_date");
+
+            final JsonObject savingsAmountOnHold = new JsonObject();
+            savingsAmountOnHold.addProperty("id", id);
+            savingsAmountOnHold.addProperty("savingsId", savingsId);
+            savingsAmountOnHold.addProperty("amount", amount);
+            savingsAmountOnHold.addProperty("accountNo", accountNo);
+            savingsAmountOnHold.addProperty("productId", productId);
+            savingsAmountOnHold.addProperty("productName", productName);
+            savingsAmountOnHold.addProperty("clientId", clientId);
+            savingsAmountOnHold.addProperty("displayName", displayName);
+            savingsAmountOnHold.addProperty("officeName", officeName);
+            savingsAmountOnHold.addProperty("mobileNo", mobileNo);
+            savingsAmountOnHold.addProperty("emailAddress", emailAddress);
+            savingsAmountOnHold.addProperty("bvn", bvn);
+            savingsAmountOnHold.addProperty("nin", nin);
+            savingsAmountOnHold.addProperty("tin", tin);
+            savingsAmountOnHold.addProperty("alternateMobileNumber", alternateMobileNumber);
+            savingsAmountOnHold.addProperty("appuserId", appuserId);
+            savingsAmountOnHold.addProperty("originator", originator);
+            savingsAmountOnHold.addProperty("createdDateTime", createdDateTime.toString());
+
+            return savingsAmountOnHold;
         }
     }
 

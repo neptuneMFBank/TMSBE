@@ -299,7 +299,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             // withdraw upFrontWithdrawal Fees/Interest
             BigDecimal sumUpfrontWithdrawalCharges = loanCharges.stream()
                     .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer() && chg.isChargePending() && chg.isActive()
-                            && chg.isUpfrontWithdrawalCharge())
+                    && chg.isUpfrontWithdrawalCharge())
                     .map(mapper -> mapper.amountOutstanding()).reduce(BigDecimal.ZERO, BigDecimal::add);
             sumUpfrontWithdrawalCharges = sumUpfrontWithdrawalCharges.setScale(2, RoundingMode.HALF_EVEN);
             if (sumUpfrontWithdrawalCharges.compareTo(BigDecimal.ZERO) > 0) {
@@ -325,7 +325,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 // withdraw upFrontFees
                 BigDecimal sumUpfrontCharges = loanCharges.stream()
                         .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer() && chg.isChargePending() && chg.isActive()
-                                && chg.isUpfrontCharge())
+                        && chg.isUpfrontCharge())
                         .map(mapper -> mapper.amountOutstanding()).reduce(BigDecimal.ZERO, BigDecimal::add);
                 sumUpfrontCharges = sumUpfrontCharges.setScale(2, RoundingMode.HALF_EVEN);
                 if (sumUpfrontCharges.compareTo(BigDecimal.ZERO) > 0) {
@@ -338,7 +338,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
                 // then hold the rest
                 BigDecimal sumUpfrontChargesHold = loanCharges.stream()
                         .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer() && chg.isChargePending() && chg.isActive()
-                                && chg.isUpfrontHoldCharge())
+                        && chg.isUpfrontHoldCharge())
                         .map(mapper -> mapper.amountOutstanding()).reduce(BigDecimal.ZERO, BigDecimal::add);
                 sumUpfrontChargesHold = sumUpfrontChargesHold.setScale(2, RoundingMode.HALF_EVEN);
                 if (sumUpfrontChargesHold.compareTo(BigDecimal.ZERO) > 0) {

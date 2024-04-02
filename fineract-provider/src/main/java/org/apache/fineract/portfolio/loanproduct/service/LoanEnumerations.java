@@ -601,7 +601,7 @@ public final class LoanEnumerations {
         return optionData;
     }
 
-    public static EnumOptionData interestRecalculationCompoundingType(final int id) {
+    public static EnumOptionData interestRecalculationCompoundingType(final Integer id) {
         return interestRecalculationCompoundingType(InterestRecalculationCompoundingMethod.fromInt(id));
     }
 

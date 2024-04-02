@@ -356,7 +356,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
     public ApiResponseMessage validateCustomer(String apiRequestBodyAsJson, Boolean isMerchant) {
         final ApiResponseMessage apiResponseMessage = new ApiResponseMessage();
         apiResponseMessage.setStatus(HttpStatus.NOT_FOUND.value());
-        apiResponseMessage.setMessage("Record not found");
+        apiResponseMessage.setMessage("Your data does not exist, please signup");
 
         this.selfServiceRegistrationCommandFromApiJsonDeserializer.validateMode(apiRequestBodyAsJson);
         Gson gson = new Gson();
@@ -372,7 +372,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
             client = this.clientRepository.findByEmailAddress(value);
             if (ObjectUtils.isNotEmpty(client)) {
                 apiResponseMessage.setStatus(HttpStatus.OK.value());
-                apiResponseMessage.setMessage("Record found");
+                apiResponseMessage.setMessage("You have an existing account, try login or use forget password");
 
             }
         } else if (isMobileAuthenticationMode) {
@@ -380,7 +380,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
             client = this.clientRepository.findByMobileNo(value);
             if (ObjectUtils.isNotEmpty(client)) {
                 apiResponseMessage.setStatus(HttpStatus.OK.value());
-                apiResponseMessage.setMessage("Record found");
+                apiResponseMessage.setMessage("You have an existing account, try login or use forget password");
             }
         } else {
             throw new PlatformDataIntegrityException("error.msg.customer.validate.mode", "Validation mode not supported");

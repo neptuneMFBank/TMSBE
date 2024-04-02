@@ -20,7 +20,7 @@
 -- VIEW FOR CLIENT
 CREATE OR REPLACE VIEW m_savings_amount_on_hold_view AS
 SELECT msat.id, msat.savings_account_id, msat.amount, msa.account_no, msa.product_id, msp.name product_name, msa.client_id,
-mc.display_name, mc.office_id, mo.name office_name, mo.hierarchy,
+mc.display_name, mc.office_id, mo.name office_name, mo.hierarchy, msat.reason_for_block,
 mc.mobile_no, mc.email_address, slk.bvn, slk.nin, slk.tin, slk.alternateMobileNumber, 
 msat.appuser_id, CONCAT_WS(' ',ma.firstname,' ',ma.lastname) originator, msat.created_date 
 from m_savings_account_transaction msat 

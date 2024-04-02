@@ -443,7 +443,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
             final StringBuilder accountsSummary = new StringBuilder(
                     " sav.id, sav.savings_account_id, sav.amount, sav.account_no, sav.product_id, sav.product_name, sav.client_id, "
                     + " sav.display_name, sav.office_id, sav.office_name, sav.mobile_no, sav.email_address, sav.bvn, sav.nin, "
-                    + " sav.tin, sav.alternateMobileNumber, sav.appuser_id, sav.originator, "
+                    + " sav.tin, sav.alternateMobileNumber, sav.appuser_id, sav.originator, sav.reason_for_block, "
                     + " sav.created_date from m_savings_account_transaction sav ");
 
             return accountsSummary.toString();
@@ -463,6 +463,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
             final String officeName = rs.getString("office_name");
             final String mobileNo = rs.getString("mobile_no");
             final String emailAddress = rs.getString("email_address");
+            final String reasonForBlock = rs.getString("reason_for_block");
             final String bvn = rs.getString("bvn");
             final String nin = rs.getString("nin");
             final String tin = rs.getString("tin");
@@ -490,6 +491,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
             savingsAmountOnHold.addProperty("appuserId", appuserId);
             savingsAmountOnHold.addProperty("originator", originator);
             savingsAmountOnHold.addProperty("createdDateTime", createdDateTime.toString());
+            savingsAmountOnHold.addProperty("reasonForBlock", reasonForBlock);
 
             return savingsAmountOnHold;
         }

@@ -933,7 +933,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 
                 final Long lprId = JdbcSupport.getLong(rs, "lirId");
                 final Long productId = JdbcSupport.getLong(rs, "loanId");
-                final int compoundTypeEnumValue = JdbcSupport.getInteger(rs, "compoundType");
+                final Integer compoundTypeEnumValue = JdbcSupport.getInteger(rs, "compoundType");
                 final EnumOptionData interestRecalculationCompoundingType = LoanEnumerations
                         .interestRecalculationCompoundingType(compoundTypeEnumValue);
                 final int rescheduleStrategyEnumValue = JdbcSupport.getInteger(rs, "rescheduleStrategy");

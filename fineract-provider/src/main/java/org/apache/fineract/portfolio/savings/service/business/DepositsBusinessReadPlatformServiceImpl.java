@@ -444,7 +444,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
                     " sav.id, sav.savings_account_id, sav.amount, sav.account_no, sav.product_id, sav.product_name, sav.client_id, "
                     + " sav.display_name, sav.office_id, sav.office_name, sav.mobile_no, sav.email_address, sav.bvn, sav.nin, "
                     + " sav.tin, sav.alternateMobileNumber, sav.appuser_id, sav.originator, sav.reason_for_block, "
-                    + " sav.created_date from m_savings_account_transaction sav ");
+                    + " sav.created_date from m_savings_amount_on_hold_view sav ");
 
             return accountsSummary.toString();
         }

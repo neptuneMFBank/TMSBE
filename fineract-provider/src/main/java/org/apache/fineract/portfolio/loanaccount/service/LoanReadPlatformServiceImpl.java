@@ -936,12 +936,12 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                 final Integer compoundTypeEnumValue = JdbcSupport.getInteger(rs, "compoundType");
                 final EnumOptionData interestRecalculationCompoundingType = LoanEnumerations
                         .interestRecalculationCompoundingType(compoundTypeEnumValue);
-                final int rescheduleStrategyEnumValue = JdbcSupport.getInteger(rs, "rescheduleStrategy");
+                final int rescheduleStrategyEnumValue = rs.getInt("rescheduleStrategy");// JdbcSupport.getInteger(rs, "rescheduleStrategy");
                 final EnumOptionData rescheduleStrategyType = LoanEnumerations.rescheduleStrategyType(rescheduleStrategyEnumValue);
                 final CalendarData calendarData = null;
                 final int restFrequencyEnumValue = JdbcSupport.getInteger(rs, "restFrequencyEnum");
                 final EnumOptionData restFrequencyType = LoanEnumerations.interestRecalculationFrequencyType(restFrequencyEnumValue);
-                final int restFrequencyInterval = JdbcSupport.getInteger(rs, "restFrequencyInterval");
+                final Integer restFrequencyInterval = JdbcSupport.getInteger(rs, "restFrequencyInterval");
                 final Integer restFrequencyNthDayEnumValue = JdbcSupport.getInteger(rs, "restFrequencyNthDayEnum");
                 EnumOptionData restFrequencyNthDayEnum = null;
                 if (restFrequencyNthDayEnumValue != null) {

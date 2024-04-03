@@ -709,7 +709,7 @@ public final class LoanEnumerations {
         return optionData;
     }
 
-    public static EnumOptionData interestRecalculationFrequencyType(final int id) {
+    public static EnumOptionData interestRecalculationFrequencyType(final Integer id) {
         return interestRecalculationFrequencyType(RecalculationFrequencyType.fromInt(id));
     }
 

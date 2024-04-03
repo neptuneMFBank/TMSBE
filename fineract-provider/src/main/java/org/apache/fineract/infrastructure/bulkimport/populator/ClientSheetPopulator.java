@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.bulkimport.constants.TemplatePopulateImportConstants;
 import org.apache.fineract.organisation.office.data.OfficeData;
 import org.apache.fineract.portfolio.client.data.ClientData;
@@ -82,7 +83,7 @@ public class ClientSheetPopulator extends AbstractWorkbookPopulator {
         officeToClients = new HashMap<>();
         for (ClientData person : allClients) {
             addToOfficeClientMap(person.getOfficeName().trim().replaceAll("[ )(]", "_"),
-                    person.displayName().trim() + "(" + person.id() + ")");
+                    StringUtils.trim(person.displayName()) + "(" + person.id() + ")");
         }
     }
 
@@ -123,7 +124,7 @@ public class ClientSheetPopulator extends AbstractWorkbookPopulator {
                     writeLong(CLIENT_ID_COL, row, clientNameToClientId.get(clientName));
                     row = clientSheet.createRow(++rowIndex);
                 }
-                officeNameToBeginEndIndexesOfClients.put(officeIndex++, new Integer[] { startIndex, rowIndex });
+                officeNameToBeginEndIndexesOfClients.put(officeIndex++, new Integer[]{startIndex, rowIndex});
             } else {
                 officeIndex++;
             }

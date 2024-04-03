@@ -89,6 +89,29 @@ public class SelfLoansBusinessApiResource {
         return this.loansBusinessApiResource.retrieveLoan(loanId, staffInSelectedOfficeOnly, associations, exclude, fields, uriInfo);
     }
 
+    @GET
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public String retrieveAll(@Context final UriInfo uriInfo,
+            @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
+            @QueryParam("clientId") @Parameter(description = "clientId") final Long clientId,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
+            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @DefaultValue("en") @QueryParam("locale") final String locale,
+            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
+        validateAppuserClientsMapping(clientId);
+        final String externalId = null;
+        final Long officeId = null;
+        final Long staffId = null;
+        return this.loansBusinessApiResource.retrieveAll(uriInfo, statusId, externalId, officeId, clientId, staffId, offset,
+                limit, orderBy, sortOrder, accountNo, startPeriod, endPeriod, locale, dateFormat);
+    }
+
     @POST
     @Path("calculate")
     @Consumes({MediaType.APPLICATION_JSON})

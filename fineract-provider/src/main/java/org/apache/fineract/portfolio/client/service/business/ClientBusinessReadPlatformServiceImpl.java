@@ -148,6 +148,12 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         return defaultOfficeId;
     }
+    
+    
+    @Override
+    public void queueSelfClientActivate() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 
     @Override
     public ClientBusinessData retrieveOne(final Long clientId, final boolean showTemplate, final Boolean staffInSelectedOfficeOnly) {
@@ -633,10 +639,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         return new KycBusinessData(clientId, null, null, null, null, null, null, agreement, null, null);
     }
 
-    @Override
-    public void queueSelfClientActivate() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 
     private static final class ClientLookupKycLevelMapper implements RowMapper<KycBusinessData> {
 

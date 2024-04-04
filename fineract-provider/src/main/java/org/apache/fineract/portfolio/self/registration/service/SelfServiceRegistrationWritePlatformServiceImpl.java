@@ -318,9 +318,9 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         createUserObject.addProperty(SelfServiceApiConstants.requestIdParamName, selfClientId);
         createUserObject.addProperty(SelfServiceApiConstants.authenticationTokenParamName,
                 selfServiceRegistration.getAuthenticationToken());
-        if (isNew) {
-            createCustomer(createUserObject.toString(), customerRole);
-        }
+        //if (isNew) {
+        createCustomer(createUserObject.toString(), customerRole);
+        //}
         sendAuthorizationToken(selfServiceRegistration.getClient(), selfServiceRegistration.getPassword(),
                 selfServiceRegistration.getEmail(), selfServiceRegistration.getMobileNumber(), selfServiceRegistration.getFirstName(),
                 "Onboarding");

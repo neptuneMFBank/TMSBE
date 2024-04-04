@@ -54,6 +54,7 @@ import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.PaginationHelper;
+import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
 import org.apache.fineract.infrastructure.dataqueries.data.DatatableData;
@@ -63,6 +64,8 @@ import org.apache.fineract.infrastructure.dataqueries.service.EntityDatatableChe
 import org.apache.fineract.infrastructure.dataqueries.service.ReadWriteNonCoreDataService;
 import org.apache.fineract.infrastructure.documentmanagement.data.business.DocumentConfigData;
 import org.apache.fineract.infrastructure.documentmanagement.service.business.DocumentConfigReadPlatformService;
+import org.apache.fineract.infrastructure.jobs.annotation.CronTarget;
+import org.apache.fineract.infrastructure.jobs.service.JobName;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.organisation.office.data.OfficeData;
@@ -148,11 +151,20 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         return defaultOfficeId;
     }
-    
-    
+
     @Override
+    @Transactional
+    @CronTarget(jobName = JobName.QUEUE_SELF_CLIENT_ACTIVATE)
     public void queueSelfClientActivate() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        final String sqlFinder = "select msac.client_id clientId from m_self_activate_client_view msac ";
+        List<Long> selfActivateClient = this.jdbcTemplate.queryForList(sqlFinder, Long.class);
+        log.info("queueSelfClientActivate start");
+        for (Long selfActivateClientId : selfActivateClient) {
+            String clientUpdateSql = "UPDATE m_client SET status_enum=? WHERE id=?";
+            jdbcTemplate.update(clientUpdateSql, ClientStatus.ACTIVE.getValue(), selfActivateClientId);
+        }
+        log.info("{}: Records affected by queueSelfClientActivate: {}", ThreadLocalContextUtil.getTenant().getName(),
+                selfActivateClient.size());
     }
 
     @Override
@@ -638,7 +650,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         return new KycBusinessData(clientId, null, null, null, null, null, null, agreement, null, null);
     }
-
 
     private static final class ClientLookupKycLevelMapper implements RowMapper<KycBusinessData> {
 

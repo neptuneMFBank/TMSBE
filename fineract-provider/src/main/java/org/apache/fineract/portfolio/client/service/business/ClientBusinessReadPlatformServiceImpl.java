@@ -633,6 +633,11 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         return new KycBusinessData(clientId, null, null, null, null, null, null, agreement, null, null);
     }
 
+    @Override
+    public void queueSelfClientActivate() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     private static final class ClientLookupKycLevelMapper implements RowMapper<KycBusinessData> {
 
         private final String schema;

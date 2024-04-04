@@ -43,4 +43,7 @@ public interface ClientBusinessReadPlatformService {
 
     KycBusinessData isClientExisting(final String email, final String mobileNo, final String altMobileNo, final String bvn,
             final String nin, final String tin);
+
+    void queueSelfClientActivate();
+
 }

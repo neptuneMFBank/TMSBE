@@ -277,34 +277,34 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
             }
 
             if (searchParameters.isStaffIdPassed()) {
-                sqlBuilder.append(" and l.loan_officer_id =?");
+                sqlBuilder.append(" and l.loan_officer_id =? ");
                 extraCriterias.add(searchParameters.getStaffId());
                 arrayPos = arrayPos + 1;
             }
 
             if (searchParameters.isStatusIdPassed()) {
-                sqlBuilder.append(" and l.loan_status_id = ?");
+                sqlBuilder.append(" and l.loan_status_id = ? ");
                 extraCriterias.add(searchParameters.getStatusId());
                 arrayPos = arrayPos + 1;
             }
             if (searchParameters.isExternalIdPassed()) {
-                sqlBuilder.append(" and l.external_id = ?");
+                sqlBuilder.append(" and l.external_id = ? ");
                 extraCriterias.add(searchParameters.getExternalId());
                 arrayPos = arrayPos + 1;
             }
             if (searchParameters.isOfficeIdPassed()) {
-                sqlBuilder.append("and c.office_id =?");
+                sqlBuilder.append(" and c.office_id =? ");
                 extraCriterias.add(searchParameters.getOfficeId());
                 arrayPos = arrayPos + 1;
             }
             if (searchParameters.isClientIdPassed()) {
-                sqlBuilder.append("and l.client_id =?");
+                sqlBuilder.append(" and l.client_id =? ");
                 extraCriterias.add(searchParameters.getClientId());
                 arrayPos = arrayPos + 1;
             }
 
             if (searchParameters.isAccountNoPassed()) {
-                sqlBuilder.append(" and l.account_no = ?");
+                sqlBuilder.append(" and l.account_no = ? ");
                 extraCriterias.add(searchParameters.getAccountNo());
                 arrayPos = arrayPos + 1;
             }

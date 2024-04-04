@@ -177,4 +177,6 @@
     <include file="parts/0161_m_read_loanproduct_visibility_config_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0162_m_users_details_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0163_m_savings_amount_on_hold_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0164_m_self_activate_client_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0165_job_queue_self_client_activation.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

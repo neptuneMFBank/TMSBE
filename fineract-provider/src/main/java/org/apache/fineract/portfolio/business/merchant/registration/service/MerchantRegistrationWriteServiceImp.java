@@ -90,7 +90,7 @@ public class MerchantRegistrationWriteServiceImp implements MerchantRegistration
             final SelfServiceRegistrationReadPlatformService selfServiceRegistrationReadPlatformService, final ApplicationContext context,
             final ClientRepositoryWrapper clientRepository, final AppUserMerchantMappingRepository appUserMerchantMappingRepository,
             final SelfServiceRegistrationCommandFromApiJsonDeserializer selfServiceRegistrationCommandFromApiJsonDeserializer,
-            final UserDomainService userDomainService,final SelfServiceRegistrationRepository selfServiceRegistrationRepository,
+            final UserDomainService userDomainService, final SelfServiceRegistrationRepository selfServiceRegistrationRepository,
             final MerchantRegistrationReadPlatformService merchantRegistrationReadPlatformService) {
         this.selfServiceRegistrationWritePlatformService = selfServiceRegistrationWritePlatformService;
         this.merchantServiceRegistrationCommandFromApiJsonDeserializer = merchantServiceRegistrationCommandFromApiJsonDeserializer;
@@ -199,7 +199,7 @@ public class MerchantRegistrationWriteServiceImp implements MerchantRegistration
         Long selfClientId = (Long) keyHolderSelf.getKey();
 
         SelfServiceRegistration selfServiceRegistration = this.selfServiceRegistrationWritePlatformService.RegisterSelfUser(selfClientId,
-                SelfServiceApiConstants.MERCHANT_USER_ROLE);
+                SelfServiceApiConstants.MERCHANT_USER_ROLE, true);
 
         final ApiResponseMessage apiResponseMessage = new ApiResponseMessage(HttpStatus.CREATED.value(),
                 SelfServiceApiConstants.createRequestSuccessMessage, selfServiceRegistration.getId(), null);
@@ -250,7 +250,6 @@ public class MerchantRegistrationWriteServiceImp implements MerchantRegistration
         }
     }
 
-    
     @Override
     public ApiResponseMessage resendCustomeronRequest(String apiRequestBodyAsJson) {
         this.selfServiceRegistrationCommandFromApiJsonDeserializer.validateForResend(apiRequestBodyAsJson);

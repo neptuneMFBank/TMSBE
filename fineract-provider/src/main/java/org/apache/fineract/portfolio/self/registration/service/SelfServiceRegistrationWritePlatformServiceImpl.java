@@ -262,7 +262,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
 
         Long selfClientId = createRequestAuditTable(clientId, accountNumber, firstName, lastName, mobileNumber, email, password);
 
-        SelfServiceRegistration selfServiceRegistration = RegisterSelfUser(selfClientId, SelfServiceApiConstants.SELF_SERVICE_USER_ROLE);
+        SelfServiceRegistration selfServiceRegistration = RegisterSelfUser(selfClientId, SelfServiceApiConstants.SELF_SERVICE_USER_ROLE, true);
 
         final ApiResponseMessage apiResponseMessage = new ApiResponseMessage(HttpStatus.CREATED.value(),
                 SelfServiceApiConstants.createRequestSuccessMessage, selfServiceRegistration.getId(), null);
@@ -308,7 +308,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         return accountNumber;
     }
 
-    public SelfServiceRegistration RegisterSelfUser(Long selfClientId, String customerRole) {
+    public SelfServiceRegistration RegisterSelfUser(Long selfClientId, String customerRole, boolean isNew) {
 
         SelfServiceRegistration selfServiceRegistration = this.selfServiceRegistrationRepository.findById(selfClientId)
                 .orElseThrow(() -> new SelfServiceRegistrationNotFoundException("Self service not available."));
@@ -318,7 +318,9 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         createUserObject.addProperty(SelfServiceApiConstants.requestIdParamName, selfClientId);
         createUserObject.addProperty(SelfServiceApiConstants.authenticationTokenParamName,
                 selfServiceRegistration.getAuthenticationToken());
-        createCustomer(createUserObject.toString(), customerRole);
+        if (isNew) {
+            createCustomer(createUserObject.toString(), customerRole);
+        }
         sendAuthorizationToken(selfServiceRegistration.getClient(), selfServiceRegistration.getPassword(),
                 selfServiceRegistration.getEmail(), selfServiceRegistration.getMobileNumber(), selfServiceRegistration.getFirstName(),
                 "Onboarding");
@@ -795,15 +797,21 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         final String lastName = client.getLastname();
         final String accountNumber = client.getAccountNumber();
 
+        boolean updateCustomerProfile = false;
+
         String emailCheck = this.fromApiJsonHelper.extractStringNamed(SelfServiceApiConstants.emailParamName, element);
         if (StringUtils.isNotBlank(client.emailAddress())) {
             emailCheck = client.emailAddress();
+        } else {
+            updateCustomerProfile = true;
         }
         final String email = emailCheck;
 
         String mobileNumberCheck = this.fromApiJsonHelper.extractStringNamed(SelfServiceApiConstants.mobileNumberParamName, element);
         if (StringUtils.isNotBlank(client.mobileNo())) {
             mobileNumberCheck = client.mobileNo();
+        } else {
+            updateCustomerProfile = true;
         }
         final String mobileNumber = mobileNumberCheck;
 
@@ -815,7 +823,12 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
 
         Long selfClientId = createRequestAuditTable(clientId, accountNumber, firstName, lastName, mobileNumber, email, password);
 
-        SelfServiceRegistration selfServiceRegistration = RegisterSelfUser(selfClientId, SelfServiceApiConstants.SELF_SERVICE_USER_ROLE);
+        SelfServiceRegistration selfServiceRegistration = RegisterSelfUser(selfClientId, SelfServiceApiConstants.SELF_SERVICE_USER_ROLE, false);
+        if (updateCustomerProfile) {
+            //update the mobile and email if any is empty
+            String clientUpdateSql = "UPDATE m_client SET mobile_no=?, email_address=? WHERE id=?";
+            jdbcTemplate.update(clientUpdateSql, mobileNumber, email, clientId);
+        }
 
         final ApiResponseMessage apiResponseMessage = new ApiResponseMessage(HttpStatus.CREATED.value(),
                 SelfServiceApiConstants.createRequestSuccessMessage, selfServiceRegistration.getId(), null);

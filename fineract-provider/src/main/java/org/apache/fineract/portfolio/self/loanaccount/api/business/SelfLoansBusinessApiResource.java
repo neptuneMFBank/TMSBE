@@ -34,10 +34,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.journalentry.api.DateParam;
+import org.apache.fineract.infrastructure.core.exception.UnrecognizedQueryParamException;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
 import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
+import org.apache.fineract.portfolio.loanaccount.api.LoanTransactionsApiResource;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanTransactionsBusinessApiResource;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoansBusinessApiResource;
 import org.apache.fineract.portfolio.loanaccount.exception.LoanNotFoundException;
@@ -62,17 +65,19 @@ public class SelfLoansBusinessApiResource {
     private final AppuserLoansMapperReadService appuserLoansMapperReadService;
     private final SelfLoansDataValidator dataValidator;
     private final LoansBusinessApiResource loansBusinessApiResource;
+    private final LoanTransactionsApiResource loanTransactionsApiResource;
 
     @Autowired
     public SelfLoansBusinessApiResource(final PlatformSecurityContext context, final AppuserClientMapperReadService appUserClientMapperReadService,
             final LoanTransactionsBusinessApiResource loanTransactionsBusinessApiResource, final LoansBusinessApiResource loansBusinessApiResource,
-            final AppuserLoansMapperReadService appuserLoansMapperReadService, final SelfLoansDataValidator dataValidator) {
+            final AppuserLoansMapperReadService appuserLoansMapperReadService, final SelfLoansDataValidator dataValidator, final LoanTransactionsApiResource loanTransactionsApiResource) {
         this.context = context;
         this.loanTransactionsBusinessApiResource = loanTransactionsBusinessApiResource;
         this.appuserLoansMapperReadService = appuserLoansMapperReadService;
         this.dataValidator = dataValidator;
         this.loansBusinessApiResource = loansBusinessApiResource;
         this.appUserClientMapperReadService = appUserClientMapperReadService;
+        this.loanTransactionsApiResource = loanTransactionsApiResource;
     }
 
     @GET
@@ -172,6 +177,27 @@ public class SelfLoansBusinessApiResource {
 
         return this.loanTransactionsBusinessApiResource.retrieveAllTransactionsByLoanId(loanId, uriInfo, startPeriod, endPeriod,
                 transactionTypeId, transactionId, offset, limit, orderBy, sortOrder, locale, dateFormat);
+    }
+
+    private boolean is(final String commandParam, final String commandValue) {
+        return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
+    }
+
+    @GET
+    @Path("{loanId}/transactions/template")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public String retrieveTransactionTemplate(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
+            @QueryParam("command") @Parameter(description = "command") final String commandParam, @Context final UriInfo uriInfo,
+            @QueryParam("dateFormat") @Parameter(description = "dateFormat") final String dateFormat,
+            @QueryParam("transactionDate") @Parameter(description = "transactionDate") final DateParam transactionDateParam,
+            @QueryParam("locale") @Parameter(description = "locale") final String locale) {
+        if (!is(commandParam, "repayment")
+                || !is(commandParam, "prepayLoan") || !is(commandParam, "foreclosure")) {
+            throw new UnrecognizedQueryParamException("command", commandParam);
+        }
+        validateAppuserLoanMapping(loanId);
+        return this.loanTransactionsApiResource.retrieveTransactionTemplate(loanId, commandParam, uriInfo, dateFormat, transactionDateParam, locale);
     }
 
     private void validateAppuserLoanMapping(final Long loanId) {

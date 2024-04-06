@@ -444,7 +444,7 @@ public class ClientsBusinessApiResource {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
-        final Collection<JsonArray> LoanProducts = this.loanProductVisibilityReadPlatformService.retrieveVisibileLoanProductForClient(clientId);
+        final JsonObject LoanProducts = this.loanProductVisibilityReadPlatformService.retrieveVisibileLoanProductForClient(clientId);
 
         return this.toApiJsonSerializer.serialize(LoanProducts);
     }

@@ -18,8 +18,7 @@
  */
 package org.apache.fineract.portfolio.loanproduct.business.service;
 
-import com.google.gson.JsonArray;
-import java.util.Collection;
+import com.google.gson.JsonObject;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductVisibilityConfigData;
@@ -32,6 +31,6 @@ public interface LoanProductVisibilityReadPlatformService {
 
     LoanProductVisibilityConfigData retrieveTemplate();
 
-    Collection<JsonArray> retrieveVisibileLoanProductForClient(final Long clientId);
+    JsonObject retrieveVisibileLoanProductForClient(final Long clientId);
 
 }

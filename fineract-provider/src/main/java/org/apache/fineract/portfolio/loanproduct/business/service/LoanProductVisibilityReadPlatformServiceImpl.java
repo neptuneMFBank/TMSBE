@@ -268,7 +268,7 @@ public class LoanProductVisibilityReadPlatformServiceImpl implements LoanProduct
     }
 
     @Override
-    public Collection<JsonArray> retrieveVisibileLoanProductForClient(final Long clientId) {
+    public JsonObject retrieveVisibileLoanProductForClient(final Long clientId) {
         this.context.authenticatedUser();
         Client client = this.clientRepository.findOneWithNotFoundDetection(clientId);
         List<Object> paramList = new ArrayList<>(Arrays.asList());
@@ -310,11 +310,11 @@ public class LoanProductVisibilityReadPlatformServiceImpl implements LoanProduct
             extraCriteria = " where " + extraCriteria;
         }
         sqlBuilder.append(extraCriteria);
-        final Collection<JsonArray> loanProductIds = this.jdbcTemplate.query(sqlBuilder.toString(), this.loanProductsMapper, paramList.toArray());
+        final JsonObject loanProductIds = this.jdbcTemplate.queryForObject(sqlBuilder.toString(), this.loanProductsMapper, paramList.toArray());
         return loanProductIds;
     }
 
-    private static final class LoanProductsMapper implements RowMapper<JsonArray> {
+    private static final class LoanProductsMapper implements RowMapper<JsonObject> {
 
         private final LoanProductRepositoryWrapper loanProductRepositoryWrapper;
 
@@ -324,9 +324,9 @@ public class LoanProductVisibilityReadPlatformServiceImpl implements LoanProduct
         }
 
         @Override
-        public JsonArray mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+        public JsonObject mapRow(final ResultSet rs, final int rowNum) throws SQLException {
 
-            JsonArray jsonArray = new JsonArray();
+            final JsonArray jsonArray = new JsonArray();
 
             final String loanproducts = rs.getString("loanproducts");
             final String[] loanProductArray = loanproducts.split(",");
@@ -340,8 +340,10 @@ public class LoanProductVisibilityReadPlatformServiceImpl implements LoanProduct
                     jsonArray.add(jsonElement);
                 }
             }
+            final JsonObject jsonObject = new JsonObject();
+            jsonObject.add("loanproduct", jsonArray);
 
-            return jsonArray;
+            return jsonObject;
         }
     }
 }

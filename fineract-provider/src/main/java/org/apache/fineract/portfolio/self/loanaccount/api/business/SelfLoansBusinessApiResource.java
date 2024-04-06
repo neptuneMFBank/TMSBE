@@ -192,12 +192,13 @@ public class SelfLoansBusinessApiResource {
             @QueryParam("dateFormat") @Parameter(description = "dateFormat") final String dateFormat,
             @QueryParam("transactionDate") @Parameter(description = "transactionDate") final DateParam transactionDateParam,
             @QueryParam("locale") @Parameter(description = "locale") final String locale) {
-        if (!is(commandParam, "repayment")
-                || !is(commandParam, "prepayLoan") || !is(commandParam, "foreclosure")) {
+        if (is(commandParam, "repayment")
+                || is(commandParam, "prepayLoan") || is(commandParam, "foreclosure")) {
+            validateAppuserLoanMapping(loanId);
+            return this.loanTransactionsApiResource.retrieveTransactionTemplate(loanId, commandParam, uriInfo, dateFormat, transactionDateParam, locale);
+        } else {
             throw new UnrecognizedQueryParamException("command", commandParam);
         }
-        validateAppuserLoanMapping(loanId);
-        return this.loanTransactionsApiResource.retrieveTransactionTemplate(loanId, commandParam, uriInfo, dateFormat, transactionDateParam, locale);
     }
 
     private void validateAppuserLoanMapping(final Long loanId) {

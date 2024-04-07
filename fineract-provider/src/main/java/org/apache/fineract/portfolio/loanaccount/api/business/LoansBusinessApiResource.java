@@ -664,6 +664,10 @@ public class LoansBusinessApiResource {
             try {
                 final DocumentProductConfigData documentConfigData = this.documentProductConfigReadPlatformService
                         .retrieveLoanProductDocument(loanProductId);
+                if (documentConfigData != null) {
+                    documentConfigData.setSavingProductOptions(null);
+                    documentConfigData.setLoanProductDatas(null);
+                }
                 loanAccount.setDocumentConfigData(documentConfigData);
             } catch (Exception e) {
                 log.warn("no loanProduct documentConfigData: {}", e.getMessage());

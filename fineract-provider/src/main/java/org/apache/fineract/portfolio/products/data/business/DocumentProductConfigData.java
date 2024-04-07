@@ -80,4 +80,12 @@ public class DocumentProductConfigData {
         return savingsProduct;
     }
 
+    public void setLoanProductDatas(Collection<LoanProductData> loanProductDatas) {
+        this.loanProductDatas = loanProductDatas;
+    }
+
+    public void setSavingProductOptions(Collection<SavingsProductData> savingProductOptions) {
+        this.savingProductOptions = savingProductOptions;
+    }
+
 }

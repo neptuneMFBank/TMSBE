@@ -1443,4 +1443,9 @@ public class LoanProductData implements Serializable {
     public BigDecimal getFixedPrincipalPercentagePerInstallment() {
         return fixedPrincipalPercentagePerInstallment;
     }
+
+    public Integer getMinimumDaysBetweenDisbursalAndFirstRepayment() {
+        return minimumDaysBetweenDisbursalAndFirstRepayment;
+    }
+    
 }

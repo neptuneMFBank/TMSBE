@@ -60,7 +60,6 @@ import org.springframework.util.CollectionUtils;
 public final class LoanAccountData {
 
     // basic loan details
-
     // identity
     private final Long id;
     private final String accountNo;
@@ -239,6 +238,7 @@ public final class LoanAccountData {
     private LocalDate expectedDisbursementDate;
 
     private final CollectionData delinquent;
+    private Integer minimumDaysBetweenDisbursalAndFirstRepayment;
 
     public static LoanAccountData importInstanceIndividual(EnumOptionData loanTypeEnumOption, Long clientId, Long productId,
             Long loanOfficerId, LocalDate submittedOnDate, Long fundId, BigDecimal principal, Integer numberOfRepayments,
@@ -471,7 +471,8 @@ public final class LoanAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only collateral options for now.
+     * Used to produce a {@link LoanAccountData} with only collateral options
+     * for now.
      */
     public static LoanAccountData collateralTemplate(final Collection<CodeValueData> loanCollateralOptions) {
         final Long id = null;
@@ -617,7 +618,8 @@ public final class LoanAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only client information defaulted.
+     * Used to produce a {@link LoanAccountData} with only client information
+     * defaulted.
      */
     public static LoanAccountData clientDefaults(final Long clientId, final String clientAccountNo, final String clientName,
             final Long clientOfficeId, final LocalDate expectedDisbursementDate) {
@@ -764,7 +766,7 @@ public final class LoanAccountData {
 
     public static LoanAccountData populateClientDefaults(final LoanAccountData acc, final LoanAccountData clientAcc) {
 
-        return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, clientAcc.clientId, clientAcc.clientAccountNo,
+        final LoanAccountData loanAccountData = new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, clientAcc.clientId, clientAcc.clientAccountNo,
                 clientAcc.clientName, clientAcc.clientOfficeId, acc.group, acc.loanType, acc.loanProductId, acc.loanProductName,
                 acc.loanProductDescription, acc.isLoanProductLinkedToFloatingRate, acc.fundId, acc.fundName, acc.loanPurposeId,
                 acc.loanPurposeName, acc.loanOfficerId, acc.loanOfficerName, acc.currency, acc.proposedPrincipal, acc.principal,
@@ -791,10 +793,13 @@ public final class LoanAccountData {
                 acc.minimumGap, acc.maximumGap, acc.subStatus, acc.canUseForTopup, acc.clientActiveLoanOptions, acc.isTopup,
                 acc.closureLoanId, acc.closureLoanAccountNo, acc.topupAmount, acc.isEqualAmortization, acc.rates, acc.isRatesEnabled,
                 acc.fixedPrincipalPercentagePerInstallment, acc.delinquent);
+        loanAccountData.setMinimumDaysBetweenDisbursalAndFirstRepayment(acc.minimumDaysBetweenDisbursalAndFirstRepayment);
+        return loanAccountData;
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only group information defaulted.
+     * Used to produce a {@link LoanAccountData} with only group information
+     * defaulted.
      */
     public static LoanAccountData groupDefaults(final GroupGeneralData group, final LocalDate expectedDisbursementDate) {
 
@@ -1111,7 +1116,7 @@ public final class LoanAccountData {
         final Boolean isRatesEnabled = false;
         final CollectionData delinquent = CollectionData.template();
 
-        return new LoanAccountData(id, accountNo, status, externalId, clientId, clientAccountNo, clientName, clientOfficeId, group,
+        final LoanAccountData loanAccountData = new LoanAccountData(id, accountNo, status, externalId, clientId, clientAccountNo, clientName, clientOfficeId, group,
                 loanType, product.getId(), product.getName(), product.getDescription(), product.isLinkedToFloatingInterestRates(),
                 product.getFundId(), product.getFundName(), loanPurposeId, loanPurposeName, loanOfficerId, loanOfficerName,
                 product.getCurrency(), proposedPrincipal, principal, principal, netDisbursalAmount, totalOverpaid,
@@ -1137,6 +1142,8 @@ public final class LoanAccountData {
                 product.getMaximumGapBetweenInstallments(), subStatus, canUseForTopup, clientActiveLoanOptions, isTopup, closureLoanId,
                 closureLoanAccountNo, topupAmount, product.isEqualAmortization(), rates, isRatesEnabled,
                 product.getFixedPrincipalPercentagePerInstallment(), delinquent);
+        loanAccountData.setMinimumDaysBetweenDisbursalAndFirstRepayment(product.getMinimumDaysBetweenDisbursalAndFirstRepayment());
+        return loanAccountData;
     }
 
     public static LoanAccountData populateLoanProductDefaults(final LoanAccountData acc, final LoanProductData product) {
@@ -1327,7 +1334,7 @@ public final class LoanAccountData {
             loanProductConfigurableAttributes = acc.product.getloanProductConfigurableAttributes();
         }
 
-        return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, acc.clientId, acc.clientAccountNo, acc.clientName,
+        final LoanAccountData loanAccountData = new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, acc.clientId, acc.clientAccountNo, acc.clientName,
                 acc.clientOfficeId, acc.group, acc.loanType, acc.loanProductId, acc.loanProductName, acc.loanProductDescription,
                 acc.isLoanProductLinkedToFloatingRate, acc.fundId, acc.fundName, acc.loanPurposeId, acc.loanPurposeName, acc.loanOfficerId,
                 acc.loanOfficerName, acc.currency, acc.proposedPrincipal, acc.principal, acc.approvedPrincipal, acc.netDisbursalAmount,
@@ -1352,6 +1359,8 @@ public final class LoanAccountData {
                 acc.minimumGap, acc.maximumGap, acc.subStatus, acc.canUseForTopup, clientActiveLoanOptions, acc.isTopup, acc.closureLoanId,
                 acc.closureLoanAccountNo, acc.topupAmount, acc.isEqualAmortization, rates, isRatesEnabled,
                 acc.fixedPrincipalPercentagePerInstallment, delinquent);
+        loanAccountData.setMinimumDaysBetweenDisbursalAndFirstRepayment(acc.minimumDaysBetweenDisbursalAndFirstRepayment);
+        return loanAccountData;
     }
 
     public static LoanAccountData associationsAndTemplate(final LoanAccountData acc, final Collection<LoanProductData> productOptions,
@@ -1915,7 +1924,8 @@ public final class LoanAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only collateral options for now.
+     * Used to produce a {@link LoanAccountData} with only collateral options
+     * for now.
      *
      * @return {@link LoanAccountData} object
      */
@@ -1951,6 +1961,14 @@ public final class LoanAccountData {
 
     public String getStatusStringValue() {
         return this.status.value();
+    }
+
+    public Integer getMinimumDaysBetweenDisbursalAndFirstRepayment() {
+        return minimumDaysBetweenDisbursalAndFirstRepayment;
+    }
+
+    public void setMinimumDaysBetweenDisbursalAndFirstRepayment(Integer minimumDaysBetweenDisbursalAndFirstRepayment) {
+        this.minimumDaysBetweenDisbursalAndFirstRepayment = minimumDaysBetweenDisbursalAndFirstRepayment;
     }
 
 }

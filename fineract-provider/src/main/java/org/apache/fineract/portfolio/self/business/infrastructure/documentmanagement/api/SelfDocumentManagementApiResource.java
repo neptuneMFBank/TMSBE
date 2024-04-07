@@ -27,8 +27,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.infrastructure.documentmanagement.api.DocumentManagementApiResource;
 import org.apache.fineract.infrastructure.documentmanagement.api.business.DocumentBusinessManagementApiResource;
 import org.apache.fineract.infrastructure.documentmanagement.exception.business.DocumentConfigNotFoundException;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentWritePlatformServiceJpaRepositoryImpl.DocumentManagementEntity;
@@ -60,6 +63,7 @@ public class SelfDocumentManagementApiResource {
     private final AppuserLoansMapperReadService appuserLoansMapperReadService;
     private final AppuserSavingsMapperReadService appuserSavingsMapperReadService;
     private final DocumentBusinessManagementApiResource documentBusinessManagementApiResource;
+    private final DocumentManagementApiResource documentManagementApiResource;
 
     private final PlatformSecurityContext context;
 
@@ -69,13 +73,24 @@ public class SelfDocumentManagementApiResource {
             final AppuserLoansMapperReadService appuserLoansMapperReadService,
             final AppuserSavingsMapperReadService appuserSavingsMapperReadService,
             final AppuserClientIdentifierMapperReadService appuserClientIdentifierMapperReadService,
-            final DocumentBusinessManagementApiResource documentBusinessManagementApiResource) {
+            final DocumentBusinessManagementApiResource documentBusinessManagementApiResource, final DocumentManagementApiResource documentManagementApiResource) {
         this.context = context;
         this.appUserClientMapperReadService = appUserClientMapperReadService;
         this.appuserLoansMapperReadService = appuserLoansMapperReadService;
         this.appuserSavingsMapperReadService = appuserSavingsMapperReadService;
         this.appuserClientIdentifierMapperReadService = appuserClientIdentifierMapperReadService;
         this.documentBusinessManagementApiResource = documentBusinessManagementApiResource;
+        this.documentManagementApiResource = documentManagementApiResource;
+    }
+
+    @GET
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public String retrieveAllDocuments(@Context final UriInfo uriInfo,
+            @PathParam("entityType") @Parameter(description = "entityType") final String entityType,
+            @PathParam("entityId") @Parameter(description = "entityId") final Long entityId) {
+        validateAppuser(entityType, entityId, null);
+        return this.documentManagementApiResource.retrieveAllDocuments(uriInfo, entityType, entityId);
     }
 
     @POST

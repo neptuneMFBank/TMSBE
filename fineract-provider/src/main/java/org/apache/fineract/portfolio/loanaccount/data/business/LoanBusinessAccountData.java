@@ -68,6 +68,7 @@ import org.apache.fineract.portfolio.loanproduct.data.TransactionProcessingStrat
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProductConfigurableAttributes;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProductValueConditionType;
 import org.apache.fineract.portfolio.note.data.NoteData;
+import org.apache.fineract.portfolio.products.data.business.DocumentProductConfigData;
 import org.apache.fineract.portfolio.rate.data.RateData;
 import org.springframework.util.CollectionUtils;
 
@@ -263,6 +264,7 @@ public final class LoanBusinessAccountData {
 
     private Collection<MetricsData> metricsData;
     private LoanProductPaymentTypeConfigData loanProductPaymentTypeConfigData;
+    private DocumentProductConfigData documentConfigData;
 
     public static LoanBusinessAccountData importInstanceIndividual(EnumOptionData loanTypeEnumOption, Long clientId, Long productId,
             Long loanOfficerId, LocalDate submittedOnDate, Long fundId, BigDecimal principal, Integer numberOfRepayments,
@@ -495,7 +497,8 @@ public final class LoanBusinessAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only collateral options for now.
+     * Used to produce a {@link LoanAccountData} with only collateral options
+     * for now.
      */
     public static LoanBusinessAccountData collateralTemplate(final Collection<CodeValueData> loanCollateralOptions) {
         final Long id = null;
@@ -641,7 +644,8 @@ public final class LoanBusinessAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only client information defaulted.
+     * Used to produce a {@link LoanAccountData} with only client information
+     * defaulted.
      */
     public static LoanBusinessAccountData clientDefaults(final Long clientId, final String clientAccountNo, final String clientName,
             final Long clientOfficeId, final LocalDate expectedDisbursementDate) {
@@ -819,7 +823,8 @@ public final class LoanBusinessAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only group information defaulted.
+     * Used to produce a {@link LoanAccountData} with only group information
+     * defaulted.
      */
     public static LoanBusinessAccountData groupDefaults(final GroupGeneralData group, final LocalDate expectedDisbursementDate) {
 
@@ -1943,7 +1948,8 @@ public final class LoanBusinessAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only collateral options for now.
+     * Used to produce a {@link LoanAccountData} with only collateral options
+     * for now.
      *
      * @return {@link LoanAccountData} object
      */
@@ -2023,6 +2029,14 @@ public final class LoanBusinessAccountData {
 
     public void setLoanProductPaymentTypeConfigData(LoanProductPaymentTypeConfigData loanProductPaymentTypeConfigData) {
         this.loanProductPaymentTypeConfigData = loanProductPaymentTypeConfigData;
+    }
+
+    public DocumentProductConfigData getDocumentConfigData() {
+        return documentConfigData;
+    }
+
+    public void setDocumentConfigData(DocumentProductConfigData documentConfigData) {
+        this.documentConfigData = documentConfigData;
     }
 
     public void setClientData(JsonObject clientData) {

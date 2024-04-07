@@ -61,6 +61,7 @@ public interface LoanBusinessApiConstants {
     String activationChannelNameParam = "activationChannelName";
     String metricsDataParam = "metricsData";
     String loanProductPaymentTypeConfigDataParam = "loanProductPaymentTypeConfigData";
+    String documentConfigDataParam = "documentConfigData";
 
     /*
      * { "clientId":1, "clientAccountNo":"000000001", "clientName":"Test Test", "clientOfficeId":1, "loanProductId":1,

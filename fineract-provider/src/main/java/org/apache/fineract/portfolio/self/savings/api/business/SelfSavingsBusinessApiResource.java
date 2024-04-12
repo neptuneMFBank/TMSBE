@@ -20,9 +20,11 @@ package org.apache.fineract.portfolio.self.savings.api.business;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.HashMap;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -37,6 +39,8 @@ import org.apache.fineract.portfolio.savings.api.business.DepositsBusinessApiRes
 import org.apache.fineract.portfolio.savings.api.business.SavingsAccountTransactionsBusinessApiResource;
 import org.apache.fineract.portfolio.savings.exception.SavingsAccountNotFoundException;
 import org.apache.fineract.portfolio.self.client.service.AppuserClientMapperReadService;
+import org.apache.fineract.portfolio.self.savings.data.SelfSavingsAccountConstants;
+import org.apache.fineract.portfolio.self.savings.data.SelfSavingsDataValidator;
 import org.apache.fineract.portfolio.self.savings.service.AppuserSavingsMapperReadService;
 import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.SAVINGS_PRODUCT_RECONCILE_ID_API;
 import org.apache.fineract.useradministration.domain.AppUser;
@@ -59,11 +63,12 @@ public class SelfSavingsBusinessApiResource {
     private final AppuserClientMapperReadService appUserClientMapperReadService;
     private final AppuserSavingsMapperReadService appuserSavingsMapperReadService;
     private final Long savingsProductId;
+    private final SelfSavingsDataValidator dataValidator;
 
     @Autowired
     public SelfSavingsBusinessApiResource(final PlatformSecurityContext context, final DepositsBusinessApiResource depositsBusinessApiResource,
             final SavingsAccountTransactionsBusinessApiResource savingsAccountTransactionsBusinessApiResource, final ApplicationContext applicationContext,
-            final AppuserSavingsMapperReadService appuserSavingsMapperReadService, final AppuserClientMapperReadService appUserClientMapperReadService) {
+            final SelfSavingsDataValidator dataValidator, final AppuserSavingsMapperReadService appuserSavingsMapperReadService, final AppuserClientMapperReadService appUserClientMapperReadService) {
         this.context = context;
         this.savingsAccountTransactionsBusinessApiResource = savingsAccountTransactionsBusinessApiResource;
         this.appuserSavingsMapperReadService = appuserSavingsMapperReadService;
@@ -71,6 +76,7 @@ public class SelfSavingsBusinessApiResource {
         this.depositsBusinessApiResource = depositsBusinessApiResource;
         Environment environment = applicationContext.getEnvironment();
         this.savingsProductId = Long.valueOf(environment.getProperty(SAVINGS_PRODUCT_RECONCILE_ID_API));
+        this.dataValidator = dataValidator;
     }
 
     @GET
@@ -123,6 +129,17 @@ public class SelfSavingsBusinessApiResource {
 
         return this.depositsBusinessApiResource.retrieveAll(uriInfo, accountWithBalance, displayName, productId, excludeProductId, clientId, officeId, externalId, statusId, depositTypeId, accountNo, offset, limit, orderBy, sortOrder, startPeriod, endPeriod, locale, dateFormat);
 
+    }
+
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public String submitSavingsAccountApplication(@QueryParam("command") final String commandParam, @Context final UriInfo uriInfo,
+            final String apiRequestBodyAsJson) {
+        HashMap<String, Object> parameterMap = this.dataValidator.validateSavingsApplication(apiRequestBodyAsJson);
+        final Long clientId = (Long) parameterMap.get(SelfSavingsAccountConstants.clientIdParameterName);
+        validateAppuserClientsMapping(clientId);
+        return this.depositsBusinessApiResource.submitApplication(uriInfo, commandParam, apiRequestBodyAsJson);
     }
 
     private void validateAppuserSavingsAccountMapping(final Long accountId) {

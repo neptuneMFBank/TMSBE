@@ -22,12 +22,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.Money;
+import org.apache.fineract.portfolio.charge.domain.Charge;
 
 /**
- * A wrapper around loan schedule related data exposing needed behaviour by loan.
+ * A wrapper around loan schedule related data exposing needed behaviour by
+ * loan.
  */
+@Slf4j
 public class LoanRepaymentScheduleProcessingWrapper {
 
     public void reprocess(final MonetaryCurrency currency, final LocalDate disbursementDate,
@@ -72,6 +76,17 @@ public class LoanRepaymentScheduleProcessingWrapper {
         for (final LoanCharge loanCharge : loanCharges) {
             if (loanCharge.isFeeCharge() && !loanCharge.isDueAtDisbursement()) {
                 if (loanCharge.isInstalmentFee() && isInstallmentChargeApplicable) {
+                    final Charge charge = loanCharge.getCharge();
+                    final Integer feeInterval = charge.getFeeInterval();
+                    if (feeInterval != null && feeInterval > 0) {
+                        //check feeFrequency and skip
+                        final Integer periodInstallment = period.getInstallmentNumber();
+                        final int isFeeIntervalModulo = periodInstallment % feeInterval;
+                        if (isFeeIntervalModulo != 0) {
+                            log.warn("cumulativeFeeChargesDueWithin feeInterval checks: periodInstallment:{} % feeInterval:{} = {}", periodInstallment, feeInterval, isFeeIntervalModulo);
+                            continue;
+                        }
+                    }
                     if (loanCharge.getChargeCalculation().isPercentageBased()) {
                         BigDecimal amount = BigDecimal.ZERO;
                         if (loanCharge.getChargeCalculation().isPercentageOfAmountAndInterest()) {

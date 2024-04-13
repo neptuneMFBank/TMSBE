@@ -300,6 +300,7 @@ public class LoanCharge extends AbstractPersistableCustom {
             break;
             case PERCENT_OF_AMOUNT:
             case PERCENT_OF_AMOUNT_AND_INTEREST:
+            case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
             case PERCENT_OF_INTEREST:
             case PERCENT_OF_DISBURSEMENT_AMOUNT:
                 this.percentage = chargeAmount;
@@ -412,6 +413,7 @@ public class LoanCharge extends AbstractPersistableCustom {
                 break;
                 case PERCENT_OF_AMOUNT:
                 case PERCENT_OF_AMOUNT_AND_INTEREST:
+                case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
                 case PERCENT_OF_INTEREST:
                 case PERCENT_OF_DISBURSEMENT_AMOUNT:
                     this.percentage = amount;
@@ -459,6 +461,9 @@ public class LoanCharge extends AbstractPersistableCustom {
                     LoanTrancheDisbursementCharge loanTrancheDisbursementCharge = this.loanTrancheDisbursementCharge;
                     amountPercentageAppliedTo = loanTrancheDisbursementCharge.getloanDisbursementDetails().principal();
                 break;
+                case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
+                    amountPercentageAppliedTo = this.loan.getPrincpal().getAmount().add(this.loan.getTotalInterest()).add(this.loan.getTotalFee());
+                break;
                 default:
                 break;
             }
@@ -502,6 +507,7 @@ public class LoanCharge extends AbstractPersistableCustom {
                 break;
                 case PERCENT_OF_AMOUNT:
                 case PERCENT_OF_AMOUNT_AND_INTEREST:
+                case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
                 case PERCENT_OF_INTEREST:
                 case PERCENT_OF_DISBURSEMENT_AMOUNT:
                     this.percentage = newValue;

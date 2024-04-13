@@ -2600,7 +2600,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                     null, null, null, loanId, null, null, null, null, null, null);
             LoanOverdueDTO overdueDTO = applyChargeToOverdueLoanInstallment(loanId, overdueInstallment.getChargeId(),
                     overdueInstallment.getPeriodNumber(), command, loan, existingTransactionIds, existingReversedTransactionIds);
-            loan = overdueDTO.getLoan();
+            loan = overdueDTO.getLoan();xx
             runInterestRecalculation = runInterestRecalculation || overdueDTO.isRunInterestRecalculation();
             if (recalculateFrom.isAfter(overdueDTO.getRecalculateFrom())) {
                 recalculateFrom = overdueDTO.getRecalculateFrom();

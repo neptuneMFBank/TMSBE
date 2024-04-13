@@ -114,7 +114,8 @@ public final class LoanApplicationCommandFromApiJsonHelper {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -409,7 +410,8 @@ public final class LoanApplicationCommandFromApiJsonHelper {
             final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(topLevelJsonElement);
 
             if (topLevelJsonElement.get(chargesParameterName).isJsonArray()) {
-                final Type arrayObjectParameterTypeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+                final Type arrayObjectParameterTypeOfMap = new TypeToken<Map<String, Object>>() {
+                }.getType();
                 final Set<String> supportedParameters = new HashSet<>(
                         Arrays.asList("id", "chargeId", "amount", "chargeTimeType", "chargeCalculationType", "dueDate"));
 
@@ -435,10 +437,10 @@ public final class LoanApplicationCommandFromApiJsonHelper {
         }
 
         /**
-         * TODO: Add collaterals for other loan accounts if needed. For now it's only applicable for individual
-         * accounts. (loanType.isJLG() || loanType.isGLIM())
+         * TODO: Add collaterals for other loan accounts if needed. For now it's
+         * only applicable for individual accounts. (loanType.isJLG() ||
+         * loanType.isGLIM())
          */
-
         if (!StringUtils.isBlank(loanTypeStr)) {
             final AccountType loanType = AccountType.fromName(loanTypeStr);
 
@@ -450,7 +452,8 @@ public final class LoanApplicationCommandFromApiJsonHelper {
                     final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(topLevelJsonElement);
                     if (topLevelJsonElement.get("collateral").isJsonArray()) {
 
-                        final Type collateralParameterTypeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+                        final Type collateralParameterTypeOfMap = new TypeToken<Map<String, Object>>() {
+                        }.getType();
                         final Set<String> supportedParameters = new HashSet<>(Arrays.asList("clientCollateralId", "quantity"));
                         final JsonArray array = topLevelJsonElement.get("collateral").getAsJsonArray();
                         for (int i = 1; i <= array.size(); i++) {
@@ -540,7 +543,8 @@ public final class LoanApplicationCommandFromApiJsonHelper {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -871,7 +875,8 @@ public final class LoanApplicationCommandFromApiJsonHelper {
             final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(topLevelJsonElement);
 
             if (topLevelJsonElement.get(chargesParameterName).isJsonArray()) {
-                final Type arrayObjectParameterTypeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+                final Type arrayObjectParameterTypeOfMap = new TypeToken<Map<String, Object>>() {
+                }.getType();
                 final Set<String> supportedParameters = new HashSet<>(
                         Arrays.asList("id", "chargeId", "amount", "chargeTimeType", "chargeCalculationType", "dueDate"));
 
@@ -915,7 +920,8 @@ public final class LoanApplicationCommandFromApiJsonHelper {
                     final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(topLevelJsonElement);
                     if (topLevelJsonElement.get("collateral").isJsonArray()) {
 
-                        final Type collateralParameterTypeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+                        final Type collateralParameterTypeOfMap = new TypeToken<Map<String, Object>>() {
+                        }.getType();
                         final Set<String> supportedParameters = new HashSet<>(Arrays.asList("id", "clientCollateralId", "quantity"));
                         final JsonArray array = topLevelJsonElement.get("collateral").getAsJsonArray();
                         if (array.size() > 0) {
@@ -1034,7 +1040,8 @@ public final class LoanApplicationCommandFromApiJsonHelper {
         }
 
         final Set<String> undoSupportedParameters = new HashSet<>(Arrays.asList("note"));
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, undoSupportedParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -1080,9 +1087,11 @@ public final class LoanApplicationCommandFromApiJsonHelper {
                 numberOfRepayments, repaymentEvery, repaymentEveryType);
 
         /**
-         * For multi-disbursal loans where schedules are auto-generated based on a fixed EMI, ensure the number of
-         * repayments is within the permissible range defined by the loan product
-         **/
+         * For multi-disbursal loans where schedules are auto-generated based on
+         * a fixed EMI, ensure the number of repayments is within the
+         * permissible range defined by the loan product
+         *
+         */
         if (loan.getFixedEmiAmount() != null) {
             Integer minimumNoOfRepayments = loan.loanProduct().getMinNumberOfRepayments();
             Integer maximumNoOfRepayments = loan.loanProduct().getMaxNumberOfRepayments();
@@ -1093,7 +1102,7 @@ public final class LoanApplicationCommandFromApiJsonHelper {
                 final ApiParameterError error = ApiParameterError.generalError(
                         "validation.msg.loan.numberOfRepayments.lesser.than.minimumNumberOfRepayments",
                         "The total number of calculated repayments for this loan " + actualNumberOfRepayments
-                                + " is lesser than the allowed minimum of " + minimumNoOfRepayments,
+                        + " is lesser than the allowed minimum of " + minimumNoOfRepayments,
                         actualNumberOfRepayments, minimumNoOfRepayments);
                 dataValidationErrors.add(error);
             }
@@ -1104,7 +1113,7 @@ public final class LoanApplicationCommandFromApiJsonHelper {
                 final ApiParameterError error = ApiParameterError.generalError(
                         "validation.msg.loan.numberOfRepayments.greater.than.maximumNumberOfRepayments",
                         "The total number of calculated repayments for this loan " + actualNumberOfRepayments
-                                + " is greater than the allowed maximum of " + maximumNoOfRepayments,
+                        + " is greater than the allowed maximum of " + maximumNoOfRepayments,
                         actualNumberOfRepayments, maximumNoOfRepayments);
                 dataValidationErrors.add(error);
             }
@@ -1249,23 +1258,23 @@ public final class LoanApplicationCommandFromApiJsonHelper {
                         errorcode = "installment." + LoanApiConstants.LOAN_CHARGE_CAN_NOT_BE_ADDED_WITH_PRINCIPAL_CALCULATION_TYPE;
 
                     }
-                break;
+                    break;
                 case PERCENT_OF_AMOUNT_AND_INTEREST:
-                case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
+//                case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
                     if (loanCharge.isInstalmentFee()) {
                         errorcode = "installment." + LoanApiConstants.LOAN_CHARGE_CAN_NOT_BE_ADDED_WITH_PRINCIPAL_CALCULATION_TYPE;
                     } else if (loanCharge.isSpecifiedDueDate()) {
                         errorcode = "specific." + LoanApiConstants.LOAN_CHARGE_CAN_NOT_BE_ADDED_WITH_INTEREST_CALCULATION_TYPE;
                     }
-                break;
+                    break;
                 case PERCENT_OF_INTEREST:
                     if (loanCharge.isSpecifiedDueDate()) {
                         errorcode = "specific." + LoanApiConstants.LOAN_CHARGE_CAN_NOT_BE_ADDED_WITH_INTEREST_CALCULATION_TYPE;
                     }
-                break;
+                    break;
 
                 default:
-                break;
+                    break;
             }
             if (errorcode != null) {
                 baseDataValidator.reset().parameter("charges").failWithCode(errorcode);

@@ -1280,7 +1280,7 @@ public final class LoanBusinessApplicationCommandFromApiJsonHelper {
                     }
                 break;
                 case PERCENT_OF_AMOUNT_AND_INTEREST:
-                case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
+//                case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
                     if (loanCharge.isInstalmentFee()) {
                         errorcode = "installment." + LoanApiConstants.LOAN_CHARGE_CAN_NOT_BE_ADDED_WITH_PRINCIPAL_CALCULATION_TYPE;
                     } else if (loanCharge.isSpecifiedDueDate()) {

@@ -805,8 +805,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
              * loan transactions).
              *
              * Consider removing this block of code or logically completing it
-             * for the future by getting the list of affected Transactions
-             **
+             * for the future by getting the list of affected Transactions *
              */
             final List<LoanTransaction> allNonContraTransactionsPostDisbursement = retreiveListOfTransactionsPostDisbursement();
             loanRepaymentScheduleTransactionProcessor.handleTransaction(getDisbursementDate(), allNonContraTransactionsPostDisbursement,
@@ -876,8 +875,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
              * any loan transactions).
              *
              * Consider removing this block of code or logically completing it
-             * for the future by getting the list of affected Transactions
-             **
+             * for the future by getting the list of affected Transactions *
              */
             final List<LoanTransaction> allNonContraTransactionsPostDisbursement = retreiveListOfTransactionsPostDisbursement();
             loanRepaymentScheduleTransactionProcessor.handleTransaction(getDisbursementDate(), allNonContraTransactionsPostDisbursement,
@@ -924,14 +922,14 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                     amount = getPrincpal().getAmount();
                 }
                 break;
-            case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
-                final BigDecimal totalInterestFeeCharged = getTotalInterest().add(getTotalFee());
-                if (isMultiDisburmentLoan() && loanCharge.isDisbursementCharge()) {
-                    amount = getTotalAllTrancheDisbursementAmount().getAmount().add(totalInterestFeeCharged);
-                } else {
-                    amount = getPrincpal().getAmount().add(totalInterestFeeCharged);
-                }
-                break;
+//            case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
+//                final BigDecimal totalInterestFeeCharged = getTotalInterest().add(getTotalFee());
+//                if (isMultiDisburmentLoan() && loanCharge.isDisbursementCharge()) {
+//                    amount = getTotalAllTrancheDisbursementAmount().getAmount().add(totalInterestFeeCharged);
+//                } else {
+//                    amount = getPrincpal().getAmount().add(totalInterestFeeCharged);
+//                }
+//                break;
             default:
                 break;
         }
@@ -1078,8 +1076,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
              * remaining amount.
              *
              * Consider removing this block of code or logically completing it
-             * for the future by getting the list of affected Transactions
-             **
+             * for the future by getting the list of affected Transactions *
              */
             final List<LoanTransaction> allNonContraTransactionsPostDisbursement = retreiveListOfTransactionsPostDisbursement();
             loanRepaymentScheduleTransactionProcessor.handleTransaction(getDisbursementDate(), allNonContraTransactionsPostDisbursement,
@@ -1789,9 +1786,9 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
             case PERCENT_OF_INTEREST:
                 amount = installment.getInterestOutstanding(getCurrency());
                 break;
-            case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
-                amount = installment.getPrincipalOutstanding(getCurrency()).plus(installment.getInterestOutstanding(getCurrency())).plus(installment.getFeeChargesOutstanding(getCurrency()));
-                break;
+//            case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
+//                amount = installment.getPrincipalOutstanding(getCurrency()).plus(installment.getInterestOutstanding(getCurrency())).plus(installment.getFeeChargesOutstanding(getCurrency()));
+//                break;
             default:
                 break;
         }
@@ -2849,8 +2846,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
         /**
          * *
          * TODO Vishwas: do we need to be able to pass in payment type details
-         * for repayments at disbursements too?
-         **
+         * for repayments at disbursements too? *
          */
         final Money totalFeeChargesDueAtDisbursement = this.summary.getTotalFeeChargesDueAtDisbursement(loanCurrency());
         /**

@@ -23,12 +23,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.PaginationHelper;
+import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
+import org.apache.fineract.infrastructure.jobs.annotation.CronTarget;
+import org.apache.fineract.infrastructure.jobs.service.JobName;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.organisation.staff.data.StaffData;
@@ -40,7 +44,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessReadPlatformService {
 
@@ -63,6 +69,21 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
         this.sqlGenerator = sqlGenerator;
         this.paginationHelper = paginationHelper;
         this.columnValidator = columnValidator;
+    }
+
+    @Override
+    @Transactional
+    @CronTarget(jobName = JobName.LOCK_INACTIVITY_STAFF_USER)
+    public void lockInactivityStaffUser() {
+        final String sqlFinder = "select mulv.id from m_users_lock_view mulv ";
+        List<Long> staffUserIds = this.jdbcTemplate.queryForList(sqlFinder, Long.class);
+        log.info("lockInactivityStaffUser start");
+        for (Long staffUserId : staffUserIds) {
+            String staffUserIdUpdateSql = "UPDATE m_appuser SET nonlocked=? WHERE id=?";
+            jdbcTemplate.update(staffUserIdUpdateSql, 0, staffUserId);
+        }
+        log.info("{}: Records affected by lockInactivityStaffUser: {}", ThreadLocalContextUtil.getTenant().getName(),
+                staffUserIds.size());
     }
 
     @Override

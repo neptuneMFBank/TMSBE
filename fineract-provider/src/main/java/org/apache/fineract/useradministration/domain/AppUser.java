@@ -789,4 +789,12 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         return newAppUserMerchantMappings;
 
     }
+
+    public void lockUser() {
+        this.accountNonLocked = false;
+    }
+
+    public void unLockUser() {
+        this.accountNonLocked = true;
+    }
 }

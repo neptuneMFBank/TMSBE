@@ -63,7 +63,8 @@ import org.springframework.stereotype.Component;
 public class UsersBusinessApiResource {
 
     /**
-     * The set of parameters that are supported in response for {@link AppUserData}.
+     * The set of parameters that are supported in response for
+     * {@link AppUserData}.
      */
     private final PlatformSecurityContext context;
     private final AppUserBusinessReadPlatformService readPlatformService;
@@ -87,13 +88,14 @@ public class UsersBusinessApiResource {
     }
 
     @GET
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve all Users", description = "Retrieve list of Userss")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
-    // EmployerApiResourceSwagger.GetEmployersResponse.class)))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+        // EmployerApiResourceSwagger.GetEmployersResponse.class)))
+        )})
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
             @QueryParam("username") @Parameter(description = "username") final String username,
@@ -132,11 +134,12 @@ public class UsersBusinessApiResource {
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
-    ) })
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
+        )})
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public String update(@PathParam("userId") @Parameter(description = "userId") final Long userId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -156,11 +159,12 @@ public class UsersBusinessApiResource {
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
-    ) })
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = UsersApiResourceSwagger.PutUsersUserIdResponse.class))
+        )})
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public String update(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
@@ -175,11 +179,12 @@ public class UsersBusinessApiResource {
 
     @POST
     @Path("{userId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Enable/Disable User", description = "")
     @RequestBody(required = true)
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
     public String actions(@PathParam("userId") @Parameter(description = "userId") final Long userId,
             @QueryParam("command") @Parameter(description = "command") final String commandParam,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
@@ -194,10 +199,16 @@ public class UsersBusinessApiResource {
         } else if (is(commandParam, "disable")) {
             commandRequest = builder.disableUser(userId).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        } else if (is(commandParam, "lock")) {
+            commandRequest = builder.lockUser(userId).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        } else if (is(commandParam, "lock")) {
+            commandRequest = builder.unLockUser(userId).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         }
 
         if (result == null) {
-            throw new UnrecognizedQueryParamException("command", commandParam, new Object[] { "enable", "disable" });
+            throw new UnrecognizedQueryParamException("command", commandParam, new Object[]{"enable", "disable"});
         }
 
         return this.toApiJsonSerializer.serialize(result);

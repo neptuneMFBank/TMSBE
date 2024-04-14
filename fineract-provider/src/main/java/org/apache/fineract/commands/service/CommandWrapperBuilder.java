@@ -3535,6 +3535,22 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder lockUser(Long userId) {
+        this.actionName = "LOCK";
+        this.entityName = "USER";
+        this.entityId = userId;
+        this.href = "/users/business/" + userId + "/lock";
+        return this;
+    }
+
+    public CommandWrapperBuilder unLockUser(Long userId) {
+        this.actionName = "UNLOCK";
+        this.entityName = "USER";
+        this.entityId = userId;
+        this.href = "/users/business/" + userId + "/unlock";
+        return this;
+    }
+
     public CommandWrapperBuilder enableUser(Long userId) {
         this.actionName = "ENABLE";
         this.entityName = "USER";
@@ -3822,13 +3838,15 @@ public class CommandWrapperBuilder {
         this.href = "/loanproducts/visibility";
         return this;
     }
-       public CommandWrapperBuilder updateLoanProductVisibility(final Long loanProductVisibilityId) {
+
+    public CommandWrapperBuilder updateLoanProductVisibility(final Long loanProductVisibilityId) {
         this.actionName = "UPDATE";
         this.entityName = LoanProductVisibilityApiResourceConstants.RESOURCENAME;
         this.entityId = loanProductVisibilityId;
         this.href = "/loanproducts/visibility/" + loanProductVisibilityId;
         return this;
     }
+
     public CommandWrapperBuilder deleteLoanProductVisibility(final Long loanProductVisibilityId) {
         this.actionName = "DELETE";
         this.entityName = LoanProductVisibilityApiResourceConstants.RESOURCENAME;

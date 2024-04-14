@@ -47,8 +47,9 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
 
     @Override
     @Transactional
-    @Caching(evict = { @CacheEvict(value = "usersBusiness", allEntries = true),
-            @CacheEvict(value = "usersBusinessPasswordByUsername", allEntries = true) })
+    @Caching(evict = {
+        @CacheEvict(value = "usersBusiness", allEntries = true),
+        @CacheEvict(value = "usersBusinessPasswordByUsername", allEntries = true)})
     public CommandProcessingResult updateUserPassword(final JsonCommand command) {
         final AppUser appUser = this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForUpdatePassword(command.json());
@@ -58,8 +59,9 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
 
     @Override
     @Transactional
-    @Caching(evict = { @CacheEvict(value = "usersBusiness", allEntries = true),
-            @CacheEvict(value = "usersBusinessInfoByUsername", allEntries = true) })
+    @Caching(evict = {
+        @CacheEvict(value = "usersBusiness", allEntries = true),
+        @CacheEvict(value = "usersBusinessInfoByUsername", allEntries = true)})
     public CommandProcessingResult updateUserInfo(final Long userId, final JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForUpdate(command.json());
@@ -69,9 +71,7 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
     @Transactional
     @Override
     public CommandProcessingResult enableUser(Long userId) {
-        final AppUser appUser = this.context.authenticatedUser();
-        rejectActionOnSelfUser(appUser, userId);
-        final AppUser userToUpdate = this.appUserRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        AppUser userToUpdate = checkAppUser(userId);
 
         try {
             userToUpdate.enableUser();
@@ -86,9 +86,7 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
     @Transactional
     @Override
     public CommandProcessingResult disableUser(Long userId) {
-        final AppUser appUser = this.context.authenticatedUser();
-        rejectActionOnSelfUser(appUser, userId);
-        final AppUser userToUpdate = this.appUserRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        AppUser userToUpdate = checkAppUser(userId);
 
         try {
             userToUpdate.disableUser();
@@ -97,6 +95,43 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
         } catch (final Exception e) {
             log.warn("disableUser: {}", e);
             throw new PlatformDataIntegrityException("error.msg.unknown.data.integrity.issue", "User not Disabled.");
+        }
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult lockUser(Long userId) {
+        AppUser userToUpdate = checkAppUser(userId);
+
+        try {
+            userToUpdate.lockUser();
+            this.appUserRepository.saveAndFlush(userToUpdate);
+            return new CommandProcessingResultBuilder().withEntityId(userId).build();
+        } catch (final Exception e) {
+            log.warn("lockUser: {}", e);
+            throw new PlatformDataIntegrityException("error.msg.unknown.data.integrity.issue", "User not Locked.");
+        }
+    }
+
+    protected AppUser checkAppUser(Long userId) throws UserNotFoundException {
+        final AppUser appUser = this.context.authenticatedUser();
+        rejectActionOnSelfUser(appUser, userId);
+        final AppUser userToUpdate = this.appUserRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        return userToUpdate;
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult unLockUser(Long userId) {
+        AppUser userToUpdate = checkAppUser(userId);
+
+        try {
+            userToUpdate.unLockUser();
+            this.appUserRepository.saveAndFlush(userToUpdate);
+            return new CommandProcessingResultBuilder().withEntityId(userId).build();
+        } catch (final Exception e) {
+            log.warn("unLockUser: {}", e);
+            throw new PlatformDataIntegrityException("error.msg.unknown.data.integrity.issue", "User not unLocked.");
         }
     }
 

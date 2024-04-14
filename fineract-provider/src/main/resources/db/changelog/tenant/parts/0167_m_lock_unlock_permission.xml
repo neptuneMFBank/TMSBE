@@ -44,7 +44,7 @@
 
     <changeSet author="fineract" id="2">
         <insert tableName="job">
-            <column name="id" valueNumeric="1"/>
+            <column name="id"/>
             <column name="name" value="Lock Inactivity Staff User"/>
             <column name="display_name" value="Lock Inactivity Staff User"/>
             <column name="cron_expression" value="0 0 03 1/1 * ? *"/>

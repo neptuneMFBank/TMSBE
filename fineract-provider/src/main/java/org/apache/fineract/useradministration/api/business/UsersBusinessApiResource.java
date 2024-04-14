@@ -202,13 +202,13 @@ public class UsersBusinessApiResource {
         } else if (is(commandParam, "lock")) {
             commandRequest = builder.lockUser(userId).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-        } else if (is(commandParam, "lock")) {
+        } else if (is(commandParam, "unlock")) {
             commandRequest = builder.unLockUser(userId).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         }
 
         if (result == null) {
-            throw new UnrecognizedQueryParamException("command", commandParam, new Object[]{"enable", "disable"});
+            throw new UnrecognizedQueryParamException("command", commandParam, new Object[]{"enable", "disable", "lock", "unlock"});
         }
 
         return this.toApiJsonSerializer.serialize(result);

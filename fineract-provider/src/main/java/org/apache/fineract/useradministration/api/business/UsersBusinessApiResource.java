@@ -100,6 +100,7 @@ public class UsersBusinessApiResource {
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
             @QueryParam("username") @Parameter(description = "username") final String username,
             @QueryParam("active") @Parameter(description = "active") Boolean active,
+            @QueryParam("locked") @Parameter(description = "locked") Boolean locked,
             @QueryParam("isSelfUser") @Parameter(description = "isSelfUser") Boolean isSelfUser,
             // @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
             // @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
@@ -122,6 +123,7 @@ public class UsersBusinessApiResource {
         // }
         final SearchParametersBusiness searchParameters = SearchParametersBusiness.forUser(active, offset, limit, orderBy, sortOrder,
                 fromDate, toDate, officeId, username, isSelfUser);
+        searchParameters.setLocked(locked);
         final Page<AppUserData> appUserData = this.readPlatformService.retrieveAllUsers(searchParameters);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());

@@ -111,6 +111,7 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
         final String username = searchParameters.getUsername();
         final Boolean active = searchParameters.isActive();
         final Boolean isSelfUser = searchParameters.isSelfUser();
+        final Boolean locked = searchParameters.getLocked();
 
         String extraCriteria = "";
 
@@ -143,6 +144,10 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
         if (searchParameters.isActivePassed()) {
             extraCriteria += " and u.enabled = ? ";
             paramList.add(active);
+        }
+        if (searchParameters.isLockedPassed()) {
+            extraCriteria += " and u.nonlocked = ? ";
+            paramList.add(locked);
         }
         if (searchParameters.isSelfUserPassed()) {
             extraCriteria += " and u.is_self_service_user = ? ";

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.Money;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.feeIntervalOnInterestCharge;
 
 /**
  * A wrapper around loan schedule related data exposing needed behaviour by
@@ -73,6 +74,9 @@ public class LoanRepaymentScheduleProcessingWrapper {
         for (final LoanCharge loanCharge : loanCharges) {
             if (loanCharge.isFeeCharge() && !loanCharge.isDueAtDisbursement()) {
                 if (loanCharge.isInstalmentFee() && isInstallmentChargeApplicable) {
+                    if (feeIntervalOnInterestCharge(loanCharge.getCharge(), period.getInstallmentNumber(), "ReProcess-cumulativeFeeChargesDueWithin")) {
+                        continue;
+                    }
                     if (loanCharge.getChargeCalculation().isPercentageBased()) {
                         BigDecimal amount = BigDecimal.ZERO;
                         if (loanCharge.getChargeCalculation().isPercentageOfAmountAndInterest()) {

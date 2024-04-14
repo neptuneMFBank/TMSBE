@@ -797,4 +797,9 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     public void unLockUser() {
         this.accountNonLocked = true;
     }
+
+    public void setFirstTimeLoginRemaining(boolean firstTimeLoginRemaining) {
+        this.firstTimeLoginRemaining = firstTimeLoginRemaining;
+    }
+
 }

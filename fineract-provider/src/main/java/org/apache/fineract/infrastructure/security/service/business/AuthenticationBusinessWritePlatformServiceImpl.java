@@ -35,6 +35,7 @@ import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityEx
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.GmailBackedPlatformEmailService;
 import org.apache.fineract.infrastructure.security.domain.business.LoginCountRequestRepository;
+import org.apache.fineract.infrastructure.security.exception.NoAuthorizationException;
 import org.apache.fineract.infrastructure.security.service.AuthenticationBusinessCommandFromApiJsonDeserializer;
 import org.apache.fineract.infrastructure.sms.domain.SmsMessage;
 import org.apache.fineract.infrastructure.sms.domain.SmsMessageRepository;
@@ -192,17 +193,22 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
     @Override
     public void lockUserAfterMultipleAttempts(String username, boolean clearFromLoginAttempts) {
         this.appUserRepositoryWrapper.findAppUserByName(username);
+        log.info("clearFromLoginAttempts username: {}-{}", username, clearFromLoginAttempts);
         if (clearFromLoginAttempts) {
             this.loginCountRequestRepository.deleteLoginRequestCountForUser(username);
         } else {
             int count = this.loginCountRequestRepository.getLoginRequestCountForUser(username);
+            log.info("before adding count: {}", count);
             if (count > 3) {
                 //lock user
+                log.info("lock count: {}", count);
                 String lockUserUpdateSql = "UPDATE m_appuser SET nonlocked=? WHERE username=?";
                 jdbcTemplate.update(lockUserUpdateSql, 0, username);
+                throw new NoAuthorizationException("Your account is now locked, please contact support.");
             } else {
                 count = count++;
                 this.loginCountRequestRepository.addLoginRequestCount(username, count);
+                log.info("after adding count: {}", count);
             }
         }
     }

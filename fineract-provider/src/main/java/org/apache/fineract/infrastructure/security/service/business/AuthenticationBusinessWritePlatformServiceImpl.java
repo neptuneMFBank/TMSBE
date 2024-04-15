@@ -34,8 +34,9 @@ import org.apache.fineract.infrastructure.core.domain.EmailDetail;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.GmailBackedPlatformEmailService;
+import org.apache.fineract.infrastructure.security.domain.business.LoginCountRequestRepository;
+import org.apache.fineract.infrastructure.security.exception.NoAuthorizationException;
 import org.apache.fineract.infrastructure.security.service.AuthenticationBusinessCommandFromApiJsonDeserializer;
-import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.sms.domain.SmsMessage;
 import org.apache.fineract.infrastructure.sms.domain.SmsMessageRepository;
 import org.apache.fineract.infrastructure.sms.domain.SmsMessageStatusType;
@@ -49,6 +50,7 @@ import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.UserDomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -64,8 +66,10 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
     private static final SecureRandom secureRandom = new SecureRandom();
     final AuthenticationBusinessCommandFromApiJsonDeserializer authenticationBusinessCommandFromApiJsonDeserializer;
     private final AppUserRepositoryWrapper appUserRepositoryWrapper;
-    private final PlatformSecurityContext context;
+//    private final PlatformSecurityContext context;
     private final CommandSourceRepository commandSourceRepository;
+    private final LoginCountRequestRepository loginCountRequestRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public AuthenticationBusinessWritePlatformServiceImpl(final FromJsonHelper fromApiJsonHelper, final UserDomainService userDomainService,
@@ -73,8 +77,9 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
             SmsMessageScheduledJobService smsMessageScheduledJobService,
             final SmsCampaignDropdownReadPlatformService smsCampaignDropdownReadPlatformService,
             final AuthenticationBusinessCommandFromApiJsonDeserializer authenticationBusinessCommandFromApiJsonDeserializer,
-            final AppUserRepositoryWrapper appUserRepositoryWrapper, final PlatformSecurityContext context,
-            final CommandSourceRepository commandSourceRepository) {
+            final AppUserRepositoryWrapper appUserRepositoryWrapper,
+            //final PlatformSecurityContext context,
+            final JdbcTemplate jdbcTemplate, final CommandSourceRepository commandSourceRepository, LoginCountRequestRepository loginCountRequestRepository) {
         this.appUserRepositoryWrapper = appUserRepositoryWrapper;
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.userDomainService = userDomainService;
@@ -83,8 +88,10 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
         this.smsMessageScheduledJobService = smsMessageScheduledJobService;
         this.smsCampaignDropdownReadPlatformService = smsCampaignDropdownReadPlatformService;
         this.authenticationBusinessCommandFromApiJsonDeserializer = authenticationBusinessCommandFromApiJsonDeserializer;
-        this.context = context;
+        //this.context = context;
         this.commandSourceRepository = commandSourceRepository;
+        this.loginCountRequestRepository = loginCountRequestRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -103,8 +110,8 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
             // appUser = this.appUserRepositoryWrapper.findAppUserByName(value);
             appUser = this.appUserRepositoryWrapper.findAppUserByEmail(value);
         } // else if (isMobileAuthenticationMode) {
-          // check mobile
-          // }
+        // check mobile
+        // }
         else {
             throw new PlatformDataIntegrityException("error.msg.reset.mode", "Password reset mode not supported");
         }
@@ -183,4 +190,27 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
         this.commandSourceRepository.saveAndFlush(commandSourceResult);
     }
 
+    @Override
+    public void lockUserAfterMultipleAttempts(String username, boolean clearFromLoginAttempts) {
+        this.appUserRepositoryWrapper.findAppUserByName(username);
+        log.info("clearFromLoginAttempts username: {}-{}", username, clearFromLoginAttempts);
+        if (clearFromLoginAttempts) {
+            this.loginCountRequestRepository.deleteLoginRequestCountForUser(username);
+        } else {
+            int count = this.loginCountRequestRepository.getLoginRequestCountForUser(username);
+            log.info("before adding count: {}", count);
+            if (count > 3) {
+                //lock user
+                log.info("lock count: {}", count);
+                String lockUserUpdateSql = "UPDATE m_appuser SET nonlocked=? WHERE username=?";
+                jdbcTemplate.update(lockUserUpdateSql, 0, username);
+                this.loginCountRequestRepository.deleteLoginRequestCountForUser(username);
+                throw new NoAuthorizationException("Your account is now locked, please contact support.");
+            } else {
+                count = ++count;
+                this.loginCountRequestRepository.addLoginRequestCount(username, count);
+                log.info("after adding count: {}", count);
+            }
+        }
+    }
 }

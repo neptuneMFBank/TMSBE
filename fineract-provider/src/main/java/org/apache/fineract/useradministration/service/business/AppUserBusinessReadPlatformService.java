@@ -29,4 +29,5 @@ public interface AppUserBusinessReadPlatformService {
 
     Collection<AppUserData> retrieveActiveAppUsersForRole(Long roleId);
 
+    void lockInactivityStaffUser();
 }

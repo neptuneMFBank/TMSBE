@@ -87,7 +87,9 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
 
     @Override
     @Transactional
-    @Caching(evict = { @CacheEvict(value = "users", allEntries = true), @CacheEvict(value = "usersByUsername", allEntries = true) })
+    @Caching(evict = {
+        @CacheEvict(value = "users", allEntries = true),
+        @CacheEvict(value = "usersByUsername", allEntries = true)})
     public CommandProcessingResult createUser(final JsonCommand command) {
         try {
             this.context.authenticatedUser();
@@ -127,6 +129,10 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
             }
 
             AppUser appUser = AppUser.fromJson(userOffice, linkedStaff, allRoles, clients, command);
+            if (linkedStaff != null) {
+                //only set this to true for staff, when linked
+                appUser.setFirstTimeLoginRemaining(true);
+            }
 
             final Boolean sendPasswordToEmail = command.booleanObjectValueOfParameterNamed("sendPasswordToEmail");
             this.userDomainService.create(appUser, sendPasswordToEmail);
@@ -157,7 +163,9 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
 
     @Override
     @Transactional
-    @Caching(evict = { @CacheEvict(value = "users", allEntries = true), @CacheEvict(value = "usersByUsername", allEntries = true) })
+    @Caching(evict = {
+        @CacheEvict(value = "users", allEntries = true),
+        @CacheEvict(value = "usersByUsername", allEntries = true)})
     public CommandProcessingResult updateUser(final Long userId, final JsonCommand command) {
         try {
             this.context.authenticatedUser(new CommandWrapperBuilder().updateUser(null).build());
@@ -237,8 +245,8 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
     }
 
     /**
-     * Encode the new submitted password and retrieve the last N used passwords to check if the current submitted
-     * password matches with one of them.
+     * Encode the new submitted password and retrieve the last N used passwords
+     * to check if the current submitted password matches with one of them.
      */
     private AppUserPreviousPassword getCurrentPasswordToSaveAsPreview(final AppUser user, final JsonCommand command) {
         final String passWordEncodedValue = user.getEncodedPassword(command, this.platformPasswordEncoder);
@@ -277,7 +285,9 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
 
     @Override
     @Transactional
-    @Caching(evict = { @CacheEvict(value = "users", allEntries = true), @CacheEvict(value = "usersByUsername", allEntries = true) })
+    @Caching(evict = {
+        @CacheEvict(value = "users", allEntries = true),
+        @CacheEvict(value = "usersByUsername", allEntries = true)})
     public CommandProcessingResult deleteUser(final Long userId) {
         final AppUser user = this.appUserRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         if (user.isDeleted()) {

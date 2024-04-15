@@ -80,6 +80,7 @@ public final class SearchParametersBusiness {
     private final Long staffSupervisorId;
     private final Boolean isSupervisor;
     private final Boolean isLoanOfficer;
+    private Boolean locked;
 
     private final Long transactionTypeId;
     private final Long transactionId;
@@ -1390,4 +1391,15 @@ public final class SearchParametersBusiness {
         return transactionId;
     }
 
+    public Boolean getLocked() {
+        return locked;
+    }
+
+    public void setLocked(Boolean locked) {
+        this.locked = locked;
+    }
+
+    public boolean isLockedPassed() {
+        return locked != null;
+    }
 }

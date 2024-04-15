@@ -125,8 +125,10 @@ public class AuthenticationApiResource {
             throw new IllegalArgumentException("Username or Password is null in JSON (see FINERACT-726) of POST to /authentication: "
                     + apiRequestBodyAsJson + "; username=" + request.username + ", password=" + request.password);
         }
-
-        final Authentication authentication = new UsernamePasswordAuthenticationToken(request.username, request.password);
+        final String username = request.username;
+        //check login attempts
+        this.authenticationBusinessWritePlatformService.lockUserAfterMultipleAttempts(username, false);
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(username, request.password);
         Authentication authenticationCheck = null;
 //        final Authentication authenticationCheck = this.customAuthenticationProvider.authenticate(authentication);
         try {
@@ -187,6 +189,8 @@ public class AuthenticationApiResource {
             final LocalDateTime lastLoginDate = this.authenticationBusinessReadPlatformService.lastLoginDate(userId);
             authenticatedUserData.setLastLoggedIn(lastLoginDate);
         }
+        //clear login attempts if available
+        this.authenticationBusinessWritePlatformService.lockUserAfterMultipleAttempts(username, true);
         return this.apiJsonSerializerService.serialize(authenticatedUserData);
     }
 }

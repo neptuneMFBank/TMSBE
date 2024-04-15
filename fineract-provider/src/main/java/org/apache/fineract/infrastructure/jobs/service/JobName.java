@@ -21,6 +21,7 @@ package org.apache.fineract.infrastructure.jobs.service;
 public enum JobName {
 
     // Added Business Lofgic start here
+    LOCK_INACTIVITY_STAFF_USER("Lock Inactivity Staff User"),
     QUEUE_SELF_CLIENT_ACTIVATE("Queue Self Client Activate"),
     UPDATE_DUE_OVERDRAFT("Update Due Overdraft"),
     REMINDER_LOAN_APPROVAL_CHECKS(

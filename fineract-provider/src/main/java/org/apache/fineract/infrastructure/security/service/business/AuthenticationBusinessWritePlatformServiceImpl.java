@@ -204,6 +204,7 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
                 log.info("lock count: {}", count);
                 String lockUserUpdateSql = "UPDATE m_appuser SET nonlocked=? WHERE username=?";
                 jdbcTemplate.update(lockUserUpdateSql, 0, username);
+                this.loginCountRequestRepository.deleteLoginRequestCountForUser(username);
                 throw new NoAuthorizationException("Your account is now locked, please contact support.");
             } else {
                 count = ++count;

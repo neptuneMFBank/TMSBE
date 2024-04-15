@@ -206,7 +206,7 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
                 jdbcTemplate.update(lockUserUpdateSql, 0, username);
                 throw new NoAuthorizationException("Your account is now locked, please contact support.");
             } else {
-                count = count++;
+                count = ++count;
                 this.loginCountRequestRepository.addLoginRequestCount(username, count);
                 log.info("after adding count: {}", count);
             }

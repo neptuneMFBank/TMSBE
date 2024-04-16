@@ -59,6 +59,7 @@ public final class AppUserData {
     private Set<ClientData> clients;
 
     private Boolean active;
+    private Boolean nonlocked;
     private LocalDateTime lastLoggedIn;
 
     public static AppUserData importInstance(Long officeId, Long staffId, String username, String firstname, String lastname, String email,
@@ -187,6 +188,14 @@ public final class AppUserData {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public Boolean getNonlocked() {
+        return nonlocked;
+    }
+
+    public void setNonlocked(Boolean nonlocked) {
+        this.nonlocked = nonlocked;
     }
 
     public StaffData getStaff() {

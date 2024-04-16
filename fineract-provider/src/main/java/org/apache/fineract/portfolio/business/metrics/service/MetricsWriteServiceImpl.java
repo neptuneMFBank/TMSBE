@@ -817,13 +817,13 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
         final Long staffId = this.fromApiJsonHelper.extractLongNamed(ClientApiConstants.staffIdParamName, element);
         metricsOverdraftStateCheck(metrics, overdraftId);
         try {
-            final Loan loan = metrics.getLoan();
+            final SavingsAccount savingsAccount = metrics.getSavingsAccount();
             final Staff oldStaff = metrics.getAssignedUser();
             final Staff newStaff = this.staffRepositoryWrapper.findOneWithNotFoundDetection(staffId);
             if (!Objects.equals(oldStaff.getId(), newStaff.getId())) {
 
-                saveNoteMetrics("Reassign overdraft from " + oldStaff.displayName() + "to a new approval officer" + newStaff.displayName(),
-                        loan);
+                saveNoteSavingsMetrics("Reassign overdraft from " + oldStaff.displayName() + "to a new approval officer" + newStaff.displayName(),
+                        savingsAccount);
 
                 metrics.setAssignedUser(newStaff);
                 this.metricsRepositoryWrapper.saveAndFlush(metrics);

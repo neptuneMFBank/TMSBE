@@ -132,7 +132,7 @@ public final class SearchParametersBusiness {
 
     public static SearchParametersBusiness forAudit(final LocalDate fromDate, final LocalDate toDate, Boolean isChecker, String actionName,
             String entityName, Long resourceId, Long makerCheckerId, Integer processingResult, Long officeId, Long groupId, Long clientId,
-            Long loanId, Long savingsAccountId, Integer offset, Integer limit, String orderBy, String sortOrder) {
+            Long loanId, Long savingsAccountId, Integer offset, Integer limit, String orderBy, String sortOrder, Long supervisorStaffId) {
         final String name = entityName;
 
         final Integer maxLimitAllowed = getCheckedLimit(limit);
@@ -171,7 +171,7 @@ public final class SearchParametersBusiness {
         final Long overdraftId = null;
         final Long productId = null;
         final Long staffId = makerCheckerId;
-        final Long staffSupervisorId = null;
+        final Long staffSupervisorId = supervisorStaffId;
         final Long transactionTypeId = null;
         final Long transactionId = null;
 

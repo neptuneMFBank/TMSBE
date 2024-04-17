@@ -16,19 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.commands.data;
+package org.apache.fineract.commands.data.business;
 
 import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.fineract.organisation.staff.data.StaffData;
 
 /**
  * Immutable data object representing client data.
  */
 @AllArgsConstructor
 @Getter
-public final class AuditData {
+public final class AuditBusinessData {
 
     private final Long id;
     private final String actionName;
@@ -51,5 +52,6 @@ public final class AuditData {
     private final Long clientId;
     private final Long loanId;
     private final String url;
+    private final StaffData supervisorStaffData;
 
 }

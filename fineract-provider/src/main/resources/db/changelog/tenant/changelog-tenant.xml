@@ -183,4 +183,5 @@
     <include file="parts/0167_m_lock_unlock_permission.xml" relativeToChangelogFile="true" />
     <include file="parts/0168_m_users_lock_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0169_m_password_policy.xml" relativeToChangelogFile="true" />
+    <include file="parts/0170_m_audit_approval_view.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

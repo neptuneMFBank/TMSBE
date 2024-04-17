@@ -116,7 +116,7 @@ public final class StaffBusinessCommandFromApiJsonDeserializer {
             baseDataValidator.reset().parameter("organisationalRoleTypeId").value(organisationalRoleTypeId).notNull()
                     .integerGreaterThanZero();
         }
-        if (this.fromApiJsonHelper.parameterExists("organisationalRoleTypeId", element)) {
+        if (this.fromApiJsonHelper.parameterExists("organisationalRoleParentStaffId", element)) {
             final Long organisationalRoleParentStaffId = this.fromApiJsonHelper.extractLongNamed("organisationalRoleParentStaffId",
                     element);
             baseDataValidator.reset().parameter("organisationalRoleParentStaffId").value(organisationalRoleParentStaffId).notNull()

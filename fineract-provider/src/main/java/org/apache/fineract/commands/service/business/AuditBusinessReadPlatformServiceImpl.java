@@ -260,6 +260,7 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
         // pcs.made_on_date, pcs.checker_id, pcs.checked_on_date, pcs.processing_result_enum,
         // pcs.group_id, pcs.client_id, pcs.loan_id, pcs.savings_account_id
         // aud.
+        final Long resourceId = searchParameters.getCategoryId();
         final Long officeId = searchParameters.getOfficeId();
         final Long makerCheckerId = searchParameters.getStaffId();
         final Long groupId = searchParameters.getIndustryId();// groupId
@@ -306,6 +307,11 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
         if (officeId != null) {
             extraCriteria += " and aud.office_id = ? ";
             paramList.add(officeId);
+        }
+
+        if (searchParameters.isCategoryIdPassed()) {
+            extraCriteria += " and aud.resource_id = ? ";
+            paramList.add(resourceId);
         }
 
         if (externalId != null) {

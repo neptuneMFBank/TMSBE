@@ -25,6 +25,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
+import java.util.Collection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -51,10 +52,13 @@ import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.business.metrics.data.MetricsData;
+import org.apache.fineract.portfolio.business.metrics.service.MetricsReadPlatformService;
 import org.apache.fineract.portfolio.business.overdraft.data.OverdraftData;
 import org.apache.fineract.portfolio.business.overdraft.service.OverdraftReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Path("/overdraft")
@@ -70,13 +74,15 @@ public class OverdraftApiResource {
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PlatformSecurityContext context;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+    private final MetricsReadPlatformService metricsReadPlatformService;
 
     @GET
     @Path("{overdraftId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve a overdraft", description = "Returns the details of a overdraft. Example Requests: overdraft/1")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
     public String retreiveOverdraft(@PathParam("overdraftId") @Parameter(description = "overdraftId") final Long overdraftId,
             @Context final UriInfo uriInfo) {
 
@@ -84,18 +90,24 @@ public class OverdraftApiResource {
 
         final OverdraftData overdraftData = this.readPlatformService.retrieveOne(overdraftId);
 
+        final Collection<MetricsData> metricsData = this.metricsReadPlatformService.retrieveOverdraftMetrics(overdraftId);
+        if (!CollectionUtils.isEmpty(metricsData)) {
+            overdraftData.setMetricsData(metricsData);
+        }
+
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.jsonSerializer.serialize(settings, overdraftData, OverdraftApiResourceConstants.RESPONSE_DATA_PARAMETERS);
     }
 
     @GET
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve Overdraft", description = "Retrieve Overdraft")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
-    // MetricsApiResourceSwagger.GetMetricssResponse.class)))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+        // MetricsApiResourceSwagger.GetMetricssResponse.class)))
+        )})
     public String retreiveAllOverdraft(@Context final UriInfo uriInfo,
             @QueryParam("savingsId") @Parameter(description = "savingsId") final Long savingsId,
             @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
@@ -128,11 +140,12 @@ public class OverdraftApiResource {
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create an Overdraft", description = "")
     @RequestBody(required = true)
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
@@ -147,11 +160,12 @@ public class OverdraftApiResource {
 
     @PUT
     @Path("{overdraftId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Update an Overdraft", description = "")
     @RequestBody(required = true)
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
     public String update(@Parameter(description = "overdraftId") @PathParam("overdraftId") final Long overdraftId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -167,11 +181,12 @@ public class OverdraftApiResource {
 
     @POST
     @Path("/stop/{overdraftId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Stop an Overdraft", description = "")
     @RequestBody(required = true)
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
     public String stop(@Parameter(description = "overdraftId") @PathParam("overdraftId") final Long overdraftId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -187,11 +202,12 @@ public class OverdraftApiResource {
 
     @DELETE
     @Path("{overdraftId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Update a Client", description = "")
     @RequestBody(required = true)
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
     public String delete(@Parameter(description = "overdraftId") @PathParam("overdraftId") final Long overdraftId) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
@@ -206,11 +222,12 @@ public class OverdraftApiResource {
 
     @POST
     @Path("/submit/{overdraftId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Stop an Overdraft", description = "")
     @RequestBody(required = true)
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
     public String submitOverdraft(@Parameter(description = "overdraftId") @PathParam("overdraftId") final Long overdraftId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 

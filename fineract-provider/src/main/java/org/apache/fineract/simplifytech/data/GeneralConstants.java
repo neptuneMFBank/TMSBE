@@ -292,4 +292,13 @@ public class GeneralConstants {
         return false;
     }
 
+    public static String removeFirstCharacters(String originalString, int numberOfCharactersToRemove) {
+        // Check if the original string is not null and its length is greater than the number of characters to remove
+        if (originalString != null && originalString.length() > numberOfCharactersToRemove) {
+            return StringUtils.substring(originalString, numberOfCharactersToRemove);
+        } else {
+            // Handle the case where the original string is null or its length is less than or equal to the number of characters to remove
+            return originalString;
+        }
+    }
 }

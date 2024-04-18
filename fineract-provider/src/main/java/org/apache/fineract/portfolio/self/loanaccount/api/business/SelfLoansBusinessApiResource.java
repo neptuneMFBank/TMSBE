@@ -113,7 +113,8 @@ public class SelfLoansBusinessApiResource {
         final String externalId = null;
         final Long officeId = null;
         final Long staffId = null;
-        return this.loansBusinessApiResource.retrieveAll(uriInfo, statusId, externalId, officeId, clientId, staffId, offset,
+        final Boolean noLoanOfficer = null;
+        return this.loansBusinessApiResource.retrieveAll(uriInfo, statusId, externalId, officeId, clientId, staffId, noLoanOfficer, offset,
                 limit, orderBy, sortOrder, accountNo, startPeriod, endPeriod, locale, dateFormat);
     }
 

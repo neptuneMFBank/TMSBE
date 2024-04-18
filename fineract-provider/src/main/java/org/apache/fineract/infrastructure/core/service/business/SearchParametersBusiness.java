@@ -80,6 +80,7 @@ public final class SearchParametersBusiness {
     private final Long staffSupervisorId;
     private final Boolean isSupervisor;
     private final Boolean isLoanOfficer;
+    private Boolean locked;
 
     private final Long transactionTypeId;
     private final Long transactionId;
@@ -131,7 +132,7 @@ public final class SearchParametersBusiness {
 
     public static SearchParametersBusiness forAudit(final LocalDate fromDate, final LocalDate toDate, Boolean isChecker, String actionName,
             String entityName, Long resourceId, Long makerCheckerId, Integer processingResult, Long officeId, Long groupId, Long clientId,
-            Long loanId, Long savingsAccountId, Integer offset, Integer limit, String orderBy, String sortOrder) {
+            Long loanId, Long savingsAccountId, Integer offset, Integer limit, String orderBy, String sortOrder, Long supervisorStaffId) {
         final String name = entityName;
 
         final Integer maxLimitAllowed = getCheckedLimit(limit);
@@ -170,7 +171,7 @@ public final class SearchParametersBusiness {
         final Long overdraftId = null;
         final Long productId = null;
         final Long staffId = makerCheckerId;
-        final Long staffSupervisorId = null;
+        final Long staffSupervisorId = supervisorStaffId;
         final Long transactionTypeId = null;
         final Long transactionId = null;
 
@@ -740,14 +741,13 @@ public final class SearchParametersBusiness {
 
     public static SearchParametersBusiness forLoansBusiness(final Long clientId, final Long officeId, final String externalId,
             final Integer statusId, final String hierarchy, final Integer offset, final Integer limit, final String orderBy,
-            final String sortOrder, final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate) {
+            final String sortOrder, final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate, final Boolean isSelfUser) {
 
         final Long organisationalRoleEnumId = null;
         final Long industryId = null;
         final Long classificationId = null;
         final Boolean showLoanProducts = null;
         final Boolean showSavingsProducts = null;
-        final Boolean isSelfUser = null;
         final Boolean orphansOnly = false;
         final Long savingsId = null;
         final Long documentConfigId = null;
@@ -1442,4 +1442,15 @@ public final class SearchParametersBusiness {
         return transactionId;
     }
 
+    public Boolean getLocked() {
+        return locked;
+    }
+
+    public void setLocked(Boolean locked) {
+        this.locked = locked;
+    }
+
+    public boolean isLockedPassed() {
+        return locked != null;
+    }
 }

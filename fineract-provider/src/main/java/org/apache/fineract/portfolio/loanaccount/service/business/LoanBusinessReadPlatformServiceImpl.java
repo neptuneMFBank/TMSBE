@@ -32,6 +32,7 @@ import java.util.List;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
@@ -280,6 +281,10 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
                 sqlBuilder.append(" and l.loan_officer_id =? ");
                 extraCriterias.add(searchParameters.getStaffId());
                 arrayPos = arrayPos + 1;
+            }
+
+            if (searchParameters.isSelfUserPassed() && BooleanUtils.isTrue(searchParameters.isSelfUser())) {
+                sqlBuilder.append(" and l.loan_officer_id IS NULL ");
             }
 
             if (searchParameters.isStatusIdPassed()) {

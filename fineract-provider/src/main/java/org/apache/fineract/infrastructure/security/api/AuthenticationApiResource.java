@@ -46,6 +46,7 @@ import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.constants.TwoFactorConstants;
 import org.apache.fineract.infrastructure.security.data.AuthenticatedUserData;
+import org.apache.fineract.infrastructure.security.exception.NoAuthorizationException;
 import org.apache.fineract.infrastructure.security.service.SpringSecurityPlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.service.business.AuthenticationBusinessReadPlatformService;
 import org.apache.fineract.infrastructure.security.service.business.AuthenticationBusinessWritePlatformService;
@@ -64,6 +65,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
@@ -134,10 +136,17 @@ public class AuthenticationApiResource {
             throw new IllegalArgumentException("Username or Password is null in JSON (see FINERACT-726) of POST to /authentication: "
                     + apiRequestBodyAsJson + "; username=" + request.username + ", password=" + request.password);
         }
-
-        final Authentication authentication = new UsernamePasswordAuthenticationToken(request.username, request.password);
-        final Authentication authenticationCheck = this.customAuthenticationProvider.authenticate(authentication);
-
+        final String username = request.username;
+        //check login attempts
+        this.authenticationBusinessWritePlatformService.lockUserAfterMultipleAttempts(username, false);
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(username, request.password);
+        Authentication authenticationCheck = null;
+//        final Authentication authenticationCheck = this.customAuthenticationProvider.authenticate(authentication);
+        try {
+            authenticationCheck = this.customAuthenticationProvider.authenticate(authentication);
+        } catch (AuthenticationException e) {
+            throw new NoAuthorizationException(e.getMessage());
+        }
         final Collection<String> permissions = new ArrayList<>();
         AuthenticatedUserData authenticatedUserData = new AuthenticatedUserData(request.username, permissions);
 
@@ -196,6 +205,8 @@ public class AuthenticationApiResource {
             final LocalDateTime lastLoginDate = this.authenticationBusinessReadPlatformService.lastLoginDate(userId);
             authenticatedUserData.setLastLoggedIn(lastLoginDate);
         }
+        //clear login attempts if available
+        this.authenticationBusinessWritePlatformService.lockUserAfterMultipleAttempts(username, true);
         return this.apiJsonSerializerService.serialize(authenticatedUserData);
     }
 }

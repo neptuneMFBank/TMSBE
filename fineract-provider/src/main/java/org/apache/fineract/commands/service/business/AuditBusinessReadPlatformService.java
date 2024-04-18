@@ -18,14 +18,16 @@
  */
 package org.apache.fineract.commands.service.business;
 
-import org.apache.fineract.commands.data.AuditData;
+import org.apache.fineract.commands.data.business.AuditBusinessData;
 import org.apache.fineract.commands.data.business.AuditBusinessSearchData;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 
 public interface AuditBusinessReadPlatformService {
 
-    Page<AuditData> retrieveAll(SearchParametersBusiness searchParameters);
+    Page<AuditBusinessData> retrieveAll(SearchParametersBusiness searchParameters);
+
+    Page<AuditBusinessData> retrieveWaitingApproval(SearchParametersBusiness searchParameters);
 
     AuditBusinessSearchData retrieveSearchTemplate(String useType);
 }

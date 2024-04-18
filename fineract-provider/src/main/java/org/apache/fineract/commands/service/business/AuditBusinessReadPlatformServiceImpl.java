@@ -30,8 +30,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.fineract.commands.data.AuditData;
 import org.apache.fineract.commands.data.ProcessingResultLookup;
+import org.apache.fineract.commands.data.business.AuditBusinessData;
 import org.apache.fineract.commands.data.business.AuditBusinessSearchData;
 import org.apache.fineract.infrastructure.core.data.PaginationParametersDataValidator;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
@@ -46,6 +46,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.organisation.office.data.OfficeData;
 import org.apache.fineract.organisation.office.service.OfficeReadPlatformService;
+import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.organisation.staff.service.StaffReadPlatformService;
 import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
@@ -77,9 +78,10 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
     private final DepositProductReadPlatformService depositProductReadPlatformService;
     private final ColumnValidator columnValidator;
     private final AuditMapper auditMapper = new AuditMapper();
+    private final AuditWaitingApprovalMapper auditWaitingApprovalMapper = new AuditWaitingApprovalMapper();
 
     @Override
-    public Page<AuditData> retrieveAll(SearchParametersBusiness searchParameters) {
+    public Page<AuditBusinessData> retrieveAll(SearchParametersBusiness searchParameters) {
 
         // final String userOfficeHierarchy = this.context.officeHierarchy();
         // final String underHierarchySearchString = userOfficeHierarchy + "%";
@@ -119,7 +121,43 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.auditMapper);
     }
 
-    private static final class AuditMapper implements RowMapper<AuditData> {
+    @Override
+    public Page<AuditBusinessData> retrieveWaitingApproval(SearchParametersBusiness searchParameters) {
+        List<Object> paramList = new ArrayList<>();
+        final StringBuilder sqlBuilder = new StringBuilder(200);
+        sqlBuilder.append("select ").append(sqlGenerator.calcFoundRows()).append(" ");
+        sqlBuilder.append(this.auditWaitingApprovalMapper.schema());
+
+        if (searchParameters != null) {
+
+            final String extraCriteria = buildSqlStringFromAuditCriteria(searchParameters, paramList);
+
+            if (StringUtils.isNotBlank(extraCriteria)) {
+                sqlBuilder.append(" where (").append(extraCriteria).append(")");
+            }
+
+            if (searchParameters.isOrderByRequested()) {
+                sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
+                this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getOrderBy());
+                if (searchParameters.isSortOrderProvided()) {
+                    sqlBuilder.append(' ').append(searchParameters.getSortOrder());
+                    this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getSortOrder());
+                }
+            }
+
+            if (searchParameters.isLimited()) {
+                sqlBuilder.append(" ");
+                if (searchParameters.isOffset()) {
+                    sqlBuilder.append(sqlGenerator.limit(searchParameters.getLimit(), searchParameters.getOffset()));
+                } else {
+                    sqlBuilder.append(sqlGenerator.limit(searchParameters.getLimit()));
+                }
+            }
+        }
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.auditMapper);
+    }
+
+    private static final class AuditMapper implements RowMapper<AuditBusinessData> {
 
         public String schema() {
 
@@ -133,7 +171,7 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
         }
 
         @Override
-        public AuditData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+        public AuditBusinessData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
 
             final Long id = rs.getLong("id");
             final String actionName = rs.getString("actionName");
@@ -156,9 +194,61 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
             final String loanAccountNo = rs.getString("loanAccountNo");
             final String savingsAccountNo = rs.getString("savingsAccountNo");
 
-            return new AuditData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate, processingResult,
+            return new AuditBusinessData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate, processingResult,
                     commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo, clientId, loanId,
-                    resourceGetUrl);
+                    resourceGetUrl, null);
+        }
+    }
+
+    private static final class AuditWaitingApprovalMapper implements RowMapper<AuditBusinessData> {
+
+        public String schema() {
+
+            String partSql = " aud.id as id, aud.action_name as actionName, aud.entity_name as entityName,"
+                    + " aud.resource_id as resourceId,aud.client_id as clientId, aud.loan_id as loanId,"
+                    + " aud.maker, aud.made_on_date as madeOnDate, " + " aud.api_get_url as resourceGetUrl, "
+                    + "aud.checker, aud.checked_on_date as checkedOnDate, aud.processingResult, "
+                    + " aud.officeName, aud.groupLevelName, aud.groupName, aud.clientName, "
+                    + " aud.loanAccountNo, aud.savingsAccountNo, "
+                    + " aud.supervisor_id supervisorId, aud.supervisor_name supervisorName "
+                    + " from m_audit_approval_view aud " + " LEFT JOIN m_office o ON o.id=aud.office_id ";
+            return partSql;
+        }
+
+        @Override
+        public AuditBusinessData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String actionName = rs.getString("actionName");
+            final String entityName = rs.getString("entityName");
+            final Long resourceId = JdbcSupport.getLong(rs, "resourceId");
+            final Long clientId = JdbcSupport.getLong(rs, "clientId");
+            final Long loanId = JdbcSupport.getLong(rs, "loanId");
+            final String maker = rs.getString("maker");
+            final ZonedDateTime madeOnDate = JdbcSupport.getDateTime(rs, "madeOnDate");
+            final String checker = rs.getString("checker");
+            final ZonedDateTime checkedOnDate = JdbcSupport.getDateTime(rs, "checkedOnDate");
+            final String processingResult = rs.getString("processingResult");
+            final String resourceGetUrl = rs.getString("resourceGetUrl");
+            String commandAsJson = null;
+
+            final String officeName = rs.getString("officeName");
+            final String groupLevelName = rs.getString("groupLevelName");
+            final String groupName = rs.getString("groupName");
+            final String clientName = rs.getString("clientName");
+            final String loanAccountNo = rs.getString("loanAccountNo");
+            final String savingsAccountNo = rs.getString("savingsAccountNo");
+
+            StaffData supervisorStaffData = null;
+            final Long supervisorId = rs.getLong("supervisorId");
+            if (supervisorId > 0) {
+                final String supervisorName = rs.getString("supervisorName");
+                supervisorStaffData = StaffData.lookup(supervisorId, supervisorName);
+            }
+
+            return new AuditBusinessData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate, processingResult,
+                    commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo, clientId, loanId,
+                    resourceGetUrl, supervisorStaffData);
         }
     }
 
@@ -260,6 +350,8 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
         // pcs.made_on_date, pcs.checker_id, pcs.checked_on_date, pcs.processing_result_enum,
         // pcs.group_id, pcs.client_id, pcs.loan_id, pcs.savings_account_id
         // aud.
+        final Long staffSupervisorId = searchParameters.getStaffSupervisorId();
+        final Long resourceId = searchParameters.getCategoryId();
         final Long officeId = searchParameters.getOfficeId();
         final Long makerCheckerId = searchParameters.getStaffId();
         final Long groupId = searchParameters.getIndustryId();// groupId
@@ -303,9 +395,18 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
             extraCriteria += " and " + makerCheckerColumn + " = ? ";
             paramList.add(makerCheckerId);
         }
+        if (searchParameters.isStaffSupervisorIdPassed()) {
+            extraCriteria += " and aud.supervisor_id = ? ";
+            paramList.add(staffSupervisorId);
+        }
         if (officeId != null) {
             extraCriteria += " and aud.office_id = ? ";
             paramList.add(officeId);
+        }
+
+        if (searchParameters.isCategoryIdPassed()) {
+            extraCriteria += " and aud.resource_id = ? ";
+            paramList.add(resourceId);
         }
 
         if (externalId != null) {

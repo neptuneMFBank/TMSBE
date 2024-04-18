@@ -179,4 +179,8 @@
     <include file="parts/0163_m_savings_amount_on_hold_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0164_m_self_activate_client_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0165_job_queue_self_client_activation.sql" relativeToChangelogFile="true" />
+    <include file="parts/0166_m_inventory.sql" relativeToChangelogFile="true" />
+    <include file="parts/0167_create_m_inventory_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0168_update_m_inventory_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0169_delete_m_inventory_permission.sql" relativeToChangelogFile="true" /> 
 </databaseChangeLog>

@@ -41,6 +41,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.constants.TwoFactorConstants;
@@ -49,9 +50,12 @@ import org.apache.fineract.infrastructure.security.service.SpringSecurityPlatfor
 import org.apache.fineract.infrastructure.security.service.business.AuthenticationBusinessReadPlatformService;
 import org.apache.fineract.infrastructure.security.service.business.AuthenticationBusinessWritePlatformService;
 import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
+import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformService;
 import org.apache.fineract.useradministration.data.RoleData;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.Role;
+import org.apache.fineract.useradministration.domain.business.AppUserExtension;
+import org.apache.fineract.useradministration.domain.business.AppUserExtensionRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -85,6 +89,9 @@ public class AuthenticationApiResource {
     private final ClientReadPlatformService clientReadPlatformService;
     private final AuthenticationBusinessWritePlatformService authenticationBusinessWritePlatformService;
     private final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService;
+    private final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper;
+    private final ClientBusinessReadPlatformService clientBusinessReadPlatformService;
+
 
     @Autowired
     public AuthenticationApiResource(
@@ -93,13 +100,17 @@ public class AuthenticationApiResource {
             final SpringSecurityPlatformSecurityContext springSecurityPlatformSecurityContext,
             ClientReadPlatformService aClientReadPlatformService,
             final AuthenticationBusinessWritePlatformService authenticationBusinessWritePlatformService,
-            final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService) {
+            final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService,
+            final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper,
+            final ClientBusinessReadPlatformService clientBusinessReadPlatformService) {
         this.customAuthenticationProvider = customAuthenticationProvider;
         this.apiJsonSerializerService = apiJsonSerializerService;
         this.springSecurityPlatformSecurityContext = springSecurityPlatformSecurityContext;
         clientReadPlatformService = aClientReadPlatformService;
         this.authenticationBusinessWritePlatformService = authenticationBusinessWritePlatformService;
         this.authenticationBusinessReadPlatformService = authenticationBusinessReadPlatformService;
+        this.appUserExtensionRepositoryWrapper = appUserExtensionRepositoryWrapper;
+        this.clientBusinessReadPlatformService = clientBusinessReadPlatformService;
     }
 
     @POST
@@ -158,6 +169,9 @@ public class AuthenticationApiResource {
             boolean isTwoFactorRequired = this.twoFactorEnabled
                     && !principal.hasSpecificPermissionTo(TwoFactorConstants.BYPASS_TWO_FACTOR_PERMISSION);
             userId = principal.getId();
+            AppUserExtension appUserExtension = this.appUserExtensionRepositoryWrapper.findByAppuserId(principal);
+            Boolean isMerchant = ObjectUtils.isNotEmpty(appUserExtension) ? appUserExtension.isMerchant() : false;
+
             if (this.springSecurityPlatformSecurityContext.doesPasswordHasToBeRenewed(principal)) {
                 authenticatedUserData = new AuthenticatedUserData(request.username, userId,
                         new String(base64EncodedAuthenticationKey, StandardCharsets.UTF_8), isTwoFactorRequired);
@@ -166,7 +180,9 @@ public class AuthenticationApiResource {
                 authenticatedUserData = new AuthenticatedUserData(request.username, officeId, officeName, staffId, staffDisplayName,
                         organisationalRole, roles, permissions, principal.getId(),
                         new String(base64EncodedAuthenticationKey, StandardCharsets.UTF_8), isTwoFactorRequired,
-                        returnClientList ? clientReadPlatformService.retrieveUserClients(userId) : null);
+                        returnClientList
+                                ? (isMerchant ? clientBusinessReadPlatformService.retrieveMerchantClients(userId) : clientReadPlatformService.retrieveUserClients(userId))
+                                : null);
             }
             authenticatedUserData.setFirstTimeLoginRemaining(principal.isFirstTimeLoginRemaining());
 

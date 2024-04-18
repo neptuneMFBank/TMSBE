@@ -36,7 +36,7 @@ public class AccountNumberNuban {
     private final int SEVEN = 7;
     private final int THREE = 3;
     private String sortCode;
-    private Long bankDigit;
+    private final Long bankDigit;
 
     private String serialNumber;
 

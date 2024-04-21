@@ -199,7 +199,8 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
                         defaultUserMessage, chargeDefinition.getId(), chargeDefinition.getName());
             }
             /**
-             * For Weekly fee feeOnDay is ISO standard day of the week. Monday=1, Tuesday=2
+             * For Weekly fee feeOnDay is ISO standard day of the week.
+             * Monday=1, Tuesday=2
              */
             this.feeOnDay = dueDate.get(ChronoField.DAY_OF_WEEK);
         } else {
@@ -228,7 +229,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
 
         populateDerivedFields(transactionAmount, chargeAmount);
 
-        if (this.isWithdrawalFee() || this.isSavingsNoActivity()) {
+        if (this.isWithdrawalFee() || this.isSavingsNoActivity() || this.isDepositFee()) {
             this.amountOutstanding = BigDecimal.ZERO;
         }
 
@@ -259,7 +260,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
                 this.amountOutstanding = BigDecimal.ZERO;
                 this.amountWaived = null;
                 this.amountWrittenOff = null;
-            break;
+                break;
             case FLAT:
                 this.percentage = null;
                 this.amount = chargeAmount;
@@ -268,7 +269,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
                 this.amountOutstanding = chargeAmount;
                 this.amountWaived = null;
                 this.amountWrittenOff = null;
-            break;
+                break;
             case PERCENT_OF_AMOUNT:
                 this.percentage = chargeAmount;
                 this.amountPercentageAppliedTo = transactionAmount;
@@ -277,7 +278,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
                 this.amountOutstanding = calculateOutstanding();
                 this.amountWaived = null;
                 this.amountWrittenOff = null;
-            break;
+                break;
             case PERCENT_OF_AMOUNT_AND_INTEREST:
 //            case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
                 this.percentage = null;
@@ -287,7 +288,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
                 this.amountOutstanding = BigDecimal.ZERO;
                 this.amountWaived = null;
                 this.amountWrittenOff = null;
-            break;
+                break;
             case PERCENT_OF_INTEREST:
                 this.percentage = null;
                 this.amount = null;
@@ -296,7 +297,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
                 this.amountOutstanding = BigDecimal.ZERO;
                 this.amountWaived = null;
                 this.amountWrittenOff = null;
-            break;
+                break;
             case PERCENT_OF_DISBURSEMENT_AMOUNT:
                 this.percentage = null;
                 this.amount = null;
@@ -305,7 +306,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
                 this.amountOutstanding = BigDecimal.ZERO;
                 this.amountWaived = null;
                 this.amountWrittenOff = null;
-            break;
+                break;
         }
     }
 
@@ -330,7 +331,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
         this.amountPaid = amountPaid.getAmount();
         this.amountOutstanding = calculateAmountOutstanding(currency);
 
-        if (this.isWithdrawalFee()) {
+        if (this.isWithdrawalFee() || this.isDepositFee()) {
             this.amountOutstanding = BigDecimal.ZERO;
         }
         // to reset amount outstanding for annual and monthly fee
@@ -412,32 +413,32 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
         if (amount != null) {
             switch (ChargeCalculationType.fromInt(this.chargeCalculation)) {
                 case INVALID:
-                break;
+                    break;
                 case FLAT:
                     this.amount = amount;
-                break;
+                    break;
                 case PERCENT_OF_AMOUNT:
                     this.percentage = amount;
                     this.amountPercentageAppliedTo = transactionAmount;
                     this.amount = percentageOf(this.amountPercentageAppliedTo, this.percentage);
                     this.amountOutstanding = calculateOutstanding();
-                break;
+                    break;
                 case PERCENT_OF_AMOUNT_AND_INTEREST:
 //                case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
                     this.percentage = amount;
                     this.amount = null;
                     this.amountPercentageAppliedTo = null;
                     this.amountOutstanding = null;
-                break;
+                    break;
                 case PERCENT_OF_INTEREST:
                     this.percentage = amount;
                     this.amount = null;
                     this.amountPercentageAppliedTo = null;
                     this.amountOutstanding = null;
-                break;
+                    break;
                 case PERCENT_OF_DISBURSEMENT_AMOUNT:
                     LOG.error("TODO Implement update ChargeCalculationType for PERCENT_OF_DISBURSEMENT_AMOUNT");
-                break;
+                    break;
             }
         }
     }
@@ -487,33 +488,33 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
 
             switch (ChargeCalculationType.fromInt(this.chargeCalculation)) {
                 case INVALID:
-                break;
+                    break;
                 case FLAT:
                     this.amount = newValue;
                     this.amountOutstanding = calculateOutstanding();
-                break;
+                    break;
                 case PERCENT_OF_AMOUNT:
                     this.percentage = newValue;
                     this.amountPercentageAppliedTo = null;
                     this.amount = percentageOf(this.amountPercentageAppliedTo, this.percentage);
                     this.amountOutstanding = calculateOutstanding();
-                break;
+                    break;
                 case PERCENT_OF_AMOUNT_AND_INTEREST:
 //                case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
                     this.percentage = newValue;
                     this.amount = null;
                     this.amountPercentageAppliedTo = null;
                     this.amountOutstanding = null;
-                break;
+                    break;
                 case PERCENT_OF_INTEREST:
                     this.percentage = newValue;
                     this.amount = null;
                     this.amountPercentageAppliedTo = null;
                     this.amountOutstanding = null;
-                break;
+                    break;
                 case PERCENT_OF_DISBURSEMENT_AMOUNT:
                     LOG.error("TODO Implement update ChargeCalculationType for PERCENT_OF_DISBURSEMENT_AMOUNT");
-                break;
+                    break;
             }
         }
 
@@ -622,8 +623,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
     }
 
     /**
-     * @param incrementBy
-     *            Amount used to pay off this charge
+     * @param incrementBy Amount used to pay off this charge
      * @return Actual amount paid on this charge
      */
     public Money updatePaidAmountBy(final Money incrementBy) {
@@ -723,6 +723,10 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
         return ChargeTimeType.fromInt(this.chargeTime).isWithdrawalFee();
     }
 
+    public boolean isDepositFee() {
+        return ChargeTimeType.fromInt(this.chargeTime).isDepositFee();
+    }
+
     public boolean isOverdraftFee() {
         return ChargeTimeType.fromInt(this.chargeTime).isOverdraftFee();
     }
@@ -758,16 +762,16 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
         return (penaltyCharge == that.penaltyCharge) && (paid == that.paid) && (waived == that.waived) && (status == that.status)
                 && Objects.equals(savingsAccount, that.savingsAccount) && Objects.equals(charge, that.charge)
                 && Objects.equals(chargeTime, that.chargeTime) && dueDate.compareTo(that.dueDate) == 0
-                        ? Boolean.TRUE
-                        : Boolean.FALSE && Objects.equals(feeOnMonth, that.feeOnMonth) && Objects.equals(feeOnDay, that.feeOnDay)
-                                && Objects.equals(feeInterval, that.feeInterval)
-                                && Objects.equals(chargeCalculation, that.chargeCalculation) && Objects.equals(percentage, that.percentage)
-                                && Objects.equals(amountPercentageAppliedTo, that.amountPercentageAppliedTo)
-                                && Objects.equals(amount, that.amount) && Objects.equals(amountPaid, that.amountPaid)
-                                && Objects.equals(amountWaived, that.amountWaived)
-                                && Objects.equals(amountWrittenOff, that.amountWrittenOff)
-                                && Objects.equals(amountOutstanding, that.amountOutstanding)
-                                && inactivationDate.compareTo(that.inactivationDate) == 0 ? Boolean.TRUE : Boolean.FALSE;
+                ? Boolean.TRUE
+                : Boolean.FALSE && Objects.equals(feeOnMonth, that.feeOnMonth) && Objects.equals(feeOnDay, that.feeOnDay)
+                && Objects.equals(feeInterval, that.feeInterval)
+                && Objects.equals(chargeCalculation, that.chargeCalculation) && Objects.equals(percentage, that.percentage)
+                && Objects.equals(amountPercentageAppliedTo, that.amountPercentageAppliedTo)
+                && Objects.equals(amount, that.amount) && Objects.equals(amountPaid, that.amountPaid)
+                && Objects.equals(amountWaived, that.amountWaived)
+                && Objects.equals(amountWrittenOff, that.amountWrittenOff)
+                && Objects.equals(amountOutstanding, that.amountOutstanding)
+                && inactivationDate.compareTo(that.inactivationDate) == 0 ? Boolean.TRUE : Boolean.FALSE;
     }
 
     @Override
@@ -914,12 +918,14 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
     }
 
     /**
-     * This method is to identify the charges which can override the savings rules(for example if there is a minimum
-     * enforced balance of 1000 on savings account with account balance of 1000, still these charges can be collected as
-     * these charges are initiated by system and it can bring down the balance below the enforced minimum balance).
+     * This method is to identify the charges which can override the savings
+     * rules(for example if there is a minimum enforced balance of 1000 on
+     * savings account with account balance of 1000, still these charges can be
+     * collected as these charges are initiated by system and it can bring down
+     * the balance below the enforced minimum balance).
      *
      */
     public boolean canOverriteSavingAccountRules() {
-        return (!this.isSavingsActivation() && !this.isWithdrawalFee());
+        return (!this.isSavingsActivation() && !this.isWithdrawalFee() && !this.isDepositFee());
     }
 }

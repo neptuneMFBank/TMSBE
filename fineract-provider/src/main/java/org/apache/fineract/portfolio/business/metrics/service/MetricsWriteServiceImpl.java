@@ -635,7 +635,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
     }
 
     private void UpdateOverdraftStatus(final Overdraft overdraft, final Integer status) {
-        if (status <= 300) {
+        if (status <= 300 || status == 500) {
             overdraft.setStatus(status);
             this.overdraftRepositoryWrapper.saveAndFlush(overdraft);
         } else {

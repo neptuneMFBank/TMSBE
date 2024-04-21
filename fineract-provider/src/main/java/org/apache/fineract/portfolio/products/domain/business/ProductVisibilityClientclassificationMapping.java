@@ -16,37 +16,38 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanproduct.business.domain;
+package org.apache.fineract.portfolio.products.domain.business;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
-@Table(name = "m_loanproduct_visibility_legalenum_mapping")
-public class LoanproductVisibilityLegalenumMapping extends AbstractPersistableCustom {
+@Table(name = "m_product_visibility_clientclassification_mapping")
+public class ProductVisibilityClientclassificationMapping extends AbstractPersistableCustom {
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "config_id", nullable = false)
-    private LoanProductVisibilityConfig loanProductVisibilityConfig;
+    private ProductVisibilityConfig productVisibilityConfig;
 
-    @Column(name = "legalenum_id", nullable = false)
-    private Integer legalEnum;
+    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "clientclassification_id", nullable = false)
+    private CodeValue clientClassification;
 
-    public LoanproductVisibilityLegalenumMapping() {
+    public ProductVisibilityClientclassificationMapping() {}
+
+    public ProductVisibilityClientclassificationMapping(ProductVisibilityConfig productVisibilityConfig,
+            CodeValue clientClassification) {
+        this.productVisibilityConfig = productVisibilityConfig;
+        this.clientClassification = clientClassification;
     }
 
-    public LoanproductVisibilityLegalenumMapping(LoanProductVisibilityConfig loanProductVisibilityConfig, Integer legalEnum) {
-        this.loanProductVisibilityConfig = loanProductVisibilityConfig;
-        this.legalEnum = legalEnum;
-    }
-
-    public Integer getLegalEnum() {
-        return legalEnum;
+    public CodeValue getClientClassification() {
+        return clientClassification;
     }
 
 }

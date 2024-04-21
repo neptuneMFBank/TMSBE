@@ -276,8 +276,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
             // been 'contra'ed by another transaction
             // repayments at time of disbursement (e.g. charges)
             /**
-             * *
-             * TODO Vishwas: Remove references to "Contra" from the codebase
+             * * TODO Vishwas: Remove references to "Contra" from the codebase
              **
              */
             final String sql = "select " + rm.loanPaymentsSchema()
@@ -563,7 +562,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
             loanRepaymentScheduleInstallmentData.add(LoanRepaymentScheduleInstallmentData.instanceOf(
                     loanRepaymentScheduleInstallment.getId(), loanRepaymentScheduleInstallment.getInstallmentNumber(),
                     loanRepaymentScheduleInstallment.getDueDate(), loanRepaymentScheduleInstallment
-                    .getTotalOutstanding(loanRepaymentScheduleInstallment.getLoan().getCurrency()).getAmount()));
+                            .getTotalOutstanding(loanRepaymentScheduleInstallment.getLoan().getCurrency()).getAmount()));
         }
         return loanRepaymentScheduleInstallmentData;
     }
@@ -937,10 +936,12 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                 final Integer compoundTypeEnumValue = JdbcSupport.getInteger(rs, "compoundType");
                 final EnumOptionData interestRecalculationCompoundingType = LoanEnumerations
                         .interestRecalculationCompoundingType(compoundTypeEnumValue);
-                final int rescheduleStrategyEnumValue = rs.getInt("rescheduleStrategy");// JdbcSupport.getInteger(rs, "rescheduleStrategy");
+                final int rescheduleStrategyEnumValue = rs.getInt("rescheduleStrategy");// JdbcSupport.getInteger(rs,
+                                                                                        // "rescheduleStrategy");
                 final EnumOptionData rescheduleStrategyType = LoanEnumerations.rescheduleStrategyType(rescheduleStrategyEnumValue);
                 final CalendarData calendarData = null;
-                final int restFrequencyEnumValue = rs.getInt("restFrequencyEnum");//JdbcSupport.getInteger(rs, "restFrequencyEnum");
+                final int restFrequencyEnumValue = rs.getInt("restFrequencyEnum");// JdbcSupport.getInteger(rs,
+                                                                                  // "restFrequencyEnum");
                 final EnumOptionData restFrequencyType = LoanEnumerations.interestRecalculationFrequencyType(restFrequencyEnumValue);
                 final Integer restFrequencyInterval = JdbcSupport.getInteger(rs, "restFrequencyInterval");
                 final Integer restFrequencyNthDayEnumValue = JdbcSupport.getInteger(rs, "restFrequencyNthDayEnum");
@@ -1424,10 +1425,10 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         Collection<ChargeData> chargeOptions = null;
         if (loanProduct.getMultiDisburseLoan()) {
             chargeOptions = this.chargeReadPlatformService.retrieveLoanProductApplicableCharges(productId,
-                    new ChargeTimeType[]{ChargeTimeType.OVERDUE_INSTALLMENT});
+                    new ChargeTimeType[] { ChargeTimeType.OVERDUE_INSTALLMENT });
         } else {
             chargeOptions = this.chargeReadPlatformService.retrieveLoanProductApplicableCharges(productId,
-                    new ChargeTimeType[]{ChargeTimeType.OVERDUE_INSTALLMENT, ChargeTimeType.TRANCHE_DISBURSEMENT});
+                    new ChargeTimeType[] { ChargeTimeType.OVERDUE_INSTALLMENT, ChargeTimeType.TRANCHE_DISBURSEMENT });
         }
 
         Integer loanCycleCounter = null;
@@ -1551,14 +1552,14 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
     @Override
     public Integer retriveLoanCounter(final Long groupId, final Integer loanType, Long productId) {
         final String sql = "Select MAX(l.loan_product_counter) from m_loan l where l.group_id = ?  and l.loan_type_enum = ? and l.product_id=?";
-        return this.jdbcTemplate.queryForObject(sql, new Object[]{groupId, loanType, productId}, Integer.class);
+        return this.jdbcTemplate.queryForObject(sql, new Object[] { groupId, loanType, productId }, Integer.class);
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public Integer retriveLoanCounter(final Long clientId, Long productId) {
         final String sql = "Select MAX(l.loan_product_counter) from m_loan l where l.client_id = ? and l.product_id=?";
-        return this.jdbcTemplate.queryForObject(sql, new Object[]{clientId, productId}, Integer.class);
+        return this.jdbcTemplate.queryForObject(sql, new Object[] { clientId, productId }, Integer.class);
     }
 
     @Override
@@ -2183,7 +2184,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                 .append(" and adddet.effective_date is not null ").append(" and trans.transaction_date is null ")
                 .append(" and adddet.effective_date < ? ");
         try {
-            return this.jdbcTemplate.queryForList(sqlBuilder.toString(), new Object[]{currentdate}, Long.class);
+            return this.jdbcTemplate.queryForList(sqlBuilder.toString(), new Object[] { currentdate }, Long.class);
         } catch (final EmptyResultDataAccessException e) {
             return null;
         }
@@ -2354,7 +2355,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                     sqlGenerator.dateDiff(sqlGenerator.currentBusinessDate(), "laa.overdue_since_date_derived") + " as pastDueDays, ");
             sqlBuilder.append(
                     "(select coalesce(min(lrs.duedate), null) as duedate from m_loan_repayment_schedule lrs where lrs.loan_id=l.id and lrs.completed_derived is false and lrs.duedate >= "
-                    + sqlGenerator.currentBusinessDate() + ") as nextPaymentDueDate, ");
+                            + sqlGenerator.currentBusinessDate() + ") as nextPaymentDueDate, ");
             sqlBuilder.append(
                     sqlGenerator.dateDiff(sqlGenerator.currentBusinessDate(), "laa.overdue_since_date_derived") + " as delinquentDays, ");
             sqlBuilder.append(sqlGenerator.currentBusinessDate()

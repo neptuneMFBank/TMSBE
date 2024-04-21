@@ -24,16 +24,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MerchantRegistrationReadPlatformServiceImp implements MerchantRegistrationReadPlatformService {
-        private final JdbcTemplate jdbcTemplate;
+
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public MerchantRegistrationReadPlatformServiceImp(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    
-      @Override
-    public boolean isClientExist(String accountNumber ,String email, String mobileNumber,
-            boolean isEmailAuthenticationMode) {
+
+    @Override
+    public boolean isClientExist(String accountNumber, String email, String mobileNumber, boolean isEmailAuthenticationMode) {
         String sql = "select count(*) from m_client where account_no = ? and email_address = ?";
         Object[] params = new Object[] { accountNumber, email };
         if (!isEmailAuthenticationMode) {

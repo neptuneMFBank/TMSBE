@@ -57,7 +57,8 @@ public class MerchantAuthServiceImpl implements MerchantAuthService {
             final ClientRepositoryWrapper clientRepositoryWrapper,
             final AppUserMerchantMappingRepositoryWrapper appUserMerchantMappingRepositoryWrapper,
             final SelfServiceRegistrationRepository selfServiceRegistrationRepository,
-            final AppUserRepositoryWrapper appUserRepositoryWrapper, final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper) {
+            final AppUserRepositoryWrapper appUserRepositoryWrapper,
+            final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper) {
         this.authenticationApiResource = authenticationApiResource;
         this.fromJsonHelper = fromJsonHelper;
         this.clientRepositoryWrapper = clientRepositoryWrapper;

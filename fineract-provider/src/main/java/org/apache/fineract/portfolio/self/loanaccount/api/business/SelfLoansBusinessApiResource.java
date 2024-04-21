@@ -68,9 +68,11 @@ public class SelfLoansBusinessApiResource {
     private final LoanTransactionsApiResource loanTransactionsApiResource;
 
     @Autowired
-    public SelfLoansBusinessApiResource(final PlatformSecurityContext context, final AppuserClientMapperReadService appUserClientMapperReadService,
-            final LoanTransactionsBusinessApiResource loanTransactionsBusinessApiResource, final LoansBusinessApiResource loansBusinessApiResource,
-            final AppuserLoansMapperReadService appuserLoansMapperReadService, final SelfLoansDataValidator dataValidator, final LoanTransactionsApiResource loanTransactionsApiResource) {
+    public SelfLoansBusinessApiResource(final PlatformSecurityContext context,
+            final AppuserClientMapperReadService appUserClientMapperReadService,
+            final LoanTransactionsBusinessApiResource loanTransactionsBusinessApiResource,
+            final LoansBusinessApiResource loansBusinessApiResource, final AppuserLoansMapperReadService appuserLoansMapperReadService,
+            final SelfLoansDataValidator dataValidator, final LoanTransactionsApiResource loanTransactionsApiResource) {
         this.context = context;
         this.loanTransactionsBusinessApiResource = loanTransactionsBusinessApiResource;
         this.appuserLoansMapperReadService = appuserLoansMapperReadService;
@@ -82,8 +84,8 @@ public class SelfLoansBusinessApiResource {
 
     @GET
     @Path("{loanId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveLoan(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId, @Context final UriInfo uriInfo) {
         this.dataValidator.validateRetrieveLoan(uriInfo);
         validateAppuserLoanMapping(loanId);
@@ -95,8 +97,8 @@ public class SelfLoansBusinessApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
             @QueryParam("clientId") @Parameter(description = "clientId") final Long clientId,
@@ -120,8 +122,8 @@ public class SelfLoansBusinessApiResource {
 
     @POST
     @Path("calculate")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Calculate loan repayment schedule")
     public String calculateLoanScheduleLoanApplication(@Context final UriInfo uriInfo,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
@@ -132,11 +134,10 @@ public class SelfLoansBusinessApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    public String submitLoanApplication(
-            @QueryParam("command") @Parameter(description = "command") final String commandParam, @Context final UriInfo uriInfo,
-            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String submitLoanApplication(@QueryParam("command") @Parameter(description = "command") final String commandParam,
+            @Context final UriInfo uriInfo, @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         HashMap<String, Object> attr = this.dataValidator.validateLoanApplication(apiRequestBodyAsJson);
         final Long clientId = (Long) attr.get("clientId");
         validateAppuserClientsMapping(clientId);
@@ -145,8 +146,8 @@ public class SelfLoansBusinessApiResource {
 
     @PUT
     @Path("{loanId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String modifyLoanApplication(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson, @Context final UriInfo uriInfo) {
         HashMap<String, Object> attr = this.dataValidator.validateModifyLoanApplication(apiRequestBodyAsJson);
@@ -160,8 +161,8 @@ public class SelfLoansBusinessApiResource {
 
     @GET
     @Path("{loanId}/transactions")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAllTransactionsByLoanId(@PathParam("loanId") final Long loanId, @Context final UriInfo uriInfo,
             @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
@@ -186,17 +187,17 @@ public class SelfLoansBusinessApiResource {
 
     @GET
     @Path("{loanId}/transactions/template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveTransactionTemplate(@PathParam("loanId") @Parameter(description = "loanId") final Long loanId,
             @QueryParam("command") @Parameter(description = "command") final String commandParam, @Context final UriInfo uriInfo,
             @QueryParam("dateFormat") @Parameter(description = "dateFormat") final String dateFormat,
             @QueryParam("transactionDate") @Parameter(description = "transactionDate") final DateParam transactionDateParam,
             @QueryParam("locale") @Parameter(description = "locale") final String locale) {
-        if (is(commandParam, "repayment")
-                || is(commandParam, "prepayLoan") || is(commandParam, "foreclosure")) {
+        if (is(commandParam, "repayment") || is(commandParam, "prepayLoan") || is(commandParam, "foreclosure")) {
             validateAppuserLoanMapping(loanId);
-            return this.loanTransactionsApiResource.retrieveTransactionTemplate(loanId, commandParam, uriInfo, dateFormat, transactionDateParam, locale);
+            return this.loanTransactionsApiResource.retrieveTransactionTemplate(loanId, commandParam, uriInfo, dateFormat,
+                    transactionDateParam, locale);
         } else {
             throw new UnrecognizedQueryParamException("command", commandParam);
         }

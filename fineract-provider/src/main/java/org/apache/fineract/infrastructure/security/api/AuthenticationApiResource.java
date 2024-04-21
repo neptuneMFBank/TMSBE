@@ -105,13 +105,13 @@ public class AuthenticationApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Verify authentication", description = "Authenticates the credentials provided and returns the set roles and permissions allowed.")
     @RequestBody(required = true, content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationRequest.class)))
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationResponse.class))),
-        @ApiResponse(responseCode = "400", description = "Unauthenticated. Please login")})
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Unauthenticated. Please login") })
     public String authenticate(@Parameter(hidden = true) final String apiRequestBodyAsJson,
             @QueryParam("returnClientList") @DefaultValue("false") boolean returnClientList) {
         // TODO FINERACT-819: sort out Jersey so JSON conversion does not have
@@ -126,11 +126,11 @@ public class AuthenticationApiResource {
                     + apiRequestBodyAsJson + "; username=" + request.username + ", password=" + request.password);
         }
         final String username = request.username;
-        //check login attempts
+        // check login attempts
         this.authenticationBusinessWritePlatformService.lockUserAfterMultipleAttempts(username, false);
         final Authentication authentication = new UsernamePasswordAuthenticationToken(username, request.password);
         Authentication authenticationCheck = null;
-//        final Authentication authenticationCheck = this.customAuthenticationProvider.authenticate(authentication);
+        // final Authentication authenticationCheck = this.customAuthenticationProvider.authenticate(authentication);
         try {
             authenticationCheck = this.customAuthenticationProvider.authenticate(authentication);
         } catch (AuthenticationException e) {
@@ -189,7 +189,7 @@ public class AuthenticationApiResource {
             final LocalDateTime lastLoginDate = this.authenticationBusinessReadPlatformService.lastLoginDate(userId);
             authenticatedUserData.setLastLoggedIn(lastLoginDate);
         }
-        //clear login attempts if available
+        // clear login attempts if available
         this.authenticationBusinessWritePlatformService.lockUserAfterMultipleAttempts(username, true);
         return this.apiJsonSerializerService.serialize(authenticatedUserData);
     }

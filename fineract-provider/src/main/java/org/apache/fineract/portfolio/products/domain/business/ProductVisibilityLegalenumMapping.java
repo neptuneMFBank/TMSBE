@@ -16,38 +16,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanproduct.business.domain;
+package org.apache.fineract.portfolio.products.domain.business;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
-@Table(name = "m_loanproduct_visibility_clienttype_mapping")
-public class LoanproductVisibilityClienttypeMapping extends AbstractPersistableCustom {
+@Table(name = "m_product_visibility_legalenum_mapping")
+public class ProductVisibilityLegalenumMapping extends AbstractPersistableCustom {
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "config_id", nullable = false)
-    private LoanProductVisibilityConfig loanProductVisibilityConfig;
+    private ProductVisibilityConfig productVisibilityConfig;
 
-    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "clienttype_id", nullable = false)
-    private CodeValue clientType;
+    @Column(name = "legalenum_id", nullable = false)
+    private Integer legalEnum;
 
-    public LoanproductVisibilityClienttypeMapping() {
+    public ProductVisibilityLegalenumMapping() {}
+
+    public ProductVisibilityLegalenumMapping(ProductVisibilityConfig productVisibilityConfig, Integer legalEnum) {
+        this.productVisibilityConfig = productVisibilityConfig;
+        this.legalEnum = legalEnum;
     }
 
-    public LoanproductVisibilityClienttypeMapping(LoanProductVisibilityConfig loanProductVisibilityConfig, CodeValue clientType) {
-        this.loanProductVisibilityConfig = loanProductVisibilityConfig;
-        this.clientType = clientType;
-    }
-
-    public CodeValue getClientType() {
-        return clientType;
+    public Integer getLegalEnum() {
+        return legalEnum;
     }
 
 }

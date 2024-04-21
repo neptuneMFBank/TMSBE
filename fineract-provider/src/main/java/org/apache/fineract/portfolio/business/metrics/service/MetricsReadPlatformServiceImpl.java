@@ -215,8 +215,8 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
         final String columnName = "mm.overdraft_id";
         final String subject = "Notification of Overdraft(s) Pending Approval";
-//        final String subject = "Notification of Pending Overdraft Id `%s` Approval";
-//        final String body = "%s with mobile %s have an overdraft (`%s`) pending approval.%s";
+        // final String subject = "Notification of Pending Overdraft Id `%s` Approval";
+        // final String body = "%s with mobile %s have an overdraft (`%s`) pending approval.%s";
         final String body = "The overdraft(s) below are pending approval:%s";
         final String link = "/savings/overdraft/details?overdraftId=";
         final int type = 1;
@@ -231,8 +231,8 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
         final String columnName = "mm.loan_id";
         final String subject = "Notification of Loan(s) Pending Approval";
-        //final String subject = "Notification of Pending Loan Id `%s` Approval";
-        //final String body = "%s with mobile %s have a loan (`%s`) pending approval.%s";
+        // final String subject = "Notification of Pending Loan Id `%s` Approval";
+        // final String body = "%s with mobile %s have a loan (`%s`) pending approval.%s";
         final String body = "The loan(s) below are pending approval:%s";
         final String link = "/loans/details?loanId=";
         final int type = 0;
@@ -247,7 +247,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
         // HOUR) ";
         Collection<MetricsData> metricsDatas = this.jdbcTemplate.query(sql, metricsMapper);
         if (!CollectionUtils.isEmpty(metricsDatas)) {
-            //groupby assigned staff
+            // groupby assigned staff
             Map<StaffData, List<MetricsData>> metricsDatasGroupAssigned = metricsDatas.stream()
                     .collect(Collectors.groupingBy(MetricsData::getStaffData));
 
@@ -304,14 +304,8 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                                 .retrieveGlobalConfiguration("app-base-url");
                         if (appBaseUrl.isEnabled() && StringUtils.isNotBlank(appBaseUrl.getStringValue())) {
                             StringBuilder navigationBuilder = new StringBuilder();
-                            navigationBuilder
-                                    .append("\n\n(")
-                                    .append(clientName)
-                                    .append("-")
-                                    .append(mobileNo)
-                                    .append("-")
-                                    .append(productName)
-                                    .append("): ");
+                            navigationBuilder.append("\n\n(").append(clientName).append("-").append(mobileNo).append("-")
+                                    .append(productName).append("): ");
                             navigationBuilder.append(appBaseUrl.getStringValue());
                             navigationBuilder.append(link);
                             navigationBuilder.append(transactionId);
@@ -320,9 +314,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                             linkBuilder.append(navigationUrl);
                         }
 
-                        //final String subject = String.format(subjectValue, transactionId);
-                        //final String body = String.format(bodyValue, clientName, mobileNo, productName, navigationUrl);
-                        //notificationToUsers(notifybusinessUsers, subjectValue, body);
+                        // final String subject = String.format(subjectValue, transactionId);
+                        // final String body = String.format(bodyValue, clientName, mobileNo, productName,
+                        // navigationUrl);
+                        // notificationToUsers(notifybusinessUsers, subjectValue, body);
                     }
                 }
                 if (!CollectionUtils.isEmpty(notifybusinessUsers)) {
@@ -441,10 +436,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                 log.warn("createLoanMetrics maxApprovalAmount: {}", maxApprovalAmount);
                 final boolean isWithinRange = GeneralConstants.isWithinRange(value, minApprovalAmount, maxApprovalAmount);
                 if ( // loanProductApprovalConfigData.getMaxApprovalAmount() == null
-                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
-                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal())
-                        // >= 0
-                        isWithinRange) {
+                     // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
+                     // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal())
+                     // >= 0
+                isWithinRange) {
                     // create loan movement approval if this condition is met
                     final RoleData roleData = loanProductApprovalConfigData.getRoleData();
                     final Long roleId = roleData.getId();
@@ -658,8 +653,8 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             final LocalDateTime modifiedOnTime = JdbcSupport.getLocalDateTime(rs, "modifiedOn");
             final LocalDate modifiedOn = modifiedOnTime != null ? modifiedOnTime.toLocalDate() : null;
 
-            final MetricsData metricsData = MetricsData.instance(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn, modifiedOn, clientData,
-                    loanOfficerData, overdraftId, rank);
+            final MetricsData metricsData = MetricsData.instance(id, loanId, savingsId, status, staffData, supervisorStaffData, createdOn,
+                    modifiedOn, clientData, loanOfficerData, overdraftId, rank);
             metricsData.setCreatedOnTime(createdOnTime);
             metricsData.setModifiedOnTime(modifiedOnTime);
             return metricsData;

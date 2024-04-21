@@ -19,12 +19,11 @@
 package org.apache.fineract.infrastructure.security.domain.business;
 
 import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
 @Repository
-@ConditionalOnProperty("fineract.security.2fa.enabled")
+//@ConditionalOnProperty("fineract.security.2fa.enabled")
 @SuppressWarnings({"MemberName"})
 public class LoginCountRequestRepository {
 

@@ -18,17 +18,17 @@
  */
 package org.apache.fineract.portfolio.loanaccount.domain;
 
+import static org.apache.fineract.simplifytech.data.GeneralConstants.feeIntervalOnInterestCharge;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.Money;
-import static org.apache.fineract.simplifytech.data.GeneralConstants.feeIntervalOnInterestCharge;
 
 /**
- * A wrapper around loan schedule related data exposing needed behaviour by
- * loan.
+ * A wrapper around loan schedule related data exposing needed behaviour by loan.
  */
 public class LoanRepaymentScheduleProcessingWrapper {
 

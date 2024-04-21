@@ -16,35 +16,40 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanproduct.business.domain;
+package org.apache.fineract.portfolio.products.domain.business;
 
-import org.apache.fineract.portfolio.loanproduct.business.exception.LoanProductVisibilityNotFoundException;
+import org.apache.fineract.portfolio.products.exception.business.ProductVisibilityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class LoanProductVisibilityRepositoryWrapper {
+public class ProductVisibilityRepositoryWrapper {
 
-    private final LoanProductVisibilityRepository repository;
+    private final ProductVisibilityRepository repository;
 
     @Autowired
-    public LoanProductVisibilityRepositoryWrapper(final LoanProductVisibilityRepository repository) {
+    public ProductVisibilityRepositoryWrapper(final ProductVisibilityRepository repository) {
         this.repository = repository;
     }
 
-    @Transactional(readOnly = true)
-    public void saveAndFlush(final LoanProductVisibilityConfig loanProductVisibilityConfig) {
+    @Transactional()
+    public void saveAndFlush(final ProductVisibilityConfig loanProductVisibilityConfig) {
         this.repository.saveAndFlush(loanProductVisibilityConfig);
     }
 
+     @Transactional()
+    public void save(final ProductVisibilityConfig loanProductVisibilityConfig) {
+        this.repository.save(loanProductVisibilityConfig);
+    }
+
     @Transactional(readOnly = true)
-    public LoanProductVisibilityConfig findOneWithNotFoundDetection(final Long id) {
-        return this.repository.findById(id).orElseThrow(() -> new LoanProductVisibilityNotFoundException(id));
+    public ProductVisibilityConfig findOneWithNotFoundDetection(final Long id) {
+        return this.repository.findById(id).orElseThrow(() -> new ProductVisibilityNotFoundException(id));
     }
 
     @Transactional()
-    public void delete(final LoanProductVisibilityConfig loanProductVisibilityConfig) {
+    public void delete(final ProductVisibilityConfig loanProductVisibilityConfig) {
         this.repository.delete(loanProductVisibilityConfig);
     }
 

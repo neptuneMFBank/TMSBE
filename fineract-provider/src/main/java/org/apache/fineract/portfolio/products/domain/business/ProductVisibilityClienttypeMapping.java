@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanproduct.business.domain;
+package org.apache.fineract.portfolio.products.domain.business;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -27,27 +27,26 @@ import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
 @Entity
-@Table(name = "m_loanproduct_visibility_clientclassification_mapping")
-public class LoanproductVisibilityClientclassificationMapping extends AbstractPersistableCustom {
+@Table(name = "m_product_visibility_clienttype_mapping")
+public class ProductVisibilityClienttypeMapping extends AbstractPersistableCustom {
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "config_id", nullable = false)
-    private LoanProductVisibilityConfig loanProductVisibilityConfig;
+    private ProductVisibilityConfig productVisibilityConfig;
 
     @ManyToOne(optional = false, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "clientclassification_id", nullable = false)
-    private CodeValue clientClassification;
+    @JoinColumn(name = "clienttype_id", nullable = false)
+    private CodeValue clientType;
 
-    public LoanproductVisibilityClientclassificationMapping() {
+    public ProductVisibilityClienttypeMapping() {}
+
+    public ProductVisibilityClienttypeMapping(ProductVisibilityConfig productVisibilityConfig, CodeValue clientType) {
+        this.productVisibilityConfig = productVisibilityConfig;
+        this.clientType = clientType;
     }
 
-    public LoanproductVisibilityClientclassificationMapping(LoanProductVisibilityConfig loanProductVisibilityConfig, CodeValue clientClassification) {
-        this.loanProductVisibilityConfig = loanProductVisibilityConfig;
-        this.clientClassification = clientClassification;
-    }
-
-    public CodeValue getClientClassification() {
-        return clientClassification;
+    public CodeValue getClientType() {
+        return clientType;
     }
 
 }

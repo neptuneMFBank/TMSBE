@@ -1447,5 +1447,5 @@ public class LoanProductData implements Serializable {
     public Integer getMinimumDaysBetweenDisbursalAndFirstRepayment() {
         return minimumDaysBetweenDisbursalAndFirstRepayment;
     }
-    
+
 }

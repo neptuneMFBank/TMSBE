@@ -149,7 +149,8 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
             final AppUserClientMappingRepository appUserClientMappingRepository, final ApplicationContext context,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final AccountNumberGenerator accountNumberGenerator,
             final SelfServiceRegistrationCommandFromApiJsonDeserializer selfServiceRegistrationCommandFromApiJsonDeserializer,
-            final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper, final AppUserMerchantMappingRepositoryWrapper appUserMerchantMappingRepositoryWrapper) {
+            final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper,
+            final AppUserMerchantMappingRepositoryWrapper appUserMerchantMappingRepositoryWrapper) {
         this.selfServiceRegistrationRepository = selfServiceRegistrationRepository;
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.selfServiceRegistrationReadPlatformService = selfServiceRegistrationReadPlatformService;
@@ -262,14 +263,16 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
 
         Long selfClientId = createRequestAuditTable(clientId, accountNumber, firstName, lastName, mobileNumber, email, password);
 
-        SelfServiceRegistration selfServiceRegistration = RegisterSelfUser(selfClientId, SelfServiceApiConstants.SELF_SERVICE_USER_ROLE, true);
+        SelfServiceRegistration selfServiceRegistration = RegisterSelfUser(selfClientId, SelfServiceApiConstants.SELF_SERVICE_USER_ROLE,
+                true);
 
         final ApiResponseMessage apiResponseMessage = new ApiResponseMessage(HttpStatus.CREATED.value(),
                 SelfServiceApiConstants.createRequestSuccessMessage, selfServiceRegistration.getId(), null);
         return apiResponseMessage;
     }
 
-    protected Long createRequestAuditTable(Long clientId, String accountNumber, String firstName, String lastName, String mobileNumber, String email, String password) throws DataAccessException, InvalidDataAccessApiUsageException {
+    protected Long createRequestAuditTable(Long clientId, String accountNumber, String firstName, String lastName, String mobileNumber,
+            String email, String password) throws DataAccessException, InvalidDataAccessApiUsageException {
         // SelfServiceRegistration selfServiceRegistration = SelfServiceRegistration.instance(client,
         // client.getAccountNumber(), firstName,
         // lastName, mobileNumber, email, SelfServiceApiConstants.bothModeParamName, email, password);
@@ -318,9 +321,9 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         createUserObject.addProperty(SelfServiceApiConstants.requestIdParamName, selfClientId);
         createUserObject.addProperty(SelfServiceApiConstants.authenticationTokenParamName,
                 selfServiceRegistration.getAuthenticationToken());
-        //if (isNew) {
+        // if (isNew) {
         createCustomer(createUserObject.toString(), customerRole);
-        //}
+        // }
         sendAuthorizationToken(selfServiceRegistration.getClient(), selfServiceRegistration.getPassword(),
                 selfServiceRegistration.getEmail(), selfServiceRegistration.getMobileNumber(), selfServiceRegistration.getFirstName(),
                 "Onboarding");
@@ -390,12 +393,13 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         if (ObjectUtils.isNotEmpty(client)) {
             clientData = ClientData.lookup(client.getId(), client.getDisplayName(), client.getMiddlename(), client.mobileNo(),
                     client.emailAddress(), client.getLastname());
-            //final String encryptResponse = this.fromApiJsonHelper.toJson(clientData);
+            // final String encryptResponse = this.fromApiJsonHelper.toJson(clientData);
             apiResponseMessage.setData(clientData);
 
             boolean appUserIsEmpty;
             if (BooleanUtils.isTrue(isMerchant)) {
-                List<AppUserMerchantMapping> appUserMerchantMappings = appUserMerchantMappingRepositoryWrapper.findByClientId(client.getId());
+                List<AppUserMerchantMapping> appUserMerchantMappings = appUserMerchantMappingRepositoryWrapper
+                        .findByClientId(client.getId());
                 appUserIsEmpty = CollectionUtils.isEmpty(appUserMerchantMappings);
             } else {
                 List<AppUserClientMapping> appUserClientMappings = this.appUserClientMappingRepository.findByClientId(client.getId());
@@ -457,8 +461,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
     @Override
     public SelfServiceRegistration createRegistrationRequest(String apiRequestBodyAsJson) {
         Gson gson = new Gson();
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, apiRequestBodyAsJson,
@@ -641,8 +644,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         String username = null;
         try {
             Gson gson = new Gson();
-            final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-            }.getType();
+            final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
             final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
             final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, apiRequestBodyAsJson,
@@ -703,8 +705,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
         String username = null;
         try {
             Gson gson = new Gson();
-            final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-            }.getType();
+            final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
             final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
             final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, apiRequestBodyAsJson,
@@ -817,15 +818,16 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
 
         validateForDuplicateUsername(email);
 
-        //throwExceptionIfValidationErrorExists(email, mobileNumber);
+        // throwExceptionIfValidationErrorExists(email, mobileNumber);
         String authenticationToken = randomAuthorizationTokenGeneration();
         String password = authenticationToken;
 
         Long selfClientId = createRequestAuditTable(clientId, accountNumber, firstName, lastName, mobileNumber, email, password);
 
-        SelfServiceRegistration selfServiceRegistration = RegisterSelfUser(selfClientId, SelfServiceApiConstants.SELF_SERVICE_USER_ROLE, false);
+        SelfServiceRegistration selfServiceRegistration = RegisterSelfUser(selfClientId, SelfServiceApiConstants.SELF_SERVICE_USER_ROLE,
+                false);
         if (updateCustomerProfile) {
-            //update the mobile and email if any is empty
+            // update the mobile and email if any is empty
             String clientUpdateSql = "UPDATE m_client SET mobile_no=?, email_address=? WHERE id=?";
             jdbcTemplate.update(clientUpdateSql, mobileNumber, email, clientId);
         }

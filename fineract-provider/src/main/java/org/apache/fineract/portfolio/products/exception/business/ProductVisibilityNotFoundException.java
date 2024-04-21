@@ -16,12 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanproduct.business.domain;
+package org.apache.fineract.portfolio.products.exception.business;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.apache.fineract.infrastructure.core.exception.AbstractPlatformResourceNotFoundException;
 
-public interface LoanProductVisibilityRepository
-        extends JpaRepository<LoanProductVisibilityConfig, Long>, JpaSpecificationExecutor<LoanProductVisibilityConfig> {
+public class ProductVisibilityNotFoundException extends AbstractPlatformResourceNotFoundException {
+
+    public ProductVisibilityNotFoundException(final Long id) {
+        super("error.msg.product.visibility.invalid", " Product visibility with " + id + " does not exist", id);
+    }
+
+    public ProductVisibilityNotFoundException(final String msg) {
+        super("error.msg.product.visibility.invalid", msg);
+    }
 
 }

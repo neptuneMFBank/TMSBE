@@ -52,7 +52,7 @@ public class SelfServiceRegistrationApiResource {
 
     @POST
     @Path("getstarted")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
     public String createCustomeronRequest(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.selfServiceRegistrationWritePlatformService
                 .createCustomeronRequest(apiRequestBodyAsJson);
@@ -61,7 +61,7 @@ public class SelfServiceRegistrationApiResource {
 
     @POST
     @Path("getstarted/existing")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
     public String createExistingCustomeronRequest(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.selfServiceRegistrationWritePlatformService
                 .createExistingCustomeronRequest(apiRequestBodyAsJson);
@@ -70,7 +70,7 @@ public class SelfServiceRegistrationApiResource {
 
     @POST
     @Path("getstarted/resend")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
     public String resendCustomeronRequest(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.selfServiceRegistrationWritePlatformService
                 .resendCustomeronRequest(apiRequestBodyAsJson);
@@ -79,7 +79,7 @@ public class SelfServiceRegistrationApiResource {
 
     @POST
     @Path("validate")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
     public String validateCustomer(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.selfServiceRegistrationWritePlatformService
                 .validateCustomer(apiRequestBodyAsJson, false);
@@ -88,7 +88,7 @@ public class SelfServiceRegistrationApiResource {
 
     @POST
     @Path("reset-password")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
     public String resetCustomerPassword(final String apiRequestBodyAsJson) {
         final ApiResponseMessage apiResponseMessage = this.selfServiceRegistrationWritePlatformService
                 .resetCustomerPassword(apiRequestBodyAsJson);
@@ -96,7 +96,7 @@ public class SelfServiceRegistrationApiResource {
     }
 
     @POST
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
     public String createSelfServiceRegistrationRequest(final String apiRequestBodyAsJson) {
         this.selfServiceRegistrationWritePlatformService.createRegistrationRequest(apiRequestBodyAsJson);
         return SelfServiceApiConstants.createRequestSuccessMessage;
@@ -104,7 +104,7 @@ public class SelfServiceRegistrationApiResource {
 
     @POST
     @Path("user")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
     public String createSelfServiceUser(final String apiRequestBodyAsJson) {
         AppUser user = this.selfServiceRegistrationWritePlatformService.createUser(apiRequestBodyAsJson);
         return this.toApiJsonSerializer.serialize(CommandProcessingResult.resourceResult(user.getId(), null));

@@ -16,21 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanproduct.business.service;
+package org.apache.fineract.portfolio.products.domain.business;
 
-import com.google.gson.JsonObject;
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductVisibilityConfigData;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface LoanProductVisibilityReadPlatformService {
-
-    Page<LoanProductVisibilityConfigData> retrieveAll(final SearchParametersBusiness searchParameters);
-
-    LoanProductVisibilityConfigData retrieveOne(Long loanProductVisibilityId);
-
-    LoanProductVisibilityConfigData retrieveTemplate();
-
-    JsonObject retrieveVisibileLoanProductForClient(final Long clientId);
+public interface ProductVisibilityRepository
+        extends JpaRepository<ProductVisibilityConfig, Long>, JpaSpecificationExecutor<ProductVisibilityConfig> {
 
 }

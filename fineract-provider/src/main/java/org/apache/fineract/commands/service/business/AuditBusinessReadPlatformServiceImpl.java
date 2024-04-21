@@ -194,9 +194,9 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
             final String loanAccountNo = rs.getString("loanAccountNo");
             final String savingsAccountNo = rs.getString("savingsAccountNo");
 
-            return new AuditBusinessData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate, processingResult,
-                    commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo, clientId, loanId,
-                    resourceGetUrl, null);
+            return new AuditBusinessData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate,
+                    processingResult, commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo,
+                    clientId, loanId, resourceGetUrl, null);
         }
     }
 
@@ -208,10 +208,9 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
                     + " aud.resource_id as resourceId,aud.client_id as clientId, aud.loan_id as loanId,"
                     + " aud.maker, aud.made_on_date as madeOnDate, " + " aud.api_get_url as resourceGetUrl, "
                     + "aud.checker, aud.checked_on_date as checkedOnDate, aud.processingResult, "
-                    + " aud.officeName, aud.groupLevelName, aud.groupName, aud.clientName, "
-                    + " aud.loanAccountNo, aud.savingsAccountNo, "
-                    + " aud.supervisor_id supervisorId, aud.supervisor_name supervisorName "
-                    + " from m_audit_approval_view aud " + " LEFT JOIN m_office o ON o.id=aud.office_id ";
+                    + " aud.officeName, aud.groupLevelName, aud.groupName, aud.clientName, " + " aud.loanAccountNo, aud.savingsAccountNo, "
+                    + " aud.supervisor_id supervisorId, aud.supervisor_name supervisorName " + " from m_audit_approval_view aud "
+                    + " LEFT JOIN m_office o ON o.id=aud.office_id ";
             return partSql;
         }
 
@@ -246,9 +245,9 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
                 supervisorStaffData = StaffData.lookup(supervisorId, supervisorName);
             }
 
-            return new AuditBusinessData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate, processingResult,
-                    commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo, clientId, loanId,
-                    resourceGetUrl, supervisorStaffData);
+            return new AuditBusinessData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate,
+                    processingResult, commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo,
+                    clientId, loanId, resourceGetUrl, supervisorStaffData);
         }
     }
 

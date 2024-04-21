@@ -261,15 +261,14 @@ public class MerchantRegistrationWriteServiceImp implements MerchantRegistration
                 .orElseThrow(() -> new SelfServiceRegistrationNotFoundException(requestId));
 
         boolean isClientExist = this.merchantRegistrationReadPlatformService.isClientExist(selfServiceRegistration.getAccountNumber(),
-                selfServiceRegistration.getEmail(), selfServiceRegistration.getMobileNumber(),
-                false);
+                selfServiceRegistration.getEmail(), selfServiceRegistration.getMobileNumber(), false);
         if (!isClientExist) {
             throw new ClientNotFoundException();
         }
 
-        this.selfServiceRegistrationWritePlatformService.sendAuthorizationToken(selfServiceRegistration.getClient(), selfServiceRegistration.getPassword(),
-                selfServiceRegistration.getEmail(), selfServiceRegistration.getMobileNumber(), selfServiceRegistration.getFirstName(),
-                "Onboarding-Resent");
+        this.selfServiceRegistrationWritePlatformService.sendAuthorizationToken(selfServiceRegistration.getClient(),
+                selfServiceRegistration.getPassword(), selfServiceRegistration.getEmail(), selfServiceRegistration.getMobileNumber(),
+                selfServiceRegistration.getFirstName(), "Onboarding-Resent");
 
         final ApiResponseMessage apiResponseMessage = new ApiResponseMessage(HttpStatus.OK.value(),
                 SelfServiceApiConstants.resendRequestSuccessMessage, selfServiceRegistration.getId(), null);

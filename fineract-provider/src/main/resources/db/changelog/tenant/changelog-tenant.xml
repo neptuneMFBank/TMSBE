@@ -184,4 +184,16 @@
     <include file="parts/0168_m_users_lock_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0169_m_password_policy.xml" relativeToChangelogFile="true" />
     <include file="parts/0170_m_audit_approval_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0400_alter_m_product_visibility_config.sql" relativeToChangelogFile="true" />
+    <include file="parts/0401_alter_m_product_visibility_legalenum_mapping.sql" relativeToChangelogFile="true" />
+    <include file="parts/0402_alter_m_product_visibility_clientclassification_mapping.sql" relativeToChangelogFile="true" />
+    <include file="parts/0403_alter_m_product_visibility_clienttype_mapping.sql" relativeToChangelogFile="true" />
+    <include file="parts/0404_m_savingsproduct_visibility_config_mapping.sql" relativeToChangelogFile="true" />
+    <include file="parts/0405_m_create_savingsproduct_visibility_config_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0406_m_update_savingsproduct_visibility_config_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0407_m_delete_savingsproduct_visibility_config_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0408_alter_m_loanproduct_visibility_config_mapping.sql" relativeToChangelogFile="true" />
+    <include file="parts/0409_product_visibility_config_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0410_m_read_savingsproduct_visibility_config_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0411_alter_loan_product_visibility_config_view.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

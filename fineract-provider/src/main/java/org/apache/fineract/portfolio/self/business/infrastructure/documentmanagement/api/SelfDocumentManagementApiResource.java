@@ -73,7 +73,8 @@ public class SelfDocumentManagementApiResource {
             final AppuserLoansMapperReadService appuserLoansMapperReadService,
             final AppuserSavingsMapperReadService appuserSavingsMapperReadService,
             final AppuserClientIdentifierMapperReadService appuserClientIdentifierMapperReadService,
-            final DocumentBusinessManagementApiResource documentBusinessManagementApiResource, final DocumentManagementApiResource documentManagementApiResource) {
+            final DocumentBusinessManagementApiResource documentBusinessManagementApiResource,
+            final DocumentManagementApiResource documentManagementApiResource) {
         this.context = context;
         this.appUserClientMapperReadService = appUserClientMapperReadService;
         this.appuserLoansMapperReadService = appuserLoansMapperReadService;
@@ -84,8 +85,8 @@ public class SelfDocumentManagementApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAllDocuments(@Context final UriInfo uriInfo,
             @PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId) {
@@ -95,8 +96,8 @@ public class SelfDocumentManagementApiResource {
 
     @POST
     @Path("base64")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String createBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
         validateAppuser(entityType, entityId, null);
@@ -105,8 +106,8 @@ public class SelfDocumentManagementApiResource {
 
     @POST
     @Path("bulk-base64")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String createBulkBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
         validateAppuser(entityType, entityId, null);
@@ -115,8 +116,8 @@ public class SelfDocumentManagementApiResource {
 
     @GET
     @Path("{documentId}/attachment")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAttachment(@PathParam("documentId") @Parameter(description = "documentId") final Long documentId,
             @PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId) {
@@ -151,8 +152,7 @@ public class SelfDocumentManagementApiResource {
         Long clientId = null;
         Set<AppUserClientMapping> appUserClientMappings = user.getAppUserClientMappings();
         if (!CollectionUtils.isEmpty(appUserClientMappings)) {
-            final AppUserClientMapping appUserClientMapping
-                    = user.getAppUserClientMappings().stream().findAny().orElse(null);
+            final AppUserClientMapping appUserClientMapping = user.getAppUserClientMappings().stream().findAny().orElse(null);
             if (appUserClientMapping != null) {
                 final Client client = appUserClientMapping.getClient();
                 if (client != null) {
@@ -161,7 +161,8 @@ public class SelfDocumentManagementApiResource {
             }
         }
 
-        final boolean mappedClientIdentifierID = this.appuserClientIdentifierMapperReadService.isClientIdentifierMappedToUser(clientIdentifierId, clientId);
+        final boolean mappedClientIdentifierID = this.appuserClientIdentifierMapperReadService
+                .isClientIdentifierMappedToUser(clientIdentifierId, clientId);
         if (!mappedClientIdentifierID) {
             throw new ClientIdentifierNotFoundException(clientIdentifierId);
         }

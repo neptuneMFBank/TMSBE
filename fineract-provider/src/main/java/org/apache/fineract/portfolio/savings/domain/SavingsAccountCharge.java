@@ -279,7 +279,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
                 this.amountWrittenOff = null;
             break;
             case PERCENT_OF_AMOUNT_AND_INTEREST:
-//            case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
+                // case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
                 this.percentage = null;
                 this.amount = null;
                 this.amountPercentageAppliedTo = null;
@@ -423,7 +423,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
                     this.amountOutstanding = calculateOutstanding();
                 break;
                 case PERCENT_OF_AMOUNT_AND_INTEREST:
-//                case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
+                    // case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
                     this.percentage = amount;
                     this.amount = null;
                     this.amountPercentageAppliedTo = null;
@@ -499,7 +499,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
                     this.amountOutstanding = calculateOutstanding();
                 break;
                 case PERCENT_OF_AMOUNT_AND_INTEREST:
-//                case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
+                    // case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
                     this.percentage = newValue;
                     this.amount = null;
                     this.amountPercentageAppliedTo = null;

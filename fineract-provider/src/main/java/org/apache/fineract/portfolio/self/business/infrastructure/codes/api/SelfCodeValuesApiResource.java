@@ -53,27 +53,25 @@ public class SelfCodeValuesApiResource {
 
     @Autowired
     public SelfCodeValuesApiResource(final PlatformSecurityContext context,
-            final AppuserClientMapperReadService appUserClientMapperReadService,
-            final CodeValuesApiResource codeValuesApiResource) {
+            final AppuserClientMapperReadService appUserClientMapperReadService, final CodeValuesApiResource codeValuesApiResource) {
         this.context = context;
         this.appUserClientMapperReadService = appUserClientMapperReadService;
         this.codeValuesApiResource = codeValuesApiResource;
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Code Values", description = """
-                                                           Returns the list of Code Values for a given Code
-                                                           
-                                                           Example Requests:
-                                                           
-                                                           codes/1/codevalues""", parameters = @Parameter(name = "codeId", description = "co"))
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "A List of code values for a given code")
-    })
+            Returns the list of Code Values for a given Code
+
+            Example Requests:
+
+            codes/1/codevalues""", parameters = @Parameter(name = "codeId", description = "co"))
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "A List of code values for a given code") })
     public String retrieveAllCodeValues(@Context final UriInfo uriInfo,
-            @PathParam("clientId") @Parameter(description = "clientId") final Long clientId, @PathParam("codeId") @Parameter(description = "codeId") final Long codeId) {
+            @PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
+            @PathParam("codeId") @Parameter(description = "codeId") final Long codeId) {
         validateAppuserClientsMapping(clientId);
         return this.codeValuesApiResource.retrieveAllCodeValues(uriInfo, codeId);
     }

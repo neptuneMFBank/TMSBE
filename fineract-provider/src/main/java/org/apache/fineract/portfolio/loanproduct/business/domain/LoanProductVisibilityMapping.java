@@ -25,6 +25,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
+import org.apache.fineract.portfolio.products.domain.business.ProductVisibilityConfig;
 
 @Entity
 @Table(name = "m_loanproduct_visibility_config_mapping")
@@ -32,17 +33,16 @@ public class LoanProductVisibilityMapping extends AbstractPersistableCustom {
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "config_id", nullable = false)
-    private LoanProductVisibilityConfig loanProductVisibilityConfig;
+    private ProductVisibilityConfig productVisibilityConfig;
 
     @ManyToOne(optional = false, cascade = CascadeType.MERGE)
     @JoinColumn(name = "loanproduct_id", nullable = false)
     private LoanProduct loanProduct;
 
-    public LoanProductVisibilityMapping() {
-    }
+    public LoanProductVisibilityMapping() {}
 
-    public LoanProductVisibilityMapping(LoanProductVisibilityConfig loanProductVisibilityConfig, LoanProduct loanProduct) {
-        this.loanProductVisibilityConfig = loanProductVisibilityConfig;
+    public LoanProductVisibilityMapping(ProductVisibilityConfig productVisibilityConfig, LoanProduct loanProduct) {
+        this.productVisibilityConfig = productVisibilityConfig;
         this.loanProduct = loanProduct;
     }
 

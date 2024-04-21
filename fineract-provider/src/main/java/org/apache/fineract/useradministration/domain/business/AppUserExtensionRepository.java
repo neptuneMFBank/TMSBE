@@ -23,8 +23,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AppUserExtensionRepository extends JpaRepository<AppUserExtension, Long> {
 
-
-        AppUserExtension findByAppUser(AppUser appuserid);
+    AppUserExtension findByAppUser(AppUser appuserid);
 
     ;
 }

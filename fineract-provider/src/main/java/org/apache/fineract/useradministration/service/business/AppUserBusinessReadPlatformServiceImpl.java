@@ -82,8 +82,7 @@ public class AppUserBusinessReadPlatformServiceImpl implements AppUserBusinessRe
             String staffUserIdUpdateSql = "UPDATE m_appuser SET nonlocked=? WHERE id=?";
             jdbcTemplate.update(staffUserIdUpdateSql, 0, staffUserId);
         }
-        log.info("{}: Records affected by lockInactivityStaffUser: {}", ThreadLocalContextUtil.getTenant().getName(),
-                staffUserIds.size());
+        log.info("{}: Records affected by lockInactivityStaffUser: {}", ThreadLocalContextUtil.getTenant().getName(), staffUserIds.size());
     }
 
     @Override

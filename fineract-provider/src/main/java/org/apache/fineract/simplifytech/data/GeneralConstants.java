@@ -278,14 +278,19 @@ public class GeneralConstants {
         return interestRatePerPeriod;
     }
 
-    public static boolean feeIntervalOnInterestCharge(final Charge charge, final Integer periodInstallment, final String codeName) {
+    public static boolean feeIntervalOnInterestCharge(final Charge charge,
+            //final Integer periodInstallment, 
+            final String codeName, final LocalDate dueDate) {
         final Integer feeInterval = charge.getFeeInterval();
         if (feeInterval != null && feeInterval > 0) {
             //check feeFrequency and skip
-            final int isFeeIntervalModulo = periodInstallment % feeInterval;
+            //final int isFeeIntervalModulo = periodInstallment % feeInterval;
+            final int getMonth = dueDate.getMonthValue();
+            final int isFeeIntervalModulo = getMonth % feeInterval;
             if (//periodInstallment != 1 && 
                     isFeeIntervalModulo != 0) {
-                log.warn("cumulativeFeeChargesDueWithin feeInterval checks {}: periodInstallment:{} % feeInterval:{} = {}", codeName, periodInstallment, feeInterval, isFeeIntervalModulo);
+                //log.warn("cumulativeFeeChargesDueWithin feeInterval checks {}: periodInstallment:{} % feeInterval:{} = {}", codeName, periodInstallment, feeInterval, isFeeIntervalModulo);
+                log.warn("cumulativeFeeChargesDueWithin feeInterval checks {}: getMonth:{} % feeInterval:{} = {}", codeName, getMonth, feeInterval, isFeeIntervalModulo);
                 return true;
             }
         }

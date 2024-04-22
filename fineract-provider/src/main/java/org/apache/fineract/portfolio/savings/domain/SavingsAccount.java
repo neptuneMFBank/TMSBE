@@ -1144,6 +1144,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
 
         validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_DEPOSIT, transactionDTO.getTransactionDate());
 
+        LOG.info("deposit isAccountTransfer && isSelfTransfer- {}:{}", isAccountTransfer, isSelfTransfer);
         if (isAccountTransfer && !isSelfTransfer) {
             // auto pay deposit fee only when isAccountTransfer and is not self tranfer
             payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
@@ -3245,12 +3246,10 @@ public class SavingsAccount extends AbstractPersistableCustom {
             final LocalDate transactionDate, final AppUser user, final boolean backdatedTxnsAllowedTill, final String refNo) {
         SavingsAccountTransaction chargeTransaction = null;
 
-        if (savingsAccountCharge.isWithdrawalFee()) {
+        if (savingsAccountCharge.isWithdrawalFee() || savingsAccountCharge.isDepositFee()) {
             chargeTransaction = SavingsAccountTransaction.withdrawalFee(this, office(), transactionDate, transactionAmount, user, refNo);
         } else if (savingsAccountCharge.isAnnualFee()) {
             chargeTransaction = SavingsAccountTransaction.annualFee(this, office(), transactionDate, transactionAmount, user);
-        } else if (savingsAccountCharge.isDepositFee()) {
-            chargeTransaction = SavingsAccountTransaction.depositFee(this, office(), transactionDate, transactionAmount, user, refNo);
         } else {
             chargeTransaction = SavingsAccountTransaction.charge(this, office(), transactionDate, transactionAmount, user);
         }

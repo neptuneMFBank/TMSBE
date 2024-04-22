@@ -204,15 +204,6 @@ public final class SavingsAccountTransaction extends AbstractPersistableCustom {
                 isReversed, appUser, isManualTransaction, lienTransaction, refNo);
     }
 
-    public static SavingsAccountTransaction depositFee(final SavingsAccount savingsAccount, final Office office, final LocalDate date,
-            final Money amount, final AppUser appUser, final String refNo) {
-        final boolean isReversed = false;
-        final boolean isManualTransaction = false;
-        final Boolean lienTransaction = false;
-        return new SavingsAccountTransaction(savingsAccount, office, SavingsAccountTransactionType.DEPOSIT.getValue(), date, amount,
-                isReversed, appUser, isManualTransaction, lienTransaction, refNo);
-    }
-
     public static SavingsAccountTransaction annualFee(final SavingsAccount savingsAccount, final Office office, final LocalDate date,
             final Money amount, final AppUser appUser) {
         final boolean isReversed = false;
@@ -576,8 +567,7 @@ public final class SavingsAccountTransaction extends AbstractPersistableCustom {
          * *
          * Sending data in a map, though in savings we currently expect a
          * transaction to always repay a single charge (or may repay a part of a
-         * single charge too)
-         **
+         * single charge too) *
          */
         if (!this.savingsAccountChargesPaid.isEmpty()) {
             final List<Map<String, Object>> savingsChargesPaidData = new ArrayList<>();

@@ -19,6 +19,7 @@
 package org.apache.fineract.portfolio.client.service.business;
 
 import com.google.gson.JsonObject;
+import java.util.Collection;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.client.data.ClientData;
@@ -45,5 +46,7 @@ public interface ClientBusinessReadPlatformService {
             final String nin, final String tin);
 
     void queueSelfClientActivate();
+
+    Collection<Long> retrieveMerchantClients(Long aUserID);
 
 }

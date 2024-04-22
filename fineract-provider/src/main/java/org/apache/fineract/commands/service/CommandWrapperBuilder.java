@@ -3855,6 +3855,30 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createInventory() {
+        this.actionName = "CREATE";
+        this.entityName = "INVENTORY";
+        this.entityId = null;
+        this.href = "/inventory";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateInventory(final Long resourceId) {
+        this.actionName = "UPDATE";
+        this.entityName = "INVENTORY";
+        this.entityId = resourceId;
+        this.href = "/inventory/" + resourceId;
+        return this;
+    }
+
+    public CommandWrapperBuilder deleteInventory(final Long resourceId) {
+        this.actionName = "DELETE";
+        this.entityName = "INVENTORY";
+        this.entityId = resourceId;
+        this.href = "/inventory/" + resourceId;
+        return this;
+    }
+
     public CommandWrapperBuilder createSavingsProductVisibility() {
         this.actionName = "CREATE";
         this.entityName = ProductVisibilityApiResourceConstants.SAVINGS_VISIBILITY_RESOURCENAME;

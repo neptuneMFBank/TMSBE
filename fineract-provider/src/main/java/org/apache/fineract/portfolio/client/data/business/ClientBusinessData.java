@@ -109,7 +109,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
     private final Collection<OfficeData> officeOptions;
     private final Collection<StaffData> staffOptions;
     private final Collection<CodeValueData> narrations;
-    private final Collection<SavingsProductData> savingProductOptions;
+    private  Collection<SavingsProductData> savingProductOptions;
     private final Collection<SavingsAccountData> savingAccountOptions;
     private final Collection<CodeValueData> genderOptions;
     private final Collection<CodeValueData> clientTypeOptions;
@@ -556,6 +556,10 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
 
     public EnumOptionData getLegalForm() {
         return legalForm;
+    }
+
+    public void setSavingProductOptions(Collection<SavingsProductData> savingProductOptions) {
+        this.savingProductOptions = savingProductOptions;
     }
 
 }

@@ -1283,4 +1283,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
     }
 
+    @Override
+    public Collection<Long> retrieveMerchantClients(Long aUserID) {
+        String sql = "SELECT  m.client_id FROM m_appuser_merchant_mapping m INNER JOIN m_client c ON c.id = m.client_id WHERE m.appuser_id = ?";
+        return jdbcTemplate.queryForList(sql, Long.class, aUserID);
+    }
 }

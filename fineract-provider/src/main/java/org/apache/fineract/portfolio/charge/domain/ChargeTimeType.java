@@ -178,6 +178,7 @@ public enum ChargeTimeType {
     public boolean isWithdrawalFee() {
         return this.value.equals(ChargeTimeType.WITHDRAWAL_FEE.getValue());
     }
+
     public boolean isDepositFee() {
         return this.value.equals(ChargeTimeType.DEPOSIT_FEE.getValue());
     }
@@ -217,7 +218,7 @@ public enum ChargeTimeType {
 
     public boolean isAllowedSavingsChargeTime() {
         return isOnSpecifiedDueDate() || isSavingsActivation() || isSavingsClosure() || isWithdrawalFee() || isAnnualFee() || isMonthlyFee()
-                || isWeeklyFee() || isOverdraftFee() || isSavingsNoActivityFee();
+                || isWeeklyFee() || isOverdraftFee() || isSavingsNoActivityFee() || isDepositFee();
     }
 
     public boolean isOverdraftFee() {

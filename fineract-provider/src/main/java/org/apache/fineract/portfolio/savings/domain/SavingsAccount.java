@@ -1089,19 +1089,19 @@ public class SavingsAccount extends AbstractPersistableCustom {
     public SavingsAccountTransaction deposit(final SavingsAccountTransactionDTO transactionDTO, final boolean backdatedTxnsAllowedTill,
             final Long relaxingDaysConfigForPivotDate, final String refNo) {
         return deposit(transactionDTO, SavingsAccountTransactionType.DEPOSIT, backdatedTxnsAllowedTill, relaxingDaysConfigForPivotDate,
-                refNo);
+                refNo, false, false);
     }
 
     public SavingsAccountTransaction dividendPayout(final SavingsAccountTransactionDTO transactionDTO,
             final boolean backdatedTxnsAllowedTill, final Long relaxingDaysConfigForPivotDate) {
         String refNo = null;
         return deposit(transactionDTO, SavingsAccountTransactionType.DIVIDEND_PAYOUT, backdatedTxnsAllowedTill,
-                relaxingDaysConfigForPivotDate, refNo);
+                relaxingDaysConfigForPivotDate, refNo, false, false);
     }
 
     public SavingsAccountTransaction deposit(final SavingsAccountTransactionDTO transactionDTO,
             final SavingsAccountTransactionType savingsAccountTransactionType, final boolean backdatedTxnsAllowedTill,
-            final Long relaxingDaysConfigForPivotDate, final String refNo) {
+            final Long relaxingDaysConfigForPivotDate, final String refNo, final boolean isAccountTransfer, final boolean isSelfTransfer) {
         final String resourceTypeName = depositAccountType().resourceName();
         if (isNotActive()) {
             final String defaultUserMessage = "Transaction is not allowed. Account is not active.";
@@ -1144,11 +1144,12 @@ public class SavingsAccount extends AbstractPersistableCustom {
 
         validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_DEPOSIT, transactionDTO.getTransactionDate());
 
-        // auto pay deposit fee
-        payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
-                //transactionDTO.getPaymentDetail(), 
-                backdatedTxnsAllowedTill, refNo);
-
+        if (isAccountTransfer && !isSelfTransfer) {
+            // auto pay deposit fee only when isAccountTransfer and is not self tranfer
+            payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
+                    //transactionDTO.getPaymentDetail(), 
+                    backdatedTxnsAllowedTill, refNo);
+        }
         final Money amount = Money.of(this.currency, transactionDTO.getTransactionAmount());
 
         final SavingsAccountTransaction transaction = SavingsAccountTransaction.deposit(this, office(), transactionDTO.getPaymentDetail(),

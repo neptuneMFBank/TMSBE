@@ -198,4 +198,9 @@
     <include file="parts/0409_product_visibility_config_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0410_m_read_savingsproduct_visibility_config_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0411_alter_loan_product_visibility_config_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0412_m_inventory.sql" relativeToChangelogFile="true" />
+    <include file="parts/0413_create_m_inventory_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0414_update_m_inventory_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0415_delete_m_inventory_permission.sql" relativeToChangelogFile="true" /> 
+    <include file="parts/0416_read_m_inventory_permission.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

@@ -149,9 +149,8 @@ import org.springframework.stereotype.Component;
 
 @Entity
 @Component
-@Table(name = "m_loan", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"account_no"}, name = "loan_account_no_UNIQUE"),
-    @UniqueConstraint(columnNames = {"external_id"}, name = "loan_externalid_UNIQUE")})
+@Table(name = "m_loan", uniqueConstraints = { @UniqueConstraint(columnNames = { "account_no" }, name = "loan_account_no_UNIQUE"),
+        @UniqueConstraint(columnNames = { "external_id" }, name = "loan_externalid_UNIQUE") })
 public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
 
     private static final Logger LOG = LoggerFactory.getLogger(Loan.class);
@@ -655,13 +654,11 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
     }
 
     /**
-     * Creates a loanTransaction for "Apply Charge Event" with transaction date
-     * set to "suppliedTransactionDate". The newly created transaction is also
-     * added to the Loan on which this method is called.
+     * Creates a loanTransaction for "Apply Charge Event" with transaction date set to "suppliedTransactionDate". The
+     * newly created transaction is also added to the Loan on which this method is called.
      *
-     * If "suppliedTransactionDate" is not passed Id, the transaction date is
-     * set to the loans due date if the due date is lesser than todays date. If
-     * not, the transaction date is set to todays date
+     * If "suppliedTransactionDate" is not passed Id, the transaction date is set to the loans due date if the due date
+     * is lesser than todays date. If not, the transaction date is set to todays date
      *
      * @param loanCharge
      * @param suppliedTransactionDate
@@ -799,13 +796,11 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                 .determineProcessor(this.transactionProcessingStrategy);
         if (!loanCharge.isDueAtDisbursement() && loanCharge.isPaidOrPartiallyPaid(loanCurrency())) {
             /**
-             * **
-             * TODO Vishwas Currently we do not allow removing a loan charge
-             * after a loan is approved (hence there is no need to adjust any
-             * loan transactions).
+             * ** TODO Vishwas Currently we do not allow removing a loan charge after a loan is approved (hence there is
+             * no need to adjust any loan transactions).
              *
-             * Consider removing this block of code or logically completing it
-             * for the future by getting the list of affected Transactions *
+             * Consider removing this block of code or logically completing it for the future by getting the list of
+             * affected Transactions *
              */
             final List<LoanTransaction> allNonContraTransactionsPostDisbursement = retreiveListOfTransactionsPostDisbursement();
             loanRepaymentScheduleTransactionProcessor.handleTransaction(getDisbursementDate(), allNonContraTransactionsPostDisbursement,
@@ -869,13 +864,11 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                 .determineProcessor(this.transactionProcessingStrategy);
         if (!loanCharge.isDueAtDisbursement()) {
             /**
-             * **
-             * TODO Vishwas Currently we do not allow waiving updating loan
-             * charge after a loan is approved (hence there is no need to adjust
-             * any loan transactions).
+             * ** TODO Vishwas Currently we do not allow waiving updating loan charge after a loan is approved (hence
+             * there is no need to adjust any loan transactions).
              *
-             * Consider removing this block of code or logically completing it
-             * for the future by getting the list of affected Transactions *
+             * Consider removing this block of code or logically completing it for the future by getting the list of
+             * affected Transactions *
              */
             final List<LoanTransaction> allNonContraTransactionsPostDisbursement = retreiveListOfTransactionsPostDisbursement();
             loanRepaymentScheduleTransactionProcessor.handleTransaction(getDisbursementDate(), allNonContraTransactionsPostDisbursement,
@@ -903,7 +896,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
         switch (loanCharge.getChargeCalculation()) {
             case PERCENT_OF_AMOUNT:
                 amount = getDerivedAmountForCharge(loanCharge);
-                break;
+            break;
             case PERCENT_OF_AMOUNT_AND_INTEREST:
                 final BigDecimal totalInterestCharged = getTotalInterest();
                 if (isMultiDisburmentLoan() && loanCharge.isDisbursementCharge()) {
@@ -911,27 +904,27 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                 } else {
                     amount = getPrincpal().getAmount().add(totalInterestCharged);
                 }
-                break;
+            break;
             case PERCENT_OF_INTEREST:
                 amount = getTotalInterest();
-                break;
+            break;
             case PERCENT_OF_DISBURSEMENT_AMOUNT:
                 if (loanCharge.getTrancheDisbursementCharge() != null) {
                     amount = loanCharge.getTrancheDisbursementCharge().getloanDisbursementDetails().principal();
                 } else {
                     amount = getPrincpal().getAmount();
                 }
-                break;
-//            case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
-//                final BigDecimal totalInterestFeeCharged = getTotalInterest().add(getTotalFee());
-//                if (isMultiDisburmentLoan() && loanCharge.isDisbursementCharge()) {
-//                    amount = getTotalAllTrancheDisbursementAmount().getAmount().add(totalInterestFeeCharged);
-//                } else {
-//                    amount = getPrincpal().getAmount().add(totalInterestFeeCharged);
-//                }
-//                break;
+            break;
+            // case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
+            // final BigDecimal totalInterestFeeCharged = getTotalInterest().add(getTotalFee());
+            // if (isMultiDisburmentLoan() && loanCharge.isDisbursementCharge()) {
+            // amount = getTotalAllTrancheDisbursementAmount().getAmount().add(totalInterestFeeCharged);
+            // } else {
+            // amount = getPrincpal().getAmount().add(totalInterestFeeCharged);
+            // }
+            // break;
             default:
-                break;
+            break;
         }
         return amount;
     }
@@ -987,15 +980,15 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
         switch (calculationType) {
             case PERCENT_OF_AMOUNT:
                 percentOf = installment.getPrincipal(getCurrency());
-                break;
+            break;
             case PERCENT_OF_AMOUNT_AND_INTEREST:
                 percentOf = installment.getPrincipal(getCurrency()).plus(installment.getInterestCharged(getCurrency()));
-                break;
+            break;
             case PERCENT_OF_INTEREST:
                 percentOf = installment.getInterestCharged(getCurrency());
-                break;
+            break;
             default:
-                break;
+            break;
         }
         amount = amount.plus(LoanCharge.percentageOf(percentOf.getAmount(), percentage));
         return amount;
@@ -1070,13 +1063,11 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                 .determineProcessor(this.transactionProcessingStrategy);
         if (!loanCharge.isDueAtDisbursement() && loanCharge.isPaidOrPartiallyPaid(loanCurrency())) {
             /**
-             * **
-             * TODO Vishwas Currently we do not allow waiving fully paid loan
-             * charge and waiving partially paid loan charges only waives the
-             * remaining amount.
+             * ** TODO Vishwas Currently we do not allow waiving fully paid loan charge and waiving partially paid loan
+             * charges only waives the remaining amount.
              *
-             * Consider removing this block of code or logically completing it
-             * for the future by getting the list of affected Transactions *
+             * Consider removing this block of code or logically completing it for the future by getting the list of
+             * affected Transactions *
              */
             final List<LoanTransaction> allNonContraTransactionsPostDisbursement = retreiveListOfTransactionsPostDisbursement();
             loanRepaymentScheduleTransactionProcessor.handleTransaction(getDisbursementDate(), allNonContraTransactionsPostDisbursement,
@@ -1276,8 +1267,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
     }
 
     /**
-     * method updates accrual derived fields on installments and reverse the
-     * unprocessed transactions
+     * method updates accrual derived fields on installments and reverse the unprocessed transactions
      */
     private void applyAccurals() {
         Collection<LoanTransaction> accruals = retreiveListOfAccrualTransactions();
@@ -1306,7 +1296,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             || installment.getInterestCharged(getCurrency()).isLessThan(interest)
                             || installment.getPenaltyChargesCharged(getCurrency()).isLessThan(penality)
                             || (getAccruedTill().isEqual(loanTransaction.getTransactionDate())
-                            && !installment.getDueDate().isEqual(getAccruedTill()))) {
+                                    && !installment.getDueDate().isEqual(getAccruedTill()))) {
                         interest = interest.minus(loanTransaction.getInterestPortion(getCurrency()));
                         fee = fee.minus(loanTransaction.getFeeChargesPortion(getCurrency()));
                         penality = penality.minus(loanTransaction.getPenaltyChargesPortion(getCurrency()));
@@ -1779,18 +1769,19 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
         switch (calculationType) {
             case PERCENT_OF_AMOUNT:
                 amount = installment.getPrincipalOutstanding(getCurrency());
-                break;
+            break;
             case PERCENT_OF_AMOUNT_AND_INTEREST:
                 amount = installment.getPrincipalOutstanding(getCurrency()).plus(installment.getInterestOutstanding(getCurrency()));
-                break;
+            break;
             case PERCENT_OF_INTEREST:
                 amount = installment.getInterestOutstanding(getCurrency());
-                break;
-//            case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
-//                amount = installment.getPrincipalOutstanding(getCurrency()).plus(installment.getInterestOutstanding(getCurrency())).plus(installment.getFeeChargesOutstanding(getCurrency()));
-//                break;
+            break;
+            // case PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE:
+            // amount =
+            // installment.getPrincipalOutstanding(getCurrency()).plus(installment.getInterestOutstanding(getCurrency())).plus(installment.getFeeChargesOutstanding(getCurrency()));
+            // break;
             default:
-                break;
+            break;
         }
         return amount;
     }
@@ -2115,8 +2106,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
         validateDisbursementDateIsOnHoliday(allowTransactionsOnHoliday, holidays);
 
         /**
-         * Copy interest recalculation settings if interest recalculation is
-         * enabled
+         * Copy interest recalculation settings if interest recalculation is enabled
          */
         if (this.loanRepaymentScheduleDetail.isInterestRecalculationEnabled()) {
 
@@ -2478,9 +2468,8 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
         final Money interestApplied = Money.of(getCurrency(), this.summary.getTotalInterestCharged());
 
         /**
-         * Add an interest applied transaction of the interest is accrued
-         * upfront (Up front accrual), no accounting or cash based accounting is
-         * selected
+         * Add an interest applied transaction of the interest is accrued upfront (Up front accrual), no accounting or
+         * cash based accounting is selected
          *
          */
         if (((isMultiDisburmentLoan() && getDisbursedLoanDisbursementDetails().size() == 1) || !isMultiDisburmentLoan())
@@ -2844,15 +2833,12 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
         // add repayment transaction to track incoming money from client to mfi
         // for (charges due at time of disbursement)
         /**
-         * *
-         * TODO Vishwas: do we need to be able to pass in payment type details
-         * for repayments at disbursements too? *
+         * * TODO Vishwas: do we need to be able to pass in payment type details for repayments at disbursements too? *
          */
         final Money totalFeeChargesDueAtDisbursement = this.summary.getTotalFeeChargesDueAtDisbursement(loanCurrency());
         /**
-         * all Charges repaid at disbursal is marked as repaid and "APPLY
-         * Charge" transactions are created for all other fees ( which are
-         * created during disbursal but not repaid)
+         * all Charges repaid at disbursal is marked as repaid and "APPLY Charge" transactions are created for all other
+         * fees ( which are created during disbursal but not repaid)
          *
          */
 
@@ -2866,8 +2852,8 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                     && disbursedOn.equals(actualDisbursementDate) && (actualDisbursementDate != null) && !charge.isWaived()
                     && !charge.isFullyPaid())
                     || (charge.getCharge().getChargeTimeType().equals(ChargeTimeType.TRANCHE_DISBURSEMENT.getValue())
-                    && disbursedOn.equals(actualDisbursementDate) && (actualDisbursementDate != null) && !charge.isWaived()
-                    && !charge.isFullyPaid())) {
+                            && disbursedOn.equals(actualDisbursementDate) && (actualDisbursementDate != null) && !charge.isWaived()
+                            && !charge.isFullyPaid())) {
                 if (totalFeeChargesDueAtDisbursement.isGreaterThanZero() && !charge.getChargePaymentMode().isPaymentModeAccountTransfer()) {
                     charge.markAsFullyPaid();
                     // Add "Loan Charge Paid By" details to this transaction
@@ -2878,8 +2864,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                 }
             } else if (disbursedOn.equals(this.actualDisbursementDate)) {
                 /**
-                 * create a Charge applied transaction if Up front Accrual, None
-                 * or Cash based accounting is enabled
+                 * create a Charge applied transaction if Up front Accrual, None or Cash based accounting is enabled
                  *
                  */
                 if (isNoneOrCashOrUpfrontAccrualAccountingEnabledOnLoanProduct()) {
@@ -2905,7 +2890,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
 
         if (getExpectedFirstRepaymentOnDate() != null
                 && (disbursedOn.isAfter(this.fetchRepaymentScheduleInstallment(1).getDueDate())
-                || disbursedOn.isAfter(getExpectedFirstRepaymentOnDate()))
+                        || disbursedOn.isAfter(getExpectedFirstRepaymentOnDate()))
                 && disbursedOn.compareTo(this.actualDisbursementDate) == 0 ? Boolean.TRUE : Boolean.FALSE) {
             final String errorMessage = "submittedOnDate cannot be after the loans  expectedFirstRepaymentOnDate: "
                     + getExpectedFirstRepaymentOnDate().toString();
@@ -3299,10 +3284,8 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                 mapEntry.getValue().updateLoan(this);
             }
             /**
-             * *
-             * Commented since throwing exception if external id present for one
-             * of the transactions. for this need to save the reversed
-             * transactions first and then new transactions.
+             * * Commented since throwing exception if external id present for one of the transactions. for this need to
+             * save the reversed transactions first and then new transactions.
              */
             this.loanTransactions.addAll(changedTransactionDetail.getNewTransactionMappings().values());
         }
@@ -3310,8 +3293,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
         updateLoanSummaryDerivedFields();
 
         /**
-         * FIXME: Vishwas, skipping post loan transaction checks for Loan
-         * recoveries
+         * FIXME: Vishwas, skipping post loan transaction checks for Loan recoveries
          *
          */
         if (loanTransaction.isNotRecoveryRepayment()) {
@@ -3377,7 +3359,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
         for (final LoanTransaction transaction : this.loanTransactions) {
             if (transaction.isNotReversed()
                     && !(transaction.isDisbursement() || transaction.isAccrual() || transaction.isRepaymentAtDisbursement()
-                    || transaction.isNonMonetaryTransaction() || transaction.isIncomePosting())) {
+                            || transaction.isNonMonetaryTransaction() || transaction.isIncomePosting())) {
                 repaymentsOrWaivers.add(transaction);
             }
         }
@@ -3955,8 +3937,8 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
     }
 
     /**
-     * Behaviour added to comply with capability of previous mifos product to
-     * support easier transition to fineract platform.
+     * Behaviour added to comply with capability of previous mifos product to support easier transition to fineract
+     * platform.
      */
     public void closeAsMarkedForReschedule(final JsonCommand command, final LoanLifecycleStateMachine loanLifecycleStateMachine,
             final Map<String, Object> changes) {
@@ -4631,20 +4613,20 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
         switch (periodFrequencyType) {
             case DAYS:
                 dueRepaymentPeriodDate = startDate.plusDays(repaidEvery);
-                break;
+            break;
             case WEEKS:
                 dueRepaymentPeriodDate = startDate.plusWeeks(repaidEvery);
-                break;
+            break;
             case MONTHS:
                 dueRepaymentPeriodDate = startDate.plusMonths(repaidEvery);
-                break;
+            break;
             case YEARS:
                 dueRepaymentPeriodDate = startDate.plusYears(repaidEvery);
-                break;
+            break;
             case INVALID:
-                break;
+            break;
             case WHOLE_TERM:
-                break;
+            break;
         }
         return dueRepaymentPeriodDate.minusDays(1);// get 2n-1 range date from
         // startDate
@@ -4849,69 +4831,69 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                         errorMessage = "The date on which a loan is submitted cannot be earlier than client's transfer date to this office";
                         action = "submittal";
                         postfix = "cannot.be.before.client.transfer.date";
-                        break;
+                    break;
                     case LOAN_APPROVED:
                         errorMessage = "The date on which a loan is approved cannot be earlier than client's transfer date to this office";
                         action = "approval";
                         postfix = "cannot.be.before.client.transfer.date";
-                        break;
+                    break;
                     case LOAN_APPROVAL_UNDO:
                         errorMessage = "The date on which a loan is approved cannot be earlier than client's transfer date to this office";
                         action = "approval";
                         postfix = "cannot.be.undone.before.client.transfer.date";
-                        break;
+                    break;
                     case LOAN_DISBURSED:
                         errorMessage = "The date on which a loan is disbursed cannot be earlier than client's transfer date to this office";
                         action = "disbursal";
                         postfix = "cannot.be.before.client.transfer.date";
-                        break;
+                    break;
                     case LOAN_DISBURSAL_UNDO:
                         errorMessage = "Cannot undo a disbursal done in another branch";
                         action = "disbursal";
                         postfix = "cannot.be.undone.before.client.transfer.date";
-                        break;
+                    break;
                     case LOAN_REPAYMENT_OR_WAIVER:
                         errorMessage = "The date on which a repayment or waiver is made cannot be earlier than client's transfer date to this office";
                         action = "repayment.or.waiver";
                         postfix = "cannot.be.made.before.client.transfer.date";
-                        break;
+                    break;
                     case LOAN_REJECTED:
                         errorMessage = "The date on which a loan is rejected cannot be earlier than client's transfer date to this office";
                         action = "reject";
                         postfix = "cannot.be.before.client.transfer.date";
-                        break;
+                    break;
                     case LOAN_WITHDRAWN:
                         errorMessage = "The date on which a loan is withdrawn cannot be earlier than client's transfer date to this office";
                         action = "withdraw";
                         postfix = "cannot.be.before.client.transfer.date";
-                        break;
+                    break;
                     case WRITE_OFF_OUTSTANDING:
                         errorMessage = "The date on which a write off is made cannot be earlier than client's transfer date to this office";
                         action = "writeoff";
                         postfix = "cannot.be.undone.before.client.transfer.date";
-                        break;
+                    break;
                     case REPAID_IN_FULL:
                         errorMessage = "The date on which the loan is repaid in full cannot be earlier than client's transfer date to this office";
                         action = "close";
                         postfix = "cannot.be.undone.before.client.transfer.date";
-                        break;
+                    break;
                     case LOAN_CHARGE_PAYMENT:
                         errorMessage = "The date on which a charge payment is made cannot be earlier than client's transfer date to this office";
                         action = "charge.payment";
                         postfix = "cannot.be.made.before.client.transfer.date";
-                        break;
+                    break;
                     case LOAN_REFUND:
                         errorMessage = "The date on which a refund is made cannot be earlier than client's transfer date to this office";
                         action = "refund";
                         postfix = "cannot.be.made.before.client.transfer.date";
-                        break;
+                    break;
                     case LOAN_DISBURSAL_UNDO_LAST:
                         errorMessage = "Cannot undo a last disbursal in another branch";
                         action = "disbursal";
                         postfix = "cannot.be.undone.before.client.transfer.date";
-                        break;
+                    break;
                     default:
-                        break;
+                    break;
                 }
                 throw new InvalidLoanStateTransitionException(action, postfix, errorMessage, clientOfficeJoiningDate);
             }
@@ -4932,19 +4914,19 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                     errorMessage = "The date on which a repayment or waiver is made cannot be earlier than last transaction date";
                     action = "repayment.or.waiver";
                     postfix = "cannot.be.made.before.last.transaction.date";
-                    break;
+                break;
                 case WRITE_OFF_OUTSTANDING:
                     errorMessage = "The date on which a write off is made cannot be earlier than last transaction date";
                     action = "writeoff";
                     postfix = "cannot.be.made.before.last.transaction.date";
-                    break;
+                break;
                 case LOAN_CHARGE_PAYMENT:
                     errorMessage = "The date on which a charge payment is made cannot be earlier than last transaction date";
                     action = "charge.payment";
                     postfix = "cannot.be.made.before.last.transaction.date";
-                    break;
+                break;
                 default:
-                    break;
+                break;
             }
             throw new InvalidLoanStateTransitionException(action, postfix, errorMessage, lastTransactionDate);
         }
@@ -5033,7 +5015,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
 
         switch (event) {
             case LOAN_CREATED:
-                break;
+            break;
             case LOAN_APPROVED:
                 if (!isSubmittedAndPendingApproval()) {
                     final String defaultUserMessage = "Loan Account Approval is not allowed. Loan Account is not in submitted and pending approval state.";
@@ -5041,7 +5023,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             .generalError("error.msg.loan.approve.account.is.not.submitted.and.pending.state", defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case LOAN_APPROVAL_UNDO:
                 if (!isApproved()) {
                     final String defaultUserMessage = "Loan Account Undo Approval is not allowed. Loan Account is not in approved state.";
@@ -5049,7 +5031,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case LOAN_DISBURSED:
                 if ((!(isApproved() && isNotDisbursed()) && !this.loanProduct.isMultiDisburseLoan())
                         || (this.loanProduct.isMultiDisburseLoan() && !isAllTranchesNotDisbursed())) {
@@ -5058,7 +5040,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             .generalError("error.msg.loan.disbursal.account.is.not.approve.not.disbursed.state", defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case LOAN_DISBURSAL_UNDO:
                 if (!isOpen()) {
                     final String defaultUserMessage = "Loan Undo disbursal is not allowed. Loan Account is not active.";
@@ -5072,7 +5054,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             .generalError("error.msg.loan.undo.disbursal.not.allowed.on.topup.loan", defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case LOAN_REPAYMENT_OR_WAIVER:
                 if (!isOpen()) {
                     final String defaultUserMessage = "Loan Repayment (or its types) or Waiver is not allowed. Loan Account is not active.";
@@ -5080,7 +5062,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             .generalError("error.msg.loan.repayment.or.waiver.account.is.not.active", defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case LOAN_REJECTED:
                 if (!isSubmittedAndPendingApproval()) {
                     final String defaultUserMessage = "Loan application cannot be rejected. Loan Account is not in Submitted and Pending approval state.";
@@ -5088,7 +5070,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             .generalError("error.msg.loan.reject.account.is.not.submitted.pending.approval.state", defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case LOAN_WITHDRAWN:
                 if (!isSubmittedAndPendingApproval()) {
                     final String defaultUserMessage = "Loan application cannot be withdrawn. Loan Account is not in Submitted and Pending approval state.";
@@ -5096,7 +5078,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             .generalError("error.msg.loan.withdrawn.account.is.not.submitted.pending.approval.state", defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case WRITE_OFF_OUTSTANDING:
                 if (!isOpen()) {
                     final String defaultUserMessage = "Loan Written off is not allowed. Loan Account is not active.";
@@ -5104,7 +5086,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case WRITE_OFF_OUTSTANDING_UNDO:
                 if (!isClosedWrittenOff()) {
                     final String defaultUserMessage = "Loan Undo Written off is not allowed. Loan Account is not Written off.";
@@ -5112,9 +5094,9 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             .generalError("error.msg.loan.undo.writtenoff.account.is.not.written.off", defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case REPAID_IN_FULL:
-                break;
+            break;
             case LOAN_CHARGE_PAYMENT:
                 if (!isOpen()) {
                     final String defaultUserMessage = "Charge payment is not allowed. Loan Account is not Active.";
@@ -5122,7 +5104,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case LOAN_CLOSED:
                 if (!isOpen()) {
                     final String defaultUserMessage = "Closing Loan Account is not allowed. Loan Account is not Active.";
@@ -5130,7 +5112,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case LOAN_EDIT_MULTI_DISBURSE_DATE:
                 if (isClosed()) {
                     final String defaultUserMessage = "Edit disbursement is not allowed. Loan Account is not active.";
@@ -5138,7 +5120,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case LOAN_RECOVERY_PAYMENT:
                 if (!isClosedWrittenOff()) {
                     final String defaultUserMessage = "Recovery repayments may only be made on loans which are written off";
@@ -5146,7 +5128,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case LOAN_REFUND:
                 if (!isOpen()) {
                     final String defaultUserMessage = "Loan Refund is not allowed. Loan Account is not active.";
@@ -5154,7 +5136,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case LOAN_DISBURSAL_UNDO_LAST:
                 if (!isOpen()) {
                     final String defaultUserMessage = "Loan Undo last disbursal is not allowed. Loan Account is not active.";
@@ -5162,7 +5144,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             .generalError("error.msg.loan.undo.last.disbursal.account.is.not.active", defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case LOAN_FORECLOSURE:
                 if (!isOpen()) {
                     final String defaultUserMessage = "Loan foreclosure is not allowed. Loan Account is not active.";
@@ -5170,7 +5152,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             case LOAN_CREDIT_BALANCE_REFUND:
                 if (!status().isOverpaid()) {
                     final String defaultUserMessage = "Loan Credit Balance Refund is not allowed. Loan Account is not Overpaid.";
@@ -5178,9 +5160,9 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                             .generalError("error.msg.loan.credit.balance.refund.account.is.not.overpaid", defaultUserMessage);
                     dataValidationErrors.add(error);
                 }
-                break;
+            break;
             default:
-                break;
+            break;
         }
 
         if (!dataValidationErrors.isEmpty()) {
@@ -5365,10 +5347,8 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
             mapEntry.getValue().updateLoan(this);
         }
         /**
-         * *
-         * Commented since throwing exception if external id present for one of
-         * the transactions. for this need to save the reversed transactions
-         * first and then new transactions.
+         * * Commented since throwing exception if external id present for one of the transactions. for this need to
+         * save the reversed transactions first and then new transactions.
          */
         this.loanTransactions.addAll(changedTransactionDetail.getNewTransactionMappings().values());
         updateLoanSummaryDerivedFields();
@@ -5824,7 +5804,8 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
     }
 
     /**
-     * @param dueDate the due date of the installment
+     * @param dueDate
+     *            the due date of the installment
      * @return a schedule installment with similar due date to the one provided
      *
      */
@@ -5877,17 +5858,21 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
 
     /**
      * @param applicationCurrency
-     * @param restCalendarInstance TODO
-     * @param compoundingCalendarInstance TODO
+     * @param restCalendarInstance
+     *            TODO
+     * @param compoundingCalendarInstance
+     *            TODO
      * @param loanCalendar
-     * @param floatingRateDTO TODO
+     * @param floatingRateDTO
+     *            TODO
      * @param isSkipRepaymentonmonthFirst
      * @param numberofdays
-     * @param holidayDetailDTO Used for accessing the loan's calendar object
+     * @param holidayDetailDTO
+     *            Used for accessing the loan's calendar object
      * @return application terms of the Loan object
      *
      */
-    @SuppressWarnings({"unused"})
+    @SuppressWarnings({ "unused" })
     public LoanApplicationTerms getLoanApplicationTerms(final ApplicationCurrency applicationCurrency,
             final CalendarInstance restCalendarInstance, CalendarInstance compoundingCalendarInstance, final Calendar loanCalendar,
             final FloatingRateDTO floatingRateDTO, final boolean isSkipRepaymentonmonthFirst, final Integer numberofdays,
@@ -6277,8 +6262,8 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
             if ((loanTermVariations.getTermType().isDueDateVariation()
                     && loanTermVariations.fetchDateValue().isAfter(actualDisbursementDate))
                     || (loanTermVariations.getTermType().isEMIAmountVariation()
-                    && loanTermVariations.getTermApplicableFrom().compareTo(actualDisbursementDate) == 0 ? Boolean.TRUE
-                    : Boolean.FALSE)
+                            && loanTermVariations.getTermApplicableFrom().compareTo(actualDisbursementDate) == 0 ? Boolean.TRUE
+                                    : Boolean.FALSE)
                     || loanTermVariations.getTermApplicableFrom().isAfter(actualDisbursementDate)) {
                 iterator.remove();
             }
@@ -6293,8 +6278,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
     }
 
     /**
-     * Reverse only disbursement, accruals, and repayments at disbursal
-     * transactions
+     * Reverse only disbursement, accruals, and repayments at disbursal transactions
      *
      * @param actualDisbursementDate
      * @return
@@ -6393,7 +6377,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                 for (final LoanRepaymentScheduleInstallment installment : installments) {
                     if (installment.getDueDate().isEqual(loanDisbursementDetail.expectedDisbursementDateAsLocalDate())
                             || (installment.getDueDate().isAfter(loanDisbursementDetail.expectedDisbursementDateAsLocalDate())
-                            && installment.isNotFullyPaidOff())) {
+                                    && installment.isNotFullyPaidOff())) {
                         nextRepaymentDate = installment.getDueDate();
                         break;
                     }
@@ -6523,8 +6507,8 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                                 .plus(loanCharge.getAmountWaived(getCurrency()).plus(loanCharge.getAmountPaid(getCurrency())));
                     } else {
                         feeForCurrentPeriod = feeForCurrentPeriod.plus(loanCharge.getAmount(currency));
-                        feeAccountedForCurrentPeriod = feeAccountedForCurrentPeriod.plus(loanCharge.getAmountWaived(getCurrency()).plus(
-                                loanCharge.getAmountPaid(getCurrency())));
+                        feeAccountedForCurrentPeriod = feeAccountedForCurrentPeriod
+                                .plus(loanCharge.getAmountWaived(getCurrency()).plus(loanCharge.getAmountPaid(getCurrency())));
                     }
                 } else if (loanCharge.isInstalmentFee()) {
                     LoanInstallmentCharge loanInstallmentCharge = loanCharge.getInstallmentLoanCharge(installment.getInstallmentNumber());
@@ -6737,7 +6721,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom {
                     if ((chargePaidBy.getLoanCharge().isDueDateCharge()
                             && chargePaidBy.getLoanCharge().getDueLocalDate().isAfter(transactionDate))
                             || (chargePaidBy.getLoanCharge().isInstalmentFee() && chargePaidBy.getInstallmentNumber() != null
-                            && chargePaidBy.getInstallmentNumber() > installmentNumber)) {
+                                    && chargePaidBy.getInstallmentNumber() > installmentNumber)) {
                         loanTransaction.reverse();
                     }
                 }

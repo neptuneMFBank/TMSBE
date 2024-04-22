@@ -54,7 +54,8 @@ import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.util.CollectionUtils;
 
 /**
- * All monetary transactions against a savings account are modelled through this entity.
+ * All monetary transactions against a savings account are modelled through this
+ * entity.
  */
 @Entity
 @Table(name = "m_savings_account_transaction")
@@ -200,6 +201,15 @@ public final class SavingsAccountTransaction extends AbstractPersistableCustom {
         final boolean isManualTransaction = false;
         final Boolean lienTransaction = false;
         return new SavingsAccountTransaction(savingsAccount, office, SavingsAccountTransactionType.WITHDRAWAL_FEE.getValue(), date, amount,
+                isReversed, appUser, isManualTransaction, lienTransaction, refNo);
+    }
+
+    public static SavingsAccountTransaction depositFee(final SavingsAccount savingsAccount, final Office office, final LocalDate date,
+            final Money amount, final AppUser appUser, final String refNo) {
+        final boolean isReversed = false;
+        final boolean isManualTransaction = false;
+        final Boolean lienTransaction = false;
+        return new SavingsAccountTransaction(savingsAccount, office, SavingsAccountTransactionType.DEPOSIT.getValue(), date, amount,
                 isReversed, appUser, isManualTransaction, lienTransaction, refNo);
     }
 
@@ -562,10 +572,13 @@ public final class SavingsAccountTransaction extends AbstractPersistableCustom {
             thisTransactionData.put("paymentTypeId", this.paymentDetail.getPaymentType().getId());
         }
 
-        /***
-         * Sending data in a map, though in savings we currently expect a transaction to always repay a single charge
-         * (or may repay a part of a single charge too)
-         ***/
+        /**
+         * *
+         * Sending data in a map, though in savings we currently expect a
+         * transaction to always repay a single charge (or may repay a part of a
+         * single charge too)
+         **
+         */
         if (!this.savingsAccountChargesPaid.isEmpty()) {
             final List<Map<String, Object>> savingsChargesPaidData = new ArrayList<>();
             for (final SavingsAccountChargePaidBy chargePaidBy : this.savingsAccountChargesPaid) {

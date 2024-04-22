@@ -43,7 +43,7 @@ public class ChargeDropdownReadPlatformServiceImpl implements ChargeDropdownRead
                 chargeCalculationType(ChargeCalculationType.PERCENT_OF_AMOUNT_AND_INTEREST),
                 chargeCalculationType(ChargeCalculationType.PERCENT_OF_INTEREST),
                 chargeCalculationType(ChargeCalculationType.PERCENT_OF_DISBURSEMENT_AMOUNT)
-        //,                chargeCalculationType(ChargeCalculationType.PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE)
+        // , chargeCalculationType(ChargeCalculationType.PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE)
         );
     }
 
@@ -83,7 +83,7 @@ public class ChargeDropdownReadPlatformServiceImpl implements ChargeDropdownRead
                 chargeCalculationType(ChargeCalculationType.PERCENT_OF_AMOUNT_AND_INTEREST),
                 chargeCalculationType(ChargeCalculationType.PERCENT_OF_INTEREST),
                 chargeCalculationType(ChargeCalculationType.PERCENT_OF_DISBURSEMENT_AMOUNT)
-        //,                chargeCalculationType(ChargeCalculationType.PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE)
+        // , chargeCalculationType(ChargeCalculationType.PERCENT_OF_AMOUNT_AND_INTEREST_AND_FEE)
         );
     }
 
@@ -107,7 +107,7 @@ public class ChargeDropdownReadPlatformServiceImpl implements ChargeDropdownRead
                 // chargeTimeType(ChargeTimeType.SAVINGS_CLOSURE),
                 chargeTimeType(ChargeTimeType.WITHDRAWAL_FEE), chargeTimeType(ChargeTimeType.ANNUAL_FEE),
                 chargeTimeType(ChargeTimeType.MONTHLY_FEE), chargeTimeType(ChargeTimeType.WEEKLY_FEE),
-                chargeTimeType(ChargeTimeType.OVERDRAFT_FEE), chargeTimeType(ChargeTimeType.SAVINGS_NOACTIVITY_FEE));
+                chargeTimeType(ChargeTimeType.OVERDRAFT_FEE), chargeTimeType(ChargeTimeType.SAVINGS_NOACTIVITY_FEE), chargeTimeType(ChargeTimeType.DEPOSIT_FEE));
     }
 
     @Override

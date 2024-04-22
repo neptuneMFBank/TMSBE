@@ -59,7 +59,8 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
     private final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService;
 
     @Autowired
-    public AppUserReadPlatformServiceImpl(final PlatformSecurityContext context, final JdbcTemplate jdbcTemplate, final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService,
+    public AppUserReadPlatformServiceImpl(final PlatformSecurityContext context, final JdbcTemplate jdbcTemplate,
+            final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService,
             final OfficeReadPlatformService officeReadPlatformService, final RoleReadPlatformService roleReadPlatformService,
             final AppUserRepository appUserRepository, final StaffReadPlatformService staffReadPlatformService) {
         this.context = context;
@@ -89,7 +90,7 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
         final AppUserMapper mapper = new AppUserMapper(this.roleReadPlatformService, this.staffReadPlatformService);
         final String sql = "select " + mapper.schema();
 
-        return this.jdbcTemplate.query(sql, mapper, new Object[]{hierarchySearchString}); // NOSONAR
+        return this.jdbcTemplate.query(sql, mapper, new Object[] { hierarchySearchString }); // NOSONAR
     }
 
     @Override
@@ -101,7 +102,7 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
         final AppUserLookupMapper mapper = new AppUserLookupMapper();
         final String sql = "select " + mapper.schema();
 
-        return this.jdbcTemplate.query(sql, mapper, new Object[]{hierarchySearchString}); // NOSONAR
+        return this.jdbcTemplate.query(sql, mapper, new Object[] { hierarchySearchString }); // NOSONAR
     }
 
     @Override
@@ -223,7 +224,7 @@ public class AppUserReadPlatformServiceImpl implements AppUserReadPlatformServic
     @Override
     public boolean isUsernameExist(String username) {
         String sql = "select count(*) from m_appuser where username = ?";
-        Object[] params = new Object[]{username};
+        Object[] params = new Object[] { username };
         Integer count = this.jdbcTemplate.queryForObject(sql, Integer.class, params);
         if (count == 0) {
             return false;

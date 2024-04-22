@@ -58,9 +58,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AuditsBusinessApiResource {
 
-    private static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList("id", "actionName", "entityName", "resourceId",
-            "subresourceId", "maker", "madeOnDate", "checker", "checkedOnDate", "processingResult", "commandAsJson", "officeName",
-            "groupLevelName", "groupName", "clientName", "loanAccountNo", "savingsAccountNo", "clientId", "loanId", "url", "supervisorStaffData"));
+    private static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(
+            Arrays.asList("id", "actionName", "entityName", "resourceId", "subresourceId", "maker", "madeOnDate", "checker",
+                    "checkedOnDate", "processingResult", "commandAsJson", "officeName", "groupLevelName", "groupName", "clientName",
+                    "loanAccountNo", "savingsAccountNo", "clientId", "loanId", "url", "supervisorStaffData"));
 
     private final String resourceNameForPermissions = "AUDIT";
 
@@ -71,11 +72,10 @@ public class AuditsBusinessApiResource {
     private final DefaultToApiJsonSerializer<AuditBusinessSearchData> toApiJsonSerializerSearchTemplate;
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Audits", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveAllAuditEntries(@Context final UriInfo uriInfo,
             @QueryParam("isChecker") @Parameter(description = "isChecker") final Boolean isChecker,
             @QueryParam("actionName") @Parameter(description = "actionName") final String actionName,
@@ -120,11 +120,10 @@ public class AuditsBusinessApiResource {
 
     @GET
     @Path("/template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Audit Search Template", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveAuditSearchTemplate(@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
@@ -141,11 +140,10 @@ public class AuditsBusinessApiResource {
 
     @GET
     @Path("/waiting-approval")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Audits Awaiting Approval", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveWaitingApproval(@Context final UriInfo uriInfo,
             @QueryParam("supervisorStaffId") @Parameter(description = "supervisorStaffId") final Long supervisorStaffId,
             @QueryParam("actionName") @Parameter(description = "actionName") final String actionName,
@@ -177,9 +175,9 @@ public class AuditsBusinessApiResource {
             toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
         }
 
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forAudit(fromDate, toDate, null, actionName,
-                entityName, resourceId, makerId, null, officeId, groupId, clientId, loanId, savingsAccountId, offset,
-                limit, orderBy, sortOrder, supervisorStaffId);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forAudit(fromDate, toDate, null, actionName, entityName,
+                resourceId, makerId, null, officeId, groupId, clientId, loanId, savingsAccountId, offset, limit, orderBy, sortOrder,
+                supervisorStaffId);
 
         final Page<AuditBusinessData> auditData = this.auditBusinessReadPlatformService.retrieveWaitingApproval(searchParameters);
 

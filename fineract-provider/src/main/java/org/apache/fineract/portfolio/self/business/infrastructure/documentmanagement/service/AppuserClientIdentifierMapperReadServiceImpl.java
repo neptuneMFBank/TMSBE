@@ -35,8 +35,7 @@ public class AppuserClientIdentifierMapperReadServiceImpl implements AppuserClie
     @Override
     public Boolean isClientIdentifierMappedToUser(Long clientIdentifierID, Long clientId) {
         return this.jdbcTemplate.queryForObject(
-                "select case when (count(*) > 0) then true else false end "
-                + " from m_client_identifier where id = ? and client_id = ?",
+                "select case when (count(*) > 0) then true else false end " + " from m_client_identifier where id = ? and client_id = ?",
                 Boolean.class, clientIdentifierID, clientId);
     }
 

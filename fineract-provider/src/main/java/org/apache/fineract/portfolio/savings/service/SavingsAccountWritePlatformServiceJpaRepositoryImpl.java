@@ -1190,7 +1190,8 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
         Integer chargeTimeType = chargeDefinition.getChargeTimeType();
         LocalDate dueAsOfDateParam = command.localDateValueOfParameterNamed(dueAsOfDateParamName);
         if ((chargeTimeType.equals(ChargeTimeType.WITHDRAWAL_FEE.getValue())
-                || chargeTimeType.equals(ChargeTimeType.SAVINGS_NOACTIVITY_FEE.getValue())) && dueAsOfDateParam != null) {
+                || chargeTimeType.equals(ChargeTimeType.SAVINGS_NOACTIVITY_FEE.getValue())
+                || chargeTimeType.equals(ChargeTimeType.DEPOSIT_FEE.getValue())) && dueAsOfDateParam != null) {
             baseDataValidator.reset().parameter(dueAsOfDateParamName).value(dueAsOfDateParam.format(fmt))
                     .failWithCodeNoParameterAddedToErrorCode(
                             "charge.due.date.is.invalid.for." + ChargeTimeType.fromInt(chargeTimeType).getCode());
@@ -1557,7 +1558,8 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
                 .resource(SAVINGS_ACCOUNT_CHARGE_RESOURCE_NAME);
 
-        /***
+        /**
+         * *
          * Only recurring fees are allowed to inactivate
          */
         if (!savingsAccountCharge.isRecurringFee()) {
@@ -1587,7 +1589,8 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
                             chargePayments.add(transaction);
                         }
                     }
-                    /***
+                    /**
+                     * *
                      * Reverse the excess payments of charge transactions
                      */
                     SavingsAccountTransaction lastChargePayment = getLastChargePayment(chargePayments);
@@ -1751,12 +1754,13 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
     }
 
     /**
-     * Disable all standing instructions linked to the savings account if the status is "closed"
+     * Disable all standing instructions linked to the savings account if the
+     * status is "closed"
      *
-     * @param savingsAccount
-     *            -- the savings account object
+     * @param savingsAccount -- the savings account object
      *
-     **/
+     *
+     */
     @Transactional
     private void disableStandingInstructionsLinkedToClosedSavings(final SavingsAccount savingsAccount) {
         if (savingsAccount != null && savingsAccount.isClosed()) {

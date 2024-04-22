@@ -36,8 +36,7 @@ public class AuthenticationBusinessReadPlatformServiceImpl implements Authentica
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public AuthenticationBusinessReadPlatformServiceImpl(
-            final JdbcTemplate jdbcTemplate) {
+    public AuthenticationBusinessReadPlatformServiceImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -47,8 +46,7 @@ public class AuthenticationBusinessReadPlatformServiceImpl implements Authentica
             final StringBuilder sqlBuilder = new StringBuilder(200);
             final lastLoginDateMapper ptm = new lastLoginDateMapper();
 
-            String lastLoginSql = "SELECT  mllv.last_login_date  as lastLoginDate"
-                    + " FROM fineract_default.m_users_details_view mllv "
+            String lastLoginSql = "SELECT  mllv.last_login_date  as lastLoginDate" + " FROM fineract_default.m_users_details_view mllv "
                     + " where  user_id = " + userId;
             sqlBuilder.append(lastLoginSql);
 

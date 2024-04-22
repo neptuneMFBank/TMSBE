@@ -85,7 +85,8 @@ public final class SearchParametersBusiness {
     private final Long transactionTypeId;
     private final Long transactionId;
 
-    public static SearchParametersBusiness forSavingsAmountOnHold(Integer offset, Integer limit, String orderBy, String sortOrder, Long productId, LocalDate fromDate, LocalDate toDate, String accountNo, Long officeId, Long clientId, String displayName) {
+    public static SearchParametersBusiness forSavingsAmountOnHold(Integer offset, Integer limit, String orderBy, String sortOrder,
+            Long productId, LocalDate fromDate, LocalDate toDate, String accountNo, Long officeId, Long clientId, String displayName) {
         final Long classificationId = null;
         final Boolean active = null;
         final Long organisationalRoleEnumId = null;
@@ -741,7 +742,8 @@ public final class SearchParametersBusiness {
 
     public static SearchParametersBusiness forLoansBusiness(final Long clientId, final Long officeId, final String externalId,
             final Integer statusId, final String hierarchy, final Integer offset, final Integer limit, final String orderBy,
-            final String sortOrder, final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate, final Boolean isSelfUser) {
+            final String sortOrder, final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate,
+            final Boolean isSelfUser) {
 
         final Long organisationalRoleEnumId = null;
         final Long industryId = null;

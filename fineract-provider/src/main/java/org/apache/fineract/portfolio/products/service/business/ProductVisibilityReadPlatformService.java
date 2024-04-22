@@ -16,18 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanproduct.business.exception;
+package org.apache.fineract.portfolio.products.service.business;
 
-import org.apache.fineract.infrastructure.core.exception.AbstractPlatformResourceNotFoundException;
+import com.google.gson.JsonObject;
+import org.apache.fineract.infrastructure.core.service.Page;
+import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
+import org.apache.fineract.portfolio.products.data.business.ProductVisibilityConfigData;
 
-public class LoanProductVisibilityNotFoundException extends AbstractPlatformResourceNotFoundException {
+public interface ProductVisibilityReadPlatformService {
 
-    public LoanProductVisibilityNotFoundException(final Long id) {
-        super("error.msg.loanproduct.visibility.invalid", "Loan Product visibility with " + id + " does not exist", id);
-    }
+    Page<ProductVisibilityConfigData> retrieveAll(final SearchParametersBusiness searchParameters, final Integer EntityType);
 
-    public LoanProductVisibilityNotFoundException(final String msg) {
-        super("error.msg.loanproduct.visibility.invalid", msg);
-    }
+    ProductVisibilityConfigData retrieveOne(Long loanProductVisibilityId, final Integer EntityType);
+
+    ProductVisibilityConfigData retrieveTemplate(final Integer EntityType);
+
+    JsonObject retrieveVisibileProductForClient(final Long clientId, final Integer EntityType);
 
 }

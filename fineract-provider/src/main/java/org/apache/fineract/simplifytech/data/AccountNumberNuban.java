@@ -36,16 +36,18 @@ public class AccountNumberNuban {
     private final int SEVEN = 7;
     private final int THREE = 3;
     private String sortCode;
+    private final Long bankDigit;
 
     private String serialNumber;
 
     private final Environment environment;
 
     @Autowired
-    public AccountNumberNuban(String accountNumber, Environment environment, String sortCode) {
+    public AccountNumberNuban(String accountNumber, Environment environment, String sortCode, Long bankDigit) {
         this.serialNumber = accountNumber;
         this.environment = environment;
         this.sortCode = sortCode;
+        this.bankDigit = bankDigit;
     }
 
     public String getAccountNumber() {
@@ -61,6 +63,14 @@ public class AccountNumberNuban {
         if (this.serialNumber.length() != 9) {
             // auto generate serialNumber must always be 9 digits to meet NIBSS requirements
             throw new IllegalArgumentException("Error in generating account number format.");
+        }
+
+        if (bankDigit != null) {
+            final String bankDigitString = String.valueOf(bankDigit);
+            final int numberOfCharactersToRemove = bankDigitString.length();
+            this.serialNumber = GeneralConstants.removeFirstCharacters(serialNumber, numberOfCharactersToRemove);
+            this.serialNumber = bankDigitString + this.serialNumber;
+            log.info("bankDigit Added: {}", bankDigit);
         }
 
         // assign the first 9 digit

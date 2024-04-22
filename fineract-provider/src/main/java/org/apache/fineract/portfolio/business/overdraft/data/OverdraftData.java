@@ -21,8 +21,10 @@ package org.apache.fineract.portfolio.business.overdraft.data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
 import lombok.Data;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
+import org.apache.fineract.portfolio.business.metrics.data.MetricsData;
 
 @Data
 @SuppressWarnings("unused")
@@ -45,6 +47,7 @@ public class OverdraftData implements Serializable {
     private final Long id;
     private final Long savingsId;
     private final EnumOptionData status;
+    private Collection<MetricsData> metricsData;
 
     public static OverdraftData instance(BigDecimal amount, BigDecimal nominalAnnualInterestRateOverdraft, LocalDate startDate,
             LocalDate expiryDate, String createdByUser, String modifiedByUser, LocalDate createdOn, LocalDate modifiedOn, Long id,

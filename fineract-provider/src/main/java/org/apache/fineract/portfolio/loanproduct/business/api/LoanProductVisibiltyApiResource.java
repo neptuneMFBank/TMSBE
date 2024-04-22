@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.portfolio.loanproduct.business.api;
 
+import static org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityType.LOAN_PRODUCTS;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -52,8 +54,9 @@ import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
-import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductVisibilityConfigData;
-import org.apache.fineract.portfolio.loanproduct.business.service.LoanProductVisibilityReadPlatformService;
+import org.apache.fineract.portfolio.products.api.business.ProductVisibilityApiResourceConstants;
+import org.apache.fineract.portfolio.products.data.business.ProductVisibilityConfigData;
+import org.apache.fineract.portfolio.products.service.business.ProductVisibilityReadPlatformService;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -64,8 +67,8 @@ import org.springframework.stereotype.Component;
 public class LoanProductVisibiltyApiResource {
 
     private final PlatformSecurityContext securityContext;
-    private final ToApiJsonSerializer<LoanProductVisibilityConfigData> jsonSerializer;
-    private final LoanProductVisibilityReadPlatformService readPlatformService;
+    private final ToApiJsonSerializer<ProductVisibilityConfigData> jsonSerializer;
+    private final ProductVisibilityReadPlatformService readPlatformService;
     private final PortfolioCommandSourceWritePlatformService commandWritePlatformService;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
 
@@ -76,11 +79,10 @@ public class LoanProductVisibiltyApiResource {
     @RequestBody(required = true)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK")})
-    public String createLoanProductApproval(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+    public String createLoanProductVisibility(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .createLoanProductVisibility()//
-                .withJson(apiRequestBodyAsJson) //
-                .build(); //
+                .withJson(apiRequestBodyAsJson).build(); //
         final CommandProcessingResult result = this.commandWritePlatformService.logCommandSource(commandRequest);
 
         return this.jsonSerializer.serialize(result);
@@ -92,7 +94,7 @@ public class LoanProductVisibiltyApiResource {
     @Operation(summary = "Retrieve all Loan Product Visiblity Config", description = "Retrieve all Loan Product Visiblity Config")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK")})
-    public String getAllLoanProductApproval(@Context final UriInfo uriInfo,
+    public String getAllLoanProductVisiblity(@Context final UriInfo uriInfo,
             @QueryParam("name") @Parameter(description = "name") final String name,
             @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
@@ -102,7 +104,8 @@ public class LoanProductVisibiltyApiResource {
             @DefaultValue("desc") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
             @DefaultValue("en") @QueryParam("locale") final String locale,
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
-        this.securityContext.authenticatedUser().validateHasReadPermission(LoanProductVisibilityApiResourceConstants.RESOURCENAME);
+        this.securityContext.authenticatedUser()
+                .validateHasReadPermission(ProductVisibilityApiResourceConstants.LOAN_VISIBILITY_RESOURCENAME);
 
         LocalDate fromDate = null;
         if (startPeriod != null) {
@@ -116,11 +119,12 @@ public class LoanProductVisibiltyApiResource {
         final SearchParametersBusiness searchParameters = SearchParametersBusiness.forLoanProductApproval(offset, limit, orderBy, sortOrder,
                 null, fromDate, toDate, name);
 
-        final Page<LoanProductVisibilityConfigData> loanProductVisibilityConfigData = this.readPlatformService.retrieveAll(searchParameters);
+        final Page<ProductVisibilityConfigData> loanProductVisibilityConfigData = this.readPlatformService.retrieveAll(searchParameters,
+                LOAN_PRODUCTS.getValue());
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.jsonSerializer.serialize(settings, loanProductVisibilityConfigData,
-                LoanProductApprovalApiResourceConstants.RESPONSE_DATA_PARAMETERS);
+                ProductVisibilityApiResourceConstants.REQUEST_DATA_LOAN_VISIBILITY_PARAMETERS);
     }
 
     @GET
@@ -129,16 +133,17 @@ public class LoanProductVisibiltyApiResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve a loan Product Approval", description = "Retrieves a loan Product Approval")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
-    public String retrieveOneLoanProductApproval(
+        @ApiResponse(responseCode = "200", description = "OK")})
+    public String retrieveOneLoanProductVisibility(
             @PathParam("loanProductVisibilityId") @Parameter(description = "loanProductApprovalId") final Long loanProductVisibilityId,
             @Context final UriInfo uriInfo) {
-        this.securityContext.authenticatedUser().validateHasReadPermission(LoanProductVisibilityApiResourceConstants.RESOURCENAME);
-        final LoanProductVisibilityConfigData loanProductVisibilityConfigData = this.readPlatformService.retrieveOne(loanProductVisibilityId);
+        this.securityContext.authenticatedUser()
+                .validateHasReadPermission(ProductVisibilityApiResourceConstants.LOAN_VISIBILITY_RESOURCENAME);
+        final ProductVisibilityConfigData loanProductVisibilityConfigData = this.readPlatformService.retrieveOne(loanProductVisibilityId,
+                LOAN_PRODUCTS.getValue());
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.jsonSerializer.serialize(settings, loanProductVisibilityConfigData,
-                LoanProductApprovalApiResourceConstants.RESPONSE_DATA_PARAMETERS);
+                ProductVisibilityApiResourceConstants.REQUEST_DATA_LOAN_VISIBILITY_PARAMETERS);
     }
 
     @PUT
@@ -146,15 +151,14 @@ public class LoanProductVisibiltyApiResource {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Update Loan Product visibility Config", description = "Update Loan Product visibility Config")
-    @RequestBody(required = true
-    )
+    @RequestBody(required = true)
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
-    public String updateLoanProductApproval(
+        @ApiResponse(responseCode = "200", description = "OK")})
+    public String updateLoanProductVisibility(
             @PathParam("loanProductVisibilityId") @Parameter(description = "loanProductVisibilityId") final Long loanProductVisibilityId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
-        this.securityContext.authenticatedUser().validateHasReadPermission(LoanProductVisibilityApiResourceConstants.RESOURCENAME);
+        this.securityContext.authenticatedUser()
+                .validateHasReadPermission(ProductVisibilityApiResourceConstants.LOAN_VISIBILITY_RESOURCENAME);
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().updateLoanProductVisibility(loanProductVisibilityId)
                 .withJson(apiRequestBodyAsJson).build();
@@ -164,10 +168,12 @@ public class LoanProductVisibiltyApiResource {
 
     @DELETE
     @Path("{loanProductVisibilityId}")
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Delete Loan Product visibility Config", description = "Delete Loan Product visibility Config")
     @ApiResponse(responseCode = "200", description = "OK")
     public String delete(@PathParam("loanProductVisibilityId") final Long loanProductVisibilityId) {
-        this.securityContext.authenticatedUser().validateHasReadPermission(LoanProductVisibilityApiResourceConstants.RESOURCENAME);
+        this.securityContext.authenticatedUser()
+                .validateHasReadPermission(ProductVisibilityApiResourceConstants.LOAN_VISIBILITY_RESOURCENAME);
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().deleteLoanProductVisibility(loanProductVisibilityId).build();
         final CommandProcessingResult result = this.commandWritePlatformService.logCommandSource(commandRequest);
@@ -183,12 +189,14 @@ public class LoanProductVisibiltyApiResource {
         @ApiResponse(responseCode = "200", description = "OK")})
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
-        this.securityContext.authenticatedUser().validateHasReadPermission(LoanProductVisibilityApiResourceConstants.RESOURCENAME);
+        this.securityContext.authenticatedUser()
+                .validateHasReadPermission(ProductVisibilityApiResourceConstants.LOAN_VISIBILITY_RESOURCENAME);
 
-        final LoanProductVisibilityConfigData loanProductVisibilityConfigData = this.readPlatformService.retrieveTemplate();
+        final ProductVisibilityConfigData loanProductVisibilityConfigData = this.readPlatformService
+                .retrieveTemplate(LOAN_PRODUCTS.getValue());
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.jsonSerializer.serialize(settings, loanProductVisibilityConfigData,
-                LoanProductVisibilityApiResourceConstants.RESPONSE_TEMPLATE_PARAMETERS);
+                ProductVisibilityApiResourceConstants.RESPONSE_TEMPLATE_PARAMETERS);
     }
 }

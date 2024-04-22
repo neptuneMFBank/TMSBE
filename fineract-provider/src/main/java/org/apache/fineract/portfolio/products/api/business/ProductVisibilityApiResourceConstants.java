@@ -16,25 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanproduct.business.api;
+package org.apache.fineract.portfolio.products.api.business;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class LoanProductVisibilityApiResourceConstants {
+public final class ProductVisibilityApiResourceConstants {
 
-    private LoanProductVisibilityApiResourceConstants() {
+    private ProductVisibilityApiResourceConstants() {
 
     }
 
-    public static final String RESOURCENAME = "LOANPRODUCT_VISIBILITY";
+    public static final String LOAN_VISIBILITY_RESOURCENAME = "LOANPRODUCT_VISIBILITY";
+    public static final String SAVINGS_VISIBILITY_RESOURCENAME = "SAVINGSPRODUCT_VISIBILITY";
 
     public static final String ID = "id";
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";
 
     public static final String LOANPRODUCT = "loanProduct";
+    public static final String SAVINGSPRODUCT = "savingsProduct";
     public static final String CLIENTCLASSIFICATION = "clientClassification";
     public static final String CLIENTTYPE = "clientType";
     public static final String LEGALENUM = "legalEnum";
@@ -43,9 +45,19 @@ public final class LoanProductVisibilityApiResourceConstants {
     public static final String CLIENTCLASSIFICATIONOPTIONS = "clientClassificationOptions";
     public static final String CLIENTLEGALOPTIONS = "clientLegalFormOptions";
 
-    public static final Set<String> REQUEST_DATA_PARAMETERS = new HashSet<>(
+    public static final Set<String> REQUEST_DATA_LOAN_VISIBILITY_PARAMETERS = new HashSet<>(
             Arrays.asList(NAME, DESCRIPTION, LOANPRODUCT, CLIENTCLASSIFICATION, LEGALENUM, CLIENTTYPE));
 
-    public static final Set<String> RESPONSE_TEMPLATE_PARAMETERS = new HashSet<>(Arrays.asList(LOANPRODUCTOPTIONS, CLIENTTYPEOPTIONS, CLIENTCLASSIFICATIONOPTIONS, CLIENTLEGALOPTIONS));
+    public static final Set<String> REQUEST_DATA_SAVINGS_VISIBILITY_PARAMETERS = new HashSet<>(
+            Arrays.asList(NAME, DESCRIPTION, SAVINGSPRODUCT, CLIENTCLASSIFICATION, LEGALENUM, CLIENTTYPE));
+
+    public static final Set<String> RESPONSE_TEMPLATE_PARAMETERS = new HashSet<>(
+            Arrays.asList(LOANPRODUCTOPTIONS, CLIENTTYPEOPTIONS, CLIENTCLASSIFICATIONOPTIONS, CLIENTLEGALOPTIONS));
+
+    public static final Set<String> RESPONSE_DATA_LOAN_VISIBILITY_PARAMETERS = new HashSet<>(
+            Arrays.asList(NAME, DESCRIPTION, LOANPRODUCT, CLIENTCLASSIFICATION, LEGALENUM, CLIENTTYPE));
+
+    public static final Set<String> RESPONSE_DATA_SAVINGS_VISIBILITY_PARAMETERS = new HashSet<>(
+            Arrays.asList(NAME, DESCRIPTION, SAVINGSPRODUCT, CLIENTCLASSIFICATION, LEGALENUM, CLIENTTYPE));
 
 }

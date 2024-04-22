@@ -124,12 +124,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 @Entity
-@Table(name = "m_savings_account", uniqueConstraints = { @UniqueConstraint(columnNames = { "account_no" }, name = "sa_account_no_UNIQUE"),
-        @UniqueConstraint(columnNames = { "external_id" }, name = "sa_external_id_UNIQUE") })
+@Table(name = "m_savings_account", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"account_no"}, name = "sa_account_no_UNIQUE"),
+    @UniqueConstraint(columnNames = {"external_id"}, name = "sa_external_id_UNIQUE")})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "deposit_type_enum", discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorValue("100")
-@SuppressWarnings({ "MemberName" })
+@SuppressWarnings({"MemberName"})
 public class SavingsAccount extends AbstractPersistableCustom {
 
     private static final Logger LOG = LoggerFactory.getLogger(SavingsAccount.class);
@@ -224,9 +225,11 @@ public class SavingsAccount extends AbstractPersistableCustom {
     protected BigDecimal nominalAnnualInterestRate;
 
     /**
-     * The interest period is the span of time at the end of which savings in a client's account earn interest.
+     * The interest period is the span of time at the end of which savings in a
+     * client's account earn interest.
      *
-     * A value from the {@link SavingsCompoundingInterestPeriodType} enumeration.
+     * A value from the {@link SavingsCompoundingInterestPeriodType}
+     * enumeration.
      */
     @Column(name = "interest_compounding_period_enum", nullable = false)
     protected Integer interestCompoundingPeriodType;
@@ -244,7 +247,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
     protected Integer interestCalculationType;
 
     /**
-     * A value from the {@link SavingsInterestCalculationDaysInYearType} enumeration.
+     * A value from the {@link SavingsInterestCalculationDaysInYearType}
+     * enumeration.
      */
     @Column(name = "interest_calculation_days_in_year_type_enum", nullable = false)
     protected Integer interestCalculationDaysInYearType;
@@ -259,7 +263,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
     protected Integer lockinPeriodFrequencyType;
 
     /**
-     * When account becomes <code>active</code> this field is derived if <code>lockinPeriodFrequency</code> and
+     * When account becomes <code>active</code> this field is derived if
+     * <code>lockinPeriodFrequency</code> and
      * <code>lockinPeriodFrequencyType</code> details are present.
      */
     @Column(name = "lockedin_until_date_derived", nullable = true)
@@ -444,8 +449,9 @@ public class SavingsAccount extends AbstractPersistableCustom {
     }
 
     /**
-     * Used after fetching/hydrating a {@link SavingsAccount} object to inject helper services/components used for
-     * update summary details after events/transactions on a {@link SavingsAccount}.
+     * Used after fetching/hydrating a {@link SavingsAccount} object to inject
+     * helper services/components used for update summary details after
+     * events/transactions on a {@link SavingsAccount}.
      */
     public void setHelpers(final SavingsAccountTransactionSummaryWrapper savingsAccountTransactionSummaryWrapper,
             final SavingsHelper savingsHelper) {
@@ -793,18 +799,19 @@ public class SavingsAccount extends AbstractPersistableCustom {
     /**
      * All interest calculation based on END-OF-DAY-BALANCE.
      *
-     * Interest calculation is performed on-the-fly over all account transactions.
+     * Interest calculation is performed on-the-fly over all account
+     * transactions.
      *
      *
-     * 1. Calculate Interest From Beginning Of Account 1a. determine the 'crediting' periods that exist for this savings
-     * acccount 1b. determine the 'compounding' periods that exist within each 'crediting' period calculate the amount
-     * of interest due at the end of each 'crediting' period check if an existing 'interest posting' transaction exists
-     * for date and matches the amount posted
+     * 1. Calculate Interest From Beginning Of Account 1a. determine the
+     * 'crediting' periods that exist for this savings acccount 1b. determine
+     * the 'compounding' periods that exist within each 'crediting' period
+     * calculate the amount of interest due at the end of each 'crediting'
+     * period check if an existing 'interest posting' transaction exists for
+     * date and matches the amount posted
      *
-     * @param isInterestTransfer
-     *            TODO
+     * @param isInterestTransfer TODO
      */
-
     public List<PostingPeriod> calculateInterestUsing(final MathContext mc, final LocalDate upToInterestCalculationDate,
             boolean isInterestTransfer, final boolean isSavingsInterestPostingAtCurrentPeriodEnd, final Integer financialYearBeginningMonth,
             final LocalDate postInterestOnDate, final boolean backdatedTxnsAllowedTill, final boolean postReversals) {
@@ -822,13 +829,11 @@ public class SavingsAccount extends AbstractPersistableCustom {
 
         // update existing transactions so derived balance fields are
         // correct.
-
         recalculateDailyBalances(openingAccountBalance, upToInterestCalculationDate, backdatedTxnsAllowedTill, postReversals);
 
         // 1. default to calculate interest based on entire history OR
         // 2. determine latest 'posting period' and find interest credited to
         // that period
-
         // A generate list of EndOfDayBalances (not including interest postings)
         final SavingsPostingInterestPeriodType postingPeriodType = SavingsPostingInterestPeriodType.fromInt(this.interestPostingPeriodType);
 
@@ -1139,6 +1144,11 @@ public class SavingsAccount extends AbstractPersistableCustom {
 
         validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_DEPOSIT, transactionDTO.getTransactionDate());
 
+        // auto pay deposit fee
+        payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
+                //transactionDTO.getPaymentDetail(), 
+                backdatedTxnsAllowedTill, refNo);
+
         final Money amount = Money.of(this.currency, transactionDTO.getTransactionAmount());
 
         final SavingsAccountTransaction transaction = SavingsAccountTransaction.deposit(this, office(), transactionDTO.getPaymentDetail(),
@@ -1322,7 +1332,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
                 }
 
                 if (charge.isEnablePaymentType() && charge.isEnableFreeWithdrawal()) { // discount transaction to
-                                                                                       // specific paymentType
+                    // specific paymentType
                     if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
                         resetFreeChargeDaysCount(charge, transactionAmount, transactionDate, user, refNo);
                     }
@@ -1333,8 +1343,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
                                 backdatedTxnsAllowedTill, refNo);
                     }
                 } else if (!charge.isEnablePaymentType() && charge.isEnableFreeWithdrawal()) { // discount transaction
-                                                                                               // irrespective of
-                                                                                               // PaymentTypes.
+                    // irrespective of
+                    // PaymentTypes.
                     resetFreeChargeDaysCount(charge, transactionAmount, transactionDate, user, refNo);
 
                 } else { // normal-withdraw
@@ -1830,8 +1840,10 @@ public class SavingsAccount extends AbstractPersistableCustom {
     }
 
     /**
-     * If overdrafts are allowed and the overdraft limit is not set, set the same to Zero
-     **/
+     * If overdrafts are allowed and the overdraft limit is not set, set the
+     * same to Zero
+     *
+     */
     private void esnureOverdraftLimitsSetForOverdraftAccounts() {
 
         this.overdraftLimit = this.overdraftLimit == null ? BigDecimal.ZERO : this.overdraftLimit;
@@ -1848,7 +1860,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
          * DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
          * .resource(resourceName);
          */
-
         if (this.lockinPeriodFrequency == null) {
             baseDataValidator.reset().parameter(lockinPeriodFrequencyTypeParamName).value(this.lockinPeriodFrequencyType).ignoreIfNull()
                     .inMinMaxRange(0, 3);
@@ -2218,7 +2229,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
 
         // validateWithdrawalFeeDetails();
         // validateAnnualFeeDetails();
-
         final LocalDate submittedOn = getSubmittedOnLocalDate();
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -2385,7 +2395,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
 
         // FIXME - kw - support field officer history for savings accounts
         // this.loanOfficerHistory.clear();
-
         return actualChanges;
     }
 
@@ -2502,7 +2511,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
         final BigDecimal withdrawalFee = null;
 
         // check last txn date
-
         // In overdraft cases, minRequiredBalance can be in violation after interest posting
         // and should be checked after processing all transactions
         if (!isOverdraft()) {
@@ -2889,22 +2897,22 @@ public class SavingsAccount extends AbstractPersistableCustom {
         final PeriodFrequencyType lockinPeriodFrequencyType = PeriodFrequencyType.fromInt(this.lockinPeriodFrequencyType);
         switch (lockinPeriodFrequencyType) {
             case INVALID:
-            break;
+                break;
             case DAYS:
                 lockedInUntilLocalDate = activationLocalDate.plusDays(this.lockinPeriodFrequency);
-            break;
+                break;
             case WEEKS:
                 lockedInUntilLocalDate = activationLocalDate.plusWeeks(this.lockinPeriodFrequency);
-            break;
+                break;
             case MONTHS:
                 lockedInUntilLocalDate = activationLocalDate.plusMonths(this.lockinPeriodFrequency);
-            break;
+                break;
             case YEARS:
                 lockedInUntilLocalDate = activationLocalDate.plusYears(this.lockinPeriodFrequency);
-            break;
+                break;
             case WHOLE_TERM:
                 LOG.error("TODO Implement calculateDateAccountIsLockedUntil for WHOLE_TERM");
-            break;
+                break;
         }
 
         return lockedInUntilLocalDate;
@@ -3240,6 +3248,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
             chargeTransaction = SavingsAccountTransaction.withdrawalFee(this, office(), transactionDate, transactionAmount, user, refNo);
         } else if (savingsAccountCharge.isAnnualFee()) {
             chargeTransaction = SavingsAccountTransaction.annualFee(this, office(), transactionDate, transactionAmount, user);
+        } else if (savingsAccountCharge.isDepositFee()) {
+            chargeTransaction = SavingsAccountTransaction.depositFee(this, office(), transactionDate, transactionAmount, user, refNo);
         } else {
             chargeTransaction = SavingsAccountTransaction.charge(this, office(), transactionDate, transactionAmount, user);
         }
@@ -3338,24 +3348,24 @@ public class SavingsAccount extends AbstractPersistableCustom {
         Map<SavingsPostingInterestPeriodType, List<SavingsCompoundingInterestPeriodType>> postingtoCompoundMap = new HashMap<>();
 
         postingtoCompoundMap.put(SavingsPostingInterestPeriodType.DAILY,
-                Arrays.asList(new SavingsCompoundingInterestPeriodType[] { SavingsCompoundingInterestPeriodType.DAILY }));
+                Arrays.asList(new SavingsCompoundingInterestPeriodType[]{SavingsCompoundingInterestPeriodType.DAILY}));
 
-        postingtoCompoundMap.put(SavingsPostingInterestPeriodType.MONTHLY, Arrays.asList(new SavingsCompoundingInterestPeriodType[] {
-                SavingsCompoundingInterestPeriodType.DAILY, SavingsCompoundingInterestPeriodType.MONTHLY }));
+        postingtoCompoundMap.put(SavingsPostingInterestPeriodType.MONTHLY, Arrays.asList(new SavingsCompoundingInterestPeriodType[]{
+            SavingsCompoundingInterestPeriodType.DAILY, SavingsCompoundingInterestPeriodType.MONTHLY}));
 
         postingtoCompoundMap.put(SavingsPostingInterestPeriodType.QUATERLY,
-                Arrays.asList(new SavingsCompoundingInterestPeriodType[] { SavingsCompoundingInterestPeriodType.DAILY,
-                        SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY }));
+                Arrays.asList(new SavingsCompoundingInterestPeriodType[]{SavingsCompoundingInterestPeriodType.DAILY,
+            SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY}));
 
         postingtoCompoundMap.put(SavingsPostingInterestPeriodType.BIANNUAL,
-                Arrays.asList(new SavingsCompoundingInterestPeriodType[] { SavingsCompoundingInterestPeriodType.DAILY,
-                        SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY,
-                        SavingsCompoundingInterestPeriodType.BI_ANNUAL }));
+                Arrays.asList(new SavingsCompoundingInterestPeriodType[]{SavingsCompoundingInterestPeriodType.DAILY,
+            SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY,
+            SavingsCompoundingInterestPeriodType.BI_ANNUAL}));
 
         postingtoCompoundMap.put(SavingsPostingInterestPeriodType.ANNUAL,
-                Arrays.asList(new SavingsCompoundingInterestPeriodType[] { SavingsCompoundingInterestPeriodType.DAILY,
-                        SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY,
-                        SavingsCompoundingInterestPeriodType.BI_ANNUAL, SavingsCompoundingInterestPeriodType.ANNUAL }));
+                Arrays.asList(new SavingsCompoundingInterestPeriodType[]{SavingsCompoundingInterestPeriodType.DAILY,
+            SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY,
+            SavingsCompoundingInterestPeriodType.BI_ANNUAL, SavingsCompoundingInterestPeriodType.ANNUAL}));
 
         SavingsPostingInterestPeriodType savingsPostingInterestPeriodType = SavingsPostingInterestPeriodType
                 .fromInt(interestPostingPeriodType);
@@ -3918,4 +3928,51 @@ public class SavingsAccount extends AbstractPersistableCustom {
     public boolean isWithHoldTax() {
         return this.withHoldTax;
     }
+
+    private void payDepositFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user,
+            //final PaymentDetail paymentDetail, 
+            final boolean backdatedTxnsAllowedTill, final String refNo) {
+        for (SavingsAccountCharge charge : this.charges()) {
+
+            if (charge.isDepositFee() && charge.isActive()) {
+                final Charge chargeConf = charge.getCharge();
+                if (chargeConf != null) {
+                    final BigDecimal minCap = chargeConf.getMinCap();
+                    if (transactionAmount.compareTo(minCap) < 0) {
+                        LOG.info("No deposit fee to collect for charge: {}-{}-{}", chargeConf.getId(), transactionAmount, refNo);
+                        continue;
+                    }
+                }
+
+                /*
+                if (charge.getFreeWithdrawalCount() == null) {
+                  charge.setFreeWithdrawalCount(0);
+                }
+                if (charge.isEnablePaymentType() && charge.isEnableFreeWithdrawal()) { // discount transaction to
+                    // specific paymentType
+                    if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
+                        resetFreeChargeDaysCount(charge, transactionAmount, transactionDate, user, refNo);
+                    }
+                } else if (charge.isEnablePaymentType()) { // normal charge-transaction to specific paymentType
+                    if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
+                        charge.updateWithdralFeeAmount(transactionAmount);
+                        this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
+                                backdatedTxnsAllowedTill, refNo);
+                    }
+                } else if (!charge.isEnablePaymentType() && charge.isEnableFreeWithdrawal()) { // discount transaction
+                    // irrespective of
+                    // PaymentTypes.
+                    resetFreeChargeDaysCount(charge, transactionAmount, transactionDate, user, refNo);
+
+                } else { // normal-withdraw*/
+                charge.updateWithdralFeeAmount(transactionAmount);
+                this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user, backdatedTxnsAllowedTill,
+                        refNo);
+                //}
+
+            }
+
+        }
+    }
+
 }

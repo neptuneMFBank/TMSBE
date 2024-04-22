@@ -63,11 +63,10 @@ public class SelfDatatablesBusinessApiResource {
 
     @GET
     @Path("{datatableId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Single Data table", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String getDatatableManyEntry(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @PathParam("datatable") @Parameter(description = "datatable") final String datatable,
             @PathParam("apptableId") @Parameter(description = "apptableId") final Long apptableId,
@@ -77,11 +76,10 @@ public class SelfDatatablesBusinessApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Single Data table", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String getDatatable(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @PathParam("datatable") @Parameter(description = "datatable") final String datatable,
             @PathParam("apptableId") @Parameter(description = "apptableId") final Long apptableId, @Context final UriInfo uriInfo) {
@@ -90,8 +88,8 @@ public class SelfDatatablesBusinessApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String createDatatableEntry(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @PathParam("datatable") @Parameter(description = "datatable") final String datatable,
             @PathParam("apptableId") @Parameter(description = "apptableId") final Long apptableId,
@@ -101,10 +99,9 @@ public class SelfDatatablesBusinessApiResource {
     }
 
     @PUT
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    public String updateDatatableEntryOnetoOne(
-            @PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String updateDatatableEntryOnetoOne(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @PathParam("datatable") @Parameter(description = "datatable") final String datatable,
             @PathParam("apptableId") @Parameter(description = "apptableId") final Long apptableId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {

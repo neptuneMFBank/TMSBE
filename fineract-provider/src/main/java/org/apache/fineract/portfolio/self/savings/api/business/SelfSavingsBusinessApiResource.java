@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.portfolio.self.savings.api.business;
 
+import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.SAVINGS_PRODUCT_RECONCILE_ID_API;
+
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.HashMap;
@@ -42,7 +44,6 @@ import org.apache.fineract.portfolio.self.client.service.AppuserClientMapperRead
 import org.apache.fineract.portfolio.self.savings.data.SelfSavingsAccountConstants;
 import org.apache.fineract.portfolio.self.savings.data.SelfSavingsDataValidator;
 import org.apache.fineract.portfolio.self.savings.service.AppuserSavingsMapperReadService;
-import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.SAVINGS_PRODUCT_RECONCILE_ID_API;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -66,9 +67,12 @@ public class SelfSavingsBusinessApiResource {
     private final SelfSavingsDataValidator dataValidator;
 
     @Autowired
-    public SelfSavingsBusinessApiResource(final PlatformSecurityContext context, final DepositsBusinessApiResource depositsBusinessApiResource,
-            final SavingsAccountTransactionsBusinessApiResource savingsAccountTransactionsBusinessApiResource, final ApplicationContext applicationContext,
-            final SelfSavingsDataValidator dataValidator, final AppuserSavingsMapperReadService appuserSavingsMapperReadService, final AppuserClientMapperReadService appUserClientMapperReadService) {
+    public SelfSavingsBusinessApiResource(final PlatformSecurityContext context,
+            final DepositsBusinessApiResource depositsBusinessApiResource,
+            final SavingsAccountTransactionsBusinessApiResource savingsAccountTransactionsBusinessApiResource,
+            final ApplicationContext applicationContext, final SelfSavingsDataValidator dataValidator,
+            final AppuserSavingsMapperReadService appuserSavingsMapperReadService,
+            final AppuserClientMapperReadService appUserClientMapperReadService) {
         this.context = context;
         this.savingsAccountTransactionsBusinessApiResource = savingsAccountTransactionsBusinessApiResource;
         this.appuserSavingsMapperReadService = appuserSavingsMapperReadService;
@@ -81,8 +85,8 @@ public class SelfSavingsBusinessApiResource {
 
     @GET
     @Path("{savingsId}/transactions")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
             @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
@@ -104,8 +108,8 @@ public class SelfSavingsBusinessApiResource {
 
     @GET
     @Path("{clientId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAllAccounts(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo,
             @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
             @QueryParam("depositTypeId") @Parameter(description = "depositTypeId") final Integer depositTypeId,
@@ -125,15 +129,17 @@ public class SelfSavingsBusinessApiResource {
         final String accountNo = null;
         final String orderBy = "ms.id";
         final String sortOrder = "desc";
-        final Long excludeProductId = savingsProductId;//excludeProduct reconciliationSavings
+        final Long excludeProductId = savingsProductId;// excludeProduct reconciliationSavings
 
-        return this.depositsBusinessApiResource.retrieveAll(uriInfo, accountWithBalance, displayName, productId, excludeProductId, clientId, officeId, externalId, statusId, depositTypeId, accountNo, offset, limit, orderBy, sortOrder, startPeriod, endPeriod, locale, dateFormat);
+        return this.depositsBusinessApiResource.retrieveAll(uriInfo, accountWithBalance, displayName, productId, excludeProductId, clientId,
+                officeId, externalId, statusId, depositTypeId, accountNo, offset, limit, orderBy, sortOrder, startPeriod, endPeriod, locale,
+                dateFormat);
 
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String submitSavingsAccountApplication(@QueryParam("command") final String commandParam, @Context final UriInfo uriInfo,
             final String apiRequestBodyAsJson) {
         HashMap<String, Object> parameterMap = this.dataValidator.validateSavingsApplication(apiRequestBodyAsJson);

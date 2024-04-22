@@ -26,6 +26,7 @@ CREATE TABLE `m_inventory` (
   `price` decimal(19,6) DEFAULT NULL,
   `discount_rate` decimal(19,6) DEFAULT NULL,
   `sku_code` varchar(200) DEFAULT NULL,
+  `link` varchar(400) DEFAULT NULL,
   `createdby_id` bigint NOT NULL,
   `created_date` datetime NOT NULL,
   `lastmodifiedby_id` bigint NOT NULL,

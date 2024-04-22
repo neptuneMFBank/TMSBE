@@ -32,4 +32,9 @@ public class InventoryNotFound extends AbstractPlatformResourceNotFoundException
         super("error.msg.inventory.identifier.not.found", "inventory with identifier `" + resourceId + "` does not exist", resourceId,
                 e);
     }
+
+    public InventoryNotFound(final String link, EmptyResultDataAccessException e) {
+        super("error.msg.inventory.identifier.not.found", "inventory with link `" + link + "` does not exist",
+                e);
+    }
 }

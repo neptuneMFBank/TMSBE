@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
@@ -30,6 +31,9 @@ import org.apache.fineract.infrastructure.core.service.PaginationHelper;
 import org.apache.fineract.infrastructure.core.service.RoutingDataSource;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
+import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
+import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
+import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.portfolio.business.merchant.inventory.data.InventoryData;
 import org.apache.fineract.portfolio.business.merchant.inventory.exception.InventoryNotFound;
@@ -47,16 +51,22 @@ public class InventoryReadPlatformServiceImpl implements InventoryReadPlatformSe
     private final PaginationHelper paginationHelper;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
     private final ColumnValidator columnValidator;
+    private final DocumentReadPlatformService documentReadPlatformService;
+    private final PlatformSecurityContext context;
 
     @Autowired
     public InventoryReadPlatformServiceImpl(final JdbcTemplate jdbcTemplate,
             final RoutingDataSource dataSource, final PaginationHelper paginationHelper,
-            final DatabaseSpecificSQLGenerator sqlGenerator, final ColumnValidator columnValidator) {
+            final DatabaseSpecificSQLGenerator sqlGenerator, final ColumnValidator columnValidator,
+            final DocumentReadPlatformService documentReadPlatformService,
+            final PlatformSecurityContext context) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.inventoryMapper = new InventoryMapper();
         this.sqlGenerator = sqlGenerator;
         this.paginationHelper = paginationHelper;
         this.columnValidator = columnValidator;
+        this.documentReadPlatformService = documentReadPlatformService;
+        this.context = context;
     }
 
     @Override
@@ -66,6 +76,22 @@ public class InventoryReadPlatformServiceImpl implements InventoryReadPlatformSe
             return this.jdbcTemplate.queryForObject(sql, this.inventoryMapper, new Object[]{inventoryId});
         } catch (final EmptyResultDataAccessException e) {
             throw new InventoryNotFound(inventoryId, e);
+        }
+    }
+
+    @Override
+    public InventoryData retrieveOneByLink(String link) {
+        try {
+            final String sql = "select " + this.inventoryMapper.schema + " where mi.link = ? ";
+            InventoryData inventoryData = this.jdbcTemplate.queryForObject(sql, this.inventoryMapper, new Object[]{link});
+
+            this.context.authenticatedUser().validateHasReadPermission("DOCUMENT");
+            final Collection<DocumentData> documentDatas = this.documentReadPlatformService.retrieveAllDocuments("inventory", inventoryData.getId());
+
+            inventoryData.setDocumentDatas(documentDatas);
+            return inventoryData;
+        } catch (final EmptyResultDataAccessException e) {
+            throw new InventoryNotFound(link, e);
         }
     }
 
@@ -143,6 +169,7 @@ public class InventoryReadPlatformServiceImpl implements InventoryReadPlatformSe
             sql.append("mi.discount_rate as discountRate, ");
             sql.append("mi.client_id as clientId, ");
             sql.append("mi.sku_code as skuCode, ");
+            sql.append("mi.link as link, ");
             sql.append("mi.createdby_id as createdbyId, ");
             sql.append("mi.created_date as createdDate, ");
             sql.append("mi.lastmodifiedby_id as lastmodifiedbyId, ");
@@ -162,11 +189,12 @@ public class InventoryReadPlatformServiceImpl implements InventoryReadPlatformSe
             final String name = rs.getString("name");
             final String description = rs.getString("description");
             final String skuCode = rs.getString("skuCode");
+            final String link = rs.getString("link");
 
             final BigDecimal price = rs.getBigDecimal("price");
             final BigDecimal discountRate = rs.getBigDecimal("discountRate");
 
-            return InventoryData.instance(id, name, description, skuCode, price, discountRate);
+            return InventoryData.instance(id, name, description, skuCode, price, discountRate, link);
         }
     }
 

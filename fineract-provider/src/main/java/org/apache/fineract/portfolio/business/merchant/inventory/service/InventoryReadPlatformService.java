@@ -26,6 +26,8 @@ public interface InventoryReadPlatformService {
 
     InventoryData retrieveOne(Long inventoryId);
 
+    InventoryData retrieveOneByLink(String link);
+
     Page<InventoryData> retrieveAll(SearchParametersBusiness searchParameters);
 
 }

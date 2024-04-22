@@ -106,6 +106,19 @@ public class InventoryApiResource {
     }
 
     @GET
+    @Path("link/{link}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve an Inventory by link")
+    @ApiResponse(responseCode = "200", description = "OK")
+    public String retrieveInventoryByLink(@PathParam("link") final String link, @Context final UriInfo uriInfo) {
+        this.platformSecurityContext.authenticatedUser().validateHasReadPermission(InventoryValidator.RESOURCE_NAME);
+        InventoryData inventoryData = this.inventoryReadPlatformService.retrieveOneByLink(link);
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiJsonSerializer.serialize(settings, inventoryData);
+
+    }
+
+    @GET
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "List inventories")
     @ApiResponse(responseCode = "200", description = "OK")

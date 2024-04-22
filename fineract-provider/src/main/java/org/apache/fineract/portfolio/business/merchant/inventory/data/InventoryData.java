@@ -19,6 +19,8 @@
 package org.apache.fineract.portfolio.business.merchant.inventory.data;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
 
 @SuppressWarnings("unused")
 public class InventoryData {
@@ -29,19 +31,32 @@ public class InventoryData {
     private final String skuCode;
     private final BigDecimal price;
     private final BigDecimal discountRate;
+    private final String link;
+    private Collection<DocumentData> documentDatas;
 
     private InventoryData(final Long id, final String name, final String description, final String skuCode, final BigDecimal price,
-            final BigDecimal discountRate) {
+            final BigDecimal discountRate, final String link) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.skuCode = skuCode;
         this.price = price;
         this.discountRate = discountRate;
+        this.link = link;
+        this.documentDatas = null;
     }
 
     public static InventoryData instance(final Long id, final String name, final String description, final String skuCode, final BigDecimal price,
-            final BigDecimal discountRate) {
-        return new InventoryData(id, name, description, skuCode, price, discountRate);
+            final BigDecimal discountRate, final String link) {
+        return new InventoryData(id, name, description, skuCode, price, discountRate, link);
     }
+
+    public void setDocumentDatas(Collection<DocumentData> documentDatas) {
+        this.documentDatas = documentDatas;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
 }

@@ -31,6 +31,7 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableCustom;
 import org.apache.fineract.portfolio.business.merchant.inventory.data.InventoryValidator;
 import org.apache.fineract.portfolio.client.domain.Client;
+import org.apache.fineract.simplifytech.data.GeneralConstants;
 
 @Entity
 @Table(name = "m_inventory")
@@ -51,6 +52,9 @@ public class Inventory extends AbstractAuditableCustom {
     @Column(name = "sku_code", nullable = false)
     private String skuCode;
 
+    @Column(name = "link", nullable = false)
+    private String link;
+
     @ManyToOne(optional = true)
     @JoinColumn(name = "client_id", nullable = true)
     private Client client;
@@ -59,13 +63,14 @@ public class Inventory extends AbstractAuditableCustom {
     }
 
     private Inventory(final String name, final String description, final BigDecimal price,
-            final BigDecimal discountRate, final String skuCode, final Client client) {
+            final BigDecimal discountRate, final String skuCode, final String link, final Client client) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.discountRate = discountRate;
         this.skuCode = skuCode;
         this.client = client;
+        this.link = link;
     }
 
     public static Inventory instance(final JsonCommand command, Client client) {
@@ -78,7 +83,8 @@ public class Inventory extends AbstractAuditableCustom {
         if (command.parameterExists(InventoryValidator.discountRateParamName)) {
             discountRate = command.bigDecimalValueOfParameterNamed(InventoryValidator.discountRateParamName);
         }
-        return new Inventory(name, description, price, discountRate, skuCode, client);
+        String link = GeneralConstants.generateUniqueId();
+        return new Inventory(name, description, price, discountRate, skuCode, link, client);
     }
 
     public Map<String, Object> update(JsonCommand command) {
@@ -116,6 +122,5 @@ public class Inventory extends AbstractAuditableCustom {
     public void setClient(Client client) {
         this.client = client;
     }
-    
-    
+
 }

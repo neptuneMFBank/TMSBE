@@ -85,6 +85,7 @@ public class PaymentTypeGridApiResource {
         if (!CollectionUtils.isEmpty(paymentTypes)) {
             for (PaymentTypeData paymentType : paymentTypes) {
                 final PaymentTypeGridData paymentTypeGridData = this.readPlatformService.retrievePaymentTypeGrids(paymentType.getId());
+                paymentTypeGridData.setGridJson(null);
                 paymentType.setPaymentTypeGridData(paymentTypeGridData);
             }
         }

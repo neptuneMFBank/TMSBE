@@ -61,7 +61,6 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
                 final String gridJson = paymentTypeGridData.getGridJson();
                 JsonElement gridJsonElement = fromJsonHelper.parse(gridJson);
                 paymentTypeGridData.setGridJsonObject(gridJsonElement);
-                paymentTypeGridData.setGridJson(null);
             }
             return paymentTypeGridData;
         } catch (DataAccessException e) {

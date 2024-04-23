@@ -324,9 +324,6 @@ public class GeneralConstants {
                 final PaymentType paymentType = paymentDetail.getPaymentType();
                 final Long paymentTypeId = paymentType.getId();
                 final PaymentTypeGridData paymentTypeGridData = paymentTypeGridReadPlatformService.retrievePaymentTypeGrids(paymentTypeId);
-                log.info("paymentExtensionGridCharge paymentTypeId: {}", paymentTypeId);
-                log.info("paymentExtensionGridCharge paymentTypeId: {}", BooleanUtils.isFalse(paymentTypeGridData.getIsCommission()));
-                log.info("paymentExtensionGridCharge paymentTypeId: {}", BooleanUtils.isTrue(paymentTypeGridData.getIsGrid()));
                 if (BooleanUtils.isFalse(paymentTypeGridData.getIsCommission())
                         && BooleanUtils.isTrue(paymentTypeGridData.getIsGrid())
                         && StringUtils.isNotBlank(paymentTypeGridData.getGridJson())) {

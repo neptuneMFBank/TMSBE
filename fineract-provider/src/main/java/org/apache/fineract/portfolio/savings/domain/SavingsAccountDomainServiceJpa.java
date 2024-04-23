@@ -121,6 +121,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
                 paymentDetail, DateUtils.getLocalDateTimeOfSystem(), user, accountType);
         UUID refNo = UUID.randomUUID();
         final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(this.fromJsonHelper, this.paymentTypeGridReadPlatformService, paymentDetail, transactionAmount);
+        log.info("chargeAmount: {}", chargeAmount);
         if (chargeAmount != null) {
             transactionDTO.setChargeAmount(chargeAmount);
         }

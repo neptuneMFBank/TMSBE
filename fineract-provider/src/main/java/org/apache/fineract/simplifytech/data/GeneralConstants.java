@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -55,7 +56,6 @@ import org.apache.fineract.portfolio.paymenttype.data.business.PaymentTypeGridJs
 import org.apache.fineract.portfolio.paymenttype.domain.PaymentType;
 import org.apache.fineract.portfolio.paymenttype.service.business.PaymentTypeGridReadPlatformService;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
-import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -317,7 +317,7 @@ public class GeneralConstants {
         }
     }
 
-    public static void paymentExtensionGridCharge(FromJsonHelper fromJsonHelper, PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService, final PaymentDetail paymentDetail, final BigDecimal transactionAmount, final SavingsAccountTransactionDTO transactionDTO) {
+    public static BigDecimal paymentExtensionGridCharge(FromJsonHelper fromJsonHelper, PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService, final PaymentDetail paymentDetail, final BigDecimal transactionAmount) {
         try {
             if (paymentDetail != null && paymentDetail.getPaymentType() != null) {
                 //Extending to paymentTypeGrid
@@ -329,14 +329,17 @@ public class GeneralConstants {
                         && StringUtils.isNotBlank(paymentTypeGridData.getGridJson())) {
                     final Type listType = new TypeToken<List<PaymentTypeGridJsonData>>() {
                     }.getType();
-                    final List<PaymentTypeGridJsonData> paymentTypeGridJsonData = fromJsonHelper.fromJson(paymentTypeGridData.getGridJson(), listType);
+                    final String json = StringUtils.trim(paymentTypeGridData.getGridJson());
+                    log.info("paymentExtensionGridCharge raw info: {}", json);
+                    final List<PaymentTypeGridJsonData> paymentTypeGridJsonData = fromJsonHelper.fromJson(json, listType);
                     if (!CollectionUtils.isEmpty(paymentTypeGridJsonData)) {
+                        log.info("paymentExtensionGridCharge json info: {}", Arrays.toString(paymentTypeGridJsonData.toArray()));
                         final BigDecimal amount = paymentTypeGridJsonData.stream()
                                 .filter(predicate -> GeneralConstants.isWithinRange(transactionAmount, predicate.getMinAmount(),
                                 predicate.getMaxAmount()))
                                 .map(PaymentTypeGridJsonData::getAmount).findFirst().orElse(null);
                         if (amount != null) {
-                            transactionDTO.setChargeAmount(amount);
+                            return amount;
                         }
                     }
                 }
@@ -344,5 +347,6 @@ public class GeneralConstants {
         } catch (Exception e) {
             log.error("paymentTypeGridData Error: {}", e);
         }
+        return null;
     }
 }

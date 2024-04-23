@@ -1340,7 +1340,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
                     }
                 } else if (charge.isEnablePaymentType()) { // normal charge-transaction to specific paymentType
                     if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
-                        if (chargeTransactionAmount != null || chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
+                        if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
                             charge.updateFlatWithdrawalFee(chargeTransactionAmount);
                         } else {
                             charge.updateWithdralFeeAmount(transactionAmount);

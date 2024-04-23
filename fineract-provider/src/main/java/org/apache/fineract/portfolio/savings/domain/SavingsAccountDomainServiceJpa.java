@@ -120,7 +120,10 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         final SavingsAccountTransactionDTO transactionDTO = new SavingsAccountTransactionDTO(fmt, transactionDate, transactionAmount,
                 paymentDetail, DateUtils.getLocalDateTimeOfSystem(), user, accountType);
         UUID refNo = UUID.randomUUID();
-        GeneralConstants.paymentExtensionGridCharge(this.fromJsonHelper, this.paymentTypeGridReadPlatformService, paymentDetail, transactionAmount, transactionDTO);
+        final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(this.fromJsonHelper, this.paymentTypeGridReadPlatformService, paymentDetail, transactionAmount);
+        if (chargeAmount != null) {
+            transactionDTO.setChargeAmount(chargeAmount);
+        }
         final SavingsAccountTransaction withdrawal = account.withdraw(transactionDTO, transactionBooleanValues.isApplyWithdrawFee(),
                 backdatedTxnsAllowedTill, relaxingDaysConfigForPivotDate, refNo.toString());
         final MathContext mc = MathContext.DECIMAL64;

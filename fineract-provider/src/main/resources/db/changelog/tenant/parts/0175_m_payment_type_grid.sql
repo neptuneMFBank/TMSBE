@@ -21,6 +21,7 @@ CREATE TABLE `m_payment_type_grid` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `is_grid` bit(1) NOT NULL DEFAULT b'0',
+  `is_commission` bit(1) NOT NULL DEFAULT b'0',
   `grid_json` longtext DEFAULT NULL COMMENT '[{minAmount,maxAmount,amount}]',
   `payment_type_id` int(11) NOT NULL,
   `calculation_type` smallint(6) DEFAULT NULL,

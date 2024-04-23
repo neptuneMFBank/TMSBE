@@ -71,6 +71,10 @@ public class FromJsonHelper {
         return this.gsonConverter.fromJson(json, classOfT);
     }
 
+    public <T> T fromJson(final String json, final Type typeOfT) {
+        return this.gsonConverter.fromJson(json, typeOfT);
+    }
+
     public String toJson(final JsonElement jsonElement) {
         return this.gsonConverter.toJson(jsonElement);
     }
@@ -118,10 +122,9 @@ public class FromJsonHelper {
     }
 
     /**
-     * @param parentPropertyName
-     *            The full json path to this property,the value is appended to the parameter name while generating an
-     *            error message <br>
-     *            Ex: property "name" in Object "person" would be named as "person.name"
+     * @param parentPropertyName The full json path to this property,the value
+     * is appended to the parameter name while generating an error message <br>
+     * Ex: property "name" in Object "person" would be named as "person.name"
      * @param object
      * @param supportedParams
      */

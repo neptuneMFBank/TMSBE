@@ -34,6 +34,7 @@ public class PaymentTypeGridData implements Serializable {
     private String gridJson;
     private JsonElement gridJsonObject;
     private Boolean isGrid;
+    private Boolean isCommission;
     private EnumOptionData paymentCalculationType;
     private BigDecimal amount;
     private BigDecimal percent;
@@ -42,19 +43,21 @@ public class PaymentTypeGridData implements Serializable {
             final String name,
             final String gridJson,
             final Boolean isGrid,
+            final Boolean isCommission,
             final EnumOptionData paymentCalculationType,
             final BigDecimal amount,
             final BigDecimal percent) {
-        return new PaymentTypeGridData(id, paymentType, name, gridJson, isGrid, paymentCalculationType, amount, percent);
+        return new PaymentTypeGridData(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType, amount, percent);
 
     }
 
-    public PaymentTypeGridData(final Long id, PaymentTypeData paymentType, String name, String gridJson, Boolean isGrid, EnumOptionData paymentCalculationType, BigDecimal amount, BigDecimal percent) {
+    public PaymentTypeGridData(final Long id, PaymentTypeData paymentType, String name, String gridJson, Boolean isGrid, Boolean isCommission, EnumOptionData paymentCalculationType, BigDecimal amount, BigDecimal percent) {
         this.id = id;
         this.paymentType = paymentType;
         this.name = name;
         this.gridJson = gridJson;
         this.isGrid = isGrid;
+        this.isCommission = isCommission;
         this.paymentCalculationType = paymentCalculationType;
         this.amount = amount;
         this.percent = percent;

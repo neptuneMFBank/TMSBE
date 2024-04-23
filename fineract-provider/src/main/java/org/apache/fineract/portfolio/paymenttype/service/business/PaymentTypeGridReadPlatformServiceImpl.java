@@ -72,7 +72,7 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
     private static final class PaymentTypeGridMapper implements RowMapper<PaymentTypeGridData> {
 
         public String schema() {
-            return " pt.id, pt.name, pt.is_grid as isGrid, pt.grid_json as gridJson, pt.calculation_type as calculationType, pt.amount, pt.percent, pt.payment_type_id as paymentTypeId, mpt.value as paymentTypeName from m_payment_type_grid pt left join m_payment_type mpt on mpt.id = pt.payment_type_id ";
+            return " pt.id, pt.name, pt.is_commission as isCommission, pt.is_grid as isGrid, pt.grid_json as gridJson, pt.calculation_type as calculationType, pt.amount, pt.percent, pt.payment_type_id as paymentTypeId, mpt.value as paymentTypeName from m_payment_type_grid pt left join m_payment_type mpt on mpt.id = pt.payment_type_id ";
         }
 
         @Override
@@ -82,6 +82,7 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
             final String name = rs.getString("name");
             final String gridJson = rs.getString("gridJson");
             final boolean isGrid = rs.getBoolean("isGrid");
+            final boolean isCommission = rs.getBoolean("isCommission");
             final BigDecimal amount = rs.getBigDecimal("amount");
             final BigDecimal percent = rs.getBigDecimal("percent");
 
@@ -98,7 +99,7 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
                 paymentCalculationType = PaymentTypeEnumerations.paymentCalculationType(calculationType);
             }
 
-            return PaymentTypeGridData.instance(id, paymentType, name, gridJson, isGrid, paymentCalculationType, amount, percent);
+            return PaymentTypeGridData.instance(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType, amount, percent);
         }
 
     }

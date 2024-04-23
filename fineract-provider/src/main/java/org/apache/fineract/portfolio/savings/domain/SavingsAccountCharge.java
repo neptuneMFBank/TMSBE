@@ -795,6 +795,10 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
         return amountOutstanding = calculateWithdralFeeAmount(transactionAmount);
     }
 
+    public BigDecimal updateFlatWithdrawalFee(final BigDecimal chargeTransactionAmount) {
+        return amountOutstanding = chargeTransactionAmount;
+    }
+
     public BigDecimal updateNoWithdrawalFee() {
         return amountOutstanding = BigDecimal.ZERO;
     }

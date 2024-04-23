@@ -32,11 +32,12 @@ public final class PaymentTypeGridApiResourceConstants {
     public static final String NAME = "name";
     public static final String GRID_JSON = "gridJsonObject";
     public static final String ISGRID = "isGrid";
+    public static final String ISCOMMISION = "isCommission";
     public static final String PAYMENT_TYPE = "paymentType";
-    public static final String COMMISION_TYPE = "commissionType";
+    public static final String PAYMENTCALCULATIONTYPE = "paymentCalculationType";
     public static final String AMOUNT = "amount";
     public static final String PERCENT = "percent";
 
     static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ID, NAME, GRID_JSON, ISGRID,
-            PAYMENT_TYPE, COMMISION_TYPE, AMOUNT, PERCENT));
+            PAYMENT_TYPE, PAYMENTCALCULATIONTYPE, AMOUNT, PERCENT, ISCOMMISION));
 }

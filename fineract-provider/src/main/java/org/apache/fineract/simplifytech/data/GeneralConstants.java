@@ -21,9 +21,11 @@ package org.apache.fineract.simplifytech.data;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -34,18 +36,26 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.FuzzyScore;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.portfolio.charge.domain.Charge;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterest;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestConfig;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestRepositoryWrapper;
+import org.apache.fineract.portfolio.paymentdetail.domain.PaymentDetail;
+import org.apache.fineract.portfolio.paymenttype.data.business.PaymentTypeGridData;
+import org.apache.fineract.portfolio.paymenttype.data.business.PaymentTypeGridJsonData;
+import org.apache.fineract.portfolio.paymenttype.domain.PaymentType;
+import org.apache.fineract.portfolio.paymenttype.service.business.PaymentTypeGridReadPlatformService;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
+import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -116,8 +126,8 @@ public class GeneralConstants {
     }
 
     /**
-     * TODO: Need a better implementation with guaranteed uniqueness (but not a long UUID)...maybe something tied to
-     * system clock..
+     * TODO: Need a better implementation with guaranteed uniqueness (but not a
+     * long UUID)...maybe something tied to system clock..
      *
      * @param context
      * @return
@@ -130,22 +140,22 @@ public class GeneralConstants {
     }
 
     public static void main(String[] args) {
-        String[][] inputStrings = new String[][] {
-                // Matches abc at start of term
-                { "Asiata Omodeleola Babalola", "Asiata Omodeleola Babalola" }, // {"Thompson Olakunle Rasak", "Rasak
-                // Olakunle Thompson"},
-                // // ABC in different case than term
-                // {"cecilianwebonyi", "testname2"},
-                // // Matches abc at end of term
-                // {"qwreweqwqw", "testname3"},
-                // // Matches abc in middle
-                // {"dedede", "testname4"},
-                // // Matches abc but not continuous.
-                // {"abxycz", "abc"}, {"axbycz", "abc"},
-                // // Reverse order of abc
-                // {"cbaxyz", "abc"},
-                // // Matches abc but different order.
-                // {"cabxyz", "abc"}
+        String[][] inputStrings = new String[][]{
+            // Matches abc at start of term
+            {"Asiata Omodeleola Babalola", "Asiata Omodeleola Babalola"}, // {"Thompson Olakunle Rasak", "Rasak
+        // Olakunle Thompson"},
+        // // ABC in different case than term
+        // {"cecilianwebonyi", "testname2"},
+        // // Matches abc at end of term
+        // {"qwreweqwqw", "testname3"},
+        // // Matches abc in middle
+        // {"dedede", "testname4"},
+        // // Matches abc but not continuous.
+        // {"abxycz", "abc"}, {"axbycz", "abc"},
+        // // Reverse order of abc
+        // {"cbaxyz", "abc"},
+        // // Matches abc but different order.
+        // {"cabxyz", "abc"}
         };
         for (String[] input : inputStrings) {
             String term = input[0];
@@ -268,7 +278,7 @@ public class GeneralConstants {
             if (!CollectionUtils.isEmpty(loanProductInterestConfig)) {
                 final BigDecimal interestRatePerPeriodCheck = loanProductInterestConfig.stream()
                         .filter(predicate -> GeneralConstants.isWithinRange(new BigDecimal(loanTermFrequency), predicate.getMinTenor(),
-                                predicate.getMaxTenor()))
+                        predicate.getMaxTenor()))
                         .map(LoanProductInterestConfig::getNominalInterestRatePerPeriod).findFirst().orElse(null);
                 if (interestRatePerPeriodCheck != null) {
                     interestRatePerPeriod = interestRatePerPeriodCheck;
@@ -304,6 +314,35 @@ public class GeneralConstants {
         } else {
             // Handle the case where the original string is null or its length is less than or equal to the number of characters to remove
             return originalString;
+        }
+    }
+
+    public static void paymentExtensionGridCharge(FromJsonHelper fromJsonHelper, PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService, final PaymentDetail paymentDetail, final BigDecimal transactionAmount, final SavingsAccountTransactionDTO transactionDTO) {
+        try {
+            if (paymentDetail != null && paymentDetail.getPaymentType() != null) {
+                //Extending to paymentTypeGrid
+                final PaymentType paymentType = paymentDetail.getPaymentType();
+                final Long paymentTypeId = paymentType.getId();
+                final PaymentTypeGridData paymentTypeGridData = paymentTypeGridReadPlatformService.retrievePaymentTypeGrids(paymentTypeId);
+                if (BooleanUtils.isFalse(paymentTypeGridData.getIsCommission())
+                        && BooleanUtils.isTrue(paymentTypeGridData.getIsGrid())
+                        && StringUtils.isNotBlank(paymentTypeGridData.getGridJson())) {
+                    final Type listType = new TypeToken<List<PaymentTypeGridJsonData>>() {
+                    }.getType();
+                    final List<PaymentTypeGridJsonData> paymentTypeGridJsonData = fromJsonHelper.fromJson(paymentTypeGridData.getGridJson(), listType);
+                    if (!CollectionUtils.isEmpty(paymentTypeGridJsonData)) {
+                        final BigDecimal amount = paymentTypeGridJsonData.stream()
+                                .filter(predicate -> GeneralConstants.isWithinRange(transactionAmount, predicate.getMinAmount(),
+                                predicate.getMaxAmount()))
+                                .map(PaymentTypeGridJsonData::getAmount).findFirst().orElse(null);
+                        if (amount != null) {
+                            transactionDTO.setChargeAmount(amount);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("paymentTypeGridData Error: {}", e);
         }
     }
 }

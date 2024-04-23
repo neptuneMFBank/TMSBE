@@ -44,6 +44,9 @@ public class PaymentTypeGrid extends AbstractAuditableWithUTCDateTimeCustom {
     @Column(name = "is_grid")
     private Boolean isGrid;
 
+    @Column(name = "is_commission")
+    private Boolean isCommission;
+
     @Column(name = "calculation_type", nullable = true)
     private Integer paymentCalculationType;
 

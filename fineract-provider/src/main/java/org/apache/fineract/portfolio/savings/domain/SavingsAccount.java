@@ -1286,7 +1286,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
         if (applyWithdrawFee) {
             // auto pay withdrawal fee
             payWithdrawalFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
-                    transactionDTO.getPaymentDetail(), backdatedTxnsAllowedTill, refNo);
+                    transactionDTO.getPaymentDetail(), backdatedTxnsAllowedTill, refNo, transactionDTO.getChargeAmount());
         }
 
         final Money transactionAmountMoney = Money.of(this.currency, transactionDTO.getTransactionAmount());
@@ -1324,7 +1324,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
     }
 
     private void payWithdrawalFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user,
-            final PaymentDetail paymentDetail, final boolean backdatedTxnsAllowedTill, final String refNo) {
+            final PaymentDetail paymentDetail, final boolean backdatedTxnsAllowedTill, final String refNo, final BigDecimal chargeTransactionAmount) {
         for (SavingsAccountCharge charge : this.charges()) {
 
             if (charge.isWithdrawalFee() && charge.isActive()) {
@@ -1340,7 +1340,11 @@ public class SavingsAccount extends AbstractPersistableCustom {
                     }
                 } else if (charge.isEnablePaymentType()) { // normal charge-transaction to specific paymentType
                     if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
-                        charge.updateWithdralFeeAmount(transactionAmount);
+                        if (chargeTransactionAmount != null || chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
+                            charge.updateFlatWithdrawalFee(chargeTransactionAmount);
+                        } else {
+                            charge.updateWithdralFeeAmount(transactionAmount);
+                        }
                         this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
                                 backdatedTxnsAllowedTill, refNo);
                     }

@@ -35,6 +35,7 @@ public class SavingsAccountTransactionDTO {
     private final Long savingsAccountId;
     private final AppUser appUser;
     private final Integer depositAccountType;
+    private BigDecimal chargeAmount;
 
     public SavingsAccountTransactionDTO(final DateTimeFormatter formatter, final LocalDate transactionDate,
             final BigDecimal transactionAmount, final PaymentDetail paymentDetail, final LocalDateTime createdDate, final AppUser appUser,
@@ -102,6 +103,14 @@ public class SavingsAccountTransactionDTO {
 
     public Integer getAccountType() {
         return this.depositAccountType;
+    }
+
+    public void setChargeAmount(BigDecimal chargeAmount) {
+        this.chargeAmount = chargeAmount;
+    }
+
+    public BigDecimal getChargeAmount() {
+        return chargeAmount;
     }
 
 }

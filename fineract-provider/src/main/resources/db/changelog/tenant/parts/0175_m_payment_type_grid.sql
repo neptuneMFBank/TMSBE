@@ -32,7 +32,6 @@ CREATE TABLE `m_payment_type_grid` (
   `last_modified_by` BIGINT NOT NULL,
   `last_modified_on_utc` DATETIME NULL,
   UNIQUE KEY `payment_type_grid_name_UNIQUE` (`name`),
-  UNIQUE KEY `payment_type_grid_payment_type_id_UNIQUE` (`payment_type_id`),
   CONSTRAINT `payment_type_grid_FK_payment_type_id` FOREIGN KEY (`payment_type_id`) REFERENCES m_payment_type(`id`),
   CONSTRAINT `payment_type_grid_FK_created_by` FOREIGN KEY (`created_by`) REFERENCES `m_appuser` (`id`),
   CONSTRAINT `payment_type_grid_FK_last_modified_by` FOREIGN KEY (`last_modified_by`) REFERENCES `m_appuser` (`id`)

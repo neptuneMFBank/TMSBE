@@ -20,6 +20,7 @@ package org.apache.fineract.simplifytech.data;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -31,6 +32,7 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -323,23 +325,29 @@ public class GeneralConstants {
                 //Extending to paymentTypeGrid
                 final PaymentType paymentType = paymentDetail.getPaymentType();
                 final Long paymentTypeId = paymentType.getId();
-                final PaymentTypeGridData paymentTypeGridData = paymentTypeGridReadPlatformService.retrievePaymentTypeGrids(paymentTypeId);
-                if (BooleanUtils.isFalse(paymentTypeGridData.getIsCommission())
-                        && BooleanUtils.isTrue(paymentTypeGridData.getIsGrid())
-                        && StringUtils.isNotBlank(paymentTypeGridData.getGridJson())) {
-                    final Type listType = new TypeToken<List<PaymentTypeGridJsonData>>() {
-                    }.getType();
-                    final String json = StringUtils.trim(paymentTypeGridData.getGridJson());
-                    log.info("paymentExtensionGridCharge raw info: {}", json);
-                    final List<PaymentTypeGridJsonData> paymentTypeGridJsonData = fromJsonHelper.fromJson(json, listType);
-                    if (!CollectionUtils.isEmpty(paymentTypeGridJsonData)) {
-                        log.info("paymentExtensionGridCharge json info: {}", Arrays.toString(paymentTypeGridJsonData.toArray()));
-                        final BigDecimal amount = paymentTypeGridJsonData.stream()
-                                .filter(predicate -> GeneralConstants.isWithinRange(transactionAmount, predicate.getMinAmount(),
-                                predicate.getMaxAmount()))
-                                .map(PaymentTypeGridJsonData::getAmount).findFirst().orElse(null);
-                        if (amount != null) {
-                            return amount;
+                final Collection<PaymentTypeGridData> paymentTypeGridData = paymentTypeGridReadPlatformService.retrievePaymentTypeGrids(paymentTypeId);
+                if (!CollectionUtils.isEmpty(paymentTypeGridData)) {
+                    final PaymentTypeGridData paymentTypeGridData1 = paymentTypeGridData.stream().findFirst().orElse(null);
+                    if (paymentTypeGridData1 != null) {
+                        if (BooleanUtils.isFalse(paymentTypeGridData1.getIsCommission())
+                                && BooleanUtils.isTrue(paymentTypeGridData1.getIsGrid())
+                                && paymentTypeGridData1.getGridJsonObject() != null) {
+                            final JsonElement je = paymentTypeGridData1.getGridJsonObject();
+                            final Type listType = new TypeToken<List<PaymentTypeGridJsonData>>() {
+                            }.getType();
+                            final String json = fromJsonHelper.toJson(je);
+                            log.info("paymentExtensionGridCharge raw info: {}", json);
+                            final List<PaymentTypeGridJsonData> paymentTypeGridJsonData = fromJsonHelper.fromJson(json, listType);
+                            if (!CollectionUtils.isEmpty(paymentTypeGridJsonData)) {
+                                log.info("paymentExtensionGridCharge json info: {}", Arrays.toString(paymentTypeGridJsonData.toArray()));
+                                final BigDecimal amount = paymentTypeGridJsonData.stream()
+                                        .filter(predicate -> isWithinRange(transactionAmount, predicate.getMinAmount(),
+                                        predicate.getMaxAmount()))
+                                        .map(PaymentTypeGridJsonData::getAmount).findFirst().orElse(null);
+                                if (amount != null) {
+                                    return amount;
+                                }
+                            }
                         }
                     }
                 }

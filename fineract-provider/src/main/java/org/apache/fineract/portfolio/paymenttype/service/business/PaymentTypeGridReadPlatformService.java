@@ -18,10 +18,11 @@
  */
 package org.apache.fineract.portfolio.paymenttype.service.business;
 
+import java.util.Collection;
 import org.apache.fineract.portfolio.paymenttype.data.business.PaymentTypeGridData;
 
 public interface PaymentTypeGridReadPlatformService {
 
-    PaymentTypeGridData retrievePaymentTypeGrids(Long paymentTypeId);
+    Collection<PaymentTypeGridData> retrievePaymentTypeGrids(Long paymentTypeId);
 
 }

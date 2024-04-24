@@ -22,6 +22,7 @@ import com.google.gson.JsonElement;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
@@ -34,6 +35,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridReadPlatformService {
@@ -50,17 +52,22 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
     }
 
     @Override
-    public PaymentTypeGridData retrievePaymentTypeGrids(Long paymentTypeId) {
+    public Collection<PaymentTypeGridData> retrievePaymentTypeGrids(Long paymentTypeId) {
         // TODO Auto-generated method stub
         this.context.authenticatedUser();
         try {
             final PaymentTypeGridMapper ptm = new PaymentTypeGridMapper();
             final String sql = "select " + ptm.schema() + " where pt.payment_type_id = ? ";
-            final PaymentTypeGridData paymentTypeGridData = this.jdbcTemplate.queryForObject(sql, ptm, new Object[]{paymentTypeId}); // NOSONAR
-            if (paymentTypeGridData != null && StringUtils.isNotBlank(paymentTypeGridData.getGridJson())) {
-                final String gridJson = paymentTypeGridData.getGridJson();
-                JsonElement gridJsonElement = fromJsonHelper.parse(gridJson);
-                paymentTypeGridData.setGridJsonObject(gridJsonElement);
+            final Collection<PaymentTypeGridData> paymentTypeGridData = this.jdbcTemplate.query(sql, ptm, new Object[]{paymentTypeId}); // NOSONAR
+            if (!CollectionUtils.isEmpty(paymentTypeGridData)) {
+                paymentTypeGridData.forEach(obj -> {
+                    if (StringUtils.isNotBlank(obj.getGridJson())) {
+                        final String gridJson = obj.getGridJson();
+                        JsonElement gridJsonElement = fromJsonHelper.parse(gridJson);
+                        obj.setGridJsonObject(gridJsonElement);
+                        obj.setGridJson(null);
+                    }
+                });
             }
             return paymentTypeGridData;
         } catch (DataAccessException e) {

@@ -19,6 +19,7 @@
 package org.apache.fineract.portfolio.paymenttype.data;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Objects;
 import org.apache.fineract.portfolio.paymenttype.data.business.PaymentTypeGridData;
 
@@ -34,7 +35,7 @@ public class PaymentTypeData implements Serializable {
     private Boolean isCashPayment;
     @SuppressWarnings("unused")
     private Long position;
-    private PaymentTypeGridData paymentTypeGridData;
+    private Collection<PaymentTypeGridData> paymentTypeGridData;
 
     public PaymentTypeData(final Long id, final String name, final String description, final Boolean isCashPayment, final Long position) {
         this.id = id;
@@ -85,7 +86,7 @@ public class PaymentTypeData implements Serializable {
         return Objects.hash(id, name, description, isCashPayment, position);
     }
 
-    public void setPaymentTypeGridData(PaymentTypeGridData paymentTypeGridData) {
+    public void setPaymentTypeGridData(Collection<PaymentTypeGridData> paymentTypeGridData) {
         this.paymentTypeGridData = paymentTypeGridData;
     }
 

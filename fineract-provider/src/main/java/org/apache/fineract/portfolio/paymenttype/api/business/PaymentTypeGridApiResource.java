@@ -84,9 +84,8 @@ public class PaymentTypeGridApiResource {
         final Collection<PaymentTypeData> paymentTypes = this.paymentTypeReadPlatformService.retrieveAllPaymentTypes();
         if (!CollectionUtils.isEmpty(paymentTypes)) {
             for (PaymentTypeData paymentType : paymentTypes) {
-                final PaymentTypeGridData paymentTypeGridData = this.readPlatformService.retrievePaymentTypeGrids(paymentType.getId());
-                if (paymentTypeGridData != null) {
-                    paymentTypeGridData.setGridJson(null);
+                final Collection<PaymentTypeGridData> paymentTypeGridData = this.readPlatformService.retrievePaymentTypeGrids(paymentType.getId());
+                if (!CollectionUtils.isEmpty(paymentTypeGridData)) {
                     paymentType.setPaymentTypeGridData(paymentTypeGridData);
                 }
             }
@@ -107,7 +106,7 @@ public class PaymentTypeGridApiResource {
     })
     public String getAllPaymentTypeGrids(@PathParam("paymentTypeId") @Parameter(description = "paymentTypeId") final Long paymentTypeId, @Context final UriInfo uriInfo) {
         this.securityContext.authenticatedUser().validateHasReadPermission(PaymentTypeApiResourceConstants.resourceNameForPermissions);
-        final PaymentTypeGridData paymentTypeGridData = this.readPlatformService.retrievePaymentTypeGrids(paymentTypeId);
+        final Collection<PaymentTypeGridData> paymentTypeGridData = this.readPlatformService.retrievePaymentTypeGrids(paymentTypeId);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.jsonSerializer.serialize(settings, paymentTypeGridData, PaymentTypeGridApiResourceConstants.RESPONSE_DATA_PARAMETERS);
     }

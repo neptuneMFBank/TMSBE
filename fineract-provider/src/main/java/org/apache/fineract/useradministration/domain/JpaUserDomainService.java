@@ -55,7 +55,9 @@ public class JpaUserDomainService implements UserDomainService {
         final String unencodedPassword = appUser.getPassword();
 
         final String encodePassword = this.applicationPasswordEncoder.encode(appUser);
-        appUser.updatePassword(encodePassword);
+        final boolean firstTimeLoginRemaining = true;
+        appUser.updatePassword(encodePassword, firstTimeLoginRemaining);
+        //appUser.updatePassword(encodePassword);
 
         this.userRepository.saveAndFlush(appUser);
 

@@ -160,7 +160,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         List<Long> selfActivateClient = this.jdbcTemplate.queryForList(sqlFinder, Long.class);
         log.info("queueSelfClientActivate start");
         for (Long selfActivateClientId : selfActivateClient) {
-            String clientUpdateSql = "UPDATE m_client SET status_enum=? WHERE id=?";
+            String clientUpdateSql = "UPDATE m_client SET status_enum=?, activation_date=CURRENT_TIMESTAMP WHERE id=?";
             jdbcTemplate.update(clientUpdateSql, ClientStatus.ACTIVE.getValue(), selfActivateClientId);
         }
         log.info("{}: Records affected by queueSelfClientActivate: {}", ThreadLocalContextUtil.getTenant().getName(),

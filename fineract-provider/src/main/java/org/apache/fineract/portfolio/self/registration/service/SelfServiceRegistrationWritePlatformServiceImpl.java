@@ -226,7 +226,7 @@ public class SelfServiceRegistrationWritePlatformServiceImpl implements SelfServ
 
             KeyHolder keyHolder = new GeneratedKeyHolder();
 
-            String clientSql = "INSERT INTO m_client  (default_savings_product, legal_form_enum, office_id, mobile_no, email_address, firstname, lastname, created_by, created_on_utc, account_no, status_enum, display_name, activation_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?, CURRENT_TIMESTAMP)";
+            String clientSql = "INSERT INTO m_client  (default_savings_product, legal_form_enum, office_id, mobile_no, email_address, firstname, lastname, created_by, created_on_utc, account_no, status_enum, display_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?)";
             // clientId = this.jdbcTemplate.update(clientSql, savingsProductId, LegalForm.PERSON.getValue(),
             // mobileNumber,
             // email, firstName, lastName);

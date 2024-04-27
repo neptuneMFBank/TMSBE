@@ -36,6 +36,7 @@ import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.Money;
 import org.apache.fineract.portfolio.account.data.AccountTransferData;
+import org.apache.fineract.portfolio.charge.data.ChargeData;
 import org.apache.fineract.portfolio.paymentdetail.data.PaymentDetailData;
 import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
 import org.apache.fineract.portfolio.savings.SavingsAccountTransactionType;
@@ -99,6 +100,7 @@ public final class SavingsAccountTransactionData implements Serializable {
     private BigDecimal overdraftAmount;
     private transient Long modifiedId;
     private transient String refNo;
+    private ChargeData chargeData;
 
     public static SavingsAccountTransactionData importInstance(BigDecimal transactionAmount, LocalDate transactionDate, Long paymentTypeId,
             String accountNumber, String checkNumber, String routingCode, String receiptNumber, String bankNumber, Long savingsAccountId,
@@ -489,10 +491,13 @@ public final class SavingsAccountTransactionData implements Serializable {
             thisTransactionData.put("paymentTypeId", this.paymentDetailData.getPaymentType().getId());
         }
 
-        /***
-         * Sending data in a map, though in savings we currently expect a transaction to always repay a single charge
-         * (or may repay a part of a single charge too)
-         ***/
+        /**
+         * *
+         * Sending data in a map, though in savings we currently expect a
+         * transaction to always repay a single charge (or may repay a part of a
+         * single charge too)
+         **
+         */
         if (!this.chargesPaidByData.isEmpty()) {
             final List<Map<String, Object>> savingsChargesPaidData = new ArrayList<>();
             for (final SavingsAccountChargesPaidByData chargePaidBy : this.chargesPaidByData) {
@@ -946,6 +951,10 @@ public final class SavingsAccountTransactionData implements Serializable {
 
     public boolean isReversalTransaction() {
         return Boolean.TRUE.equals(this.isReversal);
+    }
+
+    public void setChargeData(ChargeData chargeData) {
+        this.chargeData = chargeData;
     }
 
 }

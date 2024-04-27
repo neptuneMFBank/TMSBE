@@ -36,6 +36,7 @@ import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecific
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.portfolio.account.data.AccountTransferData;
+import org.apache.fineract.portfolio.charge.data.ChargeData;
 import org.apache.fineract.portfolio.paymentdetail.data.PaymentDetailData;
 import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
@@ -78,7 +79,7 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
 
         List<Object> paramList = new ArrayList<>(Arrays.asList(savingsId, depositAccountType));
         final StringBuilder sqlBuilder = new StringBuilder(200);
-        sqlBuilder.append("select " + sqlGenerator.calcFoundRows() + " ");
+        sqlBuilder.append("select ").append(sqlGenerator.calcFoundRows()).append(" ");
         sqlBuilder.append(this.transactionsMapper.schema());
         sqlBuilder.append(" where (tr.savings_account_id = ? or tr.transaction_type_enum = ?) ");
 
@@ -181,6 +182,10 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
             sqlBuilder.append("pd.receipt_number as receiptNumber, pd.bank_number as bankNumber,pd.routing_code as routingCode, ");
             sqlBuilder.append(
                     "sa.currency_code as currencyCode, sa.currency_digits as currencyDigits, sa.currency_multiplesof as inMultiplesOf, ");
+
+            sqlBuilder.append(
+                    "msac.charge_id as chargeId, mc.name as chargeName, ");
+
             sqlBuilder.append("curr.name as currencyName, curr.internationalized_name_code as currencyNameCode, ");
             sqlBuilder.append("curr.display_symbol as currencyDisplaySymbol, ");
             sqlBuilder.append("pt.value as paymentTypeName, ");
@@ -194,6 +199,9 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
             sqlBuilder.append("left join m_payment_type pt on pd.payment_type_id = pt.id ");
             sqlBuilder.append(" left join m_appuser au on au.id=tr.appuser_id ");
             sqlBuilder.append(" left join m_note nt ON nt.savings_account_transaction_id=tr.id ");
+            sqlBuilder.append("left join m_savings_account_charge_paid_by msacpb on msacpb.savings_account_transaction_id = tr.id ");
+            sqlBuilder.append("left join m_savings_account_charge msac on msac.id = msacpb.savings_account_charge_id ");
+            sqlBuilder.append(" left join m_charge mc ON mc.id=msac.charge_id ");
             this.schemaSql = sqlBuilder.toString();
         }
 
@@ -270,9 +278,19 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
             }
             final String submittedByUsername = rs.getString("submittedByUsername");
             final String note = rs.getString("transactionNote");
-            return SavingsAccountTransactionData.create(id, transactionType, paymentDetailData, savingsId, accountNo, date, currency,
+
+            final long chargeId = rs.getLong("chargeId");
+            ChargeData chargeData = null;
+            if (chargeId > 0) {
+                final String chargeName = rs.getString("chargeName");
+                chargeData = ChargeData.lookup(chargeId, chargeName, false);
+            }
+
+            final SavingsAccountTransactionData savingsAccountTransactionData = SavingsAccountTransactionData.create(id, transactionType, paymentDetailData, savingsId, accountNo, date, currency,
                     amount, outstandingChargeAmount, runningBalance, reversed, transfer, submittedOnDate, postInterestAsOn,
                     submittedByUsername, note, isReversal, originalTransactionId, lienTransaction, releaseTransactionId, reasonForBlock);
+            savingsAccountTransactionData.setChargeData(chargeData);
+            return savingsAccountTransactionData;
         }
     }
 

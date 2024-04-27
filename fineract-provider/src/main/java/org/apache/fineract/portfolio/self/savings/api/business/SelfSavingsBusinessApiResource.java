@@ -85,12 +85,13 @@ public class SelfSavingsBusinessApiResource {
 
     @GET
     @Path("{savingsId}/transactions")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
             @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
             @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId") final Long transactionTypeId,
+            @QueryParam("depositAccountTypeId") @Parameter(description = "depositAccountTypeId") Integer depositAccountTypeId,
             @QueryParam("transactionId") @Parameter(description = "transactionId") final Long transactionId,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
             @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
@@ -102,14 +103,14 @@ public class SelfSavingsBusinessApiResource {
         validateAppuserSavingsAccountMapping(savingsId);
 
         return this.savingsAccountTransactionsBusinessApiResource.retrieveAllBySavingsId(savingsId, uriInfo, startPeriod, endPeriod,
-                transactionTypeId, transactionId, offset, limit, orderBy, sortOrder, locale, dateFormat);
+                transactionTypeId, depositAccountTypeId, transactionId, offset, limit, orderBy, sortOrder, locale, dateFormat);
 
     }
 
     @GET
     @Path("{clientId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public String retrieveAllAccounts(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo,
             @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
             @QueryParam("depositTypeId") @Parameter(description = "depositTypeId") final Integer depositTypeId,
@@ -138,8 +139,8 @@ public class SelfSavingsBusinessApiResource {
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public String submitSavingsAccountApplication(@QueryParam("command") final String commandParam, @Context final UriInfo uriInfo,
             final String apiRequestBodyAsJson) {
         HashMap<String, Object> parameterMap = this.dataValidator.validateSavingsApplication(apiRequestBodyAsJson);

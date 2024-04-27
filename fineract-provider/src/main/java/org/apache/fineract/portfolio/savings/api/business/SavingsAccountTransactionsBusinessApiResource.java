@@ -69,12 +69,13 @@ public class SavingsAccountTransactionsBusinessApiResource {
     }
 
     @GET
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
             @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
             @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId") final Long transactionTypeId,
+            @QueryParam("depositAccountTypeId") @Parameter(description = "depositAccountTypeId") Integer depositAccountTypeId,
             @QueryParam("transactionId") @Parameter(description = "transactionId") final Long transactionId,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
             @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
@@ -96,9 +97,12 @@ public class SavingsAccountTransactionsBusinessApiResource {
 
         final SearchParametersBusiness searchParameters = SearchParametersBusiness.forTransactions(transactionTypeId, transactionId, offset,
                 limit, orderBy, sortOrder, fromDate, toDate);
-
+        if (depositAccountTypeId == null) {
+            depositAccountTypeId = DepositAccountType.SAVINGS_DEPOSIT.getValue();
+        }
+        final DepositAccountType depositAccountType = DepositAccountType.fromInt(depositAccountTypeId);
         final Page<SavingsAccountTransactionData> transactionData = this.savingsAccountBusinessReadPlatformService
-                .retrieveAllTransactionsBySavingsId(savingsId, DepositAccountType.SAVINGS_DEPOSIT, searchParameters);
+                .retrieveAllTransactionsBySavingsId(savingsId, depositAccountType, searchParameters);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 

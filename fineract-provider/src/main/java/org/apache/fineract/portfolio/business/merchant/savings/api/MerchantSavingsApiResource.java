@@ -63,11 +63,12 @@ public class MerchantSavingsApiResource {
 
     @GET
     @Path("{savingsId}/transactions")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
             @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
+            @QueryParam("depositAccountTypeId") @Parameter(description = "depositAccountTypeId") Integer depositAccountTypeId,
             @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId") final Long transactionTypeId,
             @QueryParam("transactionId") @Parameter(description = "transactionId") final Long transactionId,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
@@ -80,7 +81,7 @@ public class MerchantSavingsApiResource {
         validateAppuserSavingsAccountMapping(savingsId);
 
         return this.savingsAccountTransactionsBusinessApiResource.retrieveAllBySavingsId(savingsId, uriInfo, startPeriod, endPeriod,
-                transactionTypeId, transactionId, offset, limit, orderBy, sortOrder, locale, dateFormat);
+                transactionTypeId, depositAccountTypeId, transactionId, offset, limit, orderBy, sortOrder, locale, dateFormat);
 
     }
 

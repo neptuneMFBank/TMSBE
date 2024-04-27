@@ -149,7 +149,7 @@ public class MerchantRegistrationWriteServiceImp implements MerchantRegistration
 
             KeyHolder keyHolder = new GeneratedKeyHolder();
 
-            String clientSql = "INSERT INTO m_client  (default_savings_product, legal_form_enum, office_id, mobile_no, email_address,  fullName, created_by, created_on_utc, account_no, status_enum, display_name) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?)";
+            String clientSql = "INSERT INTO m_client  (default_savings_product, legal_form_enum, office_id, mobile_no, email_address,  fullName, created_by, created_on_utc, account_no, status_enum, display_name, activation_date) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?, CURRENT_TIMESTAMP)";
 
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(clientSql, PreparedStatement.RETURN_GENERATED_KEYS);

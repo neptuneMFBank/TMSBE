@@ -140,12 +140,12 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
 
         if (transactionTypeId != null) {
             paramList.add(transactionTypeId);
-            extraCriteria += " and c.transactionTypeId like ? ";
+            extraCriteria += " and tr.transaction_type_enum = ? ";
         }
 
         if (transactionId != null) {
             paramList.add(transactionId);
-            extraCriteria += " and c.transactionId like ? ";
+            extraCriteria += " and tr.id = ? ";
         }
 
         if (StringUtils.isNotBlank(extraCriteria)) {

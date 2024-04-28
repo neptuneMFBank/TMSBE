@@ -206,4 +206,5 @@
     <include file="parts/0174_m_payment_types.xml" relativeToChangelogFile="true" />
     <include file="parts/0175_m_payment_type_grid.sql" relativeToChangelogFile="true" />
     <include file="parts/0176_m_account_tier_limit.sql" relativeToChangelogFile="true" />
+    <include file="parts/0177_m_transfer_approval.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

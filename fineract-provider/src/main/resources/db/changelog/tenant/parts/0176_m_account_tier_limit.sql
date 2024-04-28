@@ -31,8 +31,8 @@ CREATE TABLE `m_account_tier_limit` (
   `last_modified_by` BIGINT NOT NULL,
   `last_modified_on_utc` DATETIME NULL,
   UNIQUE KEY `tier_UNIQUE_parent_channel` (`parent_id`,`activation_channel_id`),
-  CONSTRAINT `tier_FK_parent_id` FOREIGN KEY (`parent_id`) REFERENCES m_code_value(`id`),
-  CONSTRAINT `tier_FK_type_id` FOREIGN KEY (`client_type_cv_id`) REFERENCES m_account_tier_limit(`id`),
+  CONSTRAINT `tier_FK_parent_id` FOREIGN KEY (`parent_id`) REFERENCES m_account_tier_limit(`id`),
+  CONSTRAINT `tier_FK_type_id` FOREIGN KEY (`client_type_cv_id`) REFERENCES m_code_value(`id`),
   CONSTRAINT `tier_FK_channel_id` FOREIGN KEY (`activation_channel_id`) REFERENCES m_code_value(`id`),
   CONSTRAINT `tier_FK_created_by` FOREIGN KEY (`created_by`) REFERENCES `m_appuser` (`id`),
   CONSTRAINT `tier_FK_last_modified_by` FOREIGN KEY (`last_modified_by`) REFERENCES `m_appuser` (`id`)

@@ -24,6 +24,8 @@ import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
 
 public interface PortfolioAccountReadPlatformService {
 
+    PortfolioAccountData retrieveOneViaAccountNumber(String accountNumber, Integer accountTypeId);
+
     PortfolioAccountData retrieveOne(Long accountId, Integer accountTypeId);
 
     PortfolioAccountData retrieveOne(Long accountId, Integer accountTypeId, String currencyCode);

@@ -101,14 +101,21 @@ public class AccountTransfersBusinessReadPlatformServiceImpl implements AccountT
                 .extractIntegerSansLocaleNamed(AccountTransfersBusinessApiConstants.toAccountTypeParamName, jsonElement);
         final String key = this.fromJsonHelper.extractStringNamed(AccountTransfersBusinessApiConstants.keyParam, jsonElement);
         final String value = this.fromJsonHelper.extractStringNamed(AccountTransfersBusinessApiConstants.valueParam, jsonElement);
+        PortfolioAccountData toAccount = null;
 
         Long toClientId = null;
         if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value)) {
             final JsonObject findClientJson = new JsonObject();
             findClientJson.addProperty(AccountTransfersBusinessApiConstants.keyParam, key);
             findClientJson.addProperty(AccountTransfersBusinessApiConstants.valueParam, value);
-            final ClientData toFindClient = this.clientBusinessReadPlatformService.findClient(findClientJson.toString());
-            toClientId = toFindClient.getId();
+            if (StringUtils.equalsIgnoreCase(key, "account_no")) {
+                //check which account, LOANS/SAVINGS
+                toAccount = this.portfolioAccountReadPlatformService.retrieveOneViaAccountNumber(value, toAccountType);
+                toClientId = toAccount.clientId();
+            } else {
+                final ClientData toFindClient = this.clientBusinessReadPlatformService.findClient(findClientJson.toString());
+                toClientId = toFindClient.getId();
+            }
         }
 
         final Integer fromAccountType = PortfolioAccountType.SAVINGS.getValue();
@@ -121,7 +128,7 @@ public class AccountTransfersBusinessReadPlatformServiceImpl implements AccountT
 
         final Integer mostRelevantFromAccountType = fromAccountType;
         final Collection<EnumOptionData> fromAccountTypeOptions = null;// Arrays.asList(savingsAccountType,
-                                                                       // loanAccountType);
+        // loanAccountType);
         final Collection<EnumOptionData> toAccountTypeOptions = Arrays.asList(loanAccountType, savingsAccountType);
         final Integer mostRelevantToAccountType = toAccountType;
 
@@ -135,7 +142,6 @@ public class AccountTransfersBusinessReadPlatformServiceImpl implements AccountT
 
         OfficeData toOffice = null;
         ClientData toClient = null;
-        PortfolioAccountData toAccount = null;
 
         // template
         Collection<PortfolioAccountData> fromAccountOptions = null;
@@ -162,7 +168,7 @@ public class AccountTransfersBusinessReadPlatformServiceImpl implements AccountT
         Collection<OfficeData> toOfficeOptions = fromOfficeOptions;
         Collection<ClientData> toClientOptions = null;
 
-        if (mostRelevantToClientId != null) {
+        if (mostRelevantToClientId != null && toAccount == null) {
             toClient = this.clientReadPlatformService.retrieveOne(mostRelevantToClientId);
             toAccountOptions = retrieveToAccounts(fromAccount, mostRelevantToAccountType, mostRelevantToClientId);
         }

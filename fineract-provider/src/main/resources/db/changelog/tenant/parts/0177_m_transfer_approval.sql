@@ -18,6 +18,7 @@
 --
 
 -- Action That Can Be Performed Create/Approve/Reject -> where Approve performs the actual transaction
+--  column from_account_id should having only one status(pending) per customer
 
 CREATE TABLE `m_transfer_approval` (
   `id` BIGINT PRIMARY KEY AUTO_INCREMENT,

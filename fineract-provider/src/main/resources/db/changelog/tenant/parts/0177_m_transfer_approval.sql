@@ -17,6 +17,8 @@
 -- under the License.
 --
 
+-- Action That Can Be Performed Create/Approve/Reject -> where Approve performs the actual transaction
+
 CREATE TABLE `m_transfer_approval` (
   `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
   `amount` DECIMAL(19,6) NOT NULL,

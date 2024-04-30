@@ -879,7 +879,7 @@ public final class SearchParametersBusiness {
             final String hierarchy, final Integer offset, final Integer limit, final String orderBy, final String sortOrder,
             final Long staffId, final String accountNo, final LocalDate fromDate, final LocalDate toDate, final String displayName,
             final Boolean orphansOnly, final Boolean isSelfUser, final String email, final String mobile, final Integer legalFormId,
-            final String bvn) {
+            final String bvn, final String nin) {
 
         final Long industryId = null;
         final Long organisationalRoleEnumId = null;
@@ -900,7 +900,7 @@ public final class SearchParametersBusiness {
         final Boolean active = false;
         final Long clientId = null;
         final Long documentConfigId = null;
-        final String username = null;
+        final String username = nin;
         final Integer depositTypeId = null;
         final Long staffSupervisorId = null;
         final Long overdraftId = null;

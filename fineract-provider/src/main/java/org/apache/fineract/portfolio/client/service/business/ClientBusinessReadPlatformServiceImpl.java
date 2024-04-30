@@ -175,7 +175,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             // final String hierarchySearchString = hierarchy + "%";
 
             final String sql = "select " + this.clientBusinessMapper.schema()
-            // + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
+                    // + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
                     + " where c.id = ?";
             ClientBusinessData clientData = this.jdbcTemplate.queryForObject(sql, this.clientBusinessMapper, // NOSONAR
                     // hierarchySearchString, hierarchySearchString,
@@ -311,7 +311,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
                 // , lgaValuesOptions
-                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                ,
+                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions
         // , industryOptions
         );
@@ -368,6 +369,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     }
 
     private String buildSqlStringFromClientCriteria(final SearchParametersBusiness searchParameters, List<Object> paramList) {
+        final String nin = searchParameters.getUsername();
         final String bvn = searchParameters.getBvn();
         final Integer statusId = searchParameters.getStatusId();
         final Integer legalFormId = searchParameters.getLegalFormId();
@@ -410,6 +412,10 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         if (searchParameters.isBvnPassed()) {
             paramList.add(bvn);
             extraCriteria += " and slk.bvn = ? ";
+        }
+        if (searchParameters.isUsernamePassed()) {
+            paramList.add(nin);
+            extraCriteria += " and slk.nin = ? ";
         }
         if (officeId != null) {
             extraCriteria += " and c.office_id = ? ";

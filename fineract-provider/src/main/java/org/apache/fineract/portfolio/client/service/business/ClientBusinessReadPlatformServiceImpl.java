@@ -482,7 +482,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             sqlBuilder.append("select ");
             sqlBuilder.append(this.lookupMapper.schema());
             sqlBuilder.append(" WHERE ");
-            if (StringUtils.equalsIgnoreCase(key, "bvn")) {
+            if (StringUtils.equalsIgnoreCase(key, "bvn") || StringUtils.equalsIgnoreCase(key, "nin")) {
                 sqlBuilder.append(" slk.");
             } else {
                 sqlBuilder.append(" c.");

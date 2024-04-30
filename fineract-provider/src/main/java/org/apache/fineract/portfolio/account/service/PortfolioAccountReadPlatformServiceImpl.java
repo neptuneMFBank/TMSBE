@@ -56,6 +56,33 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
     }
 
     @Override
+    public PortfolioAccountData retrieveOneViaAccountNumber(String accountNumber, Integer accountTypeId) {
+
+        Object[] sqlParams = new Object[]{accountNumber};
+        PortfolioAccountData accountData = null;
+        try {
+            String sql;
+            final PortfolioAccountType accountType = PortfolioAccountType.fromInt(accountTypeId);
+            switch (accountType) {
+                case INVALID -> {
+                }
+                case LOAN -> {
+                    sql = "select " + this.loanAccountMapper.schema() + " where la.account_no = ?";
+                    accountData = this.jdbcTemplate.queryForObject(sql, this.loanAccountMapper, sqlParams);
+                }
+                case SAVINGS -> {
+                    sql = "select " + this.savingsAccountMapper.schema() + " where sa.account_no = ?";
+                    accountData = this.jdbcTemplate.queryForObject(sql, this.savingsAccountMapper, sqlParams);
+                }
+            }
+        } catch (final EmptyResultDataAccessException e) {
+            throw new AccountTransferNotFoundException(accountNumber);
+        }
+
+        return accountData;
+    }
+
+    @Override
     public PortfolioAccountData retrieveOne(final Long accountId, final Integer accountTypeId) {
         return retrieveOne(accountId, accountTypeId, null);
     }
@@ -63,33 +90,33 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
     @Override
     public PortfolioAccountData retrieveOne(final Long accountId, final Integer accountTypeId, final String currencyCode) {
 
-        Object[] sqlParams = new Object[] { accountId };
+        Object[] sqlParams = new Object[]{accountId};
         PortfolioAccountData accountData = null;
         try {
             String sql = null;
             final PortfolioAccountType accountType = PortfolioAccountType.fromInt(accountTypeId);
             switch (accountType) {
                 case INVALID:
-                break;
+                    break;
                 case LOAN:
 
                     sql = "select " + this.loanAccountMapper.schema() + " where la.id = ?";
                     if (currencyCode != null) {
                         sql += " and la.currency_code = ?";
-                        sqlParams = new Object[] { accountId, currencyCode };
+                        sqlParams = new Object[]{accountId, currencyCode};
                     }
 
                     accountData = this.jdbcTemplate.queryForObject(sql, this.loanAccountMapper, sqlParams);
-                break;
+                    break;
                 case SAVINGS:
                     sql = "select " + this.savingsAccountMapper.schema() + " where sa.id = ?";
                     if (currencyCode != null) {
                         sql += " and sa.currency_code = ?";
-                        sqlParams = new Object[] { accountId, currencyCode };
+                        sqlParams = new Object[]{accountId, currencyCode};
                     }
 
                     accountData = this.jdbcTemplate.queryForObject(sql, this.savingsAccountMapper, sqlParams);
-                break;
+                    break;
             }
         } catch (final EmptyResultDataAccessException e) {
             throw new AccountTransferNotFoundException(accountId, e);
@@ -112,7 +139,7 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
         final PortfolioAccountType accountType = PortfolioAccountType.fromInt(portfolioAccountDTO.getAccountTypeId());
         switch (accountType) {
             case INVALID:
-            break;
+                break;
             case LOAN:
                 sql = "select " + this.loanAccountMapper.schema() + " where ";
                 if (portfolioAccountDTO.getClientId() != null) {
@@ -129,7 +156,7 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
                 }
 
                 accounts = this.jdbcTemplate.query(sql, this.loanAccountMapper, sqlParams.toArray()); // NOSONAR
-            break;
+                break;
             case SAVINGS:
                 sql = "select " + this.savingsAccountMapper.schema() + " where ";
                 if (portfolioAccountDTO.getClientId() != null) {
@@ -160,7 +187,7 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
                 }
 
                 accounts = this.jdbcTemplate.query(sql, this.savingsAccountMapper, sqlParams.toArray()); // NOSONAR
-            break;
+                break;
         }
 
         return accounts;
@@ -375,7 +402,7 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
     @Override
     public PortfolioAccountData retrieveOneByPaidInAdvance(Long accountId, Integer accountTypeId) {
         // TODO Auto-generated method stub
-        Object[] sqlParams = new Object[] { accountId, accountId };
+        Object[] sqlParams = new Object[]{accountId, accountId};
         PortfolioAccountData accountData = null;
         // String currencyCode = null;
         try {

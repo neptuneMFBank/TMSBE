@@ -27,6 +27,10 @@ public class AccountTransferNotFoundException extends AbstractPlatformResourceNo
         super("error.msg.accounttransfer.id.invalid", "Account transfer with identifier " + id + " does not exist", id);
     }
 
+    public AccountTransferNotFoundException(final String id) {
+        super("error.msg.accounttransfer.id.invalid", "Account with identifier " + id + " does not exist", id);
+    }
+
     public AccountTransferNotFoundException(Long id, EmptyResultDataAccessException e) {
         super("error.msg.accounttransfer.id.invalid", "Account transfer with identifier " + id + " does not exist", id, e);
     }

@@ -84,11 +84,12 @@ public class InventoryReadPlatformServiceImpl implements InventoryReadPlatformSe
         try {
             final String sql = "select " + this.inventoryMapper.schema + " where mi.link = ? ";
             InventoryData inventoryData = this.jdbcTemplate.queryForObject(sql, this.inventoryMapper, new Object[]{link});
+            if (inventoryData != null) {
+                this.context.authenticatedUser().validateHasReadPermission("DOCUMENT");
+                final Collection<DocumentData> documentDatas = this.documentReadPlatformService.retrieveAllDocuments("inventory", inventoryData.getId());
+                inventoryData.setDocumentDatas(documentDatas);
+            }
 
-            this.context.authenticatedUser().validateHasReadPermission("DOCUMENT");
-            final Collection<DocumentData> documentDatas = this.documentReadPlatformService.retrieveAllDocuments("inventory", inventoryData.getId());
-
-            inventoryData.setDocumentDatas(documentDatas);
             return inventoryData;
         } catch (final EmptyResultDataAccessException e) {
             throw new InventoryNotFound(link, e);

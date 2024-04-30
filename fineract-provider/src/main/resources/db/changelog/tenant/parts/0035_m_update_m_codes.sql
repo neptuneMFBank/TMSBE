@@ -24,5 +24,5 @@
 INSERT INTO `m_code_value`(`code_id`,`code_value`,`order_position`)
 select mc.id, 'Sales Toolkit', ifnull(max(mv.id), 1)
 from m_code mc
-join m_code_value mv on mv.code_id = mc.id
+left join m_code_value mv on mv.code_id = mc.id
 where mc.`code_name` = "ActivationChannel"

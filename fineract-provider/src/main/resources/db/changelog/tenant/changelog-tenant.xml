@@ -48,7 +48,7 @@
     <include file="parts/0031_m_update_permission.sql" relativeToChangelogFile="true"/>
     <include file="parts/0032_m_update_permission.sql" relativeToChangelogFile="true"/>
     <include file="parts/0033_m_update_m_codes.sql" relativeToChangelogFile="true" />
-    <!--<include file="parts/0034_m_update_m_codes.sql" relativeToChangelogFile="true" />-->
+    <include file="parts/0034_m_update_m_codes.sql" relativeToChangelogFile="true" />
     <include file="parts/0035_m_update_m_codes.sql" relativeToChangelogFile="true" />
     <include file="parts/0036_m_update_m_codes.sql" relativeToChangelogFile="true" />
     <include file="parts/0037_m_update_m_codes.sql" relativeToChangelogFile="true" />

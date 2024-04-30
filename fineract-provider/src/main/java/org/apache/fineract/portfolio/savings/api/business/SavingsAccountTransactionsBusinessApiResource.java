@@ -18,9 +18,15 @@
  */
 package org.apache.fineract.portfolio.savings.api.business;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
+import java.util.Collection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -31,16 +37,26 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.journalentry.api.DateParam;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
+import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.address.data.AddressData;
+import org.apache.fineract.portfolio.address.service.AddressReadPlatformServiceImpl;
+import org.apache.fineract.portfolio.client.data.ClientData;
+import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
+import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
+import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionData;
+import org.apache.fineract.portfolio.savings.data.business.SavingsAccountBusinessDocData;
 import org.apache.fineract.portfolio.savings.service.business.SavingsAccountBusinessReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -52,37 +68,51 @@ import org.springframework.stereotype.Component;
 @Tag(name = "Savings Account Transaction", description = "")
 public class SavingsAccountTransactionsBusinessApiResource {
 
+    private final String resourceNameForPermissions = "SAVINGSACCOUNT";
+
     private final PlatformSecurityContext context;
     private final DefaultToApiJsonSerializer<SavingsAccountTransactionData> toApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final SavingsAccountBusinessReadPlatformService savingsAccountBusinessReadPlatformService;
+    private final FromJsonHelper fromJsonHelper;
+    private final ClientReadPlatformService clientReadPlatformService;
+    private final AddressReadPlatformServiceImpl readPlatformService;
+    private final DefaultToApiJsonSerializer<SavingsAccountBusinessDocData> toApiDocJsonSerializer;
 
     @Autowired
     public SavingsAccountTransactionsBusinessApiResource(final PlatformSecurityContext context,
-            final DefaultToApiJsonSerializer<SavingsAccountTransactionData> toApiJsonSerializer,
-            final ApiRequestParameterHelper apiRequestParameterHelper,
-            final SavingsAccountBusinessReadPlatformService savingsAccountBusinessReadPlatformService) {
+                                                         final DefaultToApiJsonSerializer<SavingsAccountTransactionData> toApiJsonSerializer,
+                                                         final ApiRequestParameterHelper apiRequestParameterHelper,
+                                                         final SavingsAccountBusinessReadPlatformService savingsAccountBusinessReadPlatformService,
+                                                         final FromJsonHelper fromJsonHelper,
+                                                         final ClientReadPlatformService clientReadPlatformService,
+                                                         final AddressReadPlatformServiceImpl readPlatformService,
+                                                         final DefaultToApiJsonSerializer<SavingsAccountBusinessDocData> toApiDocJsonSerializer) {
         this.context = context;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.savingsAccountBusinessReadPlatformService = savingsAccountBusinessReadPlatformService;
+        this.fromJsonHelper = fromJsonHelper;
+        this.clientReadPlatformService = clientReadPlatformService;
+        this.readPlatformService = readPlatformService;
+        this.toApiDocJsonSerializer = toApiDocJsonSerializer;
     }
 
     @GET
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
-            @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
-            @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
-            @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId") final Long transactionTypeId,
-            @QueryParam("depositAccountTypeId") @Parameter(description = "depositAccountTypeId") Integer depositAccountTypeId,
-            @QueryParam("transactionId") @Parameter(description = "transactionId") final Long transactionId,
-            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
-            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
-            @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
-            @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
-            @DefaultValue("en") @QueryParam("locale") final String locale,
-            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
+                                         @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
+                                         @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
+                                         @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId") final Long transactionTypeId,
+                                         @QueryParam("depositAccountTypeId") @Parameter(description = "depositAccountTypeId") Integer depositAccountTypeId,
+                                         @QueryParam("transactionId") @Parameter(description = "transactionId") final Long transactionId,
+                                         @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+                                         @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+                                         @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+                                         @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+                                         @DefaultValue("en") @QueryParam("locale") final String locale,
+                                         @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
 
         this.context.authenticatedUser().validateHasReadPermission(SavingsApiConstants.SAVINGS_ACCOUNT_RESOURCE_NAME);
 
@@ -110,4 +140,61 @@ public class SavingsAccountTransactionsBusinessApiResource {
                 SavingsBusinessApiSetConstants.SAVINGS_TRANSACTION_RESPONSE_DATA_PARAMETERS);
     }
 
+    @GET
+    @Path("/doc")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve a savings Doc", description = "")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK"
+            // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))
+    )})
+    public String retrieveSavingsDoc(@PathParam("savingsId") @Parameter(description = "savingsId") final Long savingsId, @Context final UriInfo uriInfo,
+                                     @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
+                                     @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
+                                     @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId") final Long transactionTypeId,
+                                     @QueryParam("depositAccountTypeId") @Parameter(description = "depositAccountTypeId") Integer depositAccountTypeId,
+                                     @QueryParam("transactionId") @Parameter(description = "transactionId") final Long transactionId,
+                                     @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+                                     @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+                                     @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+                                     @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+                                     @DefaultValue("en") @QueryParam("locale") final String locale,
+                                     @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+
+        final JsonObject jsonObject = new JsonObject();
+
+        final String retrieveSavings = this.retrieveAllBySavingsId(savingsId, uriInfo, startPeriod, endPeriod, transactionTypeId, depositAccountTypeId, transactionId, offset, limit, orderBy, sortOrder, locale, dateFormat);
+        if (StringUtils.isNotBlank(retrieveSavings)) {
+            final JsonElement retrieveSavingsElement = this.fromJsonHelper.parse(retrieveSavings);
+            final JsonObject jsonSavingsInfo = retrieveSavingsElement.getAsJsonObject();
+            if (fromJsonHelper.parameterExists(LoanBusinessApiConstants.metricsDataParam, retrieveSavingsElement)) {
+                jsonSavingsInfo.remove(LoanBusinessApiConstants.metricsDataParam);
+            }
+            jsonObject.add("savings", jsonSavingsInfo);
+
+            final Long clientId = this.fromJsonHelper.extractLongNamed(LoanApiConstants.clientIdParameterName, retrieveSavingsElement);
+            final ClientData clientData = this.clientReadPlatformService.retrieveOne(clientId);
+            final String clientDataInfo = this.toApiJsonSerializer.serialize(clientData);
+            final JsonElement clientInfo = this.fromJsonHelper.parse(clientDataInfo);
+            jsonObject.add("clientInfo", clientInfo);
+
+            final Integer homeAddress = 15;
+            final Collection<AddressData> addressDatas = this.readPlatformService.retrieveAddressbyTypeAndStatus(clientId, homeAddress,
+                    "true");
+            final AddressData clientAddressData = addressDatas.stream().findFirst().orElse(null);
+            final String clientAddressDataInfo = this.toApiJsonSerializer.serialize(clientAddressData);
+            final JsonElement clientAddressInfo = this.fromJsonHelper.parse(clientAddressDataInfo);
+            jsonObject.add("clientAddressData", clientAddressInfo);
+
+            final Integer officeAddress = 16;
+            final Collection<AddressData> officeAddressDatas = this.readPlatformService.retrieveAddressbyTypeAndStatus(clientId,
+                    officeAddress, "true");
+            final AddressData clientOfficeAddressData = officeAddressDatas.stream().findFirst().orElse(null);
+            final String clientOfficeAddressDataInfo = this.toApiJsonSerializer.serialize(clientOfficeAddressData);
+            final JsonElement clientOfficeAddressInfo = this.fromJsonHelper.parse(clientOfficeAddressDataInfo);
+            jsonObject.add("clientOfficeAddressInfo", clientOfficeAddressInfo);
+        }
+        return this.toApiDocJsonSerializer.serialize(jsonObject);
+    }
 }

@@ -164,7 +164,7 @@ public class SavingsAccountTransactionsBusinessApiResource {
 
         final JsonObject jsonObject = new JsonObject();
 
-        final String savings = this.savingsAccountsApiResource.retrieveOne(savingsId, true, null, uriInfo);
+        final String savings = this.savingsAccountsApiResource.retrieveOne(savingsId, true, "all", uriInfo);
         if (StringUtils.isNotBlank(savings)) {
             final JsonElement retrieveSavingsElement = this.fromJsonHelper.parse(savings);
             jsonObject.add("savings", retrieveSavingsElement);

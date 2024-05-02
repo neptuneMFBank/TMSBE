@@ -141,7 +141,7 @@ public class AccountTransfersBusinessReadPlatformServiceImpl implements AccountT
         PortfolioAccountData fromAccount;// = null;
 
         OfficeData toOffice = null;
-        ClientData toClient = null;
+        ClientData toClient;
 
         // template
         Collection<PortfolioAccountData> fromAccountOptions = null;
@@ -171,6 +171,8 @@ public class AccountTransfersBusinessReadPlatformServiceImpl implements AccountT
         if (mostRelevantToClientId != null && toAccount == null) {
             toClient = this.clientReadPlatformService.retrieveOne(mostRelevantToClientId);
             toAccountOptions = retrieveToAccounts(fromAccount, mostRelevantToAccountType, mostRelevantToClientId);
+        } else {
+            toClient = this.clientReadPlatformService.retrieveOne(mostRelevantToClientId);
         }
         return AccountTransferData.template(fromOffice, fromClient, fromAccountTypeData, fromAccount, transferDate, toOffice, toClient,
                 toAccountTypeData, toAccount, fromOfficeOptions, fromClientOptions, fromAccountTypeOptions, fromAccountOptions,

@@ -192,9 +192,10 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
      */
     private void handleDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve) {
         log.warn("handleDataIntegrityIssues: {} and Exception: {}", realCause.getMessage(), dve.getMessage());
-        String[] cause = StringUtils.split(realCause.getMessage(), "'");
+        //String[] cause = StringUtils.split(realCause.getMessage(), "'");
         try {
-            String getCause = StringUtils.defaultIfBlank(cause[3], realCause.getMessage());
+            //String getCause = StringUtils.defaultIfBlank(cause[3], realCause.getMessage());
+            String getCause = StringUtils.defaultIfBlank(realCause.getMessage(), "");
             if (getCause.contains("name")) {
                 final String name = command.stringValueOfParameterNamed(LoanProductApprovalApiResourceConstants.NAME);
                 throw new PlatformDataIntegrityException("error.msg.loanproduct.approval.duplicate",

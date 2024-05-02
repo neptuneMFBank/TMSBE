@@ -58,6 +58,7 @@ import org.apache.fineract.useradministration.domain.UserDomainService;
 import org.apache.fineract.useradministration.exception.PasswordPreviouslyUsedException;
 import org.apache.fineract.useradministration.exception.RoleNotFoundException;
 import org.apache.fineract.useradministration.exception.UserNotFoundException;
+import org.apache.fineract.useradministration.exception.business.UserStaffDuplicateFoundException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -108,6 +109,11 @@ public class AppUserWritePlatformServiceJpaRepositoryImpl implements AppUserWrit
             Staff linkedStaff;
             if (staffId != null) {
                 linkedStaff = this.staffRepositoryWrapper.findByOfficeWithNotFoundDetection(staffId, userOffice.getId());
+                //also check the staffId does not already exists
+              final AppUser appUserStaffCheck =  this.appUserRepository.findFirstByStaffId(staffId).orElse(null);
+                if (appUserStaffCheck != null) {
+                    throw new UserStaffDuplicateFoundException();
+                }
             } else {
                 linkedStaff = null;
             }

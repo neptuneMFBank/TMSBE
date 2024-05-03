@@ -119,9 +119,18 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
         final Overdraft overdraft = this.overdraftRepositoryWrapper.findOneWithNotFoundDetection(overdraftApprovalScheduleId);
         final SavingsAccount savingsAccount = overdraft.getSavingsAccount();
 
-        final Collection<LoanProductApprovalConfigData> overdraftApprovalConfigDatas = this.retrieveOverdraftRoleApprovalConfig();
+        //final Collection<LoanProductApprovalConfigData> overdraftApprovalConfigDatas = this.retrieveOverdraftRoleApprovalConfig();
+        //if (CollectionUtils.isEmpty(overdraftApprovalConfigDatas)) {
+        final SavingsProduct savingsProduct = savingsAccount.savingsProduct();
+        final Long savingsProductId = savingsProduct.getId();
+        final LoanProductApprovalData savingProductApprovalData = this.loanProductApprovalReadPlatformService
+                .retrieveOneViaSavingsProduct(savingsProductId);
+        log.warn("createOverdraftMetrics savingProductApprovalData {}", savingProductApprovalData.getId());
 
-        if (CollectionUtils.isEmpty(overdraftApprovalConfigDatas)) {
+        final Collection<LoanProductApprovalConfigData> loanProductApprovalConfigDatas = savingProductApprovalData
+                .getLoanProductApprovalConfigData();
+
+        if (CollectionUtils.isEmpty(loanProductApprovalConfigDatas)) {
             // send a mail
             log.warn("No overdraft approval set for id {}", overdraftApprovalScheduleId);
 
@@ -133,7 +142,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
             }
         } else {
             int nextRank = 0;
-            for (LoanProductApprovalConfigData loanProductApprovalConfigData : overdraftApprovalConfigDatas) {
+            for (LoanProductApprovalConfigData loanProductApprovalConfigData : loanProductApprovalConfigDatas) {
                 int rank = nextRank++;
                 int status = rank == 0 ? LoanApprovalStatus.PENDING.getValue() : LoanApprovalStatus.QUEUE.getValue();
 
@@ -436,10 +445,10 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                 log.warn("createLoanMetrics maxApprovalAmount: {}", maxApprovalAmount);
                 final boolean isWithinRange = GeneralConstants.isWithinRange(value, minApprovalAmount, maxApprovalAmount);
                 if ( // loanProductApprovalConfigData.getMaxApprovalAmount() == null
-                     // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
-                     // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal())
-                     // >= 0
-                isWithinRange) {
+                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(BigDecimal.ZERO) == 0
+                        // || loanProductApprovalConfigData.getMaxApprovalAmount().compareTo(loan.getProposedPrincipal())
+                        // >= 0
+                        isWithinRange) {
                     // create loan movement approval if this condition is met
                     final RoleData roleData = loanProductApprovalConfigData.getRoleData();
                     final Long roleId = roleData.getId();

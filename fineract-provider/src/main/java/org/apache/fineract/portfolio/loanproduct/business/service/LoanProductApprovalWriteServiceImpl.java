@@ -43,6 +43,8 @@ import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductAppr
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductApprovalRepositoryWrapper;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.apache.fineract.portfolio.loanproduct.domain.business.LoanProductRepositoryWrapper;
+import org.apache.fineract.portfolio.savings.domain.SavingsProduct;
+import org.apache.fineract.portfolio.savings.domain.business.SavingsProductRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.Role;
 import org.apache.fineract.useradministration.domain.RoleRepository;
 import org.apache.fineract.useradministration.exception.RoleNotFoundException;
@@ -63,6 +65,7 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
     private final RoleRepository roleRepository;
     private final LoanProductRepositoryWrapper loanProductRepositoryWrapper;
     private final LoanProductApprovalConfigRepositoryWrapper loanProductApprovalConfigRepositoryWrapper;
+    private final SavingsProductRepositoryWrapper savingsProductRepositoryWrapper;
 
     @Transactional
     @Override
@@ -87,6 +90,18 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
                 loanProduct = loanProductRepositoryWrapper.findOneWithNotFoundDetection(loanProductId);
                 changes.put(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, loanProductId);
                 loanProductApproval.setLoanProduct(loanProduct);
+            }
+        }
+
+        final Long oldSavingsProductId = loanProductApproval.getSavingsProduct() != null ? loanProductApproval.getSavingsProduct().getId() : null;
+        if (command.isChangeInLongParameterNamed(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID, oldSavingsProductId)) {
+            final Long savingsProductId = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID,
+                    element);
+            SavingsProduct savingsProduct;
+            if (savingsProductId != null) {
+                savingsProduct = savingsProductRepositoryWrapper.findOneWithNotFoundDetection(savingsProductId);
+                changes.put(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, savingsProductId);
+                loanProductApproval.setSavingsProduct(savingsProduct);
             }
         }
         try {
@@ -124,9 +139,11 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
         final String name = this.fromApiJsonHelper.extractStringNamed(LoanProductApprovalApiResourceConstants.NAME, element);
         final Long loanProductId = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, element);
         final LoanProduct loanProduct = this.loanProductRepositoryWrapper.findOneWithNotFoundDetection(loanProductId);
+        final Long savingsProductId = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID, element);
+        final SavingsProduct savingsProduct = this.savingsProductRepositoryWrapper.findOneWithNotFoundDetection(savingsProductId);
 
         try {
-            LoanProductApproval newLoanProductApproval = LoanProductApproval.create(name, loanProduct);
+            LoanProductApproval newLoanProductApproval = LoanProductApproval.create(name, loanProduct, savingsProduct);
             setLoanProductApprovalConfig(element, newLoanProductApproval);
             this.repositoryWrapper.saveAndFlush(newLoanProductApproval);
             return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(newLoanProductApproval.getId())

@@ -43,6 +43,7 @@ import org.apache.fineract.portfolio.loanproduct.business.data.LoanProductApprov
 import org.apache.fineract.portfolio.loanproduct.business.exception.LoanProductApprovalNotFoundException;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
+import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 import org.apache.fineract.useradministration.data.RoleData;
 import org.apache.fineract.useradministration.service.RoleReadPlatformService;
 import org.slf4j.Logger;
@@ -164,7 +165,7 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
         try {
             final String sql = "select " + loanProductApprovalMapper.schema() + " where lpa.id = ?";
             LoanProductApprovalData loanProductApprovalData = this.jdbcTemplate.queryForObject(sql, loanProductApprovalMapper,
-                    new Object[] { loanProductApprovalId });
+                    new Object[]{loanProductApprovalId});
             Collection<LoanProductApprovalConfigData> retrieveConfig = retrieveConfig(loanProductApprovalId);
             if (!CollectionUtils.isEmpty(retrieveConfig)) {
                 loanProductApprovalData = LoanProductApprovalData.lookUpFinal(retrieveConfig, loanProductApprovalData);
@@ -182,7 +183,7 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
         try {
             final String sql = "select " + loanProductApprovalMapper.schema() + " where lpa.loan_product_id = ?";
             LoanProductApprovalData loanProductApprovalData = this.jdbcTemplate.queryForObject(sql, loanProductApprovalMapper,
-                    new Object[] { loanProductId });
+                    new Object[]{loanProductId});
             if (loanProductApprovalData != null) {
                 Collection<LoanProductApprovalConfigData> retrieveConfig = retrieveConfig(loanProductApprovalData.getId());
                 if (!CollectionUtils.isEmpty(retrieveConfig)) {
@@ -200,24 +201,56 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
     public Collection<LoanProductApprovalConfigData> retrieveConfig(Long loanProductApprovalId) {
         this.context.authenticatedUser();
         final String sql = "select " + loanProductApprovalConfigMapper.schema() + " WHERE lpac.rlpa_id = ? ORDER BY lpac.rank ASC ";
-        return this.jdbcTemplate.query(sql, loanProductApprovalConfigMapper, new Object[] { loanProductApprovalId }); // NOSONAR
+        return this.jdbcTemplate.query(sql, loanProductApprovalConfigMapper, new Object[]{loanProductApprovalId}); // NOSONAR
+    }
+
+    @Override
+    public LoanProductApprovalData retrieveOneViaSavingsProduct(Long savingsProductId) {
+        this.context.authenticatedUser();
+        try {
+            final String sql = "select " + loanProductApprovalMapper.schema() + " where lpa.savings_product_id = ?";
+            LoanProductApprovalData loanProductApprovalData = this.jdbcTemplate.queryForObject(sql, loanProductApprovalMapper,
+                    new Object[]{savingsProductId});
+            if (loanProductApprovalData != null) {
+                Collection<LoanProductApprovalConfigData> retrieveConfig = retrieveConfig(loanProductApprovalData.getId());
+                if (!CollectionUtils.isEmpty(retrieveConfig)) {
+                    loanProductApprovalData = LoanProductApprovalData.lookUpFinal(retrieveConfig, loanProductApprovalData);
+                }
+            }
+            return loanProductApprovalData;
+        } catch (DataAccessException e) {
+            LOG.error("retrieveOneViaSavingsProduct Approval not found: {}", e);
+            throw new LoanProductApprovalNotFoundException("Savings Product with id " + savingsProductId + " does not exist for approval.");
+        }
     }
 
     private static final class LoanProductApprovalMapper implements RowMapper<LoanProductApprovalData> {
 
         public String schema() {
-            return " lpa.id, lpa.name, lpa.loan_product_id loanProductId," + " mpl.name loanProductName "
-                    + " from m_role_loan_product_approval lpa " + " JOIN m_product_loan mpl ON mpl.id=lpa.loan_product_id ";
+            return " lpa.id, lpa.name, lpa.loan_product_id loanProductId, mpl.name loanProductName "
+                    + " , lpa.savings_product_id savingsProductId, msp.name savingsProductName "
+                    + " from m_role_loan_product_approval lpa "
+                    + " LEFT JOIN m_product_loan mpl ON mpl.id=lpa.loan_product_id "
+                    + " LEFT JOIN m_savings_product msp ON msp.id=lpa.savings_product_id ";
         }
 
         @Override
         public LoanProductApprovalData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
             final Long id = rs.getLong("id");
             final String name = rs.getString("name");
+            final Long savingsProductId = rs.getLong("savingsProductId");
+            SavingsProductData savingsProductData = null;
+            if (savingsProductId > 0) {
+                final String savingsProductName = rs.getString("savingsProductName");
+                savingsProductData = SavingsProductData.lookup(savingsProductId, savingsProductName);
+            }
             final Long loanProductId = rs.getLong("loanProductId");
-            final String loanProductName = rs.getString("loanProductName");
-            final LoanProductData loanProductData = LoanProductData.lookup(loanProductId, loanProductName, null);
-            return LoanProductApprovalData.lookUp(id, name, loanProductData);
+            LoanProductData loanProductData = null;
+            if (loanProductId > 0) {
+                final String loanProductName = rs.getString("loanProductName");
+                loanProductData = LoanProductData.lookup(loanProductId, loanProductName, null);
+            }
+            return LoanProductApprovalData.lookUp(id, name, loanProductData, savingsProductData);
         }
 
     }

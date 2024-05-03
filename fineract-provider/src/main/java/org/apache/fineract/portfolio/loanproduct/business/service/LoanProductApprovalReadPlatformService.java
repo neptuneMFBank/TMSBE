@@ -36,4 +36,6 @@ public interface LoanProductApprovalReadPlatformService {
 
     LoanProductApprovalData retrieveTemplate();
 
+     LoanProductApprovalData retrieveOneViaSavingsProduct(Long savingsProductId);
+
 }

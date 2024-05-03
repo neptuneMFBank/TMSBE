@@ -29,11 +29,14 @@ public final class LoanProductApprovalApiResourceConstants {
     }
 
     public static final String RESOURCENAME = "LOANPRODUCT_APPROVAL";
+    public static final String SAVINGSPRODUCTOPTIONS = "savingsProductOptions";
     public static final String LOANPRODUCTOPTIONS = "loanProductOptions";
     public static final String ROLEOPTIONS = "roleOptions";
     public static final String ID = "id";
     public static final String NAME = "name";
     public static final String LOANPRODUCTDATA = "loanProductData";
+    public static final String SAVINGSPRODUCTDATA = "savingsProductData";
+    public static final String SAVINGSPRODUCTID = "savingsProductId";
     public static final String LOANPRODUCTID = "loanProductId";
     public static final String LOANPRODUCTAPPROVALCONFIGDATA = "loanProductApprovalConfigData";
 
@@ -43,13 +46,13 @@ public final class LoanProductApprovalApiResourceConstants {
     public static final String MAXAPPROVALAMOUNT = "maxApprovalAmount";
 
     public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(ID, NAME, LOANPRODUCTDATA, LOANPRODUCTAPPROVALCONFIGDATA));
+            Arrays.asList(ID, NAME, LOANPRODUCTDATA, LOANPRODUCTAPPROVALCONFIGDATA, SAVINGSPRODUCTDATA));
 
     public static final Set<String> REQUEST_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(NAME, LOANPRODUCTID, LOANPRODUCTAPPROVALCONFIGDATA));
+            Arrays.asList(NAME, LOANPRODUCTID, LOANPRODUCTAPPROVALCONFIGDATA, SAVINGSPRODUCTID));
 
     public static final Set<String> REQUEST_UPDATE_DATA_PARAMETERS = REQUEST_DATA_PARAMETERS;
 
-    public static final Set<String> RESPONSE_TEMPLATE_PARAMETERS = new HashSet<>(Arrays.asList(LOANPRODUCTOPTIONS, ROLEOPTIONS));
+    public static final Set<String> RESPONSE_TEMPLATE_PARAMETERS = new HashSet<>(Arrays.asList(LOANPRODUCTOPTIONS, ROLEOPTIONS, SAVINGSPRODUCTOPTIONS));
 
 }

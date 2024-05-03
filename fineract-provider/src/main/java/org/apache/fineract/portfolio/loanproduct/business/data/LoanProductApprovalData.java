@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import lombok.Data;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
+import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 import org.apache.fineract.useradministration.data.RoleData;
 
 @SuppressWarnings("unused")
@@ -35,20 +36,22 @@ public class LoanProductApprovalData implements Serializable {
     private final Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData;
     private final Collection<LoanProductData> loanProductOptions;
     private final Collection<RoleData> roleOptions;
+    private final SavingsProductData savingsProductData;
 
     public static LoanProductApprovalData template(Collection<LoanProductData> loanProductOptions, Collection<RoleData> roleOptions) {
         Long id = null;
         String name = null;
         LoanProductData loanProductData = null;
+        SavingsProductData savingsProductData = null;
         Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData = null;
-        return new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions);
+        return new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions, savingsProductData);
     }
 
-    public static LoanProductApprovalData lookUp(Long id, String name, LoanProductData loanProductData) {
+    public static LoanProductApprovalData lookUp(Long id, String name, LoanProductData loanProductData, SavingsProductData savingsProductData) {
         Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData = null;
         Collection<LoanProductData> loanProductOptions = null;
         Collection<RoleData> roleOptions = null;
-        return new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions);
+        return new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions, savingsProductData);
     }
 
     public static LoanProductApprovalData lookUpFinal(Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData,
@@ -56,15 +59,16 @@ public class LoanProductApprovalData implements Serializable {
         final Long id = loanProductApprovalData.getId();
         final String name = loanProductApprovalData.getName();
         final LoanProductData loanProductData = loanProductApprovalData.getLoanProductData();
+        final SavingsProductData savingsProductData = loanProductApprovalData.getSavingsProductData();
         Collection<LoanProductData> loanProductOptions = null;
         Collection<RoleData> roleOptions = null;
-        return new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions);
+        return new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions, savingsProductData);
     }
 
     public static LoanProductApprovalData instance(Long id, String name, LoanProductData loanProductData,
             Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData, Collection<LoanProductData> loanProductOptions,
-            Collection<RoleData> roleOptions, LocalDate createdOn, LocalDate modifiedOn) {
-        return new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions);
+            Collection<RoleData> roleOptions, LocalDate createdOn, LocalDate modifiedOn, SavingsProductData savingsProductData) {
+        return new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions, savingsProductData);
     }
 
 }

@@ -207,4 +207,6 @@
     <include file="parts/0175_m_payment_type_grid.sql" relativeToChangelogFile="true" />
     <include file="parts/0176_m_account_tier_limit.sql" relativeToChangelogFile="true" />
     <include file="parts/0177_m_transfer_approval.sql" relativeToChangelogFile="true" />
+    <include file="parts/0178_m_alter_role_product_approval_loan.sql" relativeToChangelogFile="true" />
+    <include file="parts/0179_m_alter_role_product_approval_savings.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

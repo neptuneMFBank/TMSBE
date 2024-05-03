@@ -21,22 +21,86 @@ package org.apache.fineract.portfolio.loanproduct.business.data;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Collection;
-import lombok.Data;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 import org.apache.fineract.useradministration.data.RoleData;
 
 @SuppressWarnings("unused")
-@Data
+//@Data
 public class LoanProductApprovalData implements Serializable {
 
-    private final Long id;
-    private final String name;
-    private final LoanProductData loanProductData;
-    private final Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData;
-    private final Collection<LoanProductData> loanProductOptions;
-    private final Collection<RoleData> roleOptions;
+    private Long id;
+    private String name;
+    private LoanProductData loanProductData;
+    private Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData;
+    private Collection<LoanProductData> loanProductOptions;
+    private Collection<RoleData> roleOptions;
     private SavingsProductData savingsProductData;
+
+    public LoanProductApprovalData(Long id, String name, LoanProductData loanProductData, Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData, Collection<LoanProductData> loanProductOptions, Collection<RoleData> roleOptions) {
+        this.id = id;
+        this.name = name;
+        this.loanProductData = loanProductData;
+        this.loanProductApprovalConfigData = loanProductApprovalConfigData;
+        this.loanProductOptions = loanProductOptions;
+        this.roleOptions = roleOptions;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LoanProductData getLoanProductData() {
+        return loanProductData;
+    }
+
+    public void setLoanProductData(LoanProductData loanProductData) {
+        this.loanProductData = loanProductData;
+    }
+
+    public Collection<LoanProductApprovalConfigData> getLoanProductApprovalConfigData() {
+        return loanProductApprovalConfigData;
+    }
+
+    public void setLoanProductApprovalConfigData(Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData) {
+        this.loanProductApprovalConfigData = loanProductApprovalConfigData;
+    }
+
+    public Collection<LoanProductData> getLoanProductOptions() {
+        return loanProductOptions;
+    }
+
+    public void setLoanProductOptions(Collection<LoanProductData> loanProductOptions) {
+        this.loanProductOptions = loanProductOptions;
+    }
+
+    public Collection<RoleData> getRoleOptions() {
+        return roleOptions;
+    }
+
+    public void setRoleOptions(Collection<RoleData> roleOptions) {
+        this.roleOptions = roleOptions;
+    }
+
+    public SavingsProductData getSavingsProductData() {
+        return savingsProductData;
+    }
+
+    public void setSavingsProductData(SavingsProductData savingsProductData) {
+        this.savingsProductData = savingsProductData;
+    }
 
     public static LoanProductApprovalData template(Collection<LoanProductData> loanProductOptions, Collection<RoleData> roleOptions) {
         Long id = null;

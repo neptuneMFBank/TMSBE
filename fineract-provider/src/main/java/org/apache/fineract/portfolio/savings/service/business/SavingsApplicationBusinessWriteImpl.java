@@ -18,7 +18,6 @@
  */
 package org.apache.fineract.portfolio.savings.service.business;
 
-import org.apache.fineract.portfolio.savings.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.commands.service.CommandProcessingService;
@@ -43,6 +42,9 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccountChargeAssemble
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountDomainService;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.domain.SavingsProductRepository;
+import org.apache.fineract.portfolio.savings.service.GroupSavingsIndividualMonitoringWritePlatformService;
+import org.apache.fineract.portfolio.savings.service.SavingsAccountApplicationTransitionApiJsonValidator;
+import org.apache.fineract.portfolio.savings.service.SavingsAccountWritePlatformService;
 import org.springframework.stereotype.Service;
 
 @Service

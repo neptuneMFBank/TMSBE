@@ -53,10 +53,12 @@ import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountStatusEnumData;
 import org.apache.fineract.portfolio.savings.data.business.DepositAccountBusinessData;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
 import org.apache.fineract.portfolio.savings.exception.DepositAccountNotFoundException;
 import org.apache.fineract.portfolio.savings.exception.SavingsAccountTransactionNotFoundException;
 import org.apache.fineract.portfolio.savings.service.SavingsEnumerations;
 import org.apache.fineract.simplifytech.data.GeneralConstants;
+import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -431,10 +433,22 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
         this.context.authenticatedUser();
         try {
             final String sql = "select " + savingsAmountOnHoldDataMapper.schema() + " where sav.id = ?";
-            return this.jdbcTemplate.queryForObject(sql, savingsAmountOnHoldDataMapper, new Object[] { savingsAmountOnHoldId });
+            return this.jdbcTemplate.queryForObject(sql, savingsAmountOnHoldDataMapper, new Object[]{savingsAmountOnHoldId});
         } catch (DataAccessException e) {
             log.error("SavingsAmountOnHold not found: {}", e);
             throw new SavingsAccountTransactionNotFoundException(savingsAmountOnHoldId, savingsAmountOnHoldId);
+        }
+    }
+
+    @Override
+    public void approveActivateSavings(final Long savingsId) {
+        final AppUser appUser = this.context.authenticatedUser();
+        final Long appUserId = appUser.getId();
+        try {
+            String clientUpdateSql = "UPDATE m_savings_account SET status_enum=?, approvedon_date=CURRENT_TIMESTAMP, approvedon_userid=?, activatedon_date=CURRENT_TIMESTAMP, activatedon_userid=? WHERE id=?";
+            jdbcTemplate.update(clientUpdateSql, SavingsAccountStatusType.ACTIVE.getValue(), appUserId, appUserId, savingsId);
+        } catch (DataAccessException e) {
+            log.error("approveActivateSavings: {}", e);
         }
     }
 
@@ -443,9 +457,9 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
         public String schema() {
             final StringBuilder accountsSummary = new StringBuilder(
                     " sav.id, sav.savings_account_id, sav.amount, sav.account_no, sav.product_id, sav.product_name, sav.client_id, "
-                            + " sav.display_name, sav.office_id, sav.office_name, sav.mobile_no, sav.email_address, sav.bvn, sav.nin, "
-                            + " sav.tin, sav.alternateMobileNumber, sav.appuser_id, sav.originator, sav.reason_for_block, "
-                            + " sav.created_date from m_savings_amount_on_hold_view sav ");
+                    + " sav.display_name, sav.office_id, sav.office_name, sav.mobile_no, sav.email_address, sav.bvn, sav.nin, "
+                    + " sav.tin, sav.alternateMobileNumber, sav.appuser_id, sav.originator, sav.reason_for_block, "
+                    + " sav.created_date from m_savings_amount_on_hold_view sav ");
 
             return accountsSummary.toString();
         }

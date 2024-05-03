@@ -18,25 +18,6 @@
  */
 package org.apache.fineract.portfolio.savings.service.business;
 
-import com.google.gson.JsonObject;
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.savings.data.business.DepositAccountBusinessData;
-
-public interface DepositsBusinessReadPlatformService {
-
-    void approveActivateSavings(final Long savingsId);
-
-    void createReconciliationWalletMissingForClient();
-
-    Page<DepositAccountBusinessData> retrieveAll(final SearchParametersBusiness searchParameters);
-
-    DepositAccountBusinessData retrieveBalance(final String accountNo);
-
-    DepositAccountBusinessData retrieveName(final String accountNo);
-
-    Page<JsonObject> retrieveAllSavingsAmountOnHold(final SearchParametersBusiness searchParameters);
-
-    JsonObject retrieveSavingsAmountOnHold(final Long savingsAmountOnHoldId);
+public interface SavingsApplicationBusinessWrite {
 
 }

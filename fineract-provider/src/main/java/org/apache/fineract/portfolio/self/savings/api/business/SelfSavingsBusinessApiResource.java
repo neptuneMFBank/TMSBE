@@ -149,6 +149,18 @@ public class SelfSavingsBusinessApiResource {
         return this.depositsBusinessApiResource.submitApplication(uriInfo, commandParam, apiRequestBodyAsJson);
     }
 
+    @POST
+    @Path("auto")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public String submitApproveActivateApplication(@Context final UriInfo uriInfo, @QueryParam("command") final String commandParam,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+        HashMap<String, Object> parameterMap = this.dataValidator.validateSavingsApplication(apiRequestBodyAsJson);
+        final Long clientId = (Long) parameterMap.get(SelfSavingsAccountConstants.clientIdParameterName);
+        validateAppuserClientsMapping(clientId);
+        return this.depositsBusinessApiResource.submitApproveActivateApplication(uriInfo, commandParam, apiRequestBodyAsJson);
+    }
+
     private void validateAppuserSavingsAccountMapping(final Long accountId) {
         AppUser user = this.context.authenticatedUser();
         final boolean isMappedSavings = this.appuserSavingsMapperReadService.isSavingsMappedToUser(accountId, user.getId());

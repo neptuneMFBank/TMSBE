@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.savings.api.business;
 
+import com.google.gson.JsonElement;
 import static org.apache.fineract.portfolio.savings.business.DepositsBusinessApiConstants.DEPOSIT_RESPONSE_DATA_PARAMETERS;
 
 import com.google.gson.JsonObject;
@@ -86,14 +87,15 @@ public class DepositsBusinessApiResource {
     private final FromJsonHelper fromApiJsonHelper;
 
     @GET
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "List Deposits", description = """
                         The list capability of deposits can support pagination and sorting.
             """)
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+        )})
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("accountWithBalance") @Parameter(description = "accountWithBalance") final Boolean accountWithBalance,
             @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
@@ -137,14 +139,15 @@ public class DepositsBusinessApiResource {
 
     @GET
     @Path("{accountNo}/enquiry")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve account enquiry", description = """
             Example Requests:""")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+        )})
     public String retrieveName(@PathParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
             @Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(DepositsBusinessApiConstants.RESOURCE_NAME);
@@ -158,14 +161,15 @@ public class DepositsBusinessApiResource {
 
     @GET
     @Path("{accountNo}/balance")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve account enquiry", description = """
             Example Requests:""")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+        )})
     public String retrieveBalance(@PathParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
             @Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(DepositsBusinessApiConstants.RESOURCE_NAME);
@@ -178,8 +182,8 @@ public class DepositsBusinessApiResource {
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Submit new savings application", description = """
             Submits new savings application
 
@@ -188,10 +192,11 @@ public class DepositsBusinessApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // SavingsAccountsApiResourceSwagger.PostSavingsAccountsRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // SavingsAccountsApiResourceSwagger.PostSavingsAccountsResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // SavingsAccountsApiResourceSwagger.PostSavingsAccountsResponse.class))
+        )})
     public String submitApplication(@Context final UriInfo uriInfo, @QueryParam("command") final String commandParam,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -220,15 +225,15 @@ public class DepositsBusinessApiResource {
         }
 
         if (result == null) {
-            throw new UnrecognizedQueryParamException("command", commandParam, new Object[] { "savings", "fixed", "approve", "recurring" });
+            throw new UnrecognizedQueryParamException("command", commandParam, new Object[]{"savings", "fixed", "approve", "recurring"});
         }
         return this.toApiJsonSerializer.serialize(result);
     }
 
     @PUT
     @Path("{accountId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Update savings application", description = """
             Update savings application
 
@@ -237,10 +242,11 @@ public class DepositsBusinessApiResource {
     // , content = @Content(schema = @Schema(implementation =
     // SavingsAccountsApiResourceSwagger.PostSavingsAccountsRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // SavingsAccountsApiResourceSwagger.PostSavingsAccountsResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // SavingsAccountsApiResourceSwagger.PostSavingsAccountsResponse.class))
+        )})
     public String updateApplication(@PathParam("accountId") @Parameter(description = "accountId") final Long accountId,
             @Context final UriInfo uriInfo, @QueryParam("command") final String commandParam,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
@@ -276,7 +282,7 @@ public class DepositsBusinessApiResource {
 
         if (result == null) {
             throw new UnrecognizedQueryParamException("command", commandParam,
-                    new Object[] { "savings", "updateWithHoldTax", "fixed", "approve", "recurring" });
+                    new Object[]{"savings", "updateWithHoldTax", "fixed", "approve", "recurring"});
         }
         return this.toApiJsonSerializer.serialize(result);
     }
@@ -287,12 +293,13 @@ public class DepositsBusinessApiResource {
 
     @GET
     @Path("interbank/transfer")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "List InterBank Transfer Amount on Hold", description = "The list capability of amount on hold waiting for interBank transfer response")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+        )})
     public String retrieveAllSavingsAmountOnHold(@Context final UriInfo uriInfo,
             @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
             @QueryParam("productId") @Parameter(description = "productId") final Long productId,
@@ -332,13 +339,14 @@ public class DepositsBusinessApiResource {
 
     @GET
     @Path("interbank/transfer/{savingsAmountOnHoldId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve InterBank Transfer Amount on Hold", description = "")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation =
-    // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+        )})
     public String retrieveSavingsAmountOnHold(
             @PathParam("savingsAmountOnHoldId") @Parameter(description = "savingsAmountOnHoldId") final Long savingsAmountOnHoldId,
             @Context final UriInfo uriInfo) {
@@ -350,5 +358,27 @@ public class DepositsBusinessApiResource {
                 .retrieveSavingsAmountOnHold(savingsAmountOnHoldId);
 
         return this.toApiJsonSerializer.serialize(savingsAmountOnHoldData);
+    }
+
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Submit/Approve/Activate new savings application", description = """
+            Submits new savings application
+            """)
+    @RequestBody(required = true)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        )})
+    public String submitApproveActivateApplication(@Context final UriInfo uriInfo, @QueryParam("command") final String commandParam,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+        final String result = this.submitApplication(uriInfo, commandParam, apiRequestBodyAsJson);
+        //call activate process
+        final JsonElement jsonElement = this.fromApiJsonHelper.parse(result);
+        if (this.fromApiJsonHelper.parameterExists("resourceId", jsonElement)) {
+            final Long savingsId = this.fromApiJsonHelper.extractLongNamed("resourceId", jsonElement);
+            this.depositsBusinessReadPlatformService.approveActivateSavings(savingsId);
+        }
+        return result;
     }
 }

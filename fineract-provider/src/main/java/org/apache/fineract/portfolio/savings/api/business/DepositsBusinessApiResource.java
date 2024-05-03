@@ -361,6 +361,7 @@ public class DepositsBusinessApiResource {
     }
 
     @POST
+    @Path("auto")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Submit/Approve/Activate new savings application", description = """

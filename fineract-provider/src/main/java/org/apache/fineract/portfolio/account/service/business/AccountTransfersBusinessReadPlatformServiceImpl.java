@@ -168,12 +168,10 @@ public class AccountTransfersBusinessReadPlatformServiceImpl implements AccountT
         Collection<OfficeData> toOfficeOptions = fromOfficeOptions;
         Collection<ClientData> toClientOptions = null;
 
-        if (mostRelevantToClientId != null && toAccount == null) {
+        if (mostRelevantToClientId != null) {
             toClient = this.clientReadPlatformService.retrieveOne(mostRelevantToClientId);
-            toAccountOptions = retrieveToAccounts(fromAccount, mostRelevantToAccountType, mostRelevantToClientId);
-        } else {
-            if (mostRelevantToClientId != null) {
-                toClient = this.clientReadPlatformService.retrieveOne(mostRelevantToClientId);
+            if (toAccount == null) {
+                toAccountOptions = retrieveToAccounts(fromAccount, mostRelevantToAccountType, mostRelevantToClientId);
             }
         }
         return AccountTransferData.template(fromOffice, fromClient, fromAccountTypeData, fromAccount, transferDate, toOffice, toClient,

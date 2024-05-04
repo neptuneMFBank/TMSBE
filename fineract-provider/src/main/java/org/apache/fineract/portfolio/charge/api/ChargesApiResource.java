@@ -68,7 +68,7 @@ public class ChargesApiResource {
             "chargeAppliesTo", "chargeTimeType", "chargeCalculationType", "chargeCalculationTypeOptions", "chargeAppliesToOptions",
             "chargeTimeTypeOptions", "currencyOptions", "loanChargeCalculationTypeOptions", "loanChargeTimeTypeOptions",
             "savingsChargeCalculationTypeOptions", "savingsChargeTimeTypeOptions", "incomeAccount", "clientChargeCalculationTypeOptions",
-            "clientChargeTimeTypeOptions"));
+            "clientChargeTimeTypeOptions", "paymentTypeOptions"));
 
     private final String resourceNameForPermissions = "CHARGE";
 
@@ -90,12 +90,12 @@ public class ChargesApiResource {
     }
 
     @GET
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve Charges", description = "Returns the list of defined charges.\n" + "\n" + "Example Requests:\n" + "\n"
             + "charges")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ChargesApiResourceSwagger.GetChargesResponse.class)))) })
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ChargesApiResourceSwagger.GetChargesResponse.class))))})
     public String retrieveAllCharges(@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
@@ -108,12 +108,12 @@ public class ChargesApiResource {
 
     @GET
     @Path("{chargeId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve a Charge", description = "Returns the details of a defined Charge.\n" + "\n" + "Example Requests:\n"
             + "\n" + "charges/1")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ChargesApiResourceSwagger.GetChargesResponse.class))) })
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ChargesApiResourceSwagger.GetChargesResponse.class)))})
     public String retrieveCharge(@PathParam("chargeId") @Parameter(description = "chargeId") final Long chargeId,
             @Context final UriInfo uriInfo) {
 
@@ -132,12 +132,12 @@ public class ChargesApiResource {
 
     @GET
     @Path("template")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve Charge Template", description = "This is a convenience resource. It can be useful when building maintenance user interface screens for client applications. The template data returned consists of any or all of:\n"
             + "\n" + "Field Defaults\n" + "Allowed description Lists\n" + "Example Request:\n" + "\n" + "charges/template\n")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ChargesApiResourceSwagger.GetChargesTemplateResponse.class))) })
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ChargesApiResourceSwagger.GetChargesTemplateResponse.class)))})
     public String retrieveNewChargeDetails(@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
@@ -149,12 +149,12 @@ public class ChargesApiResource {
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create/Define a Charge", description = "Define a new charge that can later be associated with loans and savings through their respective product definitions or directly on each account instance.")
     @RequestBody(required = true, content = @Content(schema = @Schema(implementation = ChargesApiResourceSwagger.PostChargesRequest.class)))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ChargesApiResourceSwagger.PostChargesResponse.class))) })
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ChargesApiResourceSwagger.PostChargesResponse.class)))})
     public String createCharge(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().createCharge().withJson(apiRequestBodyAsJson).build();
@@ -166,12 +166,12 @@ public class ChargesApiResource {
 
     @PUT
     @Path("{chargeId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Update a Charge", description = "Updates the details of a Charge.")
     @RequestBody(required = true, content = @Content(schema = @Schema(implementation = ChargesApiResourceSwagger.PutChargesChargeIdRequest.class)))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ChargesApiResourceSwagger.PutChargesChargeIdResponse.class))) })
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ChargesApiResourceSwagger.PutChargesChargeIdResponse.class)))})
     public String updateCharge(@PathParam("chargeId") @Parameter(description = "chargeId") final Long chargeId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -184,10 +184,10 @@ public class ChargesApiResource {
 
     @DELETE
     @Path("{chargeId}")
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Delete a Charge", description = "Deletes a Charge.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ChargesApiResourceSwagger.DeleteChargesChargeIdResponse.class))) })
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ChargesApiResourceSwagger.DeleteChargesChargeIdResponse.class)))})
     public String deleteCharge(@PathParam("chargeId") @Parameter(description = "chargeId") final Long chargeId) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().deleteCharge(chargeId).build();

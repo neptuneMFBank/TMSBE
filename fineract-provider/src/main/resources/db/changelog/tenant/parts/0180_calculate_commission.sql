@@ -21,4 +21,4 @@
 -- INSERT c_configuration
 INSERT INTO `c_configuration` (`id`, `name`, `value`, `date_value`, `string_value`, `enabled`, `is_trap_door`, `description`)
 VALUES
-     (NULL, 'self-client-savings', NULL, NULL, NULL, 1, 0, NULL)
+     (NULL, 'calculate-commission', NULL, NULL, NULL, 1, 0, NULL)

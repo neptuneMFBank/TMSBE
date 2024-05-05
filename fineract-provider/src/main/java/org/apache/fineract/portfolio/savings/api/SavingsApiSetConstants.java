@@ -28,8 +28,9 @@ import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 public class SavingsApiSetConstants extends SavingsApiConstants {
 
     /**
-     * These parameters will match the class level parameters of {@link SavingsProductData}. Where possible, we try to
-     * get response parameters to match those of request parameters.
+     * These parameters will match the class level parameters of
+     * {@link SavingsProductData}. Where possible, we try to get response
+     * parameters to match those of request parameters.
      */
     protected static final Set<String> SAVINGS_PRODUCT_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(idParamName, nameParamName, shortNameParamName, descriptionParamName, "currency", digitsAfterDecimalParamName,
@@ -44,8 +45,9 @@ public class SavingsApiSetConstants extends SavingsApiConstants {
                     daysToDormancyParamName, daysToInactiveParamName, accountMappingForPaymentParamName));
 
     /**
-     * These parameters will match the class level parameters of {@link SavingsAccountData}. Where possible, we try to
-     * get response parameters to match those of request parameters.
+     * These parameters will match the class level parameters of
+     * {@link SavingsAccountData}. Where possible, we try to get response
+     * parameters to match those of request parameters.
      */
     protected static final Set<String> SAVINGS_ACCOUNT_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idParamName,
             accountNoParamName, externalIdParamName, statusParamName, activatedOnDateParamName, staffIdParamName, clientIdParamName,
@@ -61,7 +63,7 @@ public class SavingsApiSetConstants extends SavingsApiConstants {
 
     protected static final Set<String> SAVINGS_TRANSACTION_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(idParamName, "accountId", accountNoParamName, "currency", "amount", dateParamName, paymentDetailDataParamName,
-                    runningBalanceParamName, reversedParamName, noteParamName));
+                    runningBalanceParamName, reversedParamName, noteParamName, "chargeData"));
 
     protected static final Set<String> SAVINGS_ACCOUNT_CHARGES_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(chargeIdParamName, savingsAccountChargeIdParamName, chargeNameParamName, penaltyParamName,

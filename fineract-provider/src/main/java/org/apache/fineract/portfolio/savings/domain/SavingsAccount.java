@@ -1353,6 +1353,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
                                 //paymentDetail,
                                 transactionAmount, paymentTypeId);
                         charge.updateFlatWithdrawalFee(chargeAmount);
+                        this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
+                                backdatedTxnsAllowedTill, refNo);
                     } else if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
 //                        if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
 //                            charge.updateFlatWithdrawalFee(chargeTransactionAmount);

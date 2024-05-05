@@ -1361,10 +1361,12 @@ public class SavingsAccount extends AbstractPersistableCustom {
                         //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
                         //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
                         final Long paymentTypeId = paymentDetail.getId();
+                        LOG.info("charge paymentTypeId: {}", paymentTypeId);
                         final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
                                 paymentTypeGridReadPlatformService,
                                 //paymentDetail,
                                 transactionAmount, paymentTypeId);
+                        LOG.info("chargeAmount paymentTypeId: {}", chargeAmount);
                         if (chargeAmount != null) {
                             charge.updateFlatWithdrawalFee(chargeAmount);
                         } else {

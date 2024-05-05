@@ -71,7 +71,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -1347,22 +1346,30 @@ public class SavingsAccount extends AbstractPersistableCustom {
                         resetFreeChargeDaysCount(charge, transactionAmount, transactionDate, user, refNo);
                     }
                 } else if (charge.isEnablePaymentType()) { // normal charge-transaction to specific paymentType
-                    final Long paymentTypeId = charge.getCharge() == null ? null : charge.getCharge().getPaymentType() == null ? null : charge.getCharge().getPaymentType().getId();
-                    final Boolean isPaymentModeAccountTransfer = charge.getCharge() == null ? null : charge.getCharge().getChargePaymentMode() == null ? null : charge.getChargePaymentMode().isPaymentModeAccountTransfer();
-                    if (paymentTypeId != null && BooleanUtils.isTrue(isPaymentModeAccountTransfer)) {
+//                    final Long paymentTypeId = charge.getCharge() == null ? null : charge.getCharge().getPaymentType() == null ? null : charge.getCharge().getPaymentType().getId();
+//                    final Boolean isPaymentModeAccountTransfer = charge.getCharge() == null ? null : charge.getCharge().getChargePaymentMode() == null ? null : charge.getChargePaymentMode().isPaymentModeAccountTransfer();
+//                    if (paymentTypeId != null && BooleanUtils.isTrue(isPaymentModeAccountTransfer)) {
+//                        final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
+//                                paymentTypeGridReadPlatformService,
+//                                //paymentDetail,
+//                                transactionAmount, paymentTypeId);
+//                        charge.updateFlatWithdrawalFee(chargeAmount);
+//                        this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
+//                                backdatedTxnsAllowedTill, refNo);
+//                    } else 
+                    if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
+                        //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
+                        //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
+                        final Long paymentTypeId = paymentDetail.getId();
                         final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
                                 paymentTypeGridReadPlatformService,
                                 //paymentDetail,
                                 transactionAmount, paymentTypeId);
-                        charge.updateFlatWithdrawalFee(chargeAmount);
-                        this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
-                                backdatedTxnsAllowedTill, refNo);
-                    } else if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
-//                        if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
-//                            charge.updateFlatWithdrawalFee(chargeTransactionAmount);
-//                        } else {
-                        charge.updateWithdralFeeAmount(transactionAmount);
-                        //}
+                        if (chargeAmount != null) {
+                            charge.updateFlatWithdrawalFee(chargeAmount);
+                        } else {
+                            charge.updateWithdralFeeAmount(transactionAmount);
+                        }
                         this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
                                 backdatedTxnsAllowedTill, refNo);
                     }

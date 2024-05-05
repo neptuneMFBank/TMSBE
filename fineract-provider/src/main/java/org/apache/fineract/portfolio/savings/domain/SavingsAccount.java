@@ -71,6 +71,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -1347,7 +1348,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
                     }
                 } else if (charge.isEnablePaymentType()) { // normal charge-transaction to specific paymentType
                     final Long paymentTypeId = charge.getCharge() == null ? null : charge.getCharge().getPaymentType() == null ? null : charge.getCharge().getPaymentType().getId();
-                    if (paymentTypeId != null) {
+                    final Boolean isPaymentModeAccountTransfer = charge.getCharge() == null ? null : charge.getChargePaymentMode().isPaymentModeAccountTransfer();
+                    if (paymentTypeId != null && BooleanUtils.isTrue(isPaymentModeAccountTransfer)) {
                         final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
                                 paymentTypeGridReadPlatformService,
                                 //paymentDetail,

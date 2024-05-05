@@ -47,6 +47,7 @@ import org.apache.fineract.organisation.monetary.domain.Money;
 import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.portfolio.charge.domain.Charge;
 import org.apache.fineract.portfolio.charge.domain.ChargeCalculationType;
+import org.apache.fineract.portfolio.charge.domain.ChargePaymentMode;
 import org.apache.fineract.portfolio.charge.domain.ChargeTimeType;
 import org.apache.fineract.portfolio.charge.exception.SavingsAccountChargeWithoutMandatoryFieldException;
 import org.slf4j.Logger;
@@ -931,5 +932,9 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
      */
     public boolean canOverriteSavingAccountRules() {
         return (!this.isSavingsActivation() && !this.isWithdrawalFee() && !this.isDepositFee());
+    }
+
+    public ChargePaymentMode getChargePaymentMode() {
+        return ChargePaymentMode.fromInt(this.charge.getChargePaymentMode());
     }
 }

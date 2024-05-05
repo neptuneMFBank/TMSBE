@@ -21,6 +21,7 @@ package org.apache.fineract.portfolio.savings.data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -101,6 +102,7 @@ public final class SavingsAccountTransactionData implements Serializable {
     private transient Long modifiedId;
     private transient String refNo;
     private ChargeData chargeData;
+    private LocalDateTime submittedOnDateTime;
 
     public static SavingsAccountTransactionData importInstance(BigDecimal transactionAmount, LocalDate transactionDate, Long paymentTypeId,
             String accountNumber, String checkNumber, String routingCode, String receiptNumber, String bankNumber, Long savingsAccountId,
@@ -495,8 +497,7 @@ public final class SavingsAccountTransactionData implements Serializable {
          * *
          * Sending data in a map, though in savings we currently expect a
          * transaction to always repay a single charge (or may repay a part of a
-         * single charge too)
-         **
+         * single charge too) *
          */
         if (!this.chargesPaidByData.isEmpty()) {
             final List<Map<String, Object>> savingsChargesPaidData = new ArrayList<>();
@@ -955,6 +956,10 @@ public final class SavingsAccountTransactionData implements Serializable {
 
     public void setChargeData(ChargeData chargeData) {
         this.chargeData = chargeData;
+    }
+
+    public void setSubmittedOnDateTime(LocalDateTime submittedOnDateTime) {
+        this.submittedOnDateTime = submittedOnDateTime;
     }
 
 }

@@ -209,5 +209,10 @@
     <include file="parts/0177_m_transfer_approval.sql" relativeToChangelogFile="true" />
     <include file="parts/0178_m_alter_role_product_approval_loan.sql" relativeToChangelogFile="true" />
     <include file="parts/0179_m_alter_role_product_approval_savings.sql" relativeToChangelogFile="true" />
+    <include file="parts/0417_create_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0418_approve_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0419_reject_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0420_read_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
+    
     <!-- <include file="parts/0180_calculate_commission.sql" relativeToChangelogFile="true" /> -->
 </databaseChangeLog>

@@ -1360,7 +1360,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
                     if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
                         //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
                         //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
-                        final Long paymentTypeId = paymentDetail.getId();
+                        final Long paymentTypeId = paymentDetail.getPaymentType().getId();
                         LOG.info("charge paymentTypeId: {}", paymentTypeId);
                         final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
                                 paymentTypeGridReadPlatformService,

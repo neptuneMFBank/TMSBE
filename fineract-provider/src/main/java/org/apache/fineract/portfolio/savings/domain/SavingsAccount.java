@@ -1348,7 +1348,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
                     }
                 } else if (charge.isEnablePaymentType()) { // normal charge-transaction to specific paymentType
                     final Long paymentTypeId = charge.getCharge() == null ? null : charge.getCharge().getPaymentType() == null ? null : charge.getCharge().getPaymentType().getId();
-                    final Boolean isPaymentModeAccountTransfer = charge.getCharge() == null ? null : charge.getChargePaymentMode().isPaymentModeAccountTransfer();
+                    final Boolean isPaymentModeAccountTransfer = charge.getCharge() == null ? null : charge.getCharge().getChargePaymentMode() == null ? null : charge.getChargePaymentMode().isPaymentModeAccountTransfer();
                     if (paymentTypeId != null && BooleanUtils.isTrue(isPaymentModeAccountTransfer)) {
                         final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
                                 paymentTypeGridReadPlatformService,

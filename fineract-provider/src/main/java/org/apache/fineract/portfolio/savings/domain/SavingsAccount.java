@@ -71,6 +71,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
+import liquibase.pro.packaged.dd;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -95,6 +96,7 @@ import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.common.domain.PeriodFrequencyType;
 import org.apache.fineract.portfolio.group.domain.Group;
 import org.apache.fineract.portfolio.paymentdetail.domain.PaymentDetail;
+import org.apache.fineract.portfolio.paymenttype.service.business.PaymentTypeGridReadPlatformService;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.SavingsAccountTransactionType;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
@@ -118,6 +120,7 @@ import org.apache.fineract.portfolio.savings.service.SavingsEnumerations;
 import org.apache.fineract.portfolio.tax.domain.TaxComponent;
 import org.apache.fineract.portfolio.tax.domain.TaxGroup;
 import org.apache.fineract.portfolio.tax.service.TaxUtils;
+import org.apache.fineract.simplifytech.data.GeneralConstants;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1228,7 +1231,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
     }
 
     public SavingsAccountTransaction withdraw(final SavingsAccountTransactionDTO transactionDTO, final boolean applyWithdrawFee,
-            final boolean backdatedTxnsAllowedTill, final Long relaxingDaysConfigForPivotDate, String refNo) {
+            final boolean backdatedTxnsAllowedTill, final Long relaxingDaysConfigForPivotDate, String refNo, final PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService) {
 
         if (!isTransactionsAllowed()) {
 
@@ -1286,7 +1289,10 @@ public class SavingsAccount extends AbstractPersistableCustom {
         if (applyWithdrawFee) {
             // auto pay withdrawal fee
             payWithdrawalFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
-                    transactionDTO.getPaymentDetail(), backdatedTxnsAllowedTill, refNo, transactionDTO.getChargeAmount());
+                    transactionDTO.getPaymentDetail(), backdatedTxnsAllowedTill, refNo,
+                    //transactionDTO.getChargeAmount()
+                    paymentTypeGridReadPlatformService
+            );
         }
 
         final Money transactionAmountMoney = Money.of(this.currency, transactionDTO.getTransactionAmount());
@@ -1324,7 +1330,9 @@ public class SavingsAccount extends AbstractPersistableCustom {
     }
 
     private void payWithdrawalFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user,
-            final PaymentDetail paymentDetail, final boolean backdatedTxnsAllowedTill, final String refNo, final BigDecimal chargeTransactionAmount) {
+            final PaymentDetail paymentDetail, final boolean backdatedTxnsAllowedTill, final String refNo,
+            //final BigDecimal chargeTransactionAmount,
+            final PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService) {
         for (SavingsAccountCharge charge : this.charges()) {
 
             if (charge.isWithdrawalFee() && charge.isActive()) {
@@ -1339,12 +1347,19 @@ public class SavingsAccount extends AbstractPersistableCustom {
                         resetFreeChargeDaysCount(charge, transactionAmount, transactionDate, user, refNo);
                     }
                 } else if (charge.isEnablePaymentType()) { // normal charge-transaction to specific paymentType
-                    if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
-                        if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
-                            charge.updateFlatWithdrawalFee(chargeTransactionAmount);
-                        } else {
-                            charge.updateWithdralFeeAmount(transactionAmount);
-                        }
+                    final Long paymentTypeId = charge.getCharge() == null ? null : charge.getCharge().getPaymentType() == null ? null : charge.getCharge().getPaymentType().getId();
+                    if (paymentTypeId != null) {
+                        final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
+                                paymentTypeGridReadPlatformService,
+                                //paymentDetail,
+                                transactionAmount, paymentTypeId);
+                        charge.updateFlatWithdrawalFee(chargeAmount);
+                    } else if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
+//                        if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
+//                            charge.updateFlatWithdrawalFee(chargeTransactionAmount);
+//                        } else {
+                        charge.updateWithdralFeeAmount(transactionAmount);
+                        //}
                         this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
                                 backdatedTxnsAllowedTill, refNo);
                     }

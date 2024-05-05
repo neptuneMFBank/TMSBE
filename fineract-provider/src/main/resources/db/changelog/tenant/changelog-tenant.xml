@@ -210,4 +210,5 @@
     <include file="parts/0178_m_alter_role_product_approval_loan.sql" relativeToChangelogFile="true" />
     <include file="parts/0179_m_alter_role_product_approval_savings.sql" relativeToChangelogFile="true" />
     <!-- <include file="parts/0180_calculate_commission.sql" relativeToChangelogFile="true" /> -->
+    <include file="parts/0181_alter_charge_payment_type.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

@@ -52,10 +52,8 @@ import org.apache.fineract.portfolio.charge.domain.Charge;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterest;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestConfig;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestRepositoryWrapper;
-import org.apache.fineract.portfolio.paymentdetail.domain.PaymentDetail;
 import org.apache.fineract.portfolio.paymenttype.data.business.PaymentTypeGridData;
 import org.apache.fineract.portfolio.paymenttype.data.business.PaymentTypeGridJsonData;
-import org.apache.fineract.portfolio.paymenttype.domain.PaymentType;
 import org.apache.fineract.portfolio.paymenttype.service.business.PaymentTypeGridReadPlatformService;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.slf4j.Logger;
@@ -319,34 +317,37 @@ public class GeneralConstants {
         }
     }
 
-    public static BigDecimal paymentExtensionGridCharge(FromJsonHelper fromJsonHelper, PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService, final PaymentDetail paymentDetail, final BigDecimal transactionAmount) {
+    public static BigDecimal paymentExtensionGridCharge(PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService,
+            //final PaymentDetail paymentDetail, 
+            final BigDecimal transactionAmount, Long paymentTypeId) {
+        FromJsonHelper fromJsonHelper = new FromJsonHelper();
         try {
-            if (paymentDetail != null && paymentDetail.getPaymentType() != null) {
-                //Extending to paymentTypeGrid
-                final PaymentType paymentType = paymentDetail.getPaymentType();
-                final Long paymentTypeId = paymentType.getId();
-                final Collection<PaymentTypeGridData> paymentTypeGridData = paymentTypeGridReadPlatformService.retrievePaymentTypeGrids(paymentTypeId);
-                if (!CollectionUtils.isEmpty(paymentTypeGridData)) {
-                    final PaymentTypeGridData paymentTypeGridData1 = paymentTypeGridData.stream().findFirst().orElse(null);
-                    if (paymentTypeGridData1 != null) {
-                        if (BooleanUtils.isFalse(paymentTypeGridData1.getIsCommission())
-                                && BooleanUtils.isTrue(paymentTypeGridData1.getIsGrid())
-                                && paymentTypeGridData1.getGridJsonObject() != null) {
-                            final JsonElement je = paymentTypeGridData1.getGridJsonObject();
-                            final Type listType = new TypeToken<List<PaymentTypeGridJsonData>>() {
-                            }.getType();
-                            final String json = fromJsonHelper.toJson(je);
-                            log.info("paymentExtensionGridCharge raw info: {}", json);
-                            final List<PaymentTypeGridJsonData> paymentTypeGridJsonData = fromJsonHelper.fromJson(json, listType);
-                            if (!CollectionUtils.isEmpty(paymentTypeGridJsonData)) {
-                                log.info("paymentExtensionGridCharge json info: {}", Arrays.toString(paymentTypeGridJsonData.toArray()));
-                                final BigDecimal amount = paymentTypeGridJsonData.stream()
-                                        .filter(predicate -> isWithinRange(transactionAmount, predicate.getMinAmount(),
-                                        predicate.getMaxAmount()))
-                                        .map(PaymentTypeGridJsonData::getAmount).findFirst().orElse(null);
-                                if (amount != null) {
-                                    return amount;
-                                }
+//            if (paymentDetail != null && paymentDetail.getPaymentType() != null) {
+//                final PaymentType paymentType = paymentDetail.getPaymentType();
+//                paymentTypeId = paymentType.getId();
+//            }
+            //Extending to paymentTypeGrid
+            final Collection<PaymentTypeGridData> paymentTypeGridData = paymentTypeGridReadPlatformService.retrievePaymentTypeGrids(paymentTypeId);
+            if (!CollectionUtils.isEmpty(paymentTypeGridData)) {
+                final PaymentTypeGridData paymentTypeGridData1 = paymentTypeGridData.stream().findFirst().orElse(null);
+                if (paymentTypeGridData1 != null) {
+                    if (BooleanUtils.isFalse(paymentTypeGridData1.getIsCommission())
+                            && BooleanUtils.isTrue(paymentTypeGridData1.getIsGrid())
+                            && paymentTypeGridData1.getGridJsonObject() != null) {
+                        final JsonElement je = paymentTypeGridData1.getGridJsonObject();
+                        final Type listType = new TypeToken<List<PaymentTypeGridJsonData>>() {
+                        }.getType();
+                        final String json = fromJsonHelper.toJson(je);
+                        log.info("paymentExtensionGridCharge raw info: {}", json);
+                        final List<PaymentTypeGridJsonData> paymentTypeGridJsonData = fromJsonHelper.fromJson(json, listType);
+                        if (!CollectionUtils.isEmpty(paymentTypeGridJsonData)) {
+                            log.info("paymentExtensionGridCharge json info: {}", Arrays.toString(paymentTypeGridJsonData.toArray()));
+                            final BigDecimal amount = paymentTypeGridJsonData.stream()
+                                    .filter(predicate -> isWithinRange(transactionAmount, predicate.getMinAmount(),
+                                    predicate.getMaxAmount()))
+                                    .map(PaymentTypeGridJsonData::getAmount).findFirst().orElse(null);
+                            if (amount != null) {
+                                return amount;
                             }
                         }
                     }

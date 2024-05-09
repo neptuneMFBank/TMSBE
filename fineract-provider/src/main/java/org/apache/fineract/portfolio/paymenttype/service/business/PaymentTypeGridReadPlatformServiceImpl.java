@@ -28,7 +28,6 @@ import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.portfolio.charge.data.ChargeData;
 import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
 import org.apache.fineract.portfolio.paymenttype.data.business.PaymentTypeGridData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,11 +124,11 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
                 paymentType = PaymentTypeData.instance(paymentTypeId, typeName);
             }
 
-            ChargeData chargeData = null;
+            EnumOptionData chargeData = null;
             final Long chargeId = JdbcSupport.getLong(rs, "chargeId");
             if (chargeId != null) {
                 final String chargeName = rs.getString("chargeName");
-                chargeData = ChargeData.lookup(chargeId, chargeName, false);
+                chargeData = new EnumOptionData(chargeId, chargeName, chargeName);
             }
             final int calculationType = rs.getInt("calculationType");
             EnumOptionData paymentCalculationType = null;

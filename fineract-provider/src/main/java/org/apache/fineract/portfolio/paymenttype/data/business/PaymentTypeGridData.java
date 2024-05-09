@@ -48,7 +48,7 @@ public class PaymentTypeGridData implements Serializable {
             final Boolean isCommission,
             final EnumOptionData paymentCalculationType,
             final BigDecimal amount,
-            final BigDecimal percent, final ChargeData chargeData) {
+            final BigDecimal percent,  ChargeData chargeData) {
         return new PaymentTypeGridData(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType, amount, percent, chargeData);
 
     }

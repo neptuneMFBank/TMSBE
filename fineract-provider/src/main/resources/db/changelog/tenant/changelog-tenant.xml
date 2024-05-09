@@ -123,7 +123,7 @@
     <include file="parts/0106_m_agreement_form_code.sql" relativeToChangelogFile="true" />
     <include file="parts/0107_enable_user_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0108_disable_user_permission.sql" relativeToChangelogFile="true" />
-    <include file="parts/0109_payment_detail_receipt_unique.sql" relativeToChangelogFile="true" />
+    <!-- <include file="parts/0109_payment_detail_receipt_unique.sql" relativeToChangelogFile="true" /> -->
     <include file="parts/0110_m_submit_loan_approval_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0111_update_commmand_as_json.sql" relativeToChangelogFile="true" />
     <include file="parts/0112_m_product_loan_payment_type_config.sql" relativeToChangelogFile="true" />

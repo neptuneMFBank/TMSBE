@@ -4008,18 +4008,22 @@ public class SavingsAccount extends AbstractPersistableCustom {
         //final Long paymentTypeId = paymentDetail.getPaymentType().getId();
         //LOG.info("charge paymentTypeId: {}", paymentTypeId);
         LOG.info("{}- charge paymentTypeId: {}", real, chargeId);
-        if (chargeId != null) {
-            final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
-                    paymentTypeGridReadPlatformService,
-                    //paymentDetail,
-                    transactionAmount,
-                    //paymentTypeId
-                    chargeId
-            );
-            LOG.info("{}- chargeAmount paymentTypeId: {}", real, chargeAmount);
-            //}
-            //if (chargeAmount != null) {
+        if (chargeId == null) {
+            throw new SavingsAccountChargeNotFoundException();
+        }
+        final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
+                paymentTypeGridReadPlatformService,
+                //paymentDetail,
+                transactionAmount,
+                //paymentTypeId
+                chargeId
+        );
+        LOG.info("{}- chargeAmount paymentTypeId: {}", real, chargeAmount);
+        //}
+        if (chargeAmount != null && chargeAmount.compareTo(BigDecimal.ZERO) > 0) {
             charge.updateFlatWithdrawalFee(chargeAmount);
+        } else {
+            charge.updateWithdralFeeAmount(transactionAmount);
         }
     }
 }

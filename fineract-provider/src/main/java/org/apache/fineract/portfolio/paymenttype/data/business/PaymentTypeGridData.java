@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import lombok.Data;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
+import org.apache.fineract.portfolio.charge.data.ChargeData;
 import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
 
 @Data
@@ -38,6 +39,7 @@ public class PaymentTypeGridData implements Serializable {
     private EnumOptionData paymentCalculationType;
     private BigDecimal amount;
     private BigDecimal percent;
+    private ChargeData chargeData;
 
     public static PaymentTypeGridData instance(final Long id, final PaymentTypeData paymentType,
             final String name,
@@ -46,12 +48,12 @@ public class PaymentTypeGridData implements Serializable {
             final Boolean isCommission,
             final EnumOptionData paymentCalculationType,
             final BigDecimal amount,
-            final BigDecimal percent) {
-        return new PaymentTypeGridData(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType, amount, percent);
+            final BigDecimal percent, final ChargeData chargeData) {
+        return new PaymentTypeGridData(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType, amount, percent, chargeData);
 
     }
 
-    public PaymentTypeGridData(final Long id, PaymentTypeData paymentType, String name, String gridJson, Boolean isGrid, Boolean isCommission, EnumOptionData paymentCalculationType, BigDecimal amount, BigDecimal percent) {
+    public PaymentTypeGridData(final Long id, PaymentTypeData paymentType, String name, String gridJson, Boolean isGrid, Boolean isCommission, EnumOptionData paymentCalculationType, BigDecimal amount, BigDecimal percent, ChargeData chargeData) {
         this.id = id;
         this.paymentType = paymentType;
         this.name = name;
@@ -61,6 +63,7 @@ public class PaymentTypeGridData implements Serializable {
         this.paymentCalculationType = paymentCalculationType;
         this.amount = amount;
         this.percent = percent;
+        this.chargeData = chargeData;
     }
 
 }

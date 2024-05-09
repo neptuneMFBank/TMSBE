@@ -110,5 +110,21 @@ public class PaymentTypeGridApiResource {
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.jsonSerializer.serialize(settings, paymentTypeGridData, PaymentTypeGridApiResourceConstants.RESPONSE_DATA_PARAMETERS);
     }
+    @GET
+    @Path("charge/{chargeId}")
+    @Consumes({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Retrieve all Payment Types Grid Via Charge", description = "Retrieve list of payment types grid via Charge")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        //, content = @Content(array = @ArraySchema(schema = @Schema(implementation = PaymentTypeApiResourceSwagger.GetPaymentTypesResponse.class)))
+        )
+    })
+    public String getAllPaymentTypeGridsViaCharge(@PathParam("chargeId") @Parameter(description = "chargeId") final Long chargeId, @Context final UriInfo uriInfo) {
+        this.securityContext.authenticatedUser().validateHasReadPermission(PaymentTypeApiResourceConstants.resourceNameForPermissions);
+        final Collection<PaymentTypeGridData> paymentTypeGridData = this.readPlatformService.retrievePaymentTypeGridsViaCharge(chargeId);
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.jsonSerializer.serialize(settings, paymentTypeGridData, PaymentTypeGridApiResourceConstants.RESPONSE_DATA_PARAMETERS);
+    }
 
 }

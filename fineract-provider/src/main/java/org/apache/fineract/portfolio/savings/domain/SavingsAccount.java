@@ -1360,14 +1360,21 @@ public class SavingsAccount extends AbstractPersistableCustom {
                     if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
                         //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
                         //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
-                        final Long paymentTypeId = paymentDetail.getPaymentType().getId();
-                        LOG.info("charge paymentTypeId: {}", paymentTypeId);
-                        final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
-                                paymentTypeGridReadPlatformService,
-                                //paymentDetail,
-                                transactionAmount, paymentTypeId);
-                        LOG.info("chargeAmount paymentTypeId: {}", chargeAmount);
-                        if (chargeAmount != null) {
+                        //final Long paymentTypeId = paymentDetail.getPaymentType().getId();
+                        //LOG.info("charge paymentTypeId: {}", paymentTypeId);
+                        final Long chargeId = charge.getCharge() == null ? null : charge.getCharge().getId();
+                        LOG.info("charge paymentTypeId: {}", chargeId);
+                        if (chargeId != null) {
+                            final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
+                                    paymentTypeGridReadPlatformService,
+                                    //paymentDetail,
+                                    transactionAmount,
+                                    //paymentTypeId
+                                    chargeId
+                            );
+                            LOG.info("chargeAmount paymentTypeId: {}", chargeAmount);
+                            //}
+                            //if (chargeAmount != null) {
                             charge.updateFlatWithdrawalFee(chargeAmount);
                         } else {
                             charge.updateWithdralFeeAmount(transactionAmount);

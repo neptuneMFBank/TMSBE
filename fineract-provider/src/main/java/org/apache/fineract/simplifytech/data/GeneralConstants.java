@@ -336,29 +336,29 @@ public class GeneralConstants {
             if (!CollectionUtils.isEmpty(paymentTypeGridData)) {
                 for (PaymentTypeGridData paymentTypeGridData1 : paymentTypeGridData) {
                     //final PaymentTypeGridData paymentTypeGridData1 = paymentTypeGridData.stream().findFirst().orElse(null);
-                    if (paymentTypeGridData1 != null) {
-                        if (BooleanUtils.isFalse(paymentTypeGridData1.getIsCommission())
-                                && BooleanUtils.isTrue(paymentTypeGridData1.getIsGrid())
-                                && paymentTypeGridData1.getGridJsonObject() != null) {
-                            final JsonElement je = paymentTypeGridData1.getGridJsonObject();
-                            final Type listType = new TypeToken<List<PaymentTypeGridJsonData>>() {
-                            }.getType();
-                            final String json = fromJsonHelper.toJson(je);
-                            log.info("paymentExtensionGridCharge raw info: {}", json);
-                            final List<PaymentTypeGridJsonData> paymentTypeGridJsonData = fromJsonHelper.fromJson(json, listType);
-                            if (!CollectionUtils.isEmpty(paymentTypeGridJsonData)) {
-                                log.info("paymentExtensionGridCharge json info: {}", Arrays.toString(paymentTypeGridJsonData.toArray()));
-                                final BigDecimal secondAmount = paymentTypeGridJsonData.stream()
-                                        .filter(predicate -> isWithinRange(transactionAmount, predicate.getMinAmount(),
-                                        predicate.getMaxAmount()))
-                                        .map(PaymentTypeGridJsonData::getAmount).findFirst().orElse(BigDecimal.ZERO);
-                                amount = amount.add(secondAmount);
-                                //if (amount != null) {
-                                //   return amount;
-                                //}
-                            }
+                    //if (paymentTypeGridData1 != null) {
+                    if (BooleanUtils.isFalse(paymentTypeGridData1.getIsCommission())
+                            && BooleanUtils.isTrue(paymentTypeGridData1.getIsGrid())
+                            && paymentTypeGridData1.getGridJsonObject() != null) {
+                        final JsonElement je = paymentTypeGridData1.getGridJsonObject();
+                        final Type listType = new TypeToken<List<PaymentTypeGridJsonData>>() {
+                        }.getType();
+                        final String json = fromJsonHelper.toJson(je);
+                        log.info("paymentExtensionGridCharge raw info: {}", json);
+                        final List<PaymentTypeGridJsonData> paymentTypeGridJsonData = fromJsonHelper.fromJson(json, listType);
+                        if (!CollectionUtils.isEmpty(paymentTypeGridJsonData)) {
+                            log.info("paymentExtensionGridCharge json info: {}", Arrays.toString(paymentTypeGridJsonData.toArray()));
+                            final BigDecimal secondAmount = paymentTypeGridJsonData.stream()
+                                    .filter(predicate -> isWithinRange(transactionAmount, predicate.getMinAmount(),
+                                    predicate.getMaxAmount()))
+                                    .map(PaymentTypeGridJsonData::getAmount).findFirst().orElse(BigDecimal.ZERO);
+                            amount = amount.add(secondAmount);
+                            //if (amount != null) {
+                            //   return amount;
+                            //}
                         }
                     }
+                    //}
                 }
             }
         } catch (Exception e) {

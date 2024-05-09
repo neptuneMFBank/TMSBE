@@ -1346,7 +1346,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
                         resetFreeChargeDaysCount(charge, transactionAmount, transactionDate, user, refNo);
                     }
                 } else if (charge.isEnablePaymentType()) { // normal charge-transaction to specific paymentType
-//                    final Long paymentTypeId = charge.getCharge() == null ? null : charge.getCharge().getPaymentType() == null ? null : charge.getCharge().getPaymentType().getId();
 //                    final Boolean isPaymentModeAccountTransfer = charge.getCharge() == null ? null : charge.getCharge().getChargePaymentMode() == null ? null : charge.getChargePaymentMode().isPaymentModeAccountTransfer();
 //                    if (paymentTypeId != null && BooleanUtils.isTrue(isPaymentModeAccountTransfer)) {
 //                        final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
@@ -1358,24 +1357,13 @@ public class SavingsAccount extends AbstractPersistableCustom {
 //                                backdatedTxnsAllowedTill, refNo);
 //                    } else 
                     if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
-                        //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
-                        //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
-                        //final Long paymentTypeId = paymentDetail.getPaymentType().getId();
-                        //LOG.info("charge paymentTypeId: {}", paymentTypeId);
-                        final Long chargeId = charge.getCharge() == null ? null : charge.getCharge().getId();
-                        LOG.info("charge paymentTypeId: {}", chargeId);
-                        if (chargeId != null) {
-                            final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
-                                    paymentTypeGridReadPlatformService,
-                                    //paymentDetail,
-                                    transactionAmount,
-                                    //paymentTypeId
-                                    chargeId
-                            );
-                            LOG.info("chargeAmount paymentTypeId: {}", chargeAmount);
-                            //}
-                            //if (chargeAmount != null) {
-                            charge.updateFlatWithdrawalFee(chargeAmount);
+                        calculateExternalCharges(charge, transactionAmount, "real-", paymentTypeGridReadPlatformService);
+                        this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
+                                backdatedTxnsAllowedTill, refNo);
+                    } else {
+                        final Long paymentTypeId = charge.getCharge() == null ? null : charge.getCharge().getPaymentType() == null ? null : charge.getCharge().getPaymentType().getId();
+                        if (paymentTypeId != null) {
+                            calculateExternalCharges(charge, transactionAmount, "realElse-", paymentTypeGridReadPlatformService);
                         } else {
                             charge.updateWithdralFeeAmount(transactionAmount);
                         }
@@ -4013,4 +4001,25 @@ public class SavingsAccount extends AbstractPersistableCustom {
         }
     }
 
+    private void calculateExternalCharges(SavingsAccountCharge charge, BigDecimal transactionAmount, String real, PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService) {
+        final Long chargeId = charge.getCharge() == null ? null : charge.getCharge().getId();
+        //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
+        //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
+        //final Long paymentTypeId = paymentDetail.getPaymentType().getId();
+        //LOG.info("charge paymentTypeId: {}", paymentTypeId);
+        LOG.info("{}- charge paymentTypeId: {}", real, chargeId);
+        if (chargeId != null) {
+            final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
+                    paymentTypeGridReadPlatformService,
+                    //paymentDetail,
+                    transactionAmount,
+                    //paymentTypeId
+                    chargeId
+            );
+            LOG.info("{}- chargeAmount paymentTypeId: {}", real, chargeAmount);
+            //}
+            //if (chargeAmount != null) {
+            charge.updateFlatWithdrawalFee(chargeAmount);
+        }
+    }
 }

@@ -4031,8 +4031,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
             final LocalDate transactionDate, final AppUser user, final boolean backdatedTxnsAllowedTill, final String refNo, final PaymentDetail paymentDetail) {
         final Long chargeId = charge.getCharge() == null ? null : charge.getCharge().getId();
         final Long paymentTypeId = paymentDetail == null ? null : paymentDetail.getPaymentType().getId();
-        //LOG.info("charge paymentTypeId: {}", paymentTypeId);
-        LOG.info("{}- charge- paymentTypeId: {}", real, chargeId);
+        LOG.info("{}- charge- paymentTypeId: {}-{}", real, chargeId, paymentTypeId);
         if (chargeId != null && paymentTypeId != null) {
             final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
                     paymentTypeGridReadPlatformService,

@@ -1369,7 +1369,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
                         //LOG.info("Else charge paymentTypeId: {}", paymentTypeId);
                         //if (paymentTypeId != null) {
                         calculateExternalChargesPaymentId(charge, transactionAmount, "realElse-", paymentTypeGridReadPlatformService, transactionDate, user, backdatedTxnsAllowedTill, refNo, paymentTypeId);
-                        LOG.info("check- charge-getAmountOutstanding: {}", charge.getAmountOutstanding(this.getCurrency()));
+                        //LOG.info("check- charge-getAmountOutstanding: {}", charge.getAmountOutstanding(this.getCurrency()));
                         //} else {
                         //charge.updateWithdralFeeAmount(transactionAmount);
                         //}
@@ -4048,7 +4048,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
             LOG.info("{}- chargeAmount-: {}", real, chargeAmount);
             //}
             if (chargeAmount != null && chargeAmount.compareTo(BigDecimal.ZERO) > 0) {
-                LOG.info("reachPaymentHere");
                 charge.updateFlatWithdrawalFee(chargeAmount);
                 this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
                         backdatedTxnsAllowedTill, refNo);

@@ -1361,12 +1361,11 @@ public class SavingsAccount extends AbstractPersistableCustom {
                         this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
                                 backdatedTxnsAllowedTill, refNo);
                     } else {
-                        final Long paymentTypeId = charge.getCharge() == null ? null : charge.getCharge().getPaymentType() == null ? null : charge.getCharge().getPaymentType().getId();
-                        LOG.info("Else charge paymentTypeId: {}", paymentTypeId);
-                        if (paymentTypeId != null) {
-                            calculateExternalChargesPaymentId(charge, transactionAmount, "realElse-", paymentTypeGridReadPlatformService, transactionDate, user, backdatedTxnsAllowedTill, refNo);
-
-                        } //else {
+                        //final Long paymentTypeId = charge.getCharge() == null ? null : charge.getCharge().getPaymentType() == null ? null : charge.getCharge().getPaymentType().getId();
+                        //LOG.info("Else charge paymentTypeId: {}", paymentTypeId);
+                        //if (paymentTypeId != null) {
+                        calculateExternalChargesPaymentId(charge, transactionAmount, "realElse-", paymentTypeGridReadPlatformService, transactionDate, user, backdatedTxnsAllowedTill, refNo, paymentDetail);
+                        //} else {
                         //charge.updateWithdralFeeAmount(transactionAmount);
                         //}
 
@@ -4029,9 +4028,9 @@ public class SavingsAccount extends AbstractPersistableCustom {
     }
 
     private void calculateExternalChargesPaymentId(SavingsAccountCharge charge, BigDecimal transactionAmount, String real, PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService,
-            final LocalDate transactionDate, final AppUser user, final boolean backdatedTxnsAllowedTill, final String refNo) {
+            final LocalDate transactionDate, final AppUser user, final boolean backdatedTxnsAllowedTill, final String refNo, final PaymentDetail paymentDetail) {
         final Long chargeId = charge.getCharge() == null ? null : charge.getCharge().getId();
-        final Long paymentTypeId = charge.getCharge() == null ? null : charge.getCharge().getPaymentType() == null ? null : charge.getCharge().getPaymentType().getId();
+        final Long paymentTypeId = paymentDetail == null ? null : paymentDetail.getPaymentType().getId();
         //LOG.info("charge paymentTypeId: {}", paymentTypeId);
         LOG.info("{}- charge- paymentTypeId: {}", real, chargeId);
         if (chargeId != null && paymentTypeId != null) {

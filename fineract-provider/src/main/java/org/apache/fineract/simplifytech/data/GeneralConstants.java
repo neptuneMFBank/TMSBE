@@ -320,7 +320,7 @@ public class GeneralConstants {
     public static BigDecimal paymentExtensionGridCharge(PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService,
             //final PaymentDetail paymentDetail, 
             final BigDecimal transactionAmount,
-            //Long paymentTypeId
+            Long paymentTypeId,
             Long chargeId
     ) {
         BigDecimal amount = BigDecimal.ZERO;
@@ -332,7 +332,12 @@ public class GeneralConstants {
 //            }
             //Extending to paymentTypeGrid
             //final Collection<PaymentTypeGridData> paymentTypeGridData = paymentTypeGridReadPlatformService.retrievePaymentTypeGrids(paymentTypeId);
-            final Collection<PaymentTypeGridData> paymentTypeGridData = paymentTypeGridReadPlatformService.retrievePaymentTypeGridsViaCharge(chargeId);
+            Collection<PaymentTypeGridData> paymentTypeGridData;//= paymentTypeGridReadPlatformService.retrievePaymentTypeGridsViaCharge(chargeId);
+            if (paymentTypeId != null && chargeId != null) {
+                paymentTypeGridData = paymentTypeGridReadPlatformService.retrievePaymentTypeGridsViaCharge(chargeId, paymentTypeId);
+            } else {
+                paymentTypeGridData = paymentTypeGridReadPlatformService.retrievePaymentTypeGridsViaCharge(chargeId);
+            }
             if (!CollectionUtils.isEmpty(paymentTypeGridData)) {
                 for (PaymentTypeGridData paymentTypeGridData1 : paymentTypeGridData) {
                     //final PaymentTypeGridData paymentTypeGridData1 = paymentTypeGridData.stream().findFirst().orElse(null);

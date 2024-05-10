@@ -98,6 +98,29 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
         }
     }
 
+    @Override
+    public Collection<PaymentTypeGridData> retrievePaymentTypeGridsViaCharge(Long chargeId, Long paymentTypeId) {
+        this.context.authenticatedUser();
+        try {
+            final PaymentTypeGridMapper ptm = new PaymentTypeGridMapper();
+            final String sql = "select " + ptm.schema() + " where pt.charge_id = ? and  pt.payment_type_id = ? ";
+            final Collection<PaymentTypeGridData> paymentTypeGridData = this.jdbcTemplate.query(sql, ptm, new Object[]{chargeId, paymentTypeId}); // NOSONAR
+            if (!CollectionUtils.isEmpty(paymentTypeGridData)) {
+                paymentTypeGridData.forEach(obj -> {
+                    if (StringUtils.isNotBlank(obj.getGridJson())) {
+                        final String gridJson = obj.getGridJson();
+                        JsonElement gridJsonElement = fromJsonHelper.parse(gridJson);
+                        obj.setGridJsonObject(gridJsonElement);
+                        obj.setGridJson(null);
+                    }
+                });
+            }
+            return paymentTypeGridData;
+        } catch (DataAccessException e) {
+            return null;
+        }
+    }
+
     private static final class PaymentTypeGridMapper implements RowMapper<PaymentTypeGridData> {
 
         public String schema() {

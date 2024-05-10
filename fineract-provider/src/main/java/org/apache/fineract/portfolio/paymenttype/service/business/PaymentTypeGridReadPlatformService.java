@@ -27,4 +27,6 @@ public interface PaymentTypeGridReadPlatformService {
 
     Collection<PaymentTypeGridData> retrievePaymentTypeGridsViaCharge(Long chargeId);
 
+    Collection<PaymentTypeGridData> retrievePaymentTypeGridsViaCharge(Long chargeId, Long paymentTypeId);
+
 }

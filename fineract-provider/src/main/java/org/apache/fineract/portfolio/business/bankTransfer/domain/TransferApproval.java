@@ -19,16 +19,9 @@
 package org.apache.fineract.portfolio.business.bankTransfer.domain;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,16 +53,16 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
     private Integer transferType;
 
     @Column(name = "hold_transaction_id")
-    private Integer holdTransactionId;
+    private Long holdTransactionId;
 
     @Column(name = "release_transaction_id")
-    private Integer releaseTransactionId;
+    private Long releaseTransactionId;
 
     @Column(name = "withdraw_transaction_id")
-    private Integer withdrawTransactionId;
+    private Long withdrawTransactionId;
 
     @Column(name = "from_account_id", nullable = false)
-    private Integer fromAccountId;
+    private Long fromAccountId;
 
     @Column(name = "from_account_type", nullable = false)
     private Integer fromAccountType;
@@ -78,7 +71,7 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
     private String fromAccountNumber;
 
     @Column(name = "to_account_id")
-    private Integer toAccountId;
+    private Long toAccountId;
 
     @Column(name = "to_account_type")
     private Integer toAccountType;
@@ -97,9 +90,9 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
     @Column(name = "reason")
     private String reason;
 
-    private TransferApproval(BigDecimal amount, Integer status, Integer transferType, Integer holdTransactionId, Integer releaseTransactionId,
-            Integer withdrawTransactionId, Integer fromAccountId, Integer fromAccountType, String fromAccountNumber,
-            Integer toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId, String reason) {
+    private TransferApproval(BigDecimal amount, Integer status, Integer transferType, Long holdTransactionId, Long releaseTransactionId,
+            Long withdrawTransactionId, Long fromAccountId, Integer fromAccountType, String fromAccountNumber,
+            Long toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId, String reason) {
         this.amount = amount;
         this.status = status;
         this.transferType = transferType;
@@ -120,10 +113,12 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
     public TransferApproval() {
     }
 
-    public static TransferApproval instance(BigDecimal amount, Integer status, Integer transferType, Integer holdTransactionId,
-            Integer releaseTransactionId, Integer withdrawTransactionId, Integer fromAccountId, Integer fromAccountType, String fromAccountNumber,
-            Integer toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId, String reason) {
-
+    public static TransferApproval instance(BigDecimal amount, Integer status, Integer transferType, Long holdTransactionId,
+            Long fromAccountId, Integer fromAccountType, String fromAccountNumber,
+            Long toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId) {
+        final Long releaseTransactionId = null;
+        final Long withdrawTransactionId = null;
+        final String reason = null;
         return new TransferApproval(amount, status, transferType, holdTransactionId, releaseTransactionId,
                 withdrawTransactionId, fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
                 toAccountNumber, activationChannelId, toBankId, reason);
@@ -149,28 +144,30 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
         final Map<String, Object> actualChanges = new LinkedHashMap<>();
 
         this.status = SavingsAccountStatusType.APPROVED.getValue();
-        actualChanges.put("status", SavingsEnumerations.status(this.status));
+        this.reason = command.stringValueOfParameterNamed(TransferApprovalApiResourceConstants.REASON);
+        actualChanges.put(TransferApprovalApiResourceConstants.STATUS, SavingsEnumerations.status(this.status));
+        actualChanges.put(TransferApprovalApiResourceConstants.REASON, this.reason);
 
-        final Locale locale = command.extractLocale();
-
-        final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(locale);
-        LocalDate approvedOn = command.localDateValueOfParameterNamed(TransferApprovalApiResourceConstants.approvedOnDateParameterName);
-
-        actualChanges.put("locale", locale);
-        actualChanges.put(TransferApprovalApiResourceConstants.approvalIdTobeApproved, command.entityId());
-        actualChanges.put("dateFormat", command.dateFormat());
-        actualChanges.put("approvedOnDate", approvedOn.format(fmt));
-
-        final OffsetDateTime submittalDate = this.getCreatedDate().orElse(OffsetDateTime.now(ZoneId.systemDefault()));
-        OffsetDateTime approvedOnOffSet = OffsetDateTime.of(approvedOn.atTime(LocalTime.MAX), ZoneOffset.UTC);
-
-        if (approvedOnOffSet.isBefore(submittalDate)) {
-            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.approvedOnDateParameterName).value(approvedOn)
-                    .failWithCode("must.be.after.createdOn.date");
-            if (!dataValidationErrors.isEmpty()) {
-                throw new PlatformApiDataValidationException(dataValidationErrors);
-            }
-        }
+//        final Locale locale = command.extractLocale();
+//
+//        final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(locale);
+//        LocalDate approvedOn = command.localDateValueOfParameterNamed(TransferApprovalApiResourceConstants.approvedOnDateParameterName);
+//
+//        actualChanges.put("locale", locale);
+//        actualChanges.put(TransferApprovalApiResourceConstants.approvalIdTobeApproved, command.entityId());
+//        actualChanges.put("dateFormat", command.dateFormat());
+//        actualChanges.put("approvedOnDate", approvedOn.format(fmt));
+//
+//        final OffsetDateTime submittalDate = this.getCreatedDate().orElse(OffsetDateTime.now(ZoneId.systemDefault()));
+//        OffsetDateTime approvedOnOffSet = OffsetDateTime.of(approvedOn.atTime(LocalTime.MAX), ZoneOffset.UTC);
+//
+//        if (approvedOnOffSet.isBefore(submittalDate)) {
+//            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.approvedOnDateParameterName).value(approvedOn)
+//                    .failWithCode("must.be.after.createdOn.date");
+//            if (!dataValidationErrors.isEmpty()) {
+//                throw new PlatformApiDataValidationException(dataValidationErrors);
+//            }
+//        }
         return actualChanges;
 
     }
@@ -180,33 +177,32 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
 
         checkSubmittedState(dataValidationErrors);
-        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
-                .resource(TransferApprovalApiResourceConstants.RESOURCE_NAME);
+        //final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+        //      .resource(TransferApprovalApiResourceConstants.RESOURCE_NAME);
         final Map<String, Object> actualChanges = new LinkedHashMap<>();
 
         this.status = SavingsAccountStatusType.REJECTED.getValue();
-        actualChanges.put("status", SavingsEnumerations.status(this.status));
+        this.reason = command.stringValueOfParameterNamed(TransferApprovalApiResourceConstants.REASON);
+        actualChanges.put(TransferApprovalApiResourceConstants.STATUS, SavingsEnumerations.status(this.status));
+        actualChanges.put(TransferApprovalApiResourceConstants.REASON, this.reason);
 
-        final Locale locale = command.extractLocale();
-        final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(locale);
-
-        LocalDate rejectedOn = command.localDateValueOfParameterNamed(TransferApprovalApiResourceConstants.rejectedOnDateParameterName);
-
-        actualChanges.put("locale", command.locale());
-        actualChanges.put(TransferApprovalApiResourceConstants.approvalIdTobeApproved, command.entityId());
-        actualChanges.put("dateFormat", command.dateFormat());
-        actualChanges.put(TransferApprovalApiResourceConstants.rejectedOnDateParameterName, rejectedOn.format(fmt));
-
-        final OffsetDateTime submittalDate = this.getCreatedDate().orElse(OffsetDateTime.now(ZoneId.systemDefault()));
-        OffsetDateTime rejectedOnOffSet = OffsetDateTime.of(rejectedOn.atTime(LocalTime.MAX), ZoneOffset.UTC);
-
-        if (rejectedOnOffSet.isBefore(submittalDate)) {
-            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.rejectedOnDateParameterName).value(rejectedOn)
-                    .failWithCode("must.be.after.createdOn.date");
-            if (!dataValidationErrors.isEmpty()) {
-                throw new PlatformApiDataValidationException(dataValidationErrors);
-            }
-        }
+        //final Locale locale = command.extractLocale();
+        //final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(locale);
+        //LocalDate rejectedOn = command.localDateValueOfParameterNamed(TransferApprovalApiResourceConstants.rejectedOnDateParameterName);
+        //actualChanges.put("locale", command.locale());
+        //actualChanges.put(TransferApprovalApiResourceConstants.approvalIdTobeApproved, command.entityId());
+        //actualChanges.put("dateFormat", command.dateFormat());
+        //actualChanges.put(TransferApprovalApiResourceConstants.rejectedOnDateParameterName, rejectedOn.format(fmt));
+//        final OffsetDateTime submittalDate = this.getCreatedDate().orElse(OffsetDateTime.now(ZoneId.systemDefault()));
+//        OffsetDateTime rejectedOnOffSet = OffsetDateTime.of(rejectedOn.atTime(LocalTime.MAX), ZoneOffset.UTC);
+//
+//        if (rejectedOnOffSet.isBefore(submittalDate)) {
+//            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.rejectedOnDateParameterName).value(rejectedOn)
+//                    .failWithCode("must.be.after.createdOn.date");
+//            if (!dataValidationErrors.isEmpty()) {
+//                throw new PlatformApiDataValidationException(dataValidationErrors);
+//            }
+//        }
         return actualChanges;
 
     }
@@ -223,4 +219,61 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
             throw new PlatformApiDataValidationException(dataValidationErrors);
         }
     }
+
+    public Long getHoldTransactionId() {
+        return holdTransactionId;
+    }
+
+    public Long getFromAccountId() {
+        return fromAccountId;
+    }
+
+    public void setReleaseTransactionId(Long releaseTransactionId) {
+        this.releaseTransactionId = releaseTransactionId;
+    }
+
+    public void setWithdrawTransactionId(Long withdrawTransactionId) {
+        this.withdrawTransactionId = withdrawTransactionId;
+    }
+
+    public Integer getTransferType() {
+        return transferType;
+    }
+
+    public Integer getFromAccountType() {
+        return fromAccountType;
+    }
+
+    public Long getToAccountId() {
+        return toAccountId;
+    }
+
+    public Integer getToAccountType() {
+        return toAccountType;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getFromAccountNumber() {
+        return fromAccountNumber;
+    }
+
+    public String getToAccountNumber() {
+        return toAccountNumber;
+    }
+
+    public CodeValue getToBankId() {
+        return toBankId;
+    }
+
 }

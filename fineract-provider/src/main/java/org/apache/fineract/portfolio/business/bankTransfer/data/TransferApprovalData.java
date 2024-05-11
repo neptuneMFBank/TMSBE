@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.Data;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
+import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 
 @Data
 public class TransferApprovalData implements Serializable {
@@ -30,7 +31,7 @@ public class TransferApprovalData implements Serializable {
     private final Long id;
     private BigDecimal amount;
     private Integer status;
-    private Integer transferType;
+    private EnumOptionData transferType;
     private Integer holdTransactionId;
     private Integer releaseTransactionId;
     private Integer withdrawTransactionId;
@@ -49,7 +50,7 @@ public class TransferApprovalData implements Serializable {
     private Long createdById;
     private LocalDate createdOn;
 
-    private TransferApprovalData(Long id, BigDecimal amount, Integer status, Integer transferType, Integer holdTransactionId,
+    private TransferApprovalData(Long id, BigDecimal amount, Integer status, EnumOptionData transferType, Integer holdTransactionId,
             Integer releaseTransactionId, Integer withdrawTransactionId, Integer fromAccountId, Integer fromAccountType,
             String fromAccountNumber, Integer toAccountId, Integer toAccountType, String toAccountNumber,
             CodeValueData activationChannel, CodeValueData toBank, String reason, String createdByUsername, String createdByFirstname,
@@ -77,7 +78,7 @@ public class TransferApprovalData implements Serializable {
         this.createdOn = createdOn;
     }
 
-    public static TransferApprovalData instance(Long id, BigDecimal amount, Integer status, Integer transferType, Integer holdTransactionId,
+    public static TransferApprovalData instance(Long id, BigDecimal amount, Integer status, EnumOptionData transferType, Integer holdTransactionId,
             Integer releaseTransactionId, Integer withdrawTransactionId, Integer fromAccountId, Integer fromAccountType,
             String fromAccountNumber, Integer toAccountId, Integer toAccountType, String toAccountNumber,
             CodeValueData activationChannel, CodeValueData toBank, String reason, String createdByUsername, String createdByFirstname,

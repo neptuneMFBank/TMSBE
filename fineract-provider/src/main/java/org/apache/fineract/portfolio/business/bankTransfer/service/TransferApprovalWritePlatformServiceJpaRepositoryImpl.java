@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import javax.persistence.PersistenceException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -29,11 +30,17 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.account.PortfolioAccountType;
 import org.apache.fineract.portfolio.business.bankTransfer.api.TransferApprovalApiResourceConstants;
 import org.apache.fineract.portfolio.business.bankTransfer.data.TransferApprovalDataValidator;
+import org.apache.fineract.portfolio.business.bankTransfer.domain.BankTransferType;
 import org.apache.fineract.portfolio.business.bankTransfer.domain.TransferApproval;
 import org.apache.fineract.portfolio.business.bankTransfer.domain.TransferApprovalRepositoryWrapper;
+import org.apache.fineract.portfolio.business.bankTransfer.exception.TransferApprovalNotFoundException;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
+import org.apache.fineract.simplifytech.data.GeneralConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,16 +56,20 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
     private final TransferApprovalRepositoryWrapper repository;
     private final TransferApprovalDataValidator fromApiJsonDataValidator;
     private final CodeValueRepositoryWrapper codeValueRepositoryWrapper;
+    private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+    private final SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper;
 
     @Autowired
     public TransferApprovalWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
             final TransferApprovalRepositoryWrapper repository,
-            final TransferApprovalDataValidator fromApiJsonDataValidator,
-            final CodeValueRepositoryWrapper codeValueRepositoryWrapper) {
+            final TransferApprovalDataValidator fromApiJsonDataValidator, final SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper,
+            final CodeValueRepositoryWrapper codeValueRepositoryWrapper, final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
         this.repository = repository;
         this.fromApiJsonDataValidator = fromApiJsonDataValidator;
         this.codeValueRepositoryWrapper = codeValueRepositoryWrapper;
+        this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
+        this.savingsAccountRepositoryWrapper = savingsAccountRepositoryWrapper;
     }
 
     @Transactional
@@ -72,21 +83,29 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
 //            final Integer status = command.integerValueOfParameterNamed(TransferApprovalApiResourceConstants.STATUS);
 
             final Integer transferType = command.integerValueOfParameterNamed(TransferApprovalApiResourceConstants.TRANSFER_TYPE);
-            final Integer holdTransactionId = command.integerValueOfParameterNamed(TransferApprovalApiResourceConstants.HOLD_TRANSACTION_ID);
-            final Integer releaseTransactionId = command.integerValueOfParameterNamed(TransferApprovalApiResourceConstants.RELEASE_TRANSACTION_ID);
-            final Integer withdrawTransactionId = command.integerValueOfParameterNamed(TransferApprovalApiResourceConstants.WITHDRAW_TRANSACTION_ID);
-            final Integer fromAccountId = command.integerValueOfParameterNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_ID);
+            final Long fromAccountId = command.longValueOfParameterNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_ID);
             final Integer fromAccountType = command.integerValueOfParameterNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_TYPE);
+            final PortfolioAccountType fromPortfolioAccountType = PortfolioAccountType.fromInt(fromAccountType);
+            if (!fromPortfolioAccountType.isSavingsAccount()) {
+                throw new TransferApprovalNotFoundException("Sender Account type not supported");
+            }
             final String fromAccountNumber = command.stringValueOfParameterNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_NUMBER);
-            final Integer toAccountId = command.integerValueOfParameterNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_ID);
+            final Long toAccountId = command.longValueOfParameterNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_ID);
+            String externalTransferInfo = "IntraBank";
+            if (toAccountId == null) {
+                externalTransferInfo = "InterBank";
+            }
             final Integer toAccountType = command.integerValueOfParameterNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_TYPE);
+            if (toAccountType != null) {
+                final PortfolioAccountType toPortfolioAccountType = PortfolioAccountType.fromInt(toAccountType);
+                if (!toPortfolioAccountType.isSavingsAccount()) {
+                    throw new TransferApprovalNotFoundException("Receiver Account type not supported");
+                }
+            }
             final String toAccountNumber = command.stringValueOfParameterNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_NUMBER);
 
-            CodeValue activationChannel = null;
             final Long activationChannelId = command.longValueOfParameterNamed(TransferApprovalApiResourceConstants.ACTIVATION_CHANNEL_ID);
-            if (activationChannelId != null) {
-                activationChannel = this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(activationChannelId);
-            }
+            final CodeValue activationChannel = this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(activationChannelId);
 
             CodeValue toBank = null;
             final Long toBankId = command.longValueOfParameterNamed(TransferApprovalApiResourceConstants.TO_BANK_ID);
@@ -94,11 +113,12 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
                 toBank = this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(toBankId);
             }
 
-            final String reason = command.stringValueOfParameterNamed(TransferApprovalApiResourceConstants.REASON);
+            //create a process to holdOff the customeer Amount from his balance
+            final Long holdTransactionId = GeneralConstants.holdAmount(amount, null, fromAccountId, externalTransferInfo + " transfer from " + fromAccountNumber + " to " + toAccountNumber, commandsSourceWritePlatformService);
 
-            final TransferApproval transferApproval = TransferApproval.instance(amount, SavingsAccountStatusType.SUBMITTED_AND_PENDING_APPROVAL.getValue(), transferType, holdTransactionId, releaseTransactionId,
-                    withdrawTransactionId, fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
-                    toAccountNumber, activationChannel, toBank, reason);
+            final TransferApproval transferApproval = TransferApproval.instance(amount, SavingsAccountStatusType.SUBMITTED_AND_PENDING_APPROVAL.getValue(), transferType, holdTransactionId,
+                    fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
+                    toAccountNumber, activationChannel, toBank);
 
             this.repository.saveAndFlush(transferApproval);
             return new CommandProcessingResultBuilder() //
@@ -132,18 +152,64 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
         this.fromApiJsonDataValidator.validateApproval(command.json());
 
         final TransferApproval transferApproval = this.repository.findOneWithNotFoundDetection(transferApprovalId);
+        final String fromAccountNumber = transferApproval.getFromAccountNumber();
+        final String toAccountNumber = transferApproval.getToAccountNumber();
 
         final Map<String, Object> changes = transferApproval.ApproveTransfer(command);
+        final Integer transferType = transferApproval.getTransferType();
 
         if (!changes.isEmpty()) {
-            if (changes.containsKey(TransferApprovalApiResourceConstants.STATUS)) {
-
+            final Integer fromAccountType = transferApproval.getFromAccountType();
+            final PortfolioAccountType fromPortfolioAccountType = PortfolioAccountType.fromInt(fromAccountType);
+            if (!fromPortfolioAccountType.isSavingsAccount()) {
+                throw new TransferApprovalNotFoundException("Sender Account type not supported");
             }
+
+            final BankTransferType bankTransferType = BankTransferType.fromInt(transferType);
+
+            //release Amount
+            transferReleaseProcess(transferApproval);
+
+            if (bankTransferType.isIntraBank()) {
+                //if intraBank
+                //call intraBank process
+                final Long fromAccountId = transferApproval.getFromAccountId();
+
+                final Long toAccountId = transferApproval.getToAccountId();
+                final Integer toAccountType = transferApproval.getToAccountType();
+                final String note = transferApproval.getReason();
+
+                final SavingsAccount fromSavingsAccount = this.savingsAccountRepositoryWrapper.findOneWithNotFoundDetection(fromAccountId);
+                final Long fromOfficeId = fromSavingsAccount.officeId();
+                final Long fromClientId = fromSavingsAccount.clientId();
+
+                final SavingsAccount toSavingsAccount = this.savingsAccountRepositoryWrapper.findOneWithNotFoundDetection(toAccountId);
+                final Long toOfficeId = toSavingsAccount.officeId();
+                final Long toClientId = toSavingsAccount.clientId();
+
+                final Long withdrawalId = GeneralConstants.intrabankTransfer(transferApprovalId, transferApproval.getAmount(), fromOfficeId, fromClientId, fromAccountId, fromAccountType, toOfficeId, toClientId, toAccountId, toAccountType, note, commandsSourceWritePlatformService);
+                transferApproval.setWithdrawTransactionId(withdrawalId);
+            } else {
+                // other process for interBank
+                if (bankTransferType.isInterBankEbills()) {
+                    final CodeValue toBank = transferApproval.getToBankId();
+                    //call the microservice eBills endPoint        
+                    //throw new TransferApprovalNotFoundException("Transfer type not supported");
+                    changes.put(TransferApprovalApiResourceConstants.TRANSFER_TYPE, transferType);
+                    changes.put(TransferApprovalApiResourceConstants.FROM_ACCOUNT_NUMBER, fromAccountNumber);
+                    changes.put(TransferApprovalApiResourceConstants.TO_ACCOUNT_NUMBER, toAccountNumber);
+                    changes.put("bankCode", toBank);
+                }
+//                else {
+//                    throw new TransferApprovalNotFoundException("Transfer type not supported");
+//                }
+            }
+            this.repository.saveAndFlush(transferApproval);
         }
+
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
-                .withEntityId(transferApproval.getId()) //
-
+                .withEntityId(transferApprovalId) //
                 .with(changes) //
                 .build();
 
@@ -161,9 +227,8 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
         final Map<String, Object> changes = transferApproval.RejectTransfer(command);
 
         if (!changes.isEmpty()) {
-            if (changes.containsKey(TransferApprovalApiResourceConstants.STATUS)) {
-
-            }
+            transferReleaseProcess(transferApproval);
+            this.repository.saveAndFlush(transferApproval);
         }
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
@@ -171,6 +236,14 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
 
                 .with(changes) //
                 .build();
+    }
+
+    protected void transferReleaseProcess(final TransferApproval transferApproval) {
+        final Long fromAccountId = transferApproval.getFromAccountId();
+        final Long holdTransactionId = transferApproval.getHoldTransactionId();
+        //create a process to release the customer Amount back to his balance
+        final Long releaseTransactionId = GeneralConstants.releaseAmount(fromAccountId, holdTransactionId, commandsSourceWritePlatformService);
+        transferApproval.setReleaseTransactionId(releaseTransactionId);
     }
 
 }

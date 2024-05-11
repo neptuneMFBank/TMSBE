@@ -48,6 +48,8 @@ import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformS
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
+import org.apache.fineract.portfolio.account.AccountDetailConstants;
+import org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants;
 import org.apache.fineract.portfolio.charge.domain.Charge;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterest;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestConfig;
@@ -268,6 +270,32 @@ public class GeneralConstants {
         final CommandWrapperBuilder builder = new CommandWrapperBuilder().withNoJsonBody();
         final CommandWrapper commandRequest = builder.releaseAmount(savingsId, transactionId).build();
         final CommandProcessingResult result = commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        return result.resourceId();
+    }
+
+    public static Long intrabankTransfer(final Long transferApprovalId, final BigDecimal amount, final Long fromOfficeId, final Long fromClientId, final Long fromAccountId, final Integer fromAccountType,
+            final Long toOfficeId, final Long toClientId, final Long toAccountId, final Integer toAccountType, final String note, final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+        final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty(AccountDetailConstants.fromOfficeIdParamName, fromOfficeId);
+        jsonObject.addProperty(AccountDetailConstants.fromClientIdParamName, fromClientId);
+        jsonObject.addProperty(AccountDetailConstants.fromAccountTypeParamName, fromAccountType);
+        jsonObject.addProperty(AccountDetailConstants.fromAccountIdParamName, fromAccountId);
+        jsonObject.addProperty(AccountDetailConstants.toOfficeIdParamName, toOfficeId);
+        jsonObject.addProperty(AccountDetailConstants.toClientIdParamName, toClientId);
+        jsonObject.addProperty(AccountDetailConstants.toAccountIdParamName, toAccountId);
+        jsonObject.addProperty(AccountDetailConstants.toAccountTypeParamName, toAccountType);
+        jsonObject.addProperty(AccountDetailConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
+        jsonObject.addProperty(AccountDetailConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
+        jsonObject.addProperty(AccountTransfersApiConstants.transferDescriptionParamName, note + "-" + transferApprovalId);
+        jsonObject.addProperty(AccountTransfersApiConstants.transferAmountParamName, amount);
+        jsonObject.addProperty(AccountTransfersApiConstants.transferDateParamName, today.toString());
+        LOG.info("intrabankTransfer createAccountTransfer details: {}", jsonObject.toString());
+
+        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(jsonObject.toString());
+        final CommandWrapper commandRequest = builder.createAccountTransfer().build();
+        final CommandProcessingResult result = commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
         return result.resourceId();
     }
 

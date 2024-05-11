@@ -28,6 +28,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
+import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.Page;
@@ -37,6 +38,7 @@ import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecific
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.portfolio.business.bankTransfer.data.TransferApprovalData;
+import org.apache.fineract.portfolio.business.bankTransfer.domain.BankTransferEnumerations;
 import org.apache.fineract.portfolio.business.bankTransfer.exception.TransferApprovalNotFoundException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -222,7 +224,8 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
             final Long id = JdbcSupport.getLong(rs, "id");
             final BigDecimal amount = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "amount");
             final Integer status = JdbcSupport.getInteger(rs, "status");
-            final Integer transferType = JdbcSupport.getInteger(rs, "transferType");
+            final Integer transferTypeId = JdbcSupport.getInteger(rs, "transferType");
+            EnumOptionData transferType = BankTransferEnumerations.status(transferTypeId);
             final Integer holdTransactionId = JdbcSupport.getInteger(rs, "holdTransactionId");
             final Integer releaseTransactionId = JdbcSupport.getInteger(rs, "releaseTransactionId");
             final Integer withdrawTransactionId = JdbcSupport.getInteger(rs, "withdrawTransactionId");

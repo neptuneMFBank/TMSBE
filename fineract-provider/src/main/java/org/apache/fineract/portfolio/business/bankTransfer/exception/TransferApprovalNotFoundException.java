@@ -25,4 +25,8 @@ public class TransferApprovalNotFoundException extends AbstractPlatformResourceN
     public TransferApprovalNotFoundException(final Long id) {
         super("error.msg.Transfer.Approval.invalid", "Transfer Approval with " + id + " does not exist", id);
     }
+
+    public TransferApprovalNotFoundException(final String msg) {
+        super("error.msg.Transfer.Approval.invalid", msg);
+    }
 }

@@ -19,6 +19,7 @@
 package org.apache.fineract.infrastructure.core.config.business;
 
 import org.apache.catalina.connector.Connector;
+import org.apache.coyote.ajp.AbstractAjpProtocol;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +39,9 @@ public class TomcatConnectorCustomizerAjp //implements WebServerFactoryCustomize
     @Bean
     public ConfigurableServletWebServerFactory webServerFactory() {
         TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+
         Connector connector = new Connector("org.apache.coyote.ajp.AjpNioProtocol");
+        ((AbstractAjpProtocol) connector.getProtocolHandler()).setSecretRequired(false);
         //connector.setAttribute("maxThreads", 100);
         connector.setPort(8009);
         connector.setRedirectPort(8443);

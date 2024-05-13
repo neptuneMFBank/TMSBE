@@ -54,7 +54,7 @@ public class TomcatConnectorCustomizerAjp //implements WebServerFactoryCustomize
         connector.setPort(8009);
         connector.setRedirectPort(8443);
         connector.setURIEncoding("UTF-8");
-        //connector.setScheme("https");
+        connector.setScheme("https");
         //connector.setSecure(false);
         connector.setProperty("address", "::");
         connector.setProperty("allowedRequestAttributesPattern", ".*");

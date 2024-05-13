@@ -16,32 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanproduct.business.handler;
+package org.apache.fineract.portfolio.paymenttype.handler.business;
 
 import org.apache.fineract.commands.annotation.CommandType;
 import org.apache.fineract.commands.handler.NewCommandSourceHandler;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.portfolio.products.api.business.ProductVisibilityApiResourceConstants;
+import org.apache.fineract.portfolio.paymenttype.api.business.PaymentTypeGridApiResourceConstants;
+import org.apache.fineract.portfolio.paymenttype.service.business.PaymentTypeGridWriteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.apache.fineract.portfolio.products.service.business.ProductVisibilityWriteService;
 
 @Service
-@CommandType(entity = ProductVisibilityApiResourceConstants.LOAN_VISIBILITY_RESOURCENAME, action = "UPDATE")
-public class UpdateLoanProductVisibilityCommandHandler implements NewCommandSourceHandler {
+@CommandType(entity = PaymentTypeGridApiResourceConstants.RESOURCE_NAME, action = "CREATE")
+public class CreatePaymentTypeGridCommandHandler implements NewCommandSourceHandler {
 
-    private final ProductVisibilityWriteService loanProductVisibilityWriteService;
+    private final PaymentTypeGridWriteService paymentTypeGridWriteService;
 
     @Autowired
-    public UpdateLoanProductVisibilityCommandHandler(final ProductVisibilityWriteService loanProductVisibilityWriteService) {
-        this.loanProductVisibilityWriteService = loanProductVisibilityWriteService;
+    public CreatePaymentTypeGridCommandHandler(final PaymentTypeGridWriteService paymentTypeGridWriteService) {
+        this.paymentTypeGridWriteService = paymentTypeGridWriteService;
     }
 
     @Transactional
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
-        return this.loanProductVisibilityWriteService.updateProductVisibility(command.entityId(), command);
+        return this.paymentTypeGridWriteService.createPaymentTypeGrid(command);
     }
 }

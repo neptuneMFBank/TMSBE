@@ -74,12 +74,11 @@ public class SavingsProductVisibiltyApiResource {
     private final ApiRequestParameterHelper apiRequestParameterHelper;
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create Loan Product visibility", description = "Creates a new Loan Product Approval")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String createSavingsProductVisibility(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .createSavingsProductVisibility()//
@@ -90,11 +89,10 @@ public class SavingsProductVisibiltyApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve all Loan Product Visiblity Config", description = "Retrieve all Loan Product Visiblity Config")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String getAllSavingsProductVisiblity(@Context final UriInfo uriInfo,
             @QueryParam("name") @Parameter(description = "name") final String name,
             @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
@@ -130,11 +128,10 @@ public class SavingsProductVisibiltyApiResource {
 
     @GET
     @Path("{savingsProductVisibilityId}")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve a Savings Product Visibility", description = "Retrieves a loan Product Visibility")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveOneSavingsProductVisibility(
             @PathParam("savingsProductVisibilityId") @Parameter(description = "SavingsProductVisibilityId") final Long savingsProductVisibilityId,
             @Context final UriInfo uriInfo) {
@@ -149,12 +146,11 @@ public class SavingsProductVisibiltyApiResource {
 
     @PUT
     @Path("{savingsProductVisibilityId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update savings Product visibility Config", description = "Update savings Product visibility Config")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String updateLoanProductVisibility(
             @PathParam("savingsProductVisibilityId") @Parameter(description = "savingsProductVisibilityId") final Long savingsProductVisibilityId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
@@ -169,12 +165,10 @@ public class SavingsProductVisibiltyApiResource {
 
     @DELETE
     @Path("{loanProductVisibilityId}")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Delete Loan Product visibility Config", description = "Delete Loan Product visibility Config")
     @ApiResponse(responseCode = "200", description = "OK")
     public String delete(@PathParam("loanProductVisibilityId") final Long loanProductVisibilityId) {
-        this.securityContext.authenticatedUser()
-                .validateHasReadPermission(ProductVisibilityApiResourceConstants.SAVINGS_VISIBILITY_RESOURCENAME);
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().deleteSavingsProductVisibility(loanProductVisibilityId).build();
         final CommandProcessingResult result = this.commandWritePlatformService.logCommandSource(commandRequest);
@@ -183,11 +177,10 @@ public class SavingsProductVisibiltyApiResource {
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Loan Product Visibility Template", description = "Retrieve Loan Product Visibility Template")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
         this.securityContext.authenticatedUser()

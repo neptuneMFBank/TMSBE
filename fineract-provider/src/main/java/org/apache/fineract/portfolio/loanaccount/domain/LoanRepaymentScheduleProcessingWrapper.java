@@ -75,7 +75,7 @@ public class LoanRepaymentScheduleProcessingWrapper {
             if (loanCharge.isFeeCharge() && !loanCharge.isDueAtDisbursement()) {
                 if (loanCharge.isInstalmentFee() && isInstallmentChargeApplicable) {
                     if (feeIntervalOnInterestCharge(loanCharge.getCharge(),
-                            //period.getInstallmentNumber(), 
+                            // period.getInstallmentNumber(),
                             "ReProcess-cumulativeFeeChargesDueWithin", period.getDueDate())) {
                         continue;
                     }

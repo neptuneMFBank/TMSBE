@@ -215,5 +215,8 @@
     <!-- <include file="parts/0183_m_create_recon_savings_product.sql" relativeToChangelogFile="true" /> -->
     <include file="parts/0184_m_alter_payment_type_grid.sql" relativeToChangelogFile="true" />
     <!-- <include file="parts/0185_m_alter_charge.sql" relativeToChangelogFile="true" /> -->
+    <include file="parts/0417_create_m_paymenttype_grid_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0418_update_m_paymenttype_grid_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0419_delete_m_paymenttype_grid_permission.sql" relativeToChangelogFile="true" />
     <!-- <include file="parts/0186_m_permission_m.xml" relativeToChangelogFile="true" /> -->
 </databaseChangeLog>

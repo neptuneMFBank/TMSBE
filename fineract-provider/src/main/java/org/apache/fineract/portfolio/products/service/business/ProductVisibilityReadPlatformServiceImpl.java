@@ -49,7 +49,6 @@ import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientEnumerations;
 import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.portfolio.client.domain.LegalForm;
-import org.apache.fineract.portfolio.products.exception.business.ProductVisibilityNotFoundException;
 import org.apache.fineract.portfolio.loanproduct.business.service.LoanProductApprovalReadPlatformServiceImpl;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
@@ -57,6 +56,7 @@ import org.apache.fineract.portfolio.loanproduct.domain.business.LoanProductRepo
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
 import org.apache.fineract.portfolio.products.api.business.ProductVisibilityApiResourceConstants;
 import org.apache.fineract.portfolio.products.data.business.ProductVisibilityConfigData;
+import org.apache.fineract.portfolio.products.exception.business.ProductVisibilityNotFoundException;
 import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 import org.apache.fineract.portfolio.savings.domain.SavingsProduct;
 import org.apache.fineract.portfolio.savings.domain.business.SavingsProductRepositoryWrapper;
@@ -132,7 +132,7 @@ public class ProductVisibilityReadPlatformServiceImpl implements ProductVisibili
             if (StringUtils.isNotBlank(extraCriteria)) {
                 sqlBuilder.append(extraCriteria);
             }
-//            sqlBuilder.append(")");
+            // sqlBuilder.append(")");
             if (searchParameters.isOrderByRequested()) {
                 sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
                 this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getOrderBy());
@@ -235,37 +235,37 @@ public class ProductVisibilityReadPlatformServiceImpl implements ProductVisibili
         try {
             final String sql = "select " + productVisibiltyConfigMapper.schema() + " where mlpvc.id = ? and mlpvc.product_type = ? ";
             ProductVisibilityConfigData productVisibilityConfigData = this.jdbcTemplate.queryForObject(sql, productVisibiltyConfigMapper,
-                    new Object[]{productVisibilityId, entityType});
+                    new Object[] { productVisibilityId, entityType });
 
             final String savingsProductIdSql = "select mlpvc.savingsproduct_id as id "
                     + " from m_savingsproduct_visibility_config_mapping mlpvc " + " where mlpvc.config_id = ? ";
 
             final Collection<Long> savingsProductIds = this.jdbcTemplate.query(savingsProductIdSql, this.productVisibiltyMapper,
-                    new Object[]{productVisibilityId});
+                    new Object[] { productVisibilityId });
 
             final String loanProductIdSql = "select mlpvc.loanproduct_id as id " + " from m_loanproduct_visibility_config_mapping mlpvc "
                     + " where mlpvc.config_id = ? ";
 
             final Collection<Long> loanProductIds = this.jdbcTemplate.query(loanProductIdSql, this.productVisibiltyMapper,
-                    new Object[]{productVisibilityId});
+                    new Object[] { productVisibilityId });
 
             final String legalEnumsSql = "select mlpvc.legalenum_id as id " + " from m_product_visibility_legalenum_mapping mlpvc "
                     + " where mlpvc.config_id = ? ";
 
             final Collection<Long> LegalEnumIds = this.jdbcTemplate.query(legalEnumsSql, this.productVisibiltyMapper,
-                    new Object[]{productVisibilityId});
+                    new Object[] { productVisibilityId });
 
             final String clientClassificationSql = "select mlpvc.clientclassification_id as id "
                     + " from m_product_visibility_clientclassification_mapping mlpvc" + " where mlpvc.config_id = ? ";
 
             final Collection<Long> clientClassificationIds = this.jdbcTemplate.query(clientClassificationSql, this.productVisibiltyMapper,
-                    new Object[]{productVisibilityId});
+                    new Object[] { productVisibilityId });
 
             final String clientTypeSql = "select mlpvc.clienttype_id as id" + " from m_product_visibility_clienttype_mapping mlpvc "
                     + " where mlpvc.config_id = ? ";
 
             final Collection<Long> clientTypeIds = this.jdbcTemplate.query(clientTypeSql, this.productVisibiltyMapper,
-                    new Object[]{productVisibilityId});
+                    new Object[] { productVisibilityId });
 
             productVisibilityConfigData.setClientClassification(clientClassificationIds);
             productVisibilityConfigData.setClientType(clientTypeIds);
@@ -278,7 +278,8 @@ public class ProductVisibilityReadPlatformServiceImpl implements ProductVisibili
             return productVisibilityConfigData;
         } catch (DataAccessException e) {
             LOG.error("retrieveOne Loan Product Visibility not found: {}", e);
-            throw new ProductVisibilityNotFoundException(GlobalEntityType.fromInt(entityType).getCode() + " visibility with " + productVisibilityId + " does not exist");
+            throw new ProductVisibilityNotFoundException(
+                    GlobalEntityType.fromInt(entityType).getCode() + " visibility with " + productVisibilityId + " does not exist");
         }
     }
 
@@ -348,10 +349,10 @@ public class ProductVisibilityReadPlatformServiceImpl implements ProductVisibili
             extraCriteria += " and mlpvc.legal_enums is null ";
         }
 
-//        if (StringUtils.isNotBlank(extraCriteria)) {
-//            extraCriteria = extraCriteria.substring(4);
-//            extraCriteria = " where " + extraCriteria;
-//        }
+        // if (StringUtils.isNotBlank(extraCriteria)) {
+        // extraCriteria = extraCriteria.substring(4);
+        // extraCriteria = " where " + extraCriteria;
+        // }
         sqlBuilder.append(extraCriteria);
         JsonObject productIds = null;
         try {
@@ -363,7 +364,8 @@ public class ProductVisibilityReadPlatformServiceImpl implements ProductVisibili
             }
             return productIds;
         } catch (final EmptyResultDataAccessException e) {
-            throw new ProductVisibilityNotFoundException("no " + GlobalEntityType.fromInt(entityType).getCode() + "  available for this client");
+            throw new ProductVisibilityNotFoundException(
+                    "no " + GlobalEntityType.fromInt(entityType).getCode() + "  available for this client");
         }
     }
 

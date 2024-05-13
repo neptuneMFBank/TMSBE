@@ -40,8 +40,7 @@ public class ProductVisibilityClientclassificationMapping extends AbstractPersis
 
     public ProductVisibilityClientclassificationMapping() {}
 
-    public ProductVisibilityClientclassificationMapping(ProductVisibilityConfig productVisibilityConfig,
-            CodeValue clientClassification) {
+    public ProductVisibilityClientclassificationMapping(ProductVisibilityConfig productVisibilityConfig, CodeValue clientClassification) {
         this.productVisibilityConfig = productVisibilityConfig;
         this.clientClassification = clientClassification;
     }

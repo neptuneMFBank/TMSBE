@@ -44,8 +44,6 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.client.domain.LegalForm;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductVisibilityMapping;
-import org.apache.fineract.portfolio.products.exception.business.ProductVisibilityNotFoundException;
-import org.apache.fineract.portfolio.loanproduct.business.service.LoanProductVisibilityWriteService;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.apache.fineract.portfolio.loanproduct.domain.business.LoanProductRepositoryWrapper;
 import org.apache.fineract.portfolio.products.api.business.ProductVisibilityApiResourceConstants;
@@ -55,6 +53,7 @@ import org.apache.fineract.portfolio.products.domain.business.ProductVisibilityC
 import org.apache.fineract.portfolio.products.domain.business.ProductVisibilityConfig;
 import org.apache.fineract.portfolio.products.domain.business.ProductVisibilityLegalenumMapping;
 import org.apache.fineract.portfolio.products.domain.business.ProductVisibilityRepositoryWrapper;
+import org.apache.fineract.portfolio.products.exception.business.ProductVisibilityNotFoundException;
 import org.apache.fineract.portfolio.savings.domain.SavingsProduct;
 import org.apache.fineract.portfolio.savings.domain.business.SavingsProductRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.domain.business.SavingsProductVisibilityMapping;
@@ -66,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-public class ProductVisibilityWriteServiceImpl implements LoanProductVisibilityWriteService {
+public class ProductVisibilityWriteServiceImpl implements ProductVisibilityWriteService {
 
     private final ProductVisibilityDataValidator fromApiJsonDeserializer;
     private final FromJsonHelper fromApiJsonHelper;
@@ -77,10 +76,11 @@ public class ProductVisibilityWriteServiceImpl implements LoanProductVisibilityW
     private final CodeValueRepositoryWrapper codeValueRepository;
 
     @Autowired
-    public ProductVisibilityWriteServiceImpl(final ProductVisibilityDataValidator fromApiJsonDeserializer, final FromJsonHelper fromApiJsonHelper,
-            final PlatformSecurityContext context, final LoanProductRepositoryWrapper loanProductRepositoryWrapper,
-            final SavingsProductRepositoryWrapper savingsProductRepositoryWrapper, final ProductVisibilityRepositoryWrapper repositoryWrapper,
-            final CodeValueRepositoryWrapper codeValueRepository) {
+    public ProductVisibilityWriteServiceImpl(final ProductVisibilityDataValidator fromApiJsonDeserializer,
+            final FromJsonHelper fromApiJsonHelper, final PlatformSecurityContext context,
+            final LoanProductRepositoryWrapper loanProductRepositoryWrapper,
+            final SavingsProductRepositoryWrapper savingsProductRepositoryWrapper,
+            final ProductVisibilityRepositoryWrapper repositoryWrapper, final CodeValueRepositoryWrapper codeValueRepository) {
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.context = context;
@@ -92,7 +92,7 @@ public class ProductVisibilityWriteServiceImpl implements LoanProductVisibilityW
 
     @Transactional
     @Override
-    public CommandProcessingResult createLoanProductVisibility(JsonCommand command) {
+    public CommandProcessingResult createProductVisibility(JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForCreate(command.json(), command.entityName());
 
@@ -226,18 +226,20 @@ public class ProductVisibilityWriteServiceImpl implements LoanProductVisibilityW
 
     @Transactional
     @Override
-    public CommandProcessingResult updateLoanProductVisibility(Long productVisibilityId, JsonCommand command) {
+    public CommandProcessingResult updateProductVisibility(Long productVisibilityId, JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForUpdate(command.json(), command.entityName());
         ProductVisibilityConfig productVisibilityConfigForUpdate = this.repositoryWrapper.findOneWithNotFoundDetection(productVisibilityId);
 
         if (command.entityName().equals(ProductVisibilityApiResourceConstants.LOAN_VISIBILITY_RESOURCENAME)
                 && !Objects.equals(productVisibilityConfigForUpdate.getProductType(), LOAN_PRODUCTS.getValue())) {
-            throw new ProductVisibilityNotFoundException(LOAN_PRODUCTS.getCode() + " visibility with " + productVisibilityId + " does not exist");
+            throw new ProductVisibilityNotFoundException(
+                    LOAN_PRODUCTS.getCode() + " visibility with " + productVisibilityId + " does not exist");
 
         } else if (command.entityName().equals(ProductVisibilityApiResourceConstants.SAVINGS_VISIBILITY_RESOURCENAME)
                 && !Objects.equals(productVisibilityConfigForUpdate.getProductType(), SAVINGS_PRODUCTS.getValue())) {
-            throw new ProductVisibilityNotFoundException(SAVINGS_PRODUCTS.getCode() + " visibility with " + productVisibilityId + " does not exist");
+            throw new ProductVisibilityNotFoundException(
+                    SAVINGS_PRODUCTS.getCode() + " visibility with " + productVisibilityId + " does not exist");
         }
 
         final JsonElement element = this.fromApiJsonHelper.parse(command.json());
@@ -269,8 +271,8 @@ public class ProductVisibilityWriteServiceImpl implements LoanProductVisibilityW
             if (clientClassificationArray != null && clientClassificationArray.length > 0) {
                 for (String clientClassificationId : clientClassificationArray) {
 
-                    CodeValue clientClassification = this.codeValueRepository.findOneWithNotFoundDetection(
-                            Long.valueOf(clientClassificationId));
+                    CodeValue clientClassification = this.codeValueRepository
+                            .findOneWithNotFoundDetection(Long.valueOf(clientClassificationId));
 
                     clientClassificationList.add(clientClassification);
                     newClientClassificationIdList.add(Long.valueOf(clientClassificationId));
@@ -298,8 +300,7 @@ public class ProductVisibilityWriteServiceImpl implements LoanProductVisibilityW
 
             if (clientTypeArray != null && clientTypeArray.length > 0) {
                 for (String clientTypeId : clientTypeArray) {
-                    CodeValue clientType = this.codeValueRepository.findOneWithNotFoundDetection(
-                            Long.valueOf(clientTypeId));
+                    CodeValue clientType = this.codeValueRepository.findOneWithNotFoundDetection(Long.valueOf(clientTypeId));
 
                     clientTypeList.add(clientType);
                     newClientTypeIdList.add(Long.valueOf(clientTypeId));
@@ -440,8 +441,7 @@ public class ProductVisibilityWriteServiceImpl implements LoanProductVisibilityW
 
     @Transactional
     @Override
-    public CommandProcessingResult delete(final Long loanProductVisibilityId
-    ) {
+    public CommandProcessingResult delete(final Long loanProductVisibilityId) {
 
         try {
             ProductVisibilityConfig loanProductVisibilityConfig = this.repositoryWrapper

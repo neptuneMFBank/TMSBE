@@ -23,8 +23,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
 @Repository
-//@ConditionalOnProperty("fineract.security.2fa.enabled")
-@SuppressWarnings({"MemberName"})
+// @ConditionalOnProperty("fineract.security.2fa.enabled")
+@SuppressWarnings({ "MemberName" })
 public class LoginCountRequestRepository {
 
     private final ConcurrentHashMap<String, Integer> loginRequest = new ConcurrentHashMap<>();

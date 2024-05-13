@@ -40,17 +40,25 @@ public class TomcatConnectorCustomizerAjp //implements WebServerFactoryCustomize
     public ConfigurableServletWebServerFactory webServerFactory() {
         TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 
-        Connector connector = new Connector("org.apache.coyote.ajp.AjpNioProtocol");
-        ((AbstractAjpProtocol) connector.getProtocolHandler()).setSecretRequired(false);
-        //connector.setAttribute("maxThreads", 100);
+        Connector connector = new Connector("AJP/1.3");
         connector.setPort(8009);
         connector.setRedirectPort(8443);
-        connector.setURIEncoding("UTF-8");
-        connector.setScheme("https");
         connector.setSecure(false);
+        connector.setAllowTrace(false);
         connector.setProperty("address", "0.0.0.0");
         connector.setProperty("allowedRequestAttributesPattern", ".*");
+        ((AbstractAjpProtocol) connector.getProtocolHandler()).setSecretRequired(false);
 
+//        //Connector connector = new Connector("org.apache.coyote.ajp.AjpNioProtocol");
+//        ((AbstractAjpProtocol) connector.getProtocolHandler()).setSecretRequired(false);
+//        //connector.setAttribute("maxThreads", 100);
+//        connector.setPort(8009);
+//        connector.setRedirectPort(8443);
+//        connector.setURIEncoding("UTF-8");
+//        connector.setScheme("https");
+//        connector.setSecure(false);
+//        connector.setProperty("address", "0.0.0.0");
+//        connector.setProperty("allowedRequestAttributesPattern", ".*");
         factory.addAdditionalTomcatConnectors(connector);
         return factory;
     }

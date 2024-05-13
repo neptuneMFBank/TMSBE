@@ -48,6 +48,8 @@ public class TomcatConnectorCustomizerAjp //implements WebServerFactoryCustomize
         connector.setURIEncoding("UTF-8");
         connector.setScheme("https");
         connector.setSecure(false);
+        connector.setProperty("address", "0.0.0.0");
+        connector.setProperty("allowedRequestAttributesPattern", ".*");
 
         factory.addAdditionalTomcatConnectors(connector);
         return factory;

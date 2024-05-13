@@ -45,7 +45,7 @@ public class TomcatConnectorCustomizerAjp //implements WebServerFactoryCustomize
         connector.setRedirectPort(8443);
         connector.setSecure(false);
         connector.setAllowTrace(false);
-        connector.setProperty("address", "0.0.0.0");
+        connector.setProperty("address", "10.2.3.33");
         connector.setProperty("allowedRequestAttributesPattern", ".*");
         ((AbstractAjpProtocol) connector.getProtocolHandler()).setSecretRequired(false);
 

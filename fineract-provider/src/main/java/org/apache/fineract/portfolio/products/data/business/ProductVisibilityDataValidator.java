@@ -18,7 +18,6 @@
  */
 package org.apache.fineract.portfolio.products.data.business;
 
-
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -62,8 +61,7 @@ public class ProductVisibilityDataValidator {
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
 
-        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
-                .resource("PRODUCT_VISIBILITY");
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("PRODUCT_VISIBILITY");
 
         final String name = this.fromApiJsonHelper.extractStringNamed(ProductVisibilityApiResourceConstants.NAME, element);
         baseDataValidator.reset().parameter(ProductVisibilityApiResourceConstants.NAME).value(name).notExceedingLengthOf(150).notBlank();
@@ -127,8 +125,7 @@ public class ProductVisibilityDataValidator {
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
 
-        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
-                .resource("PRODUCT_VISIBILITY");
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("PRODUCT_VISIBILITY");
 
         boolean atLeastOneParameterPassedForUpdate = false;
 

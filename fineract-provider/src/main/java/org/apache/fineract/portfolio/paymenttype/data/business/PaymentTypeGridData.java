@@ -21,8 +21,10 @@ package org.apache.fineract.portfolio.paymenttype.data.business;
 import com.google.gson.JsonElement;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collection;
 import lombok.Data;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
+import org.apache.fineract.portfolio.charge.data.ChargeData;
 import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
 
 @Data
@@ -40,19 +42,14 @@ public class PaymentTypeGridData implements Serializable {
     private BigDecimal percent;
     private EnumOptionData chargeData;
 
-    public static PaymentTypeGridData instance(final Long id, final PaymentTypeData paymentType,
-            final String name,
-            final String gridJson,
-            final Boolean isGrid,
-            final Boolean isCommission,
-            final EnumOptionData paymentCalculationType,
-            final BigDecimal amount,
-            final BigDecimal percent,  EnumOptionData chargeData) {
-        return new PaymentTypeGridData(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType, amount, percent, chargeData);
+//    template 
+    private final Collection<ChargeData> chargeOptions;
+    private final Collection<PaymentTypeData> paymentTypeOptions;
 
-    }
-
-    public PaymentTypeGridData(final Long id, PaymentTypeData paymentType, String name, String gridJson, Boolean isGrid, Boolean isCommission, EnumOptionData paymentCalculationType, BigDecimal amount, BigDecimal percent, EnumOptionData chargeData) {
+    public PaymentTypeGridData(final Long id, PaymentTypeData paymentType,
+            String name, String gridJson, Boolean isGrid, Boolean isCommission, EnumOptionData paymentCalculationType,
+            BigDecimal amount, BigDecimal percent, EnumOptionData chargeData, Collection<ChargeData> chargeOptions,
+            Collection<PaymentTypeData> paymentTypeOptions) {
         this.id = id;
         this.paymentType = paymentType;
         this.name = name;
@@ -63,6 +60,39 @@ public class PaymentTypeGridData implements Serializable {
         this.amount = amount;
         this.percent = percent;
         this.chargeData = chargeData;
+        this.chargeOptions = chargeOptions;
+        this.paymentTypeOptions = paymentTypeOptions;
     }
 
+    public static PaymentTypeGridData instance(final Long id, final PaymentTypeData paymentType,
+            final String name,
+            final String gridJson,
+            final Boolean isGrid,
+            final Boolean isCommission,
+            final EnumOptionData paymentCalculationType,
+            final BigDecimal amount,
+            final BigDecimal percent, EnumOptionData chargeData) {
+        final Collection<ChargeData> chargeOptions = null;
+        final Collection<PaymentTypeData> paymentTypeOptions = null;
+
+        return new PaymentTypeGridData(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType,
+                amount, percent, chargeData, chargeOptions, paymentTypeOptions);
+
+    }
+
+    public static PaymentTypeGridData template(final Collection<ChargeData> chargeOptions, final Collection<PaymentTypeData> paymentTypeOptions) {
+        final Long id = null;
+        final PaymentTypeData paymentType = null;
+        final String name = null;
+        final String gridJson = null;
+        final Boolean isGrid = null;
+        final Boolean isCommission = null;
+        final EnumOptionData paymentCalculationType = null;
+        final BigDecimal amount = null;
+        final BigDecimal percent = null;
+        EnumOptionData chargeData = null;
+
+        return new PaymentTypeGridData(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType,
+                amount, percent, chargeData, chargeOptions, paymentTypeOptions);
+    }
 }

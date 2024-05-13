@@ -78,11 +78,10 @@ public class OverdraftApiResource {
 
     @GET
     @Path("{overdraftId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a overdraft", description = "Returns the details of a overdraft. Example Requests: overdraft/1")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retreiveOverdraft(@PathParam("overdraftId") @Parameter(description = "overdraftId") final Long overdraftId,
             @Context final UriInfo uriInfo) {
 
@@ -100,14 +99,13 @@ public class OverdraftApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve Overdraft", description = "Retrieve Overdraft")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
-        // MetricsApiResourceSwagger.GetMetricssResponse.class)))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+    // MetricsApiResourceSwagger.GetMetricssResponse.class)))
+    ) })
     public String retreiveAllOverdraft(@Context final UriInfo uriInfo,
             @QueryParam("savingsId") @Parameter(description = "savingsId") final Long savingsId,
             @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
@@ -140,12 +138,11 @@ public class OverdraftApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create an Overdraft", description = "")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
@@ -160,12 +157,11 @@ public class OverdraftApiResource {
 
     @PUT
     @Path("{overdraftId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update an Overdraft", description = "")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String update(@Parameter(description = "overdraftId") @PathParam("overdraftId") final Long overdraftId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -181,12 +177,11 @@ public class OverdraftApiResource {
 
     @POST
     @Path("/stop/{overdraftId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Stop an Overdraft", description = "")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String stop(@Parameter(description = "overdraftId") @PathParam("overdraftId") final Long overdraftId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -202,12 +197,11 @@ public class OverdraftApiResource {
 
     @DELETE
     @Path("{overdraftId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update a Client", description = "")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String delete(@Parameter(description = "overdraftId") @PathParam("overdraftId") final Long overdraftId) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
@@ -222,12 +216,11 @@ public class OverdraftApiResource {
 
     @POST
     @Path("/submit/{overdraftId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Stop an Overdraft", description = "")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String submitOverdraft(@Parameter(description = "overdraftId") @PathParam("overdraftId") final Long overdraftId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 

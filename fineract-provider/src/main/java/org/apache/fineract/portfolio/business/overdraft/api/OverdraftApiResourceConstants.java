@@ -45,8 +45,9 @@ public final class OverdraftApiResourceConstants {
     public static final String SAVINGS_ID = "savingsId";
     public static final String NUMBER_OF_DAYS = "numberOfDays";
 
-    public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ID, AMOUNT, SAVINGS_ID, STATUS, NOMINALINTEREST,
-            STARTDATE, CREATED_ON, MODIFIED_ON, EXPIRYDATE, CREATEDBYUSER, MODIFIEDBYUSER, NUMBER_OF_DAYS, LoanBusinessApiConstants.metricsDataParam));
+    public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(
+            Arrays.asList(ID, AMOUNT, SAVINGS_ID, STATUS, NOMINALINTEREST, STARTDATE, CREATED_ON, MODIFIED_ON, EXPIRYDATE, CREATEDBYUSER,
+                    MODIFIEDBYUSER, NUMBER_OF_DAYS, LoanBusinessApiConstants.metricsDataParam));
 
     public static final Set<String> REQUEST_ACTION_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(SAVINGS_ID, AMOUNT, LoanApiConstants.localeParameterName, NOMINALINTEREST, STARTDATE, NUMBER_OF_DAYS,

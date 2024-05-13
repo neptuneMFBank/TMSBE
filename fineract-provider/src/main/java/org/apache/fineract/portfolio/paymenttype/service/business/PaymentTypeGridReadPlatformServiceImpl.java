@@ -28,8 +28,11 @@ import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.charge.data.ChargeData;
+import org.apache.fineract.portfolio.charge.service.ChargeReadPlatformService;
 import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
 import org.apache.fineract.portfolio.paymenttype.data.business.PaymentTypeGridData;
+import org.apache.fineract.portfolio.paymenttype.service.PaymentTypeReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -43,12 +46,19 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
     private final FromJsonHelper fromJsonHelper;
+    private final ChargeReadPlatformService chargeReadPlatformService;
+    private final PaymentTypeReadPlatformService paymentTypeReadPlatformService;
 
     @Autowired
-    public PaymentTypeGridReadPlatformServiceImpl(final FromJsonHelper fromJsonHelper, final PlatformSecurityContext context, final JdbcTemplate jdbcTemplate) {
+    public PaymentTypeGridReadPlatformServiceImpl(final FromJsonHelper fromJsonHelper, final PlatformSecurityContext context,
+            final JdbcTemplate jdbcTemplate, final ChargeReadPlatformService chargeReadPlatformService,
+            final PaymentTypeReadPlatformService paymentTypeReadPlatformService
+    ) {
         this.context = context;
         this.jdbcTemplate = jdbcTemplate;
         this.fromJsonHelper = fromJsonHelper;
+        this.chargeReadPlatformService = chargeReadPlatformService;
+        this.paymentTypeReadPlatformService = paymentTypeReadPlatformService;
     }
 
     @Override
@@ -164,4 +174,11 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
 
     }
 
+    @Override
+    public PaymentTypeGridData retrieveTemplate() {
+
+        final Collection<ChargeData> chargeOptions = this.chargeReadPlatformService.retrieveAllCharges();
+        final Collection<PaymentTypeData> paymentTypeOptions = this.paymentTypeReadPlatformService.retrieveAllPaymentTypes();
+        return PaymentTypeGridData.template(chargeOptions, paymentTypeOptions);
+    }
 }

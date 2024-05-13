@@ -66,7 +66,7 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
     private static final SecureRandom secureRandom = new SecureRandom();
     final AuthenticationBusinessCommandFromApiJsonDeserializer authenticationBusinessCommandFromApiJsonDeserializer;
     private final AppUserRepositoryWrapper appUserRepositoryWrapper;
-//    private final PlatformSecurityContext context;
+    // private final PlatformSecurityContext context;
     private final CommandSourceRepository commandSourceRepository;
     private final LoginCountRequestRepository loginCountRequestRepository;
     private final JdbcTemplate jdbcTemplate;
@@ -78,8 +78,9 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
             final SmsCampaignDropdownReadPlatformService smsCampaignDropdownReadPlatformService,
             final AuthenticationBusinessCommandFromApiJsonDeserializer authenticationBusinessCommandFromApiJsonDeserializer,
             final AppUserRepositoryWrapper appUserRepositoryWrapper,
-            //final PlatformSecurityContext context,
-            final JdbcTemplate jdbcTemplate, final CommandSourceRepository commandSourceRepository, LoginCountRequestRepository loginCountRequestRepository) {
+            // final PlatformSecurityContext context,
+            final JdbcTemplate jdbcTemplate, final CommandSourceRepository commandSourceRepository,
+            LoginCountRequestRepository loginCountRequestRepository) {
         this.appUserRepositoryWrapper = appUserRepositoryWrapper;
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.userDomainService = userDomainService;
@@ -88,7 +89,7 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
         this.smsMessageScheduledJobService = smsMessageScheduledJobService;
         this.smsCampaignDropdownReadPlatformService = smsCampaignDropdownReadPlatformService;
         this.authenticationBusinessCommandFromApiJsonDeserializer = authenticationBusinessCommandFromApiJsonDeserializer;
-        //this.context = context;
+        // this.context = context;
         this.commandSourceRepository = commandSourceRepository;
         this.loginCountRequestRepository = loginCountRequestRepository;
         this.jdbcTemplate = jdbcTemplate;
@@ -110,8 +111,8 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
             // appUser = this.appUserRepositoryWrapper.findAppUserByName(value);
             appUser = this.appUserRepositoryWrapper.findAppUserByEmail(value);
         } // else if (isMobileAuthenticationMode) {
-        // check mobile
-        // }
+          // check mobile
+          // }
         else {
             throw new PlatformDataIntegrityException("error.msg.reset.mode", "Password reset mode not supported");
         }
@@ -200,7 +201,7 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
             int count = this.loginCountRequestRepository.getLoginRequestCountForUser(username);
             log.info("before adding count: {}", count);
             if (count > 3) {
-                //lock user
+                // lock user
                 log.info("lock count: {}", count);
                 String lockUserUpdateSql = "UPDATE m_appuser SET nonlocked=? WHERE username=?";
                 jdbcTemplate.update(lockUserUpdateSql, 0, username);

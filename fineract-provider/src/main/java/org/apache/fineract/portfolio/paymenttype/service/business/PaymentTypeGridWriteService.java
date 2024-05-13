@@ -16,14 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.infrastructure.codes.domain;
+package org.apache.fineract.portfolio.paymenttype.service.business;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
-public interface CodeValueRepository extends JpaRepository<CodeValue, Long>, JpaSpecificationExecutor<CodeValue> {
+public interface PaymentTypeGridWriteService {
 
-    CodeValue findByCodeNameAndId(String codeName, Long id);
+    CommandProcessingResult createPaymentTypeGrid(JsonCommand command);
 
-    CodeValue findByCodeNameAndLabel(String codeName, String label);
+    CommandProcessingResult updatePaymentTypeGrid(Long paymentTypeGridId, JsonCommand command);
+
+    CommandProcessingResult delete(Long loanProductVisibilityId);
 }

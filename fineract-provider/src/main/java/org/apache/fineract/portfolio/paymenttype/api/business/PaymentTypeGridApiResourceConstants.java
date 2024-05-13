@@ -28,17 +28,22 @@ public final class PaymentTypeGridApiResourceConstants {
 
     }
 
+    public static final String RESOURCE_NAME = "PAYMENTTYPEGRID";
+
     public static final String ID = "id";
     public static final String NAME = "name";
     public static final String GRID_JSON = "gridJsonObject";
     public static final String ISGRID = "isGrid";
     public static final String ISCOMMISION = "isCommission";
-    public static final String PAYMENT_TYPE = "paymentType";
-    public static final String CHARGE_DATA = "chargeData";
+    public static final String PAYMENT_TYPE = "paymentTypeId";
+    public static final String CHARGE_DATA = "chargeId";
     public static final String PAYMENTCALCULATIONTYPE = "paymentCalculationType";
     public static final String AMOUNT = "amount";
     public static final String PERCENT = "percent";
+    public static final String LOCALE = "locale";
 
     static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ID, NAME, GRID_JSON, ISGRID,
             PAYMENT_TYPE, PAYMENTCALCULATIONTYPE, AMOUNT, PERCENT, ISCOMMISION, CHARGE_DATA));
+    public static final Set<String> REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(NAME, GRID_JSON, ISGRID,
+            PAYMENT_TYPE, PAYMENTCALCULATIONTYPE, AMOUNT, PERCENT, ISCOMMISION, CHARGE_DATA, LOCALE));
 }

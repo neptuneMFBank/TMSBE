@@ -41,4 +41,16 @@ public class PaymentTypeGridRepositoryWrapper {
         return this.repository.findByPaymentTypeId(paymentTypeId);
     }
 
+
+    public void delete(final PaymentTypeGrid paymentTypeGrid) {
+        this.repository.delete(paymentTypeGrid);
+    }
+
+    public void flush() {
+        this.repository.flush();
+    }
+  public void saveAndFlush(final PaymentTypeGrid paymentTypeGrid) {
+         this.repository.saveAndFlush(paymentTypeGrid);
+    }
+
 }

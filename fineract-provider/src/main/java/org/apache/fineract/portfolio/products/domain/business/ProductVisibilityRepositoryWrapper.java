@@ -38,7 +38,7 @@ public class ProductVisibilityRepositoryWrapper {
         this.repository.saveAndFlush(loanProductVisibilityConfig);
     }
 
-     @Transactional()
+    @Transactional()
     public void save(final ProductVisibilityConfig loanProductVisibilityConfig) {
         this.repository.save(loanProductVisibilityConfig);
     }

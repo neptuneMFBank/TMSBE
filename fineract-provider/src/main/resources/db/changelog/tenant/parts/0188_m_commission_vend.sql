@@ -17,7 +17,8 @@
 -- under the License.
 --
 
----make sure to replace accounting_rules NULL to the right accounting_rulesID e.g 1 else commision will not run
+-- make sure to replace accounting_rules NULL to the right accounting_rulesID e.g 1 else commision will not run
+
 CREATE OR REPLACE VIEW m_commission_vend AS
     SELECT NULL accounting_rules, msat.id, msat.amount, msat.ref_no, mpd.receipt_number, mpd.bank_number,
     mptg.calculation_type, mptg.amount grid_amount, mptg.percent grid_percent, mn.note, mpd.payment_type_id, msa.currency_code

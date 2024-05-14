@@ -17,12 +17,5 @@
 -- under the License.
 --
 
-
-CREATE TABLE `m_commision_vat_calculated` (
-  `id` bigint PRIMARY KEY AUTO_INCREMENT,
-  `savings_account_transaction_id` BIGINT NOT NULL,
-  `type` INT(11) NOT NULL  COMMENT 'commission-1,vat-2',
-  `status` INT(11) NOT NULL  COMMENT '600-done,500-failed',
-  `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT `m_cvc_FK_savings_account_transaction_id` FOREIGN KEY (`savings_account_transaction_id`) REFERENCES `savings_account_transaction` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `job` (`id`, `name`, `display_name`, `cron_expression`, `create_time`, `task_priority`, `group_name`, `previous_run_start_time`, `next_run_time`, `job_key`, `initializing_errorlog`, `is_active`, `currently_running`, `updates_allowed`, `scheduler_group`, `is_misfired`, `node_id`)
+VALUES (NULL, 'Commission Vend EOD', 'Commission Vend EOD', '0 0/5 * * * ?', curdate(), 5, NULL, NULL, '2017-02-25 00:01:00', 'Commission Vend EODJobDetail1 _ DEFAULT', NULL, 1, 0, 1, 0, 0,1)

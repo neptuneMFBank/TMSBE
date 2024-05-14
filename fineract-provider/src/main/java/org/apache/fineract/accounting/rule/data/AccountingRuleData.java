@@ -119,6 +119,18 @@ public class AccountingRuleData {
         this.debitAccounts = debitAccounts;
     }
 
+    public Long getOfficeId() {
+        return officeId;
+    }
+
+    public List<GLAccountDataForLookup> getCreditAccounts() {
+        return creditAccounts;
+    }
+
+    public List<GLAccountDataForLookup> getDebitAccounts() {
+        return debitAccounts;
+    }
+
     public List<AccountingTagRuleData> getCreditTags() {
         return this.creditTags;
     }

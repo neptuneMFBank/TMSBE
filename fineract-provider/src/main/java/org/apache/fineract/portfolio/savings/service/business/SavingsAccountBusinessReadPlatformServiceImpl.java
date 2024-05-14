@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.portfolio.savings.service.business;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,29 +29,50 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.accounting.glaccount.data.GLAccountDataForLookup;
+import org.apache.fineract.accounting.rule.data.AccountingRuleData;
+import org.apache.fineract.accounting.rule.service.AccountingRuleReadPlatformService;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
+import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
+import org.apache.fineract.infrastructure.configuration.service.ConfigurationReadPlatformService;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.PaginationHelper;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
+import org.apache.fineract.infrastructure.jobs.annotation.CronTarget;
+import org.apache.fineract.infrastructure.jobs.service.JobName;
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
+import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.portfolio.account.data.AccountTransferData;
 import org.apache.fineract.portfolio.charge.data.ChargeData;
+import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.paymentdetail.data.PaymentDetailData;
 import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
+import org.apache.fineract.portfolio.paymenttype.domain.business.PaymentCalculationType;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
+import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionData;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionEnumData;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountAssembler;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
+import org.apache.fineract.portfolio.savings.domain.business.CommissionVend;
+import org.apache.fineract.portfolio.savings.domain.business.CommissionVendRepository;
 import org.apache.fineract.portfolio.savings.service.SavingsEnumerations;
+import org.apache.fineract.simplifytech.data.GeneralConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAccountBusinessReadPlatformService {
 
@@ -61,17 +84,153 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
     private final ColumnValidator columnValidator;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
     private final JdbcTemplate jdbcTemplate;
+    private final CommissionVendRepository commissionVendRepository;
+    private final ConfigurationReadPlatformService configurationReadPlatformService;
+    private final AccountingRuleReadPlatformService accountingRuleReadPlatformService;
+    private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
 
     @Autowired
     public SavingsAccountBusinessReadPlatformServiceImpl(final ColumnValidator columnValidator,
             final SavingsAccountAssembler savingAccountAssembler, PaginationHelper paginationHelper,
-            final DatabaseSpecificSQLGenerator sqlGenerator, final JdbcTemplate jdbcTemplate) {
+            final DatabaseSpecificSQLGenerator sqlGenerator, final JdbcTemplate jdbcTemplate, final CommissionVendRepository commissionVendRepository, final ConfigurationReadPlatformService configurationReadPlatformService,
+            final AccountingRuleReadPlatformService accountingRuleReadPlatformService, final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.transactionsMapper = new SavingsAccountTransactionsMapper();
 
         this.columnValidator = columnValidator;
         this.paginationHelper = paginationHelper;
         this.sqlGenerator = sqlGenerator;
         this.jdbcTemplate = jdbcTemplate;
+        this.commissionVendRepository = commissionVendRepository;
+        this.configurationReadPlatformService = configurationReadPlatformService;
+        this.accountingRuleReadPlatformService = accountingRuleReadPlatformService;
+        this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
+    }
+
+    @Override
+    @Transactional
+    @CronTarget(jobName = JobName.COMMISSION_VEND_EOD)
+    public void commissionVendEod() {
+        final GlobalConfigurationPropertyData calculateCommission = this.configurationReadPlatformService
+                .retrieveGlobalConfigurationX("calculate-commission");
+        if (calculateCommission.isEnabled()) {
+            //run commission vend calculation
+            final List<CommissionVend> commissionVends = this.commissionVendRepository.findAll();
+            if (commissionVends != null) {
+                for (CommissionVend commissionVend : commissionVends) {
+                    final Long transactionId = commissionVend.getId();
+
+                    final Integer calculationType = commissionVend.getCalculationType();
+                    final PaymentCalculationType paymentCalculationType = PaymentCalculationType.fromInt(calculationType);
+                    final BigDecimal gridPercent = commissionVend.getGridPercent();
+                    final BigDecimal gridAmount = commissionVend.getGridAmount();
+                    final BigDecimal amount = commissionVend.getAmount();
+
+                    BigDecimal commissionAmount = BigDecimal.ZERO;
+                    if (paymentCalculationType.isCapped()) {
+                        commissionAmount = amount.multiply(gridPercent).divide(BigDecimal.valueOf(100L), MoneyHelper.getRoundingMode());
+                        if (commissionAmount.compareTo(gridAmount) > 0) {
+                            commissionAmount = gridAmount;
+                        }
+                    } else if (paymentCalculationType.isPercentage()) {
+                        commissionAmount = amount.multiply(gridPercent).divide(BigDecimal.valueOf(100L), MoneyHelper.getRoundingMode());
+                    } else {
+                        //isFlat or zero
+                        commissionAmount = gridAmount;
+                    }
+
+                    int status = SavingsAccountStatusType.CLOSED.getValue();
+                    if (commissionAmount == null || commissionAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                        status = SavingsAccountStatusType.REJECTED.getValue();
+                    } else {
+                        //run frequent posting
+
+                        final String bankNumber = commissionVend.getBankNumber();
+                        final String note = commissionVend.getNote();
+                        final String receiptNumber = commissionVend.getReceiptNumber();
+                        final String refNo = commissionVend.getRefNo();
+                        final Long accountingRuleId = commissionVend.getAccountingRules();
+                        final String currencyCode = commissionVend.getCurrencyCode();
+                        final Long paymentTypeId = commissionVend.getPaymentTypeId();
+                        final AccountingRuleData accountingRuleData = this.accountingRuleReadPlatformService.retrieveAccountingRuleById(accountingRuleId);
+                        final Long officeId = accountingRuleData.getOfficeId();
+
+                        JsonArray credits = new JsonArray();
+                        final List<GLAccountDataForLookup> accountDataForLookupsCredits = accountingRuleData.getCreditAccounts();
+                        if (accountDataForLookupsCredits != null) {
+                            for (GLAccountDataForLookup accountDataForLookupsCredit : accountDataForLookupsCredits) {
+                                final JsonObject jsonObject = new JsonObject();
+                                jsonObject.addProperty("glAccountId", accountDataForLookupsCredit.getId());
+                                jsonObject.addProperty(SavingsApiConstants.amountParamName, commissionAmount);
+                                credits.add(credits);
+                            }
+                        }
+                        JsonArray debits = new JsonArray();
+                        final List<GLAccountDataForLookup> accountDataForLookupsDebits = accountingRuleData.getDebitAccounts();
+                        if (accountDataForLookupsDebits != null) {
+                            for (GLAccountDataForLookup accountDataForLookupsDebit : accountDataForLookupsDebits) {
+                                final JsonObject jsonObject = new JsonObject();
+                                jsonObject.addProperty("glAccountId", accountDataForLookupsDebit.getId());
+                                jsonObject.addProperty(SavingsApiConstants.amountParamName, commissionAmount);
+                                debits.add(credits);
+                            }
+                        }
+//                        {
+//    "locale": "en",
+//    "dateFormat": "dd MMMM yyyy",
+//    "officeId": 1,
+//    "transactionDate": "14 May 2024",
+//    "referenceNumber": "6678",
+//    "comments": "Checks",
+//    "accountingRule": 1,
+//    "currencyCode": "EUR",
+//    "paymentTypeId": 1,
+//    "accountNumber": "1234456778",
+//    "checkNumber": "11",
+//    "routingCode": "11",
+//    "receiptNumber": "11",
+//    "bankNumber": "Sterling Bank",
+//    "credits": [
+//        {
+//            "glAccountId": 27,
+//            "amount": "10"
+//        }
+//    ],
+//    "debits": [
+//        {
+//            "glAccountId": 17,
+//            "amount": "10"
+//        }
+//    ]
+//}
+
+                        final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
+                        final JsonObject accountEntryJson = new JsonObject();
+                        accountEntryJson.addProperty(SavingsApiConstants.transactionDateParamName, today.toString());
+                        accountEntryJson.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
+                        accountEntryJson.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
+                        accountEntryJson.addProperty(ClientApiConstants.officeIdParamName, officeId);
+                        accountEntryJson.addProperty("referenceNumber", refNo);
+                        accountEntryJson.addProperty("comments", note);
+                        accountEntryJson.addProperty("accountingRule", accountingRuleId);
+                        accountEntryJson.addProperty("currencyCode", currencyCode);
+                        accountEntryJson.addProperty(SavingsApiConstants.paymentTypeIdParamName, paymentTypeId);
+                        accountEntryJson.addProperty(SavingsApiConstants.receiptNumberParamName, receiptNumber);
+                        accountEntryJson.addProperty(SavingsApiConstants.bankNumberParamName, bankNumber);
+                        accountEntryJson.add("credits", credits);
+                        accountEntryJson.add("debits", debits);
+                        final String apiRequestBodyAsJson = accountEntryJson.toString();
+                        log.info("commissionVendEod Posting- {}", apiRequestBodyAsJson);
+                        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
+                        final CommandWrapper commandRequest = builder.createJournalEntry().build();
+                        commandsSourceWritePlatformService.logCommandSource(commandRequest);
+                    }
+
+                    String updateCommissionVatCalculated = "INSERT INTO m_commision_vat_calculated (savings_account_transaction_id, type, status) VALUES (?, ?, ?)";
+                    jdbcTemplate.update(updateCommissionVatCalculated, transactionId, 1, status);
+
+                }
+            }
+        }
     }
 
     @Override

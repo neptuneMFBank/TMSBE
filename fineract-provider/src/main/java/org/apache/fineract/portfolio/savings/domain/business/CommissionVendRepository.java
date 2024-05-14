@@ -16,18 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.savings.service.business;
+package org.apache.fineract.portfolio.savings.domain.business;
 
-import org.apache.fineract.infrastructure.core.service.Page;
-import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.savings.DepositAccountType;
-import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionData;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface SavingsAccountBusinessReadPlatformService {
-
-     void commissionVendEod();
-
-    public Page<SavingsAccountTransactionData> retrieveAllTransactionsBySavingsId(Long savingsId, DepositAccountType depositAccountType,
-            final SearchParametersBusiness searchParameters);
+public interface CommissionVendRepository extends JpaRepository<CommissionVend, Long>, JpaSpecificationExecutor<CommissionVend> {
 
 }

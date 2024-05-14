@@ -219,4 +219,10 @@
     <include file="parts/0418_update_m_paymenttype_grid_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0419_delete_m_paymenttype_grid_permission.sql" relativeToChangelogFile="true" />
     <!-- <include file="parts/0186_m_permission_m.xml" relativeToChangelogFile="true" /> -->
+    <include file="parts/0420_create_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0421_approve_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0422_reject_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0423_read_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
+    
+    <!-- <include file="parts/0180_calculate_commission.sql" relativeToChangelogFile="true" /> -->
 </databaseChangeLog>

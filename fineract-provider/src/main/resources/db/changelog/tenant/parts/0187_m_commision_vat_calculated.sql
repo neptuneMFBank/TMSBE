@@ -24,5 +24,5 @@ CREATE TABLE `m_commision_vat_calculated` (
   `type` INT(11) NOT NULL  COMMENT 'commission-1,vat-2',
   `status` INT(11) NOT NULL  COMMENT '600-done,500-failed',
   `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT `m_cvc_FK_savings_account_transaction_id` FOREIGN KEY (`savings_account_transaction_id`) REFERENCES `savings_account_transaction` (`id`)
+  CONSTRAINT `m_cvc_FK_savings_account_transaction_id` FOREIGN KEY (`savings_account_transaction_id`) REFERENCES `m_savings_account_transaction` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

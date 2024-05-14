@@ -200,7 +200,7 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
         } else {
             int count = this.loginCountRequestRepository.getLoginRequestCountForUser(username);
             log.info("before adding count: {}", count);
-            if (count > 3) {
+            if (count > 2) {
                 // lock user
                 log.info("lock count: {}", count);
                 String lockUserUpdateSql = "UPDATE m_appuser SET nonlocked=? WHERE username=?";

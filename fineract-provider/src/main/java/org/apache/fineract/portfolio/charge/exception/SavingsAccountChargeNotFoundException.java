@@ -23,9 +23,14 @@ import org.apache.fineract.infrastructure.core.exception.AbstractPlatformResourc
 import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
- * {@link AbstractPlatformDomainRuleException} thrown when savings account charge does not exist.
+ * {@link AbstractPlatformDomainRuleException} thrown when savings account
+ * charge does not exist.
  */
 public class SavingsAccountChargeNotFoundException extends AbstractPlatformResourceNotFoundException {
+
+    public SavingsAccountChargeNotFoundException() {
+        super("error.msg.savings.account.charge.id.invalid", "Savings Account charge does not exist");
+    }
 
     public SavingsAccountChargeNotFoundException(final Long id) {
         super("error.msg.savings.account.charge.id.invalid", "Savings Account charge with identifier " + id + " does not exist", id);

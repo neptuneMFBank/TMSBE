@@ -257,6 +257,11 @@ public class ChargeWritePlatformServiceJpaRepositoryImpl implements ChargeWriteP
      */
     private void handleDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve) {
 
+        if (realCause.getMessage().contains("payment_type")) {
+            final Long paymentTypeId = command.longValueOfParameterNamed("paymentTypeId");
+            throw new PlatformDataIntegrityException("error.msg.charge.duplicate.paymentType", "Charge with paymentTypeId `" + paymentTypeId + "` already exists",
+                    "paymentTypeId", paymentTypeId);
+        }
         if (realCause.getMessage().contains("name")) {
             final String name = command.stringValueOfParameterNamed("name");
             throw new PlatformDataIntegrityException("error.msg.charge.duplicate.name", "Charge with name `" + name + "` already exists",
@@ -270,25 +275,25 @@ public class ChargeWritePlatformServiceJpaRepositoryImpl implements ChargeWriteP
 
     private boolean isAnyLoansAssociateWithThisCharge(final Long chargeId) {
         final String sql = "select (CASE WHEN exists (select 1 from m_loan_charge lc where lc.charge_id = ? and lc.is_active = true) THEN 'true' ELSE 'false' END)";
-        final String isLoansUsingCharge = this.jdbcTemplate.queryForObject(sql, String.class, new Object[] { chargeId });
+        final String isLoansUsingCharge = this.jdbcTemplate.queryForObject(sql, String.class, new Object[]{chargeId});
         return Boolean.valueOf(isLoansUsingCharge);
     }
 
     private boolean isAnySavingsAssociateWithThisCharge(final Long chargeId) {
         final String sql = "select (CASE WHEN exists (select 1 from m_savings_account_charge sc where sc.charge_id = ? and sc.is_active = true) THEN 'true' ELSE 'false' END)";
-        final String isSavingsUsingCharge = this.jdbcTemplate.queryForObject(sql, String.class, new Object[] { chargeId });
+        final String isSavingsUsingCharge = this.jdbcTemplate.queryForObject(sql, String.class, new Object[]{chargeId});
         return Boolean.valueOf(isSavingsUsingCharge);
     }
 
     private boolean isAnyLoanProductsAssociateWithThisCharge(final Long chargeId) {
         final String sql = "select (CASE WHEN exists (select 1 from m_product_loan_charge lc where lc.charge_id = ?) THEN 'true' ELSE 'false' END)";
-        final String isLoansUsingCharge = this.jdbcTemplate.queryForObject(sql, String.class, new Object[] { chargeId });
+        final String isLoansUsingCharge = this.jdbcTemplate.queryForObject(sql, String.class, new Object[]{chargeId});
         return Boolean.valueOf(isLoansUsingCharge);
     }
 
     private boolean isAnySavingsProductsAssociateWithThisCharge(final Long chargeId) {
         final String sql = "select (CASE WHEN (exists (select 1 from m_savings_product_charge sc where sc.charge_id = ?)) = 1 THEN 'true' ELSE 'false' END)";
-        final String isSavingsUsingCharge = this.jdbcTemplate.queryForObject(sql, String.class, new Object[] { chargeId });
+        final String isSavingsUsingCharge = this.jdbcTemplate.queryForObject(sql, String.class, new Object[]{chargeId});
         return Boolean.valueOf(isSavingsUsingCharge);
     }
 }

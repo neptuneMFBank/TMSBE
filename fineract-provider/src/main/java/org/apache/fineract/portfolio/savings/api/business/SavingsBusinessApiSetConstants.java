@@ -38,6 +38,6 @@ public class SavingsBusinessApiSetConstants {
 
     protected static final Set<String> SAVINGS_TRANSACTION_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(idParamName, "accountId", accountNoParamName, "currency", "amount", dateParamName, paymentDetailDataParamName,
-                    runningBalanceParamName, reversedParamName, noteParamName, "chargeData"));
+                    runningBalanceParamName, reversedParamName, noteParamName, "chargeData", "submittedOnDateTime"));
 
 }

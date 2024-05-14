@@ -22,20 +22,20 @@ import org.apache.fineract.commands.annotation.CommandType;
 import org.apache.fineract.commands.handler.NewCommandSourceHandler;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.portfolio.loanproduct.business.service.LoanProductVisibilityWriteService;
 import org.apache.fineract.portfolio.products.api.business.ProductVisibilityApiResourceConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.apache.fineract.portfolio.products.service.business.ProductVisibilityWriteService;
 
 @Service
 @CommandType(entity = ProductVisibilityApiResourceConstants.LOAN_VISIBILITY_RESOURCENAME, action = "DELETE")
 public class DeleteLoanProductVisibilityCommandHandler implements NewCommandSourceHandler {
 
-    private final LoanProductVisibilityWriteService writePlatformService;
+    private final ProductVisibilityWriteService writePlatformService;
 
     @Autowired
-    public DeleteLoanProductVisibilityCommandHandler(final LoanProductVisibilityWriteService writePlatformService) {
+    public DeleteLoanProductVisibilityCommandHandler(final ProductVisibilityWriteService writePlatformService) {
         this.writePlatformService = writePlatformService;
     }
 

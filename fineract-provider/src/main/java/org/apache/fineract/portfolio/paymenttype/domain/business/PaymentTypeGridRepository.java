@@ -18,9 +18,12 @@
  */
 package org.apache.fineract.portfolio.paymenttype.domain.business;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface PaymentTypeGridRepository extends JpaRepository<PaymentTypeGrid, Long>, JpaSpecificationExecutor<PaymentTypeGrid> {
+
+    List<PaymentTypeGrid> findByPaymentTypeId(Long paymentTypeId);
 
 }

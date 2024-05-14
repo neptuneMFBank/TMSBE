@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.loanproduct.business.service;
+package org.apache.fineract.portfolio.products.service.business;
 
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
-public interface LoanProductVisibilityWriteService {
+public interface ProductVisibilityWriteService {
 
-    CommandProcessingResult createLoanProductVisibility(JsonCommand command);
+    CommandProcessingResult createProductVisibility(JsonCommand command);
 
-    CommandProcessingResult updateLoanProductVisibility(Long loanProductVisibilityId, JsonCommand command);
+    CommandProcessingResult updateProductVisibility(Long loanProductVisibilityId, JsonCommand command);
 
     CommandProcessingResult delete(Long loanProductVisibilityId);
 }

@@ -39,8 +39,7 @@ public enum ChargeTimeType {
             "chargeTimeType.savingsNoActivityFee"),
     // for business upfront payment
     UPFRONT(1000, "chargeTimeType.upfront"), UPFRONT_HOLD(1001, "chargeTimeType.upfront_hold"), UPFRONT_WITHDRAWAL(1002,
-            "chargeTimeType.upfront_withdrawal"),
-    DEPOSIT_FEE(1003, "chargeTimeType.depositFee"), // only for savings
+            "chargeTimeType.upfront_withdrawal"), DEPOSIT_FEE(1003, "chargeTimeType.depositFee"), // only for savings
     ;
 
     private final Integer value;
@@ -60,31 +59,31 @@ public enum ChargeTimeType {
     }
 
     public static Object[] validLoanValues() {
-        return new Integer[]{ChargeTimeType.UPFRONT.getValue(), ChargeTimeType.UPFRONT_HOLD.getValue(),
-            ChargeTimeType.UPFRONT_WITHDRAWAL.getValue(), ChargeTimeType.DISBURSEMENT.getValue(),
-            ChargeTimeType.SPECIFIED_DUE_DATE.getValue(), ChargeTimeType.INSTALMENT_FEE.getValue(),
-            ChargeTimeType.OVERDUE_INSTALLMENT.getValue(), ChargeTimeType.TRANCHE_DISBURSEMENT.getValue()};
+        return new Integer[] { ChargeTimeType.UPFRONT.getValue(), ChargeTimeType.UPFRONT_HOLD.getValue(),
+                ChargeTimeType.UPFRONT_WITHDRAWAL.getValue(), ChargeTimeType.DISBURSEMENT.getValue(),
+                ChargeTimeType.SPECIFIED_DUE_DATE.getValue(), ChargeTimeType.INSTALMENT_FEE.getValue(),
+                ChargeTimeType.OVERDUE_INSTALLMENT.getValue(), ChargeTimeType.TRANCHE_DISBURSEMENT.getValue() };
     }
 
     public static Object[] validLoanChargeValues() {
-        return new Integer[]{ChargeTimeType.DISBURSEMENT.getValue(), ChargeTimeType.SPECIFIED_DUE_DATE.getValue(),
-            ChargeTimeType.INSTALMENT_FEE.getValue()};
+        return new Integer[] { ChargeTimeType.DISBURSEMENT.getValue(), ChargeTimeType.SPECIFIED_DUE_DATE.getValue(),
+                ChargeTimeType.INSTALMENT_FEE.getValue() };
     }
 
     public static Object[] validSavingsValues() {
-        return new Integer[]{ChargeTimeType.SPECIFIED_DUE_DATE.getValue(), ChargeTimeType.SAVINGS_ACTIVATION.getValue(),
-            ChargeTimeType.SAVINGS_CLOSURE.getValue(), ChargeTimeType.WITHDRAWAL_FEE.getValue(), ChargeTimeType.ANNUAL_FEE.getValue(),
-            ChargeTimeType.MONTHLY_FEE.getValue(), ChargeTimeType.OVERDRAFT_FEE.getValue(), ChargeTimeType.WEEKLY_FEE.getValue(),
-            ChargeTimeType.SAVINGS_NOACTIVITY_FEE.getValue(), ChargeTimeType.DEPOSIT_FEE.getValue()};
+        return new Integer[] { ChargeTimeType.SPECIFIED_DUE_DATE.getValue(), ChargeTimeType.SAVINGS_ACTIVATION.getValue(),
+                ChargeTimeType.SAVINGS_CLOSURE.getValue(), ChargeTimeType.WITHDRAWAL_FEE.getValue(), ChargeTimeType.ANNUAL_FEE.getValue(),
+                ChargeTimeType.MONTHLY_FEE.getValue(), ChargeTimeType.OVERDRAFT_FEE.getValue(), ChargeTimeType.WEEKLY_FEE.getValue(),
+                ChargeTimeType.SAVINGS_NOACTIVITY_FEE.getValue(), ChargeTimeType.DEPOSIT_FEE.getValue() };
     }
 
     public static Object[] validClientValues() {
-        return new Integer[]{ChargeTimeType.SPECIFIED_DUE_DATE.getValue()};
+        return new Integer[] { ChargeTimeType.SPECIFIED_DUE_DATE.getValue() };
     }
 
     public static Object[] validShareValues() {
-        return new Integer[]{ChargeTimeType.SHAREACCOUNT_ACTIVATION.getValue(), ChargeTimeType.SHARE_PURCHASE.getValue(),
-            ChargeTimeType.SHARE_REDEEM.getValue()};
+        return new Integer[] { ChargeTimeType.SHAREACCOUNT_ACTIVATION.getValue(), ChargeTimeType.SHARE_PURCHASE.getValue(),
+                ChargeTimeType.SHARE_REDEEM.getValue() };
     }
 
     public static ChargeTimeType fromInt(final Integer chargeTime) {
@@ -93,67 +92,67 @@ public enum ChargeTimeType {
             switch (chargeTime) {
                 case 1:
                     chargeTimeType = DISBURSEMENT;
-                    break;
+                break;
                 case 2:
                     chargeTimeType = SPECIFIED_DUE_DATE;
-                    break;
+                break;
                 case 3:
                     chargeTimeType = SAVINGS_ACTIVATION;
-                    break;
+                break;
                 case 4:
                     chargeTimeType = SAVINGS_CLOSURE;
-                    break;
+                break;
                 case 5:
                     chargeTimeType = WITHDRAWAL_FEE;
-                    break;
+                break;
                 case 6:
                     chargeTimeType = ANNUAL_FEE;
-                    break;
+                break;
                 case 7:
                     chargeTimeType = MONTHLY_FEE;
-                    break;
+                break;
                 case 8:
                     chargeTimeType = INSTALMENT_FEE;
-                    break;
+                break;
                 case 9:
                     chargeTimeType = OVERDUE_INSTALLMENT;
-                    break;
+                break;
                 case 10:
                     chargeTimeType = OVERDRAFT_FEE;
-                    break;
+                break;
                 case 11:
                     chargeTimeType = WEEKLY_FEE;
-                    break;
+                break;
                 case 12:
                     chargeTimeType = TRANCHE_DISBURSEMENT;
-                    break;
+                break;
                 case 13:
                     chargeTimeType = SHAREACCOUNT_ACTIVATION;
-                    break;
+                break;
                 case 14:
                     chargeTimeType = SHARE_PURCHASE;
-                    break;
+                break;
                 case 15:
                     chargeTimeType = SHARE_REDEEM;
-                    break;
+                break;
                 case 16:
                     chargeTimeType = SAVINGS_NOACTIVITY_FEE;
-                    break;
+                break;
                 case 1000:
                     chargeTimeType = UPFRONT;
-                    break;
+                break;
                 case 1001:
                     chargeTimeType = UPFRONT_HOLD;
-                    break;
+                break;
                 case 1002:
                     chargeTimeType = UPFRONT_WITHDRAWAL;
-                    break;
+                break;
                 case 1003:
                     chargeTimeType = DEPOSIT_FEE;
-                    break;
+                break;
                 default:
                     chargeTimeType = INVALID;
-                    break;
+                break;
             }
         }
         return chargeTimeType;

@@ -301,7 +301,7 @@ public class SelfClientsBusinessApiResource {
         return this.clientsBusinessApiResource.retrieveVisibileLoanProduct(clientId);
     }
 
-      @GET
+    @GET
     @Path("savingsproducts/visibility")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })

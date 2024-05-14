@@ -143,7 +143,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
         } else {
             int nextRank = 0;
             for (LoanProductApprovalConfigData loanProductApprovalConfigData : loanProductApprovalConfigDatas) {
-                int rank = nextRank++;
+                int rank = nextRank;
                 int status = rank == 0 ? LoanApprovalStatus.PENDING.getValue() : LoanApprovalStatus.QUEUE.getValue();
 
                 // isWithinRange
@@ -186,6 +186,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                                 final MetricsHistory metricsHistory = MetricsHistory.instance(metrics, status);
                                 this.metricsHistoryRepositoryWrapper.saveAndFlush(metricsHistory);
                             }
+                            nextRank++;
                             updateOverdraft = true;
                         } catch (Exception e) {
                             throw new MetricsNotFoundException("createOverdraftMetricsAssigningFailed: " + e);
@@ -431,7 +432,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
 
             int nextRank = 0;
             for (LoanProductApprovalConfigData loanProductApprovalConfigData : loanProductApprovalConfigDatas) {
-                int rank = nextRank++;
+                int rank = nextRank;
                 int status = rank == 0 ? LoanApprovalStatus.PENDING.getValue() : LoanApprovalStatus.QUEUE.getValue();
 
                 // isWithinRange
@@ -494,6 +495,7 @@ public class MetricsReadPlatformServiceImpl implements MetricsReadPlatformServic
                                 final MetricsHistory metricsHistory = MetricsHistory.instance(metrics, status);
                                 this.metricsHistoryRepositoryWrapper.saveAndFlush(metricsHistory);
                             }
+                            nextRank++;
                             updateLoan = true;
                         } catch (Exception e) {
                             throw new MetricsNotFoundException("createLoanMetricsAssigningFailed: " + e);

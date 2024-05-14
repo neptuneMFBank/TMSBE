@@ -29,6 +29,7 @@ import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductApprova
 import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductInterestApiResourceConstants;
 import org.apache.fineract.portfolio.loanproduct.business.api.LoanProductPaymentTypeConfigConstants;
 import org.apache.fineract.portfolio.paymenttype.api.PaymentTypeApiResourceConstants;
+import org.apache.fineract.portfolio.paymenttype.api.business.PaymentTypeGridApiResourceConstants;
 import org.apache.fineract.portfolio.products.api.business.ProductVisibilityApiResourceConstants;
 import org.apache.fineract.portfolio.savings.DepositsApiConstants;
 import org.apache.fineract.portfolio.self.pockets.api.PocketApiConstants;
@@ -3900,6 +3901,29 @@ public class CommandWrapperBuilder {
         this.entityName = ProductVisibilityApiResourceConstants.SAVINGS_VISIBILITY_RESOURCENAME;
         this.entityId = loanProductVisibilityId;
         this.href = "/savingsproducts/visibility/" + loanProductVisibilityId;
+        return this;
+    }
+
+    public CommandWrapperBuilder deletePaymentTypeGrid(final Long paymentTypeGridId) {
+        this.actionName = "DELETE";
+        this.entityName = PaymentTypeGridApiResourceConstants.RESOURCE_NAME;
+        this.entityId = paymentTypeGridId;
+        this.href = "/paymenttypes/grid/" + paymentTypeGridId;
+        return this;
+    }
+
+    public CommandWrapperBuilder createPaymentTypeGrid() {
+        this.actionName = "CREATE";
+        this.entityName = PaymentTypeGridApiResourceConstants.RESOURCE_NAME;
+        this.href = "/paymenttypes/grid";
+        return this;
+    }
+
+    public CommandWrapperBuilder updatePaymentTypeGrid(final Long paymentTypeGridId) {
+        this.actionName = "UPDATE";
+        this.entityName = PaymentTypeGridApiResourceConstants.RESOURCE_NAME;
+        this.entityId = paymentTypeGridId;
+        this.href = "/paymenttypes/grid/" + paymentTypeGridId;
         return this;
     }
 

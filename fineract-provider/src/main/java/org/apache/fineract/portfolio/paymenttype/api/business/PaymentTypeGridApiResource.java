@@ -20,20 +20,27 @@ package org.apache.fineract.portfolio.paymenttype.api.business;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Collection;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
@@ -107,6 +114,88 @@ public class PaymentTypeGridApiResource {
     public String getAllPaymentTypeGrids(@PathParam("paymentTypeId") @Parameter(description = "paymentTypeId") final Long paymentTypeId, @Context final UriInfo uriInfo) {
         this.securityContext.authenticatedUser().validateHasReadPermission(PaymentTypeApiResourceConstants.resourceNameForPermissions);
         final Collection<PaymentTypeGridData> paymentTypeGridData = this.readPlatformService.retrievePaymentTypeGrids(paymentTypeId);
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.jsonSerializer.serialize(settings, paymentTypeGridData, PaymentTypeGridApiResourceConstants.RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
+    @Path("charge/{chargeId}")
+    @Consumes({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Retrieve all Payment Types Grid Via Charge", description = "Retrieve list of payment types grid via Charge")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        //, content = @Content(array = @ArraySchema(schema = @Schema(implementation = PaymentTypeApiResourceSwagger.GetPaymentTypesResponse.class)))
+        )
+    })
+    public String getAllPaymentTypeGridsViaCharge(@PathParam("chargeId") @Parameter(description = "chargeId") final Long chargeId, @Context final UriInfo uriInfo) {
+        this.securityContext.authenticatedUser().validateHasReadPermission(PaymentTypeApiResourceConstants.resourceNameForPermissions);
+        final Collection<PaymentTypeGridData> paymentTypeGridData = this.readPlatformService.retrievePaymentTypeGridsViaCharge(chargeId);
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.jsonSerializer.serialize(settings, paymentTypeGridData, PaymentTypeGridApiResourceConstants.RESPONSE_DATA_PARAMETERS);
+    }
+
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Create payment Type Grid", description = "Creates a payment Type Grid")
+    @RequestBody(required = true)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
+    public String createPaymentTypeGrid(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .createPaymentTypeGrid()//
+                .withJson(apiRequestBodyAsJson).build(); //
+        final CommandProcessingResult result = this.commandWritePlatformService.logCommandSource(commandRequest);
+
+        return this.jsonSerializer.serialize(result);
+    }
+
+    @PUT
+    @Path("{paymentTypeGridId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Update a payment Type Grid", description = "Updates a payment Type Grid")
+    @RequestBody(required = true)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
+    public String update(@PathParam("paymentTypeGridId") @Parameter(description = "paymentTypeGridId") final Long paymentTypeGridId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().updatePaymentTypeGrid(paymentTypeGridId).withJson(apiRequestBodyAsJson)
+                .build();
+
+        final CommandProcessingResult result = this.commandWritePlatformService.logCommandSource(commandRequest);
+
+        return this.jsonSerializer.serialize(result);
+
+    }
+
+    @DELETE
+    @Path("{paymentTypeGridId}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Delete payment Type Grid", description = "Delete payment Type Grid")
+    @ApiResponse(responseCode = "200", description = "OK")
+    public String delete(@PathParam("paymentTypeGridId") final Long paymentTypeGridId) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().deletePaymentTypeGrid(paymentTypeGridId).build();
+        final CommandProcessingResult result = this.commandWritePlatformService.logCommandSource(commandRequest);
+        return this.jsonSerializer.serialize(result);
+    }
+
+    @GET
+    @Path("template")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve payment type grid Template")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
+    public String retrieveTemplate(@Context final UriInfo uriInfo) {
+
+        this.securityContext.authenticatedUser().validateHasReadPermission(PaymentTypeGridApiResourceConstants.RESOURCE_NAME);
+
+        PaymentTypeGridData paymentTypeGridData = this.readPlatformService.retrieveTemplate();
+
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.jsonSerializer.serialize(settings, paymentTypeGridData, PaymentTypeGridApiResourceConstants.RESPONSE_DATA_PARAMETERS);
     }

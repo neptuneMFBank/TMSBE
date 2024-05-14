@@ -48,7 +48,6 @@ import org.apache.fineract.portfolio.savings.SavingsAccountTransactionType;
 import org.apache.fineract.portfolio.savings.SavingsTransactionBooleanValues;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionDTO;
 import org.apache.fineract.portfolio.savings.exception.DepositAccountTransactionNotAllowedException;
-import org.apache.fineract.simplifytech.data.GeneralConstants;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -120,13 +119,13 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         final SavingsAccountTransactionDTO transactionDTO = new SavingsAccountTransactionDTO(fmt, transactionDate, transactionAmount,
                 paymentDetail, DateUtils.getLocalDateTimeOfSystem(), user, accountType);
         UUID refNo = UUID.randomUUID();
-        final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(this.fromJsonHelper, this.paymentTypeGridReadPlatformService, paymentDetail, transactionAmount);
-        log.info("chargeAmount: {}", chargeAmount);
-        if (chargeAmount != null) {
-            transactionDTO.setChargeAmount(chargeAmount);
-        }
+//        final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(this.fromJsonHelper, this.paymentTypeGridReadPlatformService, paymentDetail, transactionAmount);
+//        log.info("chargeAmount: {}", chargeAmount);
+//        if (chargeAmount != null) {
+//            transactionDTO.setChargeAmount(chargeAmount);
+//        }
         final SavingsAccountTransaction withdrawal = account.withdraw(transactionDTO, transactionBooleanValues.isApplyWithdrawFee(),
-                backdatedTxnsAllowedTill, relaxingDaysConfigForPivotDate, refNo.toString());
+                backdatedTxnsAllowedTill, relaxingDaysConfigForPivotDate, refNo.toString(), this.paymentTypeGridReadPlatformService);
         final MathContext mc = MathContext.DECIMAL64;
 
         final LocalDate today = DateUtils.getBusinessLocalDate();

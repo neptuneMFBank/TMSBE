@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.paymenttype.domain.business;
 
+import java.util.List;
 import org.apache.fineract.portfolio.paymenttype.exception.business.PaymentTypeGridNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,22 @@ public class PaymentTypeGridRepositoryWrapper {
 
     public PaymentTypeGrid findOneWithNotFoundDetection(final Long id) {
         return this.repository.findById(id).orElseThrow(() -> new PaymentTypeGridNotFoundException(id));
+    }
+
+    public List<PaymentTypeGrid> findByPaymentTypeId(final Long paymentTypeId) {
+        return this.repository.findByPaymentTypeId(paymentTypeId);
+    }
+
+
+    public void delete(final PaymentTypeGrid paymentTypeGrid) {
+        this.repository.delete(paymentTypeGrid);
+    }
+
+    public void flush() {
+        this.repository.flush();
+    }
+  public void saveAndFlush(final PaymentTypeGrid paymentTypeGrid) {
+         this.repository.saveAndFlush(paymentTypeGrid);
     }
 
 }

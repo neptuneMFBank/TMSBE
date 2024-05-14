@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -217,6 +218,7 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
 
             final LocalDate date = JdbcSupport.getLocalDate(rs, "transactionDate");
             final LocalDate submittedOnDate = JdbcSupport.getLocalDate(rs, "submittedOnDate");
+            final LocalDateTime submittedOnDateTime = JdbcSupport.getLocalDateTime(rs, "submittedOnDate");
             final BigDecimal amount = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "transactionAmount");
             final Long releaseTransactionId = rs.getLong("releaseTransactionId");
             final String reasonForBlock = rs.getString("reasonForBlock");
@@ -290,6 +292,7 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
                     amount, outstandingChargeAmount, runningBalance, reversed, transfer, submittedOnDate, postInterestAsOn,
                     submittedByUsername, note, isReversal, originalTransactionId, lienTransaction, releaseTransactionId, reasonForBlock);
             savingsAccountTransactionData.setChargeData(chargeData);
+            savingsAccountTransactionData.setSubmittedOnDateTime(submittedOnDateTime);
             return savingsAccountTransactionData;
         }
     }

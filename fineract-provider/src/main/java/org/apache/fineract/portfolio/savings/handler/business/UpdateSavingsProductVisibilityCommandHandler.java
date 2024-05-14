@@ -22,26 +22,26 @@ import org.apache.fineract.commands.annotation.CommandType;
 import org.apache.fineract.commands.handler.NewCommandSourceHandler;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.portfolio.loanproduct.business.service.LoanProductVisibilityWriteService;
 import org.apache.fineract.portfolio.products.api.business.ProductVisibilityApiResourceConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.apache.fineract.portfolio.products.service.business.ProductVisibilityWriteService;
 
 @Service
 @CommandType(entity = ProductVisibilityApiResourceConstants.SAVINGS_VISIBILITY_RESOURCENAME, action = "UPDATE")
 public class UpdateSavingsProductVisibilityCommandHandler implements NewCommandSourceHandler {
 
-    private final LoanProductVisibilityWriteService loanProductVisibilityWriteService;
+    private final ProductVisibilityWriteService loanProductVisibilityWriteService;
 
     @Autowired
-    public UpdateSavingsProductVisibilityCommandHandler(final LoanProductVisibilityWriteService loanProductVisibilityWriteService) {
+    public UpdateSavingsProductVisibilityCommandHandler(final ProductVisibilityWriteService loanProductVisibilityWriteService) {
         this.loanProductVisibilityWriteService = loanProductVisibilityWriteService;
     }
 
     @Transactional
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
-        return this.loanProductVisibilityWriteService.updateLoanProductVisibility(command.entityId(), command);
+        return this.loanProductVisibilityWriteService.updateProductVisibility(command.entityId(), command);
     }
 }

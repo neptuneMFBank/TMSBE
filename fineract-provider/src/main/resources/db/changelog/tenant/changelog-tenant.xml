@@ -226,4 +226,5 @@
     <include file="parts/0180_calculate_commission.sql" relativeToChangelogFile="true" />
     <include file="parts/0187_m_commision_vat_calculated.sql" relativeToChangelogFile="true" />
     <include file="parts/0188_m_commission_vend.sql" relativeToChangelogFile="true" />
+    <include file="parts/0189_job_commission_vend.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

@@ -161,7 +161,7 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
                                 final JsonObject jsonObject = new JsonObject();
                                 jsonObject.addProperty("glAccountId", accountDataForLookupsCredit.getId());
                                 jsonObject.addProperty(SavingsApiConstants.amountParamName, commissionAmount);
-                                credits.add(credits);
+                                credits.add(jsonObject);
                             }
                         }
                         JsonArray debits = new JsonArray();
@@ -171,7 +171,7 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
                                 final JsonObject jsonObject = new JsonObject();
                                 jsonObject.addProperty("glAccountId", accountDataForLookupsDebit.getId());
                                 jsonObject.addProperty(SavingsApiConstants.amountParamName, commissionAmount);
-                                debits.add(credits);
+                                debits.add(jsonObject);
                             }
                         }
 //                        {
@@ -230,6 +230,8 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
 
                 }
             }
+        } else {
+            log.info("Commission calc disAbled");
         }
     }
 

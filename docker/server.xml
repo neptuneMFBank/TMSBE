@@ -111,7 +111,7 @@
     <!--
     <Connector port="8009" protocol="AJP/1.3" redirectPort="8443" secret="xyz123" />
     -->
-     <Connector address="10.2.3.33" port="8009" protocol="AJP/1.3" redirectPort="8443" secretRequired="false" />
+     <Connector address="::" port="8009" protocol="AJP/1.3" redirectPort="8443" secretRequired="false" />
 
     <!-- An Engine represents the entry point (within Catalina) that processes
          every request.  The Engine implementation for Tomcat stand alone

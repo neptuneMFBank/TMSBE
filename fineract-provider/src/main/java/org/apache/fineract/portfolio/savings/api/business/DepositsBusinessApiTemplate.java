@@ -62,7 +62,7 @@ public interface DepositsBusinessApiTemplate {
 
         final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
 
-        // loan to create json
+        // recurring savings to create json
         final JsonElement apiRequestBodyAsJsonElement = fromApiJsonHelper.parse(apiRequestBodyAsJson);
         final JsonObject jsonObjectLoan = apiRequestBodyAsJsonElement.getAsJsonObject();
 
@@ -654,7 +654,7 @@ public interface DepositsBusinessApiTemplate {
 
         final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
 
-        // loan to create json
+        // fixed savings to create json
         final JsonElement apiRequestBodyAsJsonElement = fromApiJsonHelper.parse(apiRequestBodyAsJson);
         final JsonObject jsonObjectLoan = apiRequestBodyAsJsonElement.getAsJsonObject();
 
@@ -1216,7 +1216,7 @@ public interface DepositsBusinessApiTemplate {
 
         final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
 
-        // loan to create json
+        // savings to create json
         final JsonElement apiRequestBodyAsJsonElement = fromApiJsonHelper.parse(apiRequestBodyAsJson);
         final JsonObject jsonObjectLoan = apiRequestBodyAsJsonElement.getAsJsonObject();
 
@@ -1439,6 +1439,30 @@ public interface DepositsBusinessApiTemplate {
         }
         if (enforceMinRequiredBalance != null) {
             jsonObjectLoan.addProperty(SavingsApiConstants.enforceMinRequiredBalanceParamName, enforceMinRequiredBalance);
+        }
+
+        BigDecimal minRequiredBalance;
+        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.minRequiredBalanceParamName, apiRequestBodyAsJsonElement)) {
+            minRequiredBalance = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.minRequiredBalanceParamName,
+                    apiRequestBodyAsJsonElement, localeFormat);
+        } else {
+            minRequiredBalance = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.minRequiredBalanceParamName,
+                    loanTemplateElement, localeFormat);
+        }
+        if (minRequiredBalance != null) {
+            jsonObjectLoan.addProperty(SavingsApiConstants.minRequiredBalanceParamName, minRequiredBalance);
+        }
+
+        BigDecimal minBalanceForInterestCalculation;
+        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.minBalanceForInterestCalculationParamName, apiRequestBodyAsJsonElement)) {
+            minBalanceForInterestCalculation = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.minBalanceForInterestCalculationParamName,
+                    apiRequestBodyAsJsonElement, localeFormat);
+        } else {
+            minBalanceForInterestCalculation = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.minBalanceForInterestCalculationParamName,
+                    loanTemplateElement, localeFormat);
+        }
+        if (minBalanceForInterestCalculation != null) {
+            jsonObjectLoan.addProperty(SavingsApiConstants.minBalanceForInterestCalculationParamName, minBalanceForInterestCalculation);
         }
         Boolean allowOverdraft;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.allowOverdraftParamName, apiRequestBodyAsJsonElement)) {

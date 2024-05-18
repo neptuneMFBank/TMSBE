@@ -74,7 +74,12 @@ public class SelfAuthServiceImpl implements SelfAuthService {
         JsonElement element = this.fromJsonHelper.fromJson(apiRequestBodyAsJson, JsonElement.class);
         final String username = this.fromJsonHelper.extractStringNamed(SelfServiceApiConstants.usernameParamName, element);
         final String password = this.fromJsonHelper.extractStringNamed(SelfServiceApiConstants.passwordParamName, element);
-        Client client = clientRepositoryWrapper.findByMobileNoOrEmailAddress(username);
+        Client client = null;
+        try {
+            client = clientRepositoryWrapper.findByMobileNoOrEmailAddress(username);
+        } catch (Exception e) {
+            throw new NoAuthorizationException("Your login detail is not supported on this channel, please contact support.");
+        }
         if (ObjectUtils.isEmpty(client)) {
             throw new NoAuthorizationException("Your profile does not exist, kindly register as a new user.");
         }

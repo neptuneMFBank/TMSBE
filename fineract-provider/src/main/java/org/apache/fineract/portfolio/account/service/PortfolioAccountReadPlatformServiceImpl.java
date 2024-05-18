@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
@@ -56,9 +57,10 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
     }
 
     @Override
-    public PortfolioAccountData retrieveOneViaAccountNumber(String accountNumber, Integer accountTypeId) {
+    public PortfolioAccountData retrieveOneViaAccountNumber(String accountNumber, Integer accountTypeId, Collection<Integer> statuses) {
+        String inSql = String.join(",", Collections.nCopies(statuses.size(), "?"));
 
-        Object[] sqlParams = new Object[]{accountNumber};
+        Object[] sqlParams = new Object[]{accountNumber, inSql};
         PortfolioAccountData accountData = null;
         try {
             String sql;
@@ -67,11 +69,11 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
                 case INVALID -> {
                 }
                 case LOAN -> {
-                    sql = "select " + this.loanAccountMapper.schema() + " where la.account_no = ?";
+                    sql = "select " + this.loanAccountMapper.schema() + " where la.account_no = ? and la.loan_status_id in (?) ";
                     accountData = this.jdbcTemplate.queryForObject(sql, this.loanAccountMapper, sqlParams);
                 }
                 case SAVINGS -> {
-                    sql = "select " + this.savingsAccountMapper.schema() + " where sa.account_no = ?";
+                    sql = "select " + this.savingsAccountMapper.schema() + " where sa.account_no = ? and sa.status_enum in (?) ";
                     accountData = this.jdbcTemplate.queryForObject(sql, this.savingsAccountMapper, sqlParams);
                 }
             }

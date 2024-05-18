@@ -22,6 +22,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import org.apache.commons.lang3.StringUtils;
@@ -110,7 +111,9 @@ public class AccountTransfersBusinessReadPlatformServiceImpl implements AccountT
             findClientJson.addProperty(AccountTransfersBusinessApiConstants.valueParam, value);
             if (StringUtils.equalsIgnoreCase(key, "account_no")) {
                 //check which account, LOANS/SAVINGS
-                toAccount = this.portfolioAccountReadPlatformService.retrieveOneViaAccountNumber(value, toAccountType);
+                final Collection<Integer> statuses = new ArrayList<>(
+                        Arrays.asList(300));
+                toAccount = this.portfolioAccountReadPlatformService.retrieveOneViaAccountNumber(value, toAccountType, statuses);
                 toClientId = toAccount.clientId();
             } else {
                 final ClientData toFindClient = this.clientBusinessReadPlatformService.findClient(findClientJson.toString());

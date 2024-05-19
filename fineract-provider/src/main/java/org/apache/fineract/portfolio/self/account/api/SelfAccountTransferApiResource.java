@@ -105,12 +105,12 @@ public class SelfAccountTransferApiResource {
 
     @GET
     @Path("template")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve Account Transfer Template", description = "Returns list of loan/savings accounts that can be used for account transfer\n"
             + "\n" + "\n" + "Example Requests:\n" + "\n" + "self/accounttransfers/template\n")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = SelfAccountTransferApiResourceSwagger.GetAccountTransferTemplateResponse.class)))) })
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = SelfAccountTransferApiResourceSwagger.GetAccountTransferTemplateResponse.class))))})
     public String template(@DefaultValue("") @QueryParam("type") @Parameter(name = "type") final String type,
             @Context final UriInfo uriInfo) {
 
@@ -128,12 +128,12 @@ public class SelfAccountTransferApiResource {
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create new Transfer", description = "Ability to create new transfer of monetary funds from one account to another.\n"
             + "\n" + "\n" + "Example Requests:\n" + "\n" + " self/accounttransfers/\n")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = SelfAccountTransferApiResourceSwagger.PostNewTransferResponse.class)))) })
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = SelfAccountTransferApiResourceSwagger.PostNewTransferResponse.class))))})
     public String create(@DefaultValue("") @QueryParam("type") @Parameter(name = "type") final String type,
             final String apiRequestBodyAsJson) {
         Map<String, Object> params = this.dataValidator.validateCreate(type, apiRequestBodyAsJson);
@@ -173,7 +173,7 @@ public class SelfAccountTransferApiResource {
             }
         }
     }
-    
+
     @GET
     @Path("approval/{transferApprovalId}")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -191,7 +191,6 @@ public class SelfAccountTransferApiResource {
 
     }
 
-
     @POST
     @Path("approval")
     @Consumes({MediaType.APPLICATION_JSON})
@@ -207,4 +206,16 @@ public class SelfAccountTransferApiResource {
         return this.transferApprovalApiResource.create(apiRequestBodyAsJson);
     }
 
+    @GET
+    @Path("approval/template")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve a TransferApproval")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
+    public String approvalTemplate(
+            @Context final UriInfo uriInfo) {
+        return this.transferApprovalApiResource.retrieveTemplate(uriInfo);
+
+    }
 }

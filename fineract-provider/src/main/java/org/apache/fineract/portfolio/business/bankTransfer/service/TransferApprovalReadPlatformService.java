@@ -28,4 +28,6 @@ public interface TransferApprovalReadPlatformService {
 
     TransferApprovalData retrieveOne(Long transferApprovalId);
 
+    TransferApprovalData retrieveTemplate();
+
 }

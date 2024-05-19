@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.portfolio.business.bankTransfer.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 
 public final class BankTransferEnumerations {
@@ -45,4 +47,17 @@ public final class BankTransferEnumerations {
         return optionData;
     }
 
+    public static List<EnumOptionData> bankAccountTransferTypes(final BankTransferType[] accountTransferTypes) {
+        final List<EnumOptionData> optionDatas = new ArrayList<>();
+        for (final BankTransferType accountTransferType : accountTransferTypes) {
+            optionDatas.add(bankAccountTransferType(accountTransferType));
+        }
+        return optionDatas;
+    }
+
+    public static EnumOptionData bankAccountTransferType(final BankTransferType accountType) {
+        final EnumOptionData optionData = new EnumOptionData(Long.valueOf(accountType.getValue()), accountType.getCode(),
+                accountType.toString());
+        return optionData;
+    }
 }

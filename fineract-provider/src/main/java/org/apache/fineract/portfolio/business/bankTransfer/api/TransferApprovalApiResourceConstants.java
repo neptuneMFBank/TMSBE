@@ -33,6 +33,7 @@ public final class TransferApprovalApiResourceConstants {
     public static final String AMOUNT = "amount";
     public static final String STATUS = "status";
     public static final String TRANSFER_TYPE = "transferType";
+    public static final String TRANSFER_TYPE_OPTIONS = "transferTypeOptions";
     public static final String HOLD_TRANSACTION_ID = "holdTransactionId";
     public static final String RELEASE_TRANSACTION_ID = "releaseTransactionId";
     public static final String WITHDRAW_TRANSACTION_ID = "withdrawTransactionId";
@@ -57,7 +58,7 @@ public final class TransferApprovalApiResourceConstants {
 
     public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(AMOUNT, STATUS, TRANSFER_TYPE,
             HOLD_TRANSACTION_ID, RELEASE_TRANSACTION_ID, WITHDRAW_TRANSACTION_ID, FROM_ACCOUNT_ID, FROM_ACCOUNT_TYPE, FROM_ACCOUNT_NUMBER,
-            TO_ACCOUNT_ID, TO_ACCOUNT_TYPE, TO_ACCOUNT_NUMBER, ACTIVATION_CHANNEL_ID, TO_BANK_ID, REASON));
+            TO_ACCOUNT_ID, TO_ACCOUNT_TYPE, TO_ACCOUNT_NUMBER, ACTIVATION_CHANNEL_ID, TO_BANK_ID, REASON, TRANSFER_TYPE_OPTIONS));
 
     public static final Set<String> RESQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(AMOUNT, TRANSFER_TYPE,
             FROM_ACCOUNT_ID, FROM_ACCOUNT_TYPE, FROM_ACCOUNT_NUMBER,

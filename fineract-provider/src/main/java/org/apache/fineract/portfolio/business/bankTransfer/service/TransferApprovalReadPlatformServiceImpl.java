@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +40,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.portfolio.business.bankTransfer.data.TransferApprovalData;
 import org.apache.fineract.portfolio.business.bankTransfer.domain.BankTransferEnumerations;
+import org.apache.fineract.portfolio.business.bankTransfer.domain.BankTransferType;
 import org.apache.fineract.portfolio.business.bankTransfer.exception.TransferApprovalNotFoundException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -166,6 +168,16 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
         } catch (final EmptyResultDataAccessException e) {
             throw new TransferApprovalNotFoundException(transferApprovalId);
         }
+    }
+
+    @Override
+    public TransferApprovalData retrieveTemplate() {
+        this.context.authenticatedUser();
+
+        final Collection<EnumOptionData> transferTypeOptions = BankTransferEnumerations.bankAccountTransferTypes(BankTransferType.values());
+
+        final TransferApprovalData transferApprovalData = TransferApprovalData.template(transferTypeOptions);
+        return transferApprovalData;
     }
 
     private static final class TransferApprovalMapper implements RowMapper<TransferApprovalData> {

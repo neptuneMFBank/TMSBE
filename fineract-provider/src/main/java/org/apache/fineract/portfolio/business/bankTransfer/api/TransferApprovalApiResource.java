@@ -78,6 +78,24 @@ public class TransferApprovalApiResource {
     }
 
     @GET
+    @Path("template")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve Transfer Template", description = "")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        )})
+    public String retrieveTemplate(@Context final UriInfo uriInfo) {
+
+        this.securityContext.authenticatedUser().validateHasReadPermission(TransferApprovalApiResourceConstants.RESOURCE_NAME);
+
+        TransferApprovalData transferApprovalData = this.transferApprovalReadPlatformService.retrieveTemplate();
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.jsonSerializer.serialize(settings, transferApprovalData, TransferApprovalApiResourceConstants.RESPONSE_DATA_PARAMETERS);
+    }
+
+    @GET
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "List Transfer Approval ", description = "List Transfer Approval")

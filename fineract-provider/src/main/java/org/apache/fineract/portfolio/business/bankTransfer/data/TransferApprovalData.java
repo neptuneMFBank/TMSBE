@@ -21,6 +21,7 @@ package org.apache.fineract.portfolio.business.bankTransfer.data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
 import lombok.Data;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
@@ -32,6 +33,7 @@ public class TransferApprovalData implements Serializable {
     private BigDecimal amount;
     private Integer status;
     private EnumOptionData transferType;
+    private Collection<EnumOptionData> transferTypeOptions;
     private Integer holdTransactionId;
     private Integer releaseTransactionId;
     private Integer withdrawTransactionId;
@@ -54,7 +56,7 @@ public class TransferApprovalData implements Serializable {
             Integer releaseTransactionId, Integer withdrawTransactionId, Integer fromAccountId, Integer fromAccountType,
             String fromAccountNumber, Integer toAccountId, Integer toAccountType, String toAccountNumber,
             CodeValueData activationChannel, CodeValueData toBank, String reason, String createdByUsername, String createdByFirstname,
-            String createdByLastname, Long createdById, LocalDate createdOn) {
+            String createdByLastname, Long createdById, LocalDate createdOn, Collection<EnumOptionData> transferTypeOptions) {
         this.id = id;
         this.amount = amount;
         this.status = status;
@@ -76,6 +78,7 @@ public class TransferApprovalData implements Serializable {
         this.createdByLastname = createdByLastname;
         this.createdById = createdById;
         this.createdOn = createdOn;
+        this.transferTypeOptions = transferTypeOptions;
     }
 
     public static TransferApprovalData instance(Long id, BigDecimal amount, Integer status, EnumOptionData transferType, Integer holdTransactionId,
@@ -83,10 +86,38 @@ public class TransferApprovalData implements Serializable {
             String fromAccountNumber, Integer toAccountId, Integer toAccountType, String toAccountNumber,
             CodeValueData activationChannel, CodeValueData toBank, String reason, String createdByUsername, String createdByFirstname,
             String createdByLastname, Long createdById, LocalDate createdOn) {
-
+        Collection<EnumOptionData> transferTypeOptions = null;
         return new TransferApprovalData(id, amount, status, transferType, holdTransactionId, releaseTransactionId,
                 withdrawTransactionId, fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
-                toAccountNumber, activationChannel, toBank, reason, createdByUsername, createdByFirstname, createdByLastname, createdById, createdOn);
+                toAccountNumber, activationChannel, toBank, reason, createdByUsername, createdByFirstname, createdByLastname, createdById, createdOn, transferTypeOptions);
+
+    }
+
+    public static TransferApprovalData template(Collection<EnumOptionData> transferTypeOptions) {
+        Long id = null;
+        BigDecimal amount = null;
+        Integer status = null;
+        EnumOptionData transferType = null;
+        Integer holdTransactionId = null;
+        Integer releaseTransactionId = null;
+        Integer withdrawTransactionId = null;
+        Integer fromAccountId = null;
+        Integer fromAccountType = null;
+        String fromAccountNumber = null;
+        Integer toAccountId = null;
+        Integer toAccountType = null;
+        String toAccountNumber = null;
+        CodeValueData activationChannel = null;
+        CodeValueData toBank = null;
+        String reason = null;
+        String createdByUsername = null;
+        String createdByFirstname = null;
+        String createdByLastname = null;
+        Long createdById = null;
+        LocalDate createdOn = null;
+        return new TransferApprovalData(id, amount, status, transferType, holdTransactionId, releaseTransactionId,
+                withdrawTransactionId, fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
+                toAccountNumber, activationChannel, toBank, reason, createdByUsername, createdByFirstname, createdByLastname, createdById, createdOn, transferTypeOptions);
 
     }
 }

@@ -50,6 +50,9 @@ public final class BankTransferEnumerations {
     public static List<EnumOptionData> bankAccountTransferTypes(final BankTransferType[] accountTransferTypes) {
         final List<EnumOptionData> optionDatas = new ArrayList<>();
         for (final BankTransferType accountTransferType : accountTransferTypes) {
+            if (accountTransferType.getValue() == 0) {
+                continue;
+            }
             optionDatas.add(bankAccountTransferType(accountTransferType));
         }
         return optionDatas;

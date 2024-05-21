@@ -1453,17 +1453,17 @@ public interface DepositsBusinessApiTemplate {
             jsonObjectLoan.addProperty(SavingsApiConstants.minRequiredBalanceParamName, minRequiredBalance);
         }
 
-        BigDecimal minBalanceForInterestCalculation;
-        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.minBalanceForInterestCalculationParamName, apiRequestBodyAsJsonElement)) {
-            minBalanceForInterestCalculation = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.minBalanceForInterestCalculationParamName,
-                    apiRequestBodyAsJsonElement, localeFormat);
-        } else {
-            minBalanceForInterestCalculation = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.minBalanceForInterestCalculationParamName,
-                    loanTemplateElement, localeFormat);
-        }
-        if (minBalanceForInterestCalculation != null) {
-            jsonObjectLoan.addProperty(SavingsApiConstants.minBalanceForInterestCalculationParamName, minBalanceForInterestCalculation);
-        }
+//        BigDecimal minBalanceForInterestCalculation;
+//        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.minBalanceForInterestCalculationParamName, apiRequestBodyAsJsonElement)) {
+//            minBalanceForInterestCalculation = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.minBalanceForInterestCalculationParamName,
+//                    apiRequestBodyAsJsonElement, localeFormat);
+//        } else {
+//            minBalanceForInterestCalculation = fromApiJsonHelper.extractBigDecimalNamed(SavingsApiConstants.minBalanceForInterestCalculationParamName,
+//                    loanTemplateElement, localeFormat);
+//        }
+//        if (minBalanceForInterestCalculation != null) {
+//            jsonObjectLoan.addProperty(SavingsApiConstants.minBalanceForInterestCalculationParamName, minBalanceForInterestCalculation);
+//        }
         Boolean allowOverdraft;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.allowOverdraftParamName, apiRequestBodyAsJsonElement)) {
             allowOverdraft = fromApiJsonHelper.extractBooleanNamed(SavingsApiConstants.allowOverdraftParamName,

@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
@@ -41,7 +40,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-@Slf4j
 @Service
 public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccountReadPlatformService {
 
@@ -70,8 +68,6 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
             inSql = String.join(",", Collections.nCopies(statuses.size(), "?"));
             sqlParams.addAll(statuses);
         }
-        log.info("retrieveOneViaAccountNumber inSql: {}", inSql);
-        log.info("retrieveOneViaAccountNumber sqlParams: {}", sqlParams.toArray());
         PortfolioAccountData accountData = null;
         try {
             String sql;

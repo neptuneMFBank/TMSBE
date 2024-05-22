@@ -39,6 +39,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Service
@@ -61,32 +62,40 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
 
     @Override
     public PortfolioAccountData retrieveOneViaAccountNumber(String accountNumber, Integer accountTypeId, Collection<Integer> statuses) {
-        String inSql = String.join(",", Collections.nCopies(statuses.size(), "?"));
 
-        Object[] sqlParams = new Object[]{accountNumber, statuses};
+        String inSql = null;
+        //Object[] sqlParams = new Object[]{accountNumber};
+        List<Object> sqlParams = new ArrayList<>(Arrays.asList(accountNumber));
+        if (!CollectionUtils.isEmpty(statuses)) {
+            inSql = String.join(",", Collections.nCopies(statuses.size(), "?"));
+            sqlParams.addAll(statuses);
+        }
         log.info("retrieveOneViaAccountNumber inSql: {}", inSql);
-        log.info("retrieveOneViaAccountNumber sqlParams: {}", Arrays.toString(sqlParams));
+        log.info("retrieveOneViaAccountNumber sqlParams: {}", sqlParams.toArray());
         PortfolioAccountData accountData = null;
-        String sql = null;
         try {
+            String sql;
             final PortfolioAccountType accountType = PortfolioAccountType.fromInt(accountTypeId);
             switch (accountType) {
                 case INVALID -> {
                 }
                 case LOAN -> {
                     sql = "select " + this.loanAccountMapper.schema() + " where la.account_no = ? ";
-                    sql += String.format(" and la.loan_status_id IN (%s) ", inSql);
-                    accountData = this.jdbcTemplate.queryForObject(sql, this.loanAccountMapper, sqlParams);
+                    if (!CollectionUtils.isEmpty(statuses)) {
+                        sql += String.format(" and la.loan_status_id IN (%s) ", inSql);
+                    }
+                    accountData = this.jdbcTemplate.queryForObject(sql, this.loanAccountMapper, sqlParams.toArray());
                 }
                 case SAVINGS -> {
                     sql = "select " + this.savingsAccountMapper.schema() + " where sa.account_no = ? ";
-                    sql += String.format(" and sa.status_enum IN (%s) ", inSql);
-                    accountData = this.jdbcTemplate.queryForObject(sql, this.savingsAccountMapper, sqlParams);
+                    if (!CollectionUtils.isEmpty(statuses)) {
+                        sql += String.format(" and sa.status_enum IN (%s) ", inSql);
+                    }
+                    accountData = this.jdbcTemplate.queryForObject(sql, this.savingsAccountMapper, sqlParams.toArray());
                 }
             }
-            log.info("retrieveOneViaAccountNumber sql: {}", sql);
         } catch (final EmptyResultDataAccessException e) {
-            throw new AccountTransferNotFoundException(sql);
+            throw new AccountTransferNotFoundException(accountNumber);
         }
 
         return accountData;

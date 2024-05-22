@@ -116,7 +116,7 @@ public final class ChargeEnumerations {
             break;
             case DEPOSIT_FEE:
                 optionData = new EnumOptionData(ChargeTimeType.DEPOSIT_FEE.getValue().longValue(), ChargeTimeType.DEPOSIT_FEE.getCode(),
-                        "Deposit Fee");
+                        "Deposit Fee (Stamp Duty)");
             break;
             default:
                 optionData = new EnumOptionData(ChargeTimeType.INVALID.getValue().longValue(), ChargeTimeType.INVALID.getCode(), "Invalid");

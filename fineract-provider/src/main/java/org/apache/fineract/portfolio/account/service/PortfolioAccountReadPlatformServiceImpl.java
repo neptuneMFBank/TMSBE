@@ -63,7 +63,7 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
     public PortfolioAccountData retrieveOneViaAccountNumber(String accountNumber, Integer accountTypeId, Collection<Integer> statuses) {
         String inSql = String.join(",", Collections.nCopies(statuses.size(), "?"));
 
-        Object[] sqlParams = new Object[]{accountNumber, inSql};
+        Object[] sqlParams = new Object[]{accountNumber, statuses.toArray()};
         log.info("retrieveOneViaAccountNumber inSql: {}", inSql);
         log.info("retrieveOneViaAccountNumber sqlParams: {}", Arrays.toString(sqlParams));
         PortfolioAccountData accountData = null;
@@ -74,11 +74,13 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
                 case INVALID -> {
                 }
                 case LOAN -> {
-                    sql = "select " + this.loanAccountMapper.schema() + " where la.account_no = ? and la.loan_status_id in (?) ";
+                    sql = "select " + this.loanAccountMapper.schema() + " where la.account_no = ? ";
+                    sql += String.format(" and la.loan_status_id IN (%s) ", inSql);
                     accountData = this.jdbcTemplate.queryForObject(sql, this.loanAccountMapper, sqlParams);
                 }
                 case SAVINGS -> {
-                    sql = "select " + this.savingsAccountMapper.schema() + " where sa.account_no = ? and sa.status_enum in (?) ";
+                    sql = "select " + this.savingsAccountMapper.schema() + " where sa.account_no = ? ";
+                    sql += String.format(" and sa.status_enum IN (%s) ", inSql);
                     accountData = this.jdbcTemplate.queryForObject(sql, this.savingsAccountMapper, sqlParams);
                 }
             }

@@ -22,9 +22,11 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
@@ -38,6 +40,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccountReadPlatformService {
 
@@ -63,7 +66,7 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
         Object[] sqlParams = new Object[]{accountNumber, inSql};
         PortfolioAccountData accountData = null;
         try {
-            String sql;
+            String sql = null;
             final PortfolioAccountType accountType = PortfolioAccountType.fromInt(accountTypeId);
             switch (accountType) {
                 case INVALID -> {
@@ -77,6 +80,9 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
                     accountData = this.jdbcTemplate.queryForObject(sql, this.savingsAccountMapper, sqlParams);
                 }
             }
+            log.info("retrieveOneViaAccountNumber inSql: {}", inSql);
+            log.info("retrieveOneViaAccountNumber sqlParams: {}", Arrays.toString(sqlParams));
+            log.info("retrieveOneViaAccountNumber sql: {}", sql);
         } catch (final EmptyResultDataAccessException e) {
             throw new AccountTransferNotFoundException(accountNumber);
         }

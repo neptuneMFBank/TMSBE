@@ -63,7 +63,7 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
     public PortfolioAccountData retrieveOneViaAccountNumber(String accountNumber, Integer accountTypeId, Collection<Integer> statuses) {
         String inSql = String.join(",", Collections.nCopies(statuses.size(), "?"));
 
-        Object[] sqlParams = new Object[]{accountNumber, statuses.toArray()};
+        Object[] sqlParams = new Object[]{accountNumber, statuses};
         log.info("retrieveOneViaAccountNumber inSql: {}", inSql);
         log.info("retrieveOneViaAccountNumber sqlParams: {}", Arrays.toString(sqlParams));
         PortfolioAccountData accountData = null;

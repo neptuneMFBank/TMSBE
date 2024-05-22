@@ -64,9 +64,11 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
         String inSql = String.join(",", Collections.nCopies(statuses.size(), "?"));
 
         Object[] sqlParams = new Object[]{accountNumber, inSql};
+        log.info("retrieveOneViaAccountNumber inSql: {}", inSql);
+        log.info("retrieveOneViaAccountNumber sqlParams: {}", Arrays.toString(sqlParams));
         PortfolioAccountData accountData = null;
+        String sql = null;
         try {
-            String sql = null;
             final PortfolioAccountType accountType = PortfolioAccountType.fromInt(accountTypeId);
             switch (accountType) {
                 case INVALID -> {
@@ -80,11 +82,9 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
                     accountData = this.jdbcTemplate.queryForObject(sql, this.savingsAccountMapper, sqlParams);
                 }
             }
-            log.info("retrieveOneViaAccountNumber inSql: {}", inSql);
-            log.info("retrieveOneViaAccountNumber sqlParams: {}", Arrays.toString(sqlParams));
             log.info("retrieveOneViaAccountNumber sql: {}", sql);
         } catch (final EmptyResultDataAccessException e) {
-            throw new AccountTransferNotFoundException(accountNumber);
+            throw new AccountTransferNotFoundException(sql);
         }
 
         return accountData;

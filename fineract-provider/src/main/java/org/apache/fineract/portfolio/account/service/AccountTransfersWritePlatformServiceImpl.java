@@ -227,7 +227,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         } catch (Exception e) {
             log.warn(" createAccountTransfer Error:  {}", e);
             throw new GeneralPlatformDomainRuleException("error.msg.accounttransfer.error",
-                    "Account transfer currently not available, if error persists contact support");
+                    e.getMessage());
         }
     }
 

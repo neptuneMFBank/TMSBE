@@ -22,7 +22,6 @@ import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromA
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
@@ -36,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 public class AccountTransfersBusinessWritePlatformServiceImpl implements AccountTransfersBusinessWritePlatformService {
 
@@ -56,24 +54,18 @@ public class AccountTransfersBusinessWritePlatformServiceImpl implements Account
     @Override
     public CommandProcessingResult create(final String apiRequestBodyAsJson) {
         this.context.authenticatedUser();
-        try {
 
-            final JsonElement element = this.fromApiJsonHelper.parse(apiRequestBodyAsJson);
-            final JsonObject createTransfer = element.getAsJsonObject();
-            createTransfer.addProperty(fromAccountTypeParamName, PortfolioAccountType.SAVINGS.getValue());
-            if (!this.fromApiJsonHelper.parameterExists(SavingsApiConstants.localeParamName, element)) {
-                createTransfer.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
-            }
-
-            log.info(" createAccountTransfer Bs Info:  {}", createTransfer.toString());
-            final CommandWrapper commandRequest = new CommandWrapperBuilder().createAccountTransfer().withJson(createTransfer.toString())
-                    .build();
-            final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-            return result;
-
-        } catch (Exception e) {
-            log.warn(" createAccountTransfer Bs Error:  {}", e);
-            return null;
+        final JsonElement element = this.fromApiJsonHelper.parse(apiRequestBodyAsJson);
+        final JsonObject createTransfer = element.getAsJsonObject();
+        createTransfer.addProperty(fromAccountTypeParamName, PortfolioAccountType.SAVINGS.getValue());
+        if (!this.fromApiJsonHelper.parameterExists(SavingsApiConstants.localeParamName, element)) {
+            createTransfer.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
         }
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().createAccountTransfer().withJson(createTransfer.toString())
+                .build();
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        return result;
+
     }
 }

@@ -19,6 +19,7 @@
 package org.apache.fineract.infrastructure.security.service.business;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,8 +112,8 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
             // appUser = this.appUserRepositoryWrapper.findAppUserByName(value);
             appUser = this.appUserRepositoryWrapper.findAppUserByEmail(value);
         } // else if (isMobileAuthenticationMode) {
-          // check mobile
-          // }
+        // check mobile
+        // }
         else {
             throw new PlatformDataIntegrityException("error.msg.reset.mode", "Password reset mode not supported");
         }
@@ -181,23 +182,40 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
     }
 
     @Override
+    public void failedUserLogIn(final AppUser appUser) {
+        final String username = appUser.getUsername();
+        final Long appUserId = appUser.getId();
+        final String actionName = "LOGIN_FAILED";
+        final String entityName = "USER";
+        final String href = "/authentication";
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("username", username);
+        fullBusinessEntryFrom(actionName, entityName, href, appUserId, jsonObject.toString(), appUser);
+    }
+
+    @Override
     public void loggedUserLogIn(final String json, final Long userId) {
         final AppUser appUser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
         final Long appUserId = appUser.getId();
         final String actionName = "LOGIN";
         final String entityName = "USER";
         final String href = "/authentication";
+        fullBusinessEntryFrom(actionName, entityName, href, appUserId, json, appUser);
+    }
+
+    protected void fullBusinessEntryFrom(final String actionName, final String entityName, final String href, final Long appUserId, final String json, final AppUser appUser) {
         CommandSource commandSourceResult = CommandSource.fullBusinessEntryFrom(actionName, entityName, href, appUserId, json, appUser);
         this.commandSourceRepository.saveAndFlush(commandSourceResult);
     }
 
     @Override
     public void lockUserAfterMultipleAttempts(String username, boolean clearFromLoginAttempts) {
-        this.appUserRepositoryWrapper.findAppUserByName(username);
+        final AppUser appUser = this.appUserRepositoryWrapper.findAppUserByName(username);
         log.info("clearFromLoginAttempts username: {}-{}", username, clearFromLoginAttempts);
         if (clearFromLoginAttempts) {
             this.loginCountRequestRepository.deleteLoginRequestCountForUser(username);
         } else {
+            failedUserLogIn(appUser);
             int count = this.loginCountRequestRepository.getLoginRequestCountForUser(username);
             log.info("before adding count: {}", count);
             if (count > 2) {

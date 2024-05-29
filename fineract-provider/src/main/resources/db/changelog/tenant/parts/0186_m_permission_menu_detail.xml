@@ -31,5 +31,12 @@
             <column name="action_name" value="READ"/>
             <column name="can_maker_checker" valueBoolean="false"/>
         </insert>
+        <insert tableName="m_permission">
+            <column name="grouping" value="portfolio"/>
+            <column name="code" value="READ_PAYMENTDETAIL"/>
+            <column name="entity_name" value="PAYMENTDETAIL"/>
+            <column name="action_name" value="READ"/>
+            <column name="can_maker_checker" valueBoolean="false"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>

@@ -88,7 +88,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
         try {
             final String sql = "select " + rm.schema() + " where s.id = ? and o.hierarchy like ? ";
 
-            return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { staffId, hierarchy }); // NOSONAR
+            return this.jdbcTemplate.queryForObject(sql, rm, new Object[]{staffId, hierarchy}); // NOSONAR
         } catch (final EmptyResultDataAccessException e) {
             throw new StaffNotFoundException(staffId, e);
         }
@@ -257,7 +257,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
     private static final class StaffMapper implements RowMapper<StaffBusinessData> {
 
         public String schema() {
-            return " s.id as id,s.office_id as officeId, o.name as officeName, s.firstname as firstname, s.lastname as lastname,"
+            return " s.id as id,s.office_id as officeId, o.name as officeName, s.firstname as firstname, s.lastname as lastname, s.email_address as emailAddress, "
                     + " s.display_name as displayName, s.is_loan_officer as isLoanOfficer, s.external_id as externalId, s.mobile_no as mobileNo,"
                     + " s.is_active as isActive, s.joining_date as joiningDate, so.isSupervisor, "
                     + " s.organisational_role_parent_staff_id organisationalRoleParentStaff, ms.display_name organisationalRoleParentStaffName, s.organisational_role_enum organisationalRoleType, mcv.code_value organisationalRoleTypeName "
@@ -270,6 +270,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
         public StaffBusinessData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
 
             final Long id = rs.getLong("id");
+            final String emailAddress = rs.getString("emailAddress");
             final String firstname = rs.getString("firstname");
             final String lastname = rs.getString("lastname");
             final String displayName = rs.getString("displayName");
@@ -297,7 +298,7 @@ public class StaffBusinessReadPlatformServiceImpl implements StaffBusinessReadPl
             }
 
             return StaffBusinessData.instance(id, firstname, lastname, displayName, officeId, officeName, isLoanOfficer, externalId,
-                    mobileNo, isActive, joiningDate, organisationalRoleTypeData, supervisorStaffData, isSupervisor);
+                    mobileNo, isActive, joiningDate, organisationalRoleTypeData, supervisorStaffData, isSupervisor, emailAddress);
         }
     }
 

@@ -32,6 +32,7 @@ public final class StaffBusinessData implements Serializable {
 
     private final Long id;
     private final String externalId;
+    private final String emailAddress;
     private final String firstname;
     private final String lastname;
     private final String displayName;
@@ -52,21 +53,21 @@ public final class StaffBusinessData implements Serializable {
     public static StaffBusinessData templateData(final StaffBusinessData staff, final Collection<OfficeData> allowedOffices) {
         return new StaffBusinessData(staff.id, staff.firstname, staff.lastname, staff.displayName, staff.officeId, staff.officeName,
                 staff.isLoanOfficer, staff.externalId, staff.mobileNo, allowedOffices, staff.isActive, staff.joiningDate,
-                staff.organisationalRoleType, staff.organisationalRoleParentStaff, staff.isSupervisor);
+                staff.organisationalRoleType, staff.organisationalRoleParentStaff, staff.isSupervisor, staff.emailAddress);
     }
 
     public static StaffBusinessData instance(final Long id, final String firstname, final String lastname, final String displayName,
             final Long officeId, final String officeName, final Boolean isLoanOfficer, final String externalId, final String mobileNo,
             final boolean isActive, final LocalDate joiningDate, final CodeValueData organisationalRoleType,
-            final StaffData organisationalRoleParentStaff, final Boolean isSupervisor) {
+            final StaffData organisationalRoleParentStaff, final Boolean isSupervisor, final String emailAddress) {
         return new StaffBusinessData(id, firstname, lastname, displayName, officeId, officeName, isLoanOfficer, externalId, mobileNo, null,
-                isActive, joiningDate, organisationalRoleType, organisationalRoleParentStaff, isSupervisor);
+                isActive, joiningDate, organisationalRoleType, organisationalRoleParentStaff, isSupervisor, emailAddress);
     }
 
     private StaffBusinessData(final Long id, final String firstname, final String lastname, final String displayName, final Long officeId,
             final String officeName, final Boolean isLoanOfficer, final String externalId, final String mobileNo,
             final Collection<OfficeData> allowedOffices, final Boolean isActive, final LocalDate joiningDate,
-            final CodeValueData organisationalRoleType, final StaffData organisationalRoleParentStaff, final Boolean isSupervisor) {
+            final CodeValueData organisationalRoleType, final StaffData organisationalRoleParentStaff, final Boolean isSupervisor, final String emailAddress) {
         this.isSupervisor = isSupervisor;
         this.id = id;
         this.firstname = firstname;
@@ -82,6 +83,7 @@ public final class StaffBusinessData implements Serializable {
         this.joiningDate = joiningDate;
         this.organisationalRoleType = organisationalRoleType;
         this.organisationalRoleParentStaff = organisationalRoleParentStaff;
+        this.emailAddress = emailAddress;
     }
 
     public Long getId() {

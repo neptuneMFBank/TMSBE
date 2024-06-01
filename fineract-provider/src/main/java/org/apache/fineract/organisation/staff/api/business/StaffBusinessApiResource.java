@@ -59,6 +59,7 @@ import org.apache.fineract.organisation.office.service.OfficeReadPlatformService
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.organisation.staff.data.business.StaffBusinessData;
 import org.apache.fineract.organisation.staff.service.business.StaffBusinessReadPlatformService;
+import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConstants;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -71,11 +72,12 @@ import org.springframework.stereotype.Component;
 public class StaffBusinessApiResource {
 
     /**
-     * The set of parameters that are supported in response for {@link StaffData}.
+     * The set of parameters that are supported in response for
+     * {@link StaffData}.
      */
     private final Set<String> responseDataParameters = new HashSet<>(Arrays.asList("id", "firstname", "lastname", "displayName", "officeId",
             "officeName", "isLoanOfficer", "externalId", "mobileNo", "allowedOffices", "isActive", "joiningDate", "organisationalRoleType",
-            "organisationalRoleParentStaff", "isSupervisor"));
+            "organisationalRoleParentStaff", "isSupervisor", ClientBusinessApiConstants.emailAddressParamName));
 
     private final String resourceNameForPermissions = "STAFF";
 
@@ -104,8 +106,8 @@ public class StaffBusinessApiResource {
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create a staff member", description = """
             Creates a staff member.
 
@@ -117,9 +119,10 @@ public class StaffBusinessApiResource {
     @RequestBody(required = true
     // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.PostStaffRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.CreateStaffResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.CreateStaffResponse.class))
+        )})
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().createStaffBusiness().withJson(apiRequestBodyAsJson).build();
@@ -130,13 +133,14 @@ public class StaffBusinessApiResource {
     }
 
     @GET
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Retrieve all Staff", description = "Retrieve list of Employers")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
-    // EmployerApiResourceSwagger.GetEmployersResponse.class)))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+        // EmployerApiResourceSwagger.GetEmployersResponse.class)))
+        )})
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("supervisorId") @Parameter(description = "supervisorId") final Long supervisorId,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
@@ -175,17 +179,18 @@ public class StaffBusinessApiResource {
 
     @GET
     @Path("{staffId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve a Staff Member", description = """
             Returns the details of a Staff Member.
 
             Example Requests:
 
             staff/1""")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.RetrieveOneResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.RetrieveOneResponse.class))
+        )})
     public String retrieveOne(@PathParam("staffId") @Parameter(description = "staffId") final Long staffId,
             @Context final UriInfo uriInfo) {
 
@@ -203,15 +208,16 @@ public class StaffBusinessApiResource {
 
     @PUT
     @Path("{staffId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Update a Staff Member", description = "Updates the details of a staff member.")
     @RequestBody(required = true// , content = @Content(schema = @Schema(implementation =
     // StaffApiResourceSwagger.PutStaffRequest.class))
     )
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.UpdateStaffResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = StaffApiResourceSwagger.UpdateStaffResponse.class))
+        )})
     public String update(@PathParam("staffId") @Parameter(description = "staffId") final Long staffId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -225,11 +231,12 @@ public class StaffBusinessApiResource {
 
     @GET
     @Path("{staffId}/balance")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve client accounts balance", description = "")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "Bad Request") })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "400", description = "Bad Request")})
     public String retrieveAssociatedAccounts(@PathParam("staffId") @Parameter(description = "staffId") final Long staffId,
             @Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);

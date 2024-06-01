@@ -36,6 +36,7 @@ import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidati
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.organisation.staff.service.StaffReadPlatformService;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
+import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +48,7 @@ public final class StaffBusinessCommandFromApiJsonDeserializer {
      */
     private final Set<String> supportedParameters = new HashSet<>(
             Arrays.asList("firstname", "lastname", "officeId", "externalId", "mobileNo", "isLoanOfficer", "isActive", "joiningDate",
-                    "dateFormat", "locale", "forceStatus", "organisationalRoleTypeId", "organisationalRoleParentStaffId"));
+                    "dateFormat", "locale", "forceStatus", "organisationalRoleTypeId", "organisationalRoleParentStaffId", ClientBusinessApiConstants.emailAddressParamName));
 
     private final FromJsonHelper fromApiJsonHelper;
 
@@ -65,7 +66,8 @@ public final class StaffBusinessCommandFromApiJsonDeserializer {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -86,6 +88,10 @@ public final class StaffBusinessCommandFromApiJsonDeserializer {
             final String mobileNo = this.fromApiJsonHelper.extractStringNamed(ClientApiConstants.mobileNoParamName, element);
             baseDataValidator.reset().parameter(ClientApiConstants.mobileNoParamName).value(mobileNo).ignoreIfNull()
                     .notExceedingLengthOf(50);
+        }
+        if (this.fromApiJsonHelper.parameterExists(ClientBusinessApiConstants.emailAddressParamName, element)) {
+            final String emailAddress = this.fromApiJsonHelper.extractStringNamed(ClientBusinessApiConstants.emailAddressParamName, element);
+            baseDataValidator.reset().parameter(ClientBusinessApiConstants.emailAddressParamName).value(emailAddress).notBlank().isValidEmail();
         }
 
         if (this.fromApiJsonHelper.parameterExists("isLoanOfficer", element)) {
@@ -139,7 +145,8 @@ public final class StaffBusinessCommandFromApiJsonDeserializer {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -164,6 +171,11 @@ public final class StaffBusinessCommandFromApiJsonDeserializer {
         if (this.fromApiJsonHelper.parameterExists(ClientApiConstants.mobileNoParamName, element)) {
             final String mobileNo = this.fromApiJsonHelper.extractStringNamed(ClientApiConstants.mobileNoParamName, element);
             baseDataValidator.reset().parameter(ClientApiConstants.mobileNoParamName).value(mobileNo).notExceedingLengthOf(50);
+        }
+
+        if (this.fromApiJsonHelper.parameterExists(ClientBusinessApiConstants.emailAddressParamName, element)) {
+            final String emailAddress = this.fromApiJsonHelper.extractStringNamed(ClientBusinessApiConstants.emailAddressParamName, element);
+            baseDataValidator.reset().parameter(ClientBusinessApiConstants.emailAddressParamName).value(emailAddress).notBlank().isValidEmail();
         }
 
         if (this.fromApiJsonHelper.parameterExists("isLoanOfficer", element)) {

@@ -34,11 +34,13 @@ import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.infrastructure.documentmanagement.domain.Image;
 import org.apache.fineract.organisation.office.domain.Office;
+import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConstants;
 
 @Entity
-@Table(name = "m_staff", uniqueConstraints = { @UniqueConstraint(columnNames = { "display_name" }, name = "display_name"),
-        @UniqueConstraint(columnNames = { "external_id" }, name = "external_id_UNIQUE"),
-        @UniqueConstraint(columnNames = { "mobile_no" }, name = "mobile_no_UNIQUE") })
+@Table(name = "m_staff", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"display_name"}, name = "display_name"),
+    @UniqueConstraint(columnNames = {"external_id"}, name = "external_id_UNIQUE"),
+    @UniqueConstraint(columnNames = {"mobile_no"}, name = "mobile_no_UNIQUE")})
 public class Staff extends AbstractPersistableCustom {
 
     @Column(name = "firstname", length = 50)
@@ -150,6 +152,13 @@ public class Staff extends AbstractPersistableCustom {
         if (command.isChangeInLongParameterNamed(officeIdParamName, this.office.getId())) {
             final Long newValue = command.longValueOfParameterNamed(officeIdParamName);
             actualChanges.put(officeIdParamName, newValue);
+        }
+
+        final String emailAddressParamName = ClientBusinessApiConstants.emailAddressParamName;
+        if (command.isChangeInStringParameterNamed(emailAddressParamName, this.emailAddress)) {
+            final String newValue = command.stringValueOfParameterNamed(emailAddressParamName);
+            actualChanges.put(emailAddressParamName, newValue);
+            this.emailAddress = newValue;
         }
 
         boolean firstnameChanged = false;
@@ -282,6 +291,10 @@ public class Staff extends AbstractPersistableCustom {
 
     public Staff getOrganisationalRoleParentStaff() {
         return organisationalRoleParentStaff;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
 }

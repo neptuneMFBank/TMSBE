@@ -36,6 +36,7 @@ import org.apache.fineract.organisation.staff.domain.StaffRepository;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
 import org.apache.fineract.organisation.staff.exception.StaffNotFoundException;
 import org.apache.fineract.organisation.staff.serialization.business.StaffBusinessCommandFromApiJsonDeserializer;
+import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,10 @@ public class StaffBusinessWritePlatformServiceJpaRepositoryImpl implements Staff
             final Staff staff = Staff.fromJson(staffOffice, command);
 
             final JsonElement jsonElement = this.fromJsonHelper.parse(command.json());
-
+            if (this.fromJsonHelper.parameterExists(ClientBusinessApiConstants.emailAddressParamName, jsonElement)) {
+                final String emailAddress = this.fromJsonHelper.extractStringNamed(ClientBusinessApiConstants.emailAddressParamName, jsonElement);
+                staff.setEmailAddress(emailAddress);
+            }
             if (this.fromJsonHelper.parameterExists("organisationalRoleTypeId", jsonElement)) {
                 final Long organisationalRoleTypeId = this.fromJsonHelper.extractLongNamed("organisationalRoleTypeId", jsonElement);
                 this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(organisationalRoleTypeId);

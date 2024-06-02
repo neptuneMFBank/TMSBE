@@ -18,11 +18,6 @@
  */
 package org.apache.fineract.infrastructure.core.config.business;
 
-import org.apache.catalina.connector.Connector;
-import org.apache.coyote.ajp.AbstractAjpProtocol;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 //@Component
@@ -36,29 +31,29 @@ public class TomcatConnectorCustomizerAjp //implements WebServerFactoryCustomize
 //        ((TomcatServletWebServerFactory) factory).setProtocol("org.apache.coyote.ajp.AjpNioProtocol");
 //        ((TomcatServletWebServerFactory) factory).setPort(8009);
 //    }
-    @Bean
-    public ConfigurableServletWebServerFactory webServerFactory() {
-        TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
-
-//        Connector connector = new Connector("AJP/1.3");
+//    @Bean
+//    public ConfigurableServletWebServerFactory webServerFactory() {
+//        TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+//
+////        Connector connector = new Connector("AJP/1.3");
+////        connector.setPort(8009);
+////        connector.setRedirectPort(8443);
+////        connector.setSecure(false);
+////        connector.setAllowTrace(false);
+////        connector.setProperty("address", "10.2.3.33");
+////        connector.setProperty("allowedRequestAttributesPattern", ".*");
+////        ((AbstractAjpProtocol) connector.getProtocolHandler()).setSecretRequired(false);
+//        Connector connector = new Connector("org.apache.coyote.ajp.AjpNioProtocol");
+//        ((AbstractAjpProtocol) connector.getProtocolHandler()).setSecretRequired(false);
+//        //connector.setAttribute("maxThreads", 100);
 //        connector.setPort(8009);
 //        connector.setRedirectPort(8443);
-//        connector.setSecure(false);
-//        connector.setAllowTrace(false);
-//        connector.setProperty("address", "10.2.3.33");
+//        connector.setURIEncoding("UTF-8");
+//        connector.setScheme("https");
+//        //connector.setSecure(false);
+//        connector.setProperty("address", "::");
 //        connector.setProperty("allowedRequestAttributesPattern", ".*");
-//        ((AbstractAjpProtocol) connector.getProtocolHandler()).setSecretRequired(false);
-        Connector connector = new Connector("org.apache.coyote.ajp.AjpNioProtocol");
-        ((AbstractAjpProtocol) connector.getProtocolHandler()).setSecretRequired(false);
-        //connector.setAttribute("maxThreads", 100);
-        connector.setPort(8009);
-        connector.setRedirectPort(8443);
-        connector.setURIEncoding("UTF-8");
-        connector.setScheme("https");
-        //connector.setSecure(false);
-        connector.setProperty("address", "::");
-        connector.setProperty("allowedRequestAttributesPattern", ".*");
-        factory.addAdditionalTomcatConnectors(connector);
-        return factory;
-    }
+//        factory.addAdditionalTomcatConnectors(connector);
+//        return factory;
+//    }
 }

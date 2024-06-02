@@ -49,6 +49,7 @@ public final class SearchParameters {
     private final Long productId;
     private final Long categoryId;
     private final boolean isSelfUser;
+    private Integer statusId;
 
     public static SearchParameters from(final String sqlSearch, final Long officeId, final String externalId, final String name,
             final String hierarchy) {
@@ -545,10 +546,12 @@ public final class SearchParameters {
     }
 
     /**
-     * creates an instance of the SearchParameters from a request for the report mailing job run history
+     * creates an instance of the SearchParameters from a request for the report
+     * mailing job run history
      *
      * @return SearchParameters object
-     **/
+     *
+     */
     public static SearchParameters fromReportMailingJobRunHistory(final Integer offset, final Integer limit, final String orderBy,
             final String sortOrder) {
         final Integer maxLimitAllowed = getCheckedLimit(limit);
@@ -558,7 +561,8 @@ public final class SearchParameters {
     }
 
     /**
-     * creates an instance of the {@link SearchParameters} from a request for the report mailing job
+     * creates an instance of the {@link SearchParameters} from a request for
+     * the report mailing job
      *
      * @return {@link SearchParameters} object
      */
@@ -568,5 +572,17 @@ public final class SearchParameters {
 
         return new SearchParameters(null, null, null, null, null, null, null, offset, maxLimitAllowed, orderBy, sortOrder, null, null, null,
                 null, null, false);
+    }
+
+    public void setStatusId(Integer statusId) {
+        this.statusId = statusId;
+    }
+
+    public Integer getStatusId() {
+        return statusId;
+    }
+
+    public boolean isStatusIdPassed() {
+        return this.statusId != null && this.statusId != 0;
     }
 }

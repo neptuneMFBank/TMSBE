@@ -40,6 +40,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
@@ -56,6 +57,7 @@ import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.useradministration.domain.business.AppUserExtension;
 import org.apache.fineract.useradministration.domain.business.AppUserMerchantMapping;
 import org.apache.fineract.useradministration.service.AppUserConstants;
+import static org.apache.fineract.useradministration.service.AppUserConstants.FORCE_PASSWORD_RESET;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -64,8 +66,9 @@ import org.springframework.security.core.userdetails.User;
 @Entity
 @Table(name = "m_appuser",
         // uniqueConstraints = @UniqueConstraint(columnNames = { "username" }, name = "username_org")
-        uniqueConstraints = { @UniqueConstraint(columnNames = { "username" }, name = "username_org"),
-                @UniqueConstraint(columnNames = { "email" }, name = "email_org") })
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"username"}, name = "username_org"),
+            @UniqueConstraint(columnNames = {"email"}, name = "email_org")})
 public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     @Column(name = "email", nullable = false, length = 100)
@@ -257,11 +260,17 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
         final String passwordEncodedParamName = "passwordEncoded";
         if (command.hasParameter(passwordParamName)) {
             if (command.isChangeInPasswordParameterNamed(passwordParamName, this.password, platformPasswordEncoder, getId())) {
+
                 final String passwordEncodedValue = command.passwordValueOfParameterNamed(passwordParamName, platformPasswordEncoder,
                         getId());
                 // actualChanges.put(passwordEncodedParamName, passwordEncodedValue);
                 actualChanges.put(passwordEncodedParamName, "passwordChanged");
-                updatePassword(passwordEncodedValue);
+                final Boolean forcePasswordReset = command.booleanObjectValueOfParameterNamed(FORCE_PASSWORD_RESET);
+                if (BooleanUtils.isTrue(forcePasswordReset)) {
+                    updatePassword(passwordEncodedValue, forcePasswordReset);
+                } else {
+                    updatePassword(passwordEncodedValue);
+                }
             }
         }
 
@@ -374,7 +383,8 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     }
 
     /**
-     * Delete is a <i>soft delete</i>. Updates flag so it wont appear in query/report results.
+     * Delete is a <i>soft delete</i>. Updates flag so it wont appear in
+     * query/report results.
      *
      * Any fields with unique constraints and prepended with id of record.
      */
@@ -557,8 +567,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     /**
      * Checks whether the user has a given permission explicitly.
      *
-     * @param permissionCode
-     *            the permission code to check for.
+     * @param permissionCode the permission code to check for.
      * @return whether the user has the specified permission
      */
     public boolean hasSpecificPermissionTo(final String permissionCode) {

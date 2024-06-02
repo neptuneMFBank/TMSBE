@@ -25,6 +25,8 @@ import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionData;
 
 public interface SavingsAccountBusinessReadPlatformService {
 
+     void commissionVendEod();
+
     public Page<SavingsAccountTransactionData> retrieveAllTransactionsBySavingsId(Long savingsId, DepositAccountType depositAccountType,
             final SearchParametersBusiness searchParameters);
 

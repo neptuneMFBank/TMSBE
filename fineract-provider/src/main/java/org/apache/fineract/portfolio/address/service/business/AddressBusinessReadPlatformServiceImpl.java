@@ -90,13 +90,17 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         public AddressBusinessData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
 
             final Long lgaId = rs.getLong("lgaId");
-            final String lgaName = rs.getString("lgaName");
-            final CodeValueData lga = CodeValueData.instance(lgaId, lgaName);
-
+            CodeValueData lga = null;
+            if (lgaId > 0) {
+                final String lgaName = rs.getString("lgaName");
+                lga = CodeValueData.instance(lgaId, lgaName);
+            }
             final Long residentStatusId = rs.getLong("residentStatusId");
-            final String residentStatusName = rs.getString("residentStatus");
-            final CodeValueData residentStatus = CodeValueData.instance(residentStatusId, residentStatusName);
-
+            CodeValueData residentStatus = null;
+            if (residentStatusId > 0) {
+                final String residentStatusName = rs.getString("residentStatus");
+                residentStatus = CodeValueData.instance(residentStatusId, residentStatusName);
+            }
             final Date dateMovedIn = rs.getDate("dateMovedIn");
             final LocalDate localDateMovedIn = dateMovedIn != null ? dateMovedIn.toLocalDate() : null;
 
@@ -161,7 +165,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         this.context.authenticatedUser();
         final AddMapper rm = new AddMapper();
         final String sql = "select " + rm.schema() + " where ca.client_id=?";
-        return this.jdbcTemplate.query(sql, rm, new Object[] { clientid }); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, new Object[]{clientid}); // NOSONAR
     }
 
     @Override
@@ -171,7 +175,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         final AddMapper rm = new AddMapper();
         final String sql = "select " + rm.schema() + " where ca.client_id=? and ca.address_type_id=?";
 
-        return this.jdbcTemplate.query(sql, rm, new Object[] { clientid, typeid }); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, new Object[]{clientid, typeid}); // NOSONAR
     }
 
     @Override
@@ -182,7 +186,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         final AddMapper rm = new AddMapper();
         final String sql = "select " + rm.schema() + " where ca.client_id=? and ca.address_type_id=? and ca.is_active=?";
 
-        return this.jdbcTemplate.query(sql, rm, new Object[] { clientid, typeid, temp }); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, new Object[]{clientid, typeid, temp}); // NOSONAR
     }
 
     @Override
@@ -193,7 +197,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         final AddMapper rm = new AddMapper();
         final String sql = "select " + rm.schema() + " where ca.client_id=? and ca.is_active=?";
 
-        return this.jdbcTemplate.query(sql, rm, new Object[] { clientid, temp }); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, new Object[]{clientid, temp}); // NOSONAR
     }
 
     @Override

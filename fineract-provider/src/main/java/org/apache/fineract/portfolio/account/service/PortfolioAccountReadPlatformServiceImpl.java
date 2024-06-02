@@ -22,7 +22,9 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
@@ -36,6 +38,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccountReadPlatformService {
@@ -56,9 +59,15 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
     }
 
     @Override
-    public PortfolioAccountData retrieveOneViaAccountNumber(String accountNumber, Integer accountTypeId) {
+    public PortfolioAccountData retrieveOneViaAccountNumber(String accountNumber, Integer accountTypeId, Collection<Integer> statuses) {
 
-        Object[] sqlParams = new Object[]{accountNumber};
+        String inSql = null;
+        //Object[] sqlParams = new Object[]{accountNumber};
+        List<Object> sqlParams = new ArrayList<>(Arrays.asList(accountNumber));
+        if (!CollectionUtils.isEmpty(statuses)) {
+            inSql = String.join(",", Collections.nCopies(statuses.size(), "?"));
+            sqlParams.addAll(statuses);
+        }
         PortfolioAccountData accountData = null;
         try {
             String sql;
@@ -67,12 +76,18 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
                 case INVALID -> {
                 }
                 case LOAN -> {
-                    sql = "select " + this.loanAccountMapper.schema() + " where la.account_no = ?";
-                    accountData = this.jdbcTemplate.queryForObject(sql, this.loanAccountMapper, sqlParams);
+                    sql = "select " + this.loanAccountMapper.schema() + " where la.account_no = ? ";
+                    if (!CollectionUtils.isEmpty(statuses)) {
+                        sql += String.format(" and la.loan_status_id IN (%s) ", inSql);
+                    }
+                    accountData = this.jdbcTemplate.queryForObject(sql, this.loanAccountMapper, sqlParams.toArray());
                 }
                 case SAVINGS -> {
-                    sql = "select " + this.savingsAccountMapper.schema() + " where sa.account_no = ?";
-                    accountData = this.jdbcTemplate.queryForObject(sql, this.savingsAccountMapper, sqlParams);
+                    sql = "select " + this.savingsAccountMapper.schema() + " where sa.account_no = ? ";
+                    if (!CollectionUtils.isEmpty(statuses)) {
+                        sql += String.format(" and sa.status_enum IN (%s) ", inSql);
+                    }
+                    accountData = this.jdbcTemplate.queryForObject(sql, this.savingsAccountMapper, sqlParams.toArray());
                 }
             }
         } catch (final EmptyResultDataAccessException e) {

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -75,6 +76,7 @@ public class TaxGroup extends AbstractAuditableCustom {
         for (TaxGroupMappings groupMappings : taxGroupMappings) {
             TaxGroupMappings mappings = findOneBy(groupMappings);
             if (mappings == null) {
+                groupMappings.setTaxGroup(this);
                 this.taxGroupMappings.add(groupMappings);
                 taxComponentList.add(groupMappings.getTaxComponent().getId());
             } else {
@@ -95,7 +97,8 @@ public class TaxGroup extends AbstractAuditableCustom {
     public TaxGroupMappings findOneBy(final TaxGroupMappings groupMapping) {
         if (groupMapping.getId() != null) {
             for (TaxGroupMappings groupMappings : this.taxGroupMappings) {
-                if (groupMappings.getId().equals(groupMapping.getId())) {
+//                if (groupMappings.getId().equals(groupMapping.getId())) {
+                if (Objects.equals(groupMappings.getId(), groupMapping.getId())) {
                     return groupMappings;
                 }
             }

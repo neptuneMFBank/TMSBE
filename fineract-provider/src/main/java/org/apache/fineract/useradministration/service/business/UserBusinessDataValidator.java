@@ -50,7 +50,7 @@ public final class UserBusinessDataValidator {
             Arrays.asList("username", "firstname", "lastname", "email", "officeId", "notSelectedRoles", "roles", "sendPasswordToEmail",
                     "staffId", "passwordNeverExpires", AppUserConstants.IS_SELF_SERVICE_USER, AppUserConstants.CLIENTS));
 
-    private final Set<String> supportedParametersPassword = new HashSet<>(Arrays.asList("password", "repeatPassword"));
+    private final Set<String> supportedParametersPassword = new HashSet<>(Arrays.asList("password", "repeatPassword", "oldPassword"));
 
     private final FromJsonHelper fromApiJsonHelper;
     private final PasswordValidationPolicyRepository passwordValidationPolicy;
@@ -73,7 +73,8 @@ public final class UserBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -152,13 +153,17 @@ public final class UserBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParametersPassword);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("user");
 
         final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        final String oldPassword = this.fromApiJsonHelper.extractStringNamed("oldPassword", element);
+        baseDataValidator.reset().parameter("oldPassword").value(oldPassword).notBlank();
 
         final String password = this.fromApiJsonHelper.extractStringNamed("password", element);
         final String repeatPassword = this.fromApiJsonHelper.extractStringNamed("repeatPassword", element);

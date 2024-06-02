@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,6 +36,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -47,6 +49,8 @@ import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSer
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.account.api.AccountTransfersApiResource;
 import org.apache.fineract.portfolio.account.service.AccountTransfersReadPlatformService;
+import org.apache.fineract.portfolio.business.bankTransfer.api.TransferApprovalApiResource;
+import org.apache.fineract.portfolio.business.bankTransfer.api.TransferApprovalApiResourceConstants;
 import org.apache.fineract.portfolio.self.account.data.SelfAccountTemplateData;
 import org.apache.fineract.portfolio.self.account.data.SelfAccountTransferData;
 import org.apache.fineract.portfolio.self.account.data.SelfAccountTransferDataValidator;
@@ -75,6 +79,7 @@ public class SelfAccountTransferApiResource {
     private final SelfBeneficiariesTPTReadPlatformService tptBeneficiaryReadPlatformService;
     private final ConfigurationDomainService configurationDomainService;
     private final AccountTransfersReadPlatformService accountTransfersReadPlatformService;
+    private final TransferApprovalApiResource transferApprovalApiResource;
 
     @Autowired
     public SelfAccountTransferApiResource(final PlatformSecurityContext context,
@@ -84,7 +89,8 @@ public class SelfAccountTransferApiResource {
             final SelfAccountTransferDataValidator dataValidator,
             final SelfBeneficiariesTPTReadPlatformService tptBeneficiaryReadPlatformService,
             final ConfigurationDomainService configurationDomainService,
-            final AccountTransfersReadPlatformService accountTransfersReadPlatformService) {
+            final AccountTransfersReadPlatformService accountTransfersReadPlatformService,
+            final TransferApprovalApiResource transferApprovalApiResource) {
         this.context = context;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.accountTransfersApiResource = accountTransfersApiResource;
@@ -94,16 +100,17 @@ public class SelfAccountTransferApiResource {
         this.tptBeneficiaryReadPlatformService = tptBeneficiaryReadPlatformService;
         this.configurationDomainService = configurationDomainService;
         this.accountTransfersReadPlatformService = accountTransfersReadPlatformService;
+        this.transferApprovalApiResource = transferApprovalApiResource;
     }
 
     @GET
     @Path("template")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve Account Transfer Template", description = "Returns list of loan/savings accounts that can be used for account transfer\n"
             + "\n" + "\n" + "Example Requests:\n" + "\n" + "self/accounttransfers/template\n")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = SelfAccountTransferApiResourceSwagger.GetAccountTransferTemplateResponse.class)))) })
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = SelfAccountTransferApiResourceSwagger.GetAccountTransferTemplateResponse.class))))})
     public String template(@DefaultValue("") @QueryParam("type") @Parameter(name = "type") final String type,
             @Context final UriInfo uriInfo) {
 
@@ -121,12 +128,12 @@ public class SelfAccountTransferApiResource {
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create new Transfer", description = "Ability to create new transfer of monetary funds from one account to another.\n"
             + "\n" + "\n" + "Example Requests:\n" + "\n" + " self/accounttransfers/\n")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = SelfAccountTransferApiResourceSwagger.PostNewTransferResponse.class)))) })
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = SelfAccountTransferApiResourceSwagger.PostNewTransferResponse.class))))})
     public String create(@DefaultValue("") @QueryParam("type") @Parameter(name = "type") final String type,
             final String apiRequestBodyAsJson) {
         Map<String, Object> params = this.dataValidator.validateCreate(type, apiRequestBodyAsJson);
@@ -167,4 +174,48 @@ public class SelfAccountTransferApiResource {
         }
     }
 
+    @GET
+    @Path("approval/{transferApprovalId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve a TransferApproval")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
+    public String retrieveOne(@PathParam("transferApprovalId")
+            @Parameter(description = "transferApprovalId")
+            final Long transferApprovalId,
+            @Context final UriInfo uriInfo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(TransferApprovalApiResourceConstants.RESOURCE_NAME);
+        return this.transferApprovalApiResource.retrieveOne(transferApprovalId, uriInfo);
+
+    }
+
+    @POST
+    @Path("approval")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Create a Transfer Approval", description = "Creates a Transfer Approval\n\n")
+    @RequestBody(required = true)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
+    public String create(@Parameter(hidden = true)
+            final String apiRequestBodyAsJson
+    ) {
+        this.context.authenticatedUser();
+        return this.transferApprovalApiResource.create(apiRequestBodyAsJson);
+    }
+
+    @GET
+    @Path("approval/template")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve a TransferApproval")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
+    public String approvalTemplate(
+            @Context final UriInfo uriInfo) {
+        return this.transferApprovalApiResource.retrieveTemplate(uriInfo);
+
+    }
 }

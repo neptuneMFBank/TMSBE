@@ -218,6 +218,15 @@
     <include file="parts/0417_create_m_paymenttype_grid_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0418_update_m_paymenttype_grid_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0419_delete_m_paymenttype_grid_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0420_create_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0421_approve_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0422_reject_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0423_read_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0180_calculate_commission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0187_m_commision_vat_calculated.sql" relativeToChangelogFile="true" />
+    <include file="parts/0188_m_commission_vend.sql" relativeToChangelogFile="true" />
+    <include file="parts/0189_job_commission_vend.sql" relativeToChangelogFile="true" />
+    <include file="parts/0186_m_permission_menu_detail.xml" relativeToChangelogFile="true" />
     <!-- <include file="parts/0186_m_permission_m.xml" relativeToChangelogFile="true" /> -->
     <include file="parts/0425_create_m_accounttier_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0426_update_m_accounttier_permission.sql" relativeToChangelogFile="true" />

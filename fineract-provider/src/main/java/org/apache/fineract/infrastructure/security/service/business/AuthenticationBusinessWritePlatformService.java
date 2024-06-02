@@ -19,12 +19,15 @@
 package org.apache.fineract.infrastructure.security.service.business;
 
 import org.apache.fineract.simplifytech.data.ApiResponseMessage;
+import org.apache.fineract.useradministration.domain.AppUser;
 
 public interface AuthenticationBusinessWritePlatformService {
 
     ApiResponseMessage resetPassword(String apiRequestBodyAsJson);
 
     void loggedUserLogIn(final String json, final Long userId);
+
+    void failedUserLogIn(final AppUser appUser);
 
     void lockUserAfterMultipleAttempts(final String username, final boolean clearFromLoginAttempts);
 

@@ -25,13 +25,19 @@ import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
+import org.apache.fineract.infrastructure.security.exception.NoAuthorizationException;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserRepository;
 import org.apache.fineract.useradministration.exception.UserNotFoundException;
 import org.apache.fineract.useradministration.service.AppUserWritePlatformService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,22 +50,35 @@ public class AppUserBusinessWritePlatformServiceJpaRepositoryImpl implements App
     private final AppUserWritePlatformService appUserWritePlatformService;
     private final UserBusinessDataValidator fromApiJsonDeserializer;
     private final AppUserRepository appUserRepository;
+    @Qualifier("customAuthenticationProvider")
+    private final DaoAuthenticationProvider customAuthenticationProvider;
 
     @Override
     @Transactional
-    @Caching(evict = { @CacheEvict(value = "usersBusiness", allEntries = true),
-            @CacheEvict(value = "usersBusinessPasswordByUsername", allEntries = true) })
+    @Caching(evict = {
+        @CacheEvict(value = "usersBusiness", allEntries = true),
+        @CacheEvict(value = "usersBusinessPasswordByUsername", allEntries = true)})
     public CommandProcessingResult updateUserPassword(final JsonCommand command) {
         final AppUser appUser = this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForUpdatePassword(command.json());
+        try {
+            final String username = appUser.getUsername();
+            final String oldPassword = command.stringValueOfParameterNamed("oldPassword");
+            final Authentication authentication = new UsernamePasswordAuthenticationToken(username, oldPassword);
+            this.customAuthenticationProvider.authenticate(authentication);
+        } catch (AuthenticationException e) {
+            log.warn("updateUserPassword: {}", e.getMessage());
+            throw new NoAuthorizationException("Current password does not match user credentials.");
+        }
         final Long userId = appUser.getId();
         return appUserWritePlatformService.updateUser(userId, command);
     }
 
     @Override
     @Transactional
-    @Caching(evict = { @CacheEvict(value = "usersBusiness", allEntries = true),
-            @CacheEvict(value = "usersBusinessInfoByUsername", allEntries = true) })
+    @Caching(evict = {
+        @CacheEvict(value = "usersBusiness", allEntries = true),
+        @CacheEvict(value = "usersBusinessInfoByUsername", allEntries = true)})
     public CommandProcessingResult updateUserInfo(final Long userId, final JsonCommand command) {
         this.context.authenticatedUser();
         this.fromApiJsonDeserializer.validateForUpdate(command.json());

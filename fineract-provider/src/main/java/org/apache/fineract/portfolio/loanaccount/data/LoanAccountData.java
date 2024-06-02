@@ -471,7 +471,8 @@ public final class LoanAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only collateral options for now.
+     * Used to produce a {@link LoanAccountData} with only collateral options
+     * for now.
      */
     public static LoanAccountData collateralTemplate(final Collection<CodeValueData> loanCollateralOptions) {
         final Long id = null;
@@ -617,7 +618,8 @@ public final class LoanAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only client information defaulted.
+     * Used to produce a {@link LoanAccountData} with only client information
+     * defaulted.
      */
     public static LoanAccountData clientDefaults(final Long clientId, final String clientAccountNo, final String clientName,
             final Long clientOfficeId, final LocalDate expectedDisbursementDate) {
@@ -796,7 +798,8 @@ public final class LoanAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only group information defaulted.
+     * Used to produce a {@link LoanAccountData} with only group information
+     * defaulted.
      */
     public static LoanAccountData groupDefaults(final GroupGeneralData group, final LocalDate expectedDisbursementDate) {
 
@@ -1056,7 +1059,7 @@ public final class LoanAccountData {
 
         BigDecimal interestRatePerPeriod = null;
         Integer numberOfRepayments = null;
-        if (product.useBorrowerCycle() && loanCycleNumber > 0) {
+        if (product.useBorrowerCycle() && (loanCycleNumber != null && loanCycleNumber > 0)) {
             Collection<LoanProductBorrowerCycleVariationData> principalVariationsForBorrowerCycle = product
                     .getPrincipalVariationsForBorrowerCycle();
             Collection<LoanProductBorrowerCycleVariationData> interestForVariationsForBorrowerCycle = product
@@ -1921,7 +1924,8 @@ public final class LoanAccountData {
     }
 
     /**
-     * Used to produce a {@link LoanAccountData} with only collateral options for now.
+     * Used to produce a {@link LoanAccountData} with only collateral options
+     * for now.
      *
      * @return {@link LoanAccountData} object
      */

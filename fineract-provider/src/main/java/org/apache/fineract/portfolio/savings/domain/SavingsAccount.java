@@ -1148,7 +1148,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
 
         LOG.info("deposit isAccountTransfer && isSelfTransfer- {}:{}", isAccountTransfer, isSelfTransfer);
         if (isAccountTransfer && !isSelfTransfer) {
-            // auto pay deposit fee only when isAccountTransfer and is not self tranfer
+            // auto pay deposit fee (Stamp Duty) only when isAccountTransfer and is not self tranfer
             payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
                     //transactionDTO.getPaymentDetail(), 
                     backdatedTxnsAllowedTill, refNo);
@@ -3969,10 +3969,15 @@ public class SavingsAccount extends AbstractPersistableCustom {
                 final Charge chargeConf = charge.getCharge();
                 if (chargeConf != null) {
                     final BigDecimal minCap = chargeConf.getMinCap();
-                    if (transactionAmount.compareTo(minCap) < 0) {
-                        LOG.info("No deposit fee to collect for charge: {}-{}-{}", chargeConf.getId(), transactionAmount, refNo);
-                        continue;
+                    if (minCap == null || transactionAmount.compareTo(minCap) >= 0) {
+                        charge.updateWithdralFeeAmount(transactionAmount);
+                        this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user, backdatedTxnsAllowedTill,
+                                refNo);
                     }
+//                    else if (transactionAmount.compareTo(minCap) < 0) {
+//                        LOG.info("No deposit fee (Stamp Duty) to collect for charge: {}-{}-{}", chargeConf.getId(), transactionAmount, refNo);
+//                        continue;
+//                    }
                 }
 
                 /*
@@ -3996,11 +4001,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
                     resetFreeChargeDaysCount(charge, transactionAmount, transactionDate, user, refNo);
 
                 } else { // normal-withdraw*/
-                charge.updateWithdralFeeAmount(transactionAmount);
-                this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user, backdatedTxnsAllowedTill,
-                        refNo);
                 //}
-
             }
 
         }

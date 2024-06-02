@@ -21,6 +21,7 @@ package org.apache.fineract.commands.service;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.infrastructure.accountnumberformat.service.AccountNumberFormatConstants;
 import org.apache.fineract.notification.api.business.NotificationBusinessApiResource;
+import org.apache.fineract.portfolio.business.accounttier.api.AccountTierApiResouceConstants;
 import org.apache.fineract.portfolio.business.metrics.api.MetricsApiResourceConstants;
 import org.apache.fineract.portfolio.business.overdraft.api.OverdraftApiResourceConstants;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
@@ -3923,6 +3924,30 @@ public class CommandWrapperBuilder {
         this.entityName = PaymentTypeGridApiResourceConstants.RESOURCE_NAME;
         this.entityId = paymentTypeGridId;
         this.href = "/paymenttypes/grid/" + paymentTypeGridId;
+        return this;
+    }
+
+    public CommandWrapperBuilder createAccountTier() {
+        this.actionName = "CREATE";
+        this.entityName = AccountTierApiResouceConstants.RESOURCE_NAME;
+        this.entityId = null;
+        this.href = "/accounttier";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateAccountTier(final Long accountTierId) {
+        this.actionName = "UPDATE";
+        this.entityName = AccountTierApiResouceConstants.RESOURCE_NAME;
+        this.entityId = accountTierId;
+        this.href = "/accounttier/" + productId;
+        return this;
+    }
+
+    public CommandWrapperBuilder deleteAccountTier(final Long accountTierId) {
+        this.actionName = "DELETE";
+        this.entityName = AccountTierApiResouceConstants.RESOURCE_NAME;
+        this.entityId = accountTierId;
+        this.href = "/accounttier/" + productId;
         return this;
     }
 }

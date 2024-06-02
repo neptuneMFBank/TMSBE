@@ -219,4 +219,9 @@
     <include file="parts/0418_update_m_paymenttype_grid_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0419_delete_m_paymenttype_grid_permission.sql" relativeToChangelogFile="true" />
     <!-- <include file="parts/0186_m_permission_m.xml" relativeToChangelogFile="true" /> -->
+    <include file="parts/0425_create_m_accounttier_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0426_update_m_accounttier_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0427_delete_m_accounttier_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0428_read_m_accounttier_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0429_alter_m_account_tier_limit.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

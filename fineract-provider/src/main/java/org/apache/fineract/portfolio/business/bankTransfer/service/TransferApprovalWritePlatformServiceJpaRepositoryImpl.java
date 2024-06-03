@@ -180,6 +180,7 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
             final Long fromAccountId = transferApproval.getFromAccountId();
             final SavingsAccount fromSavingsAccount = this.savingsAccountRepositoryWrapper.findOneWithNotFoundDetection(fromAccountId);
             final String note = transferApproval.getReason();
+            final BigDecimal amount = transferApproval.getAmount();
             if (bankTransferType.isIntraBank()) {
                 //if intraBank
                 //call intraBank process
@@ -194,11 +195,11 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
                 final Long toOfficeId = toSavingsAccount.officeId();
                 final Long toClientId = toSavingsAccount.clientId();
 
-                final Long withdrawalId = GeneralConstants.intrabankTransfer(transferApprovalId, transferApproval.getAmount(), fromOfficeId, fromClientId, fromAccountId, fromAccountType, toOfficeId, toClientId, toAccountId, toAccountType, note, commandsSourceWritePlatformService);
+                final Long withdrawalId = GeneralConstants.intrabankTransfer(transferApprovalId, amount, fromOfficeId, fromClientId, fromAccountId, fromAccountType, toOfficeId, toClientId, toAccountId, toAccountType, note, commandsSourceWritePlatformService);
                 transferApproval.setWithdrawTransactionId(withdrawalId);
             } else {
                 //we are withdrawing for now, until we conclude which transfer integration Service will take place (E.g NIBSS NIP/EASYPAY etc)
-                final Long withdrawalId = GeneralConstants.withdrawAmount(transferApproval.getAmount(), fromAccountId, note + "-" + transferApprovalId, toAccountNumber, paymentTypeDeductionId, commandsSourceWritePlatformService);
+                final Long withdrawalId = GeneralConstants.withdrawAmount(amount, fromAccountId, note + "-" + transferApprovalId, toAccountNumber, paymentTypeDeductionId, commandsSourceWritePlatformService);
                 transferApproval.setWithdrawTransactionId(withdrawalId);
 
                 // other process for interBank

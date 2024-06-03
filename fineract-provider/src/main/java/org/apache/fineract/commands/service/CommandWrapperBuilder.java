@@ -3534,6 +3534,7 @@ public class CommandWrapperBuilder {
         this.entityName = "USER";
         this.entityId = userId;
         this.href = "/users/business/" + userId + "/disbale";
+        this.json = "{}";
         return this;
     }
 
@@ -3542,6 +3543,7 @@ public class CommandWrapperBuilder {
         this.entityName = "USER";
         this.entityId = userId;
         this.href = "/users/business/" + userId + "/lock";
+        this.json = "{}";
         return this;
     }
 
@@ -3550,6 +3552,7 @@ public class CommandWrapperBuilder {
         this.entityName = "USER";
         this.entityId = userId;
         this.href = "/users/business/" + userId + "/unlock";
+        this.json = "{}";
         return this;
     }
 
@@ -3558,6 +3561,7 @@ public class CommandWrapperBuilder {
         this.entityName = "USER";
         this.entityId = userId;
         this.href = "/users/business/" + userId + "/enable";
+        this.json = "{}";
         return this;
     }
 

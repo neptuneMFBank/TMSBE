@@ -40,10 +40,13 @@ import org.apache.fineract.portfolio.business.bankTransfer.exception.TransferApp
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
+import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.PAYMENT_TYPE_DEDUCTION;
 import org.apache.fineract.simplifytech.data.GeneralConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,10 +61,11 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
     private final CodeValueRepositoryWrapper codeValueRepositoryWrapper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper;
+    private final Long paymentTypeDeductionId;
 
     @Autowired
     public TransferApprovalWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
-            final TransferApprovalRepositoryWrapper repository,
+            final ApplicationContext applicationContext, final TransferApprovalRepositoryWrapper repository,
             final TransferApprovalDataValidator fromApiJsonDataValidator, final SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper,
             final CodeValueRepositoryWrapper codeValueRepositoryWrapper, final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
@@ -70,6 +74,9 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
         this.codeValueRepositoryWrapper = codeValueRepositoryWrapper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
         this.savingsAccountRepositoryWrapper = savingsAccountRepositoryWrapper;
+
+        Environment environment = applicationContext.getEnvironment();
+        this.paymentTypeDeductionId = Long.valueOf(environment.getProperty(PAYMENT_TYPE_DEDUCTION));
     }
 
     @Transactional
@@ -170,16 +177,16 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
             //release Amount
             transferReleaseProcess(transferApproval);
 
+            final Long fromAccountId = transferApproval.getFromAccountId();
+            final SavingsAccount fromSavingsAccount = this.savingsAccountRepositoryWrapper.findOneWithNotFoundDetection(fromAccountId);
+            final String note = transferApproval.getReason();
             if (bankTransferType.isIntraBank()) {
                 //if intraBank
                 //call intraBank process
-                final Long fromAccountId = transferApproval.getFromAccountId();
 
                 final Long toAccountId = transferApproval.getToAccountId();
                 final Integer toAccountType = transferApproval.getToAccountType();
-                final String note = transferApproval.getReason();
 
-                final SavingsAccount fromSavingsAccount = this.savingsAccountRepositoryWrapper.findOneWithNotFoundDetection(fromAccountId);
                 final Long fromOfficeId = fromSavingsAccount.officeId();
                 final Long fromClientId = fromSavingsAccount.clientId();
 
@@ -190,6 +197,10 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
                 final Long withdrawalId = GeneralConstants.intrabankTransfer(transferApprovalId, transferApproval.getAmount(), fromOfficeId, fromClientId, fromAccountId, fromAccountType, toOfficeId, toClientId, toAccountId, toAccountType, note, commandsSourceWritePlatformService);
                 transferApproval.setWithdrawTransactionId(withdrawalId);
             } else {
+                //we are withdrawing for now, until we conclude which transfer integration Service will take place (E.g NIBSS NIP/EASYPAY etc)
+                final Long withdrawalId = GeneralConstants.withdrawAmount(transferApproval.getAmount(), fromAccountId, note + "-" + transferApprovalId, toAccountNumber, paymentTypeDeductionId, commandsSourceWritePlatformService);
+                transferApproval.setWithdrawTransactionId(withdrawalId);
+
                 // other process for interBank
                 if (bankTransferType.isInterBankEbills()) {
                     final CodeValue toBank = transferApproval.getToBankId();

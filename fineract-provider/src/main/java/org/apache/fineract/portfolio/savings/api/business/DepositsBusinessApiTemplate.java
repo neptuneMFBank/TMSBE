@@ -437,15 +437,17 @@ public interface DepositsBusinessApiTemplate {
         // transferInterestToSavings);
         // }
 
-        Integer preClosurePenalInterestOnTypeId;
+        Integer preClosurePenalInterestOnTypeId = null;
         if (fromApiJsonHelper.parameterExists(DepositsApiConstants.preClosurePenalInterestOnTypeIdParamName, apiRequestBodyAsJsonElement)) {
             preClosurePenalInterestOnTypeId = fromApiJsonHelper.extractIntegerSansLocaleNamed(
                     DepositsApiConstants.preClosurePenalInterestOnTypeIdParamName, apiRequestBodyAsJsonElement);
         } else {
-            final JsonElement preClosurePenalInterestOnType = fromApiJsonHelper
-                    .extractJsonObjectNamed(preClosurePenalInterestOnTypeParamName, loanTemplateElement);
-            preClosurePenalInterestOnTypeId = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.idParamName,
-                    preClosurePenalInterestOnType);
+            if (fromApiJsonHelper.parameterExists(preClosurePenalInterestOnTypeParamName, loanTemplateElement)) {
+                final JsonElement preClosurePenalInterestOnType = fromApiJsonHelper
+                        .extractJsonObjectNamed(preClosurePenalInterestOnTypeParamName, loanTemplateElement);
+                preClosurePenalInterestOnTypeId = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.idParamName,
+                        preClosurePenalInterestOnType);
+            }
         }
         if (preClosurePenalInterestOnTypeId != null) {
             jsonObjectLoan.addProperty(DepositsApiConstants.preClosurePenalInterestOnTypeIdParamName, preClosurePenalInterestOnTypeId);

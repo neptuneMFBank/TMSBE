@@ -3913,6 +3913,38 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createBusinessTime() {
+        this.actionName = "CREATE";
+        this.entityName = BusinessTimeApiResourceConstants.RESOURCE_NAME;
+        this.entityId = null;
+        this.href = "/businesstime";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateBusinessTime(final Long businessTimeId) {
+        this.actionName = "UPDATE";
+        this.entityName = BusinessTimeApiResourceConstants.RESOURCE_NAME;
+        this.entityId = businessTimeId;
+        this.href = "/businesstime/" + businessTimeId;
+        return this;
+    }
+
+    public CommandWrapperBuilder deleteBusinessTimeByRole(final Long roleId) {
+        this.actionName = "DELETEBYROLE";
+        this.entityName = BusinessTimeApiResourceConstants.RESOURCE_NAME;
+        this.entityId = roleId;
+        this.href = "/businesstime/role/" + roleId;
+        return this;
+    }
+
+    public CommandWrapperBuilder deleteBusinessTime(final Long businessTimeId) {
+        this.actionName = "DELETE";
+        this.entityName = BusinessTimeApiResourceConstants.RESOURCE_NAME;
+        this.entityId = businessTimeId;
+        this.href = "/businesstime/" + businessTimeId;
+        return this;
+    }
+
     public CommandWrapperBuilder createPaymentTypeGrid() {
         this.actionName = "CREATE";
         this.entityName = PaymentTypeGridApiResourceConstants.RESOURCE_NAME;
@@ -3949,38 +3981,6 @@ public class CommandWrapperBuilder {
         this.entityName = TransferApprovalApiResourceConstants.RESOURCE_NAME;
         this.entityId = transferApprovalId;
         this.href = "/transfer/approval/" + transferApprovalId;
-        return this;
-    }
-
-    public CommandWrapperBuilder createBusinessTime() {
-        this.actionName = "CREATE";
-        this.entityName = BusinessTimeApiResourceConstants.RESOURCE_NAME;
-        this.entityId = null;
-        this.href = "/businesstime";
-        return this;
-    }
-
-    public CommandWrapperBuilder updateBusinessTime(final Long businessTimeId) {
-        this.actionName = "UPDATE";
-        this.entityName = BusinessTimeApiResourceConstants.RESOURCE_NAME;
-        this.entityId = businessTimeId;
-        this.href = "/businesstime/" + businessTimeId;
-        return this;
-    }
-
-    public CommandWrapperBuilder deleteBusinessTimeByRole(final Long roleId) {
-        this.actionName = "DELETEBYROLE";
-        this.entityName = BusinessTimeApiResourceConstants.RESOURCE_NAME;
-        this.entityId = roleId;
-        this.href = "/businesstime/role/" + roleId;
-        return this;
-    }
-
-    public CommandWrapperBuilder deleteBusinessTime(final Long businessTimeId) {
-        this.actionName = "DELETE";
-        this.entityName = BusinessTimeApiResourceConstants.RESOURCE_NAME;
-        this.entityId = businessTimeId;
-        this.href = "/businesstime/" + businessTimeId;
         return this;
     }
 

@@ -20,6 +20,7 @@ package org.apache.fineract.commands.service;
 
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.infrastructure.accountnumberformat.service.AccountNumberFormatConstants;
+import org.apache.fineract.organisation.business.businesstime.api.BusinessTimeApiResourceConstants;
 import org.apache.fineract.notification.api.business.NotificationBusinessApiResource;
 import org.apache.fineract.portfolio.business.bankTransfer.api.TransferApprovalApiResourceConstants;
 import org.apache.fineract.portfolio.business.metrics.api.MetricsApiResourceConstants;
@@ -3950,4 +3951,37 @@ public class CommandWrapperBuilder {
         this.href = "/transfer/approval/" + transferApprovalId;
         return this;
     }
+
+    public CommandWrapperBuilder createBusinessTime() {
+        this.actionName = "CREATE";
+        this.entityName = BusinessTimeApiResourceConstants.RESOURCE_NAME;
+        this.entityId = null;
+        this.href = "/businesstime";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateBusinessTime(final Long businessTimeId) {
+        this.actionName = "UPDATE";
+        this.entityName = BusinessTimeApiResourceConstants.RESOURCE_NAME;
+        this.entityId = businessTimeId;
+        this.href = "/businesstime/" + businessTimeId;
+        return this;
+    }
+
+    public CommandWrapperBuilder deleteBusinessTimeByRole(final Long roleId) {
+        this.actionName = "DELETEBYROLE";
+        this.entityName = BusinessTimeApiResourceConstants.RESOURCE_NAME;
+        this.entityId = roleId;
+        this.href = "/businesstime/role/" + roleId;
+        return this;
+    }
+
+    public CommandWrapperBuilder deleteBusinessTime(final Long businessTimeId) {
+        this.actionName = "DELETE";
+        this.entityName = BusinessTimeApiResourceConstants.RESOURCE_NAME;
+        this.entityId = businessTimeId;
+        this.href = "/businesstime/" + businessTimeId;
+        return this;
+    }
+
 }

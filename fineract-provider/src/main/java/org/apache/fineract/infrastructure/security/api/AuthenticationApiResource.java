@@ -29,7 +29,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.nio.charset.StandardCharsets;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -42,8 +44,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.fineract.organisation.business.businesstime.domain.BusinessTime;
+import org.apache.fineract.organisation.business.businesstime.domain.BusinessTimeRepositoryWrapper;
+import org.apache.fineract.organisation.business.businesstime.exception.BusinessTimeNotFoundException;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
+import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.security.constants.TwoFactorConstants;
 import org.apache.fineract.infrastructure.security.data.AuthenticatedUserData;
 import org.apache.fineract.infrastructure.security.exception.NoAuthorizationException;
@@ -93,7 +99,7 @@ public class AuthenticationApiResource {
     private final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService;
     private final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper;
     private final ClientBusinessReadPlatformService clientBusinessReadPlatformService;
-
+    private final BusinessTimeRepositoryWrapper businessTimeRepository;
 
     @Autowired
     public AuthenticationApiResource(
@@ -104,7 +110,8 @@ public class AuthenticationApiResource {
             final AuthenticationBusinessWritePlatformService authenticationBusinessWritePlatformService,
             final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService,
             final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper,
-            final ClientBusinessReadPlatformService clientBusinessReadPlatformService) {
+            final ClientBusinessReadPlatformService clientBusinessReadPlatformService,
+            final BusinessTimeRepositoryWrapper businessTimeRepository) {
         this.customAuthenticationProvider = customAuthenticationProvider;
         this.apiJsonSerializerService = apiJsonSerializerService;
         this.springSecurityPlatformSecurityContext = springSecurityPlatformSecurityContext;
@@ -113,16 +120,17 @@ public class AuthenticationApiResource {
         this.authenticationBusinessReadPlatformService = authenticationBusinessReadPlatformService;
         this.appUserExtensionRepositoryWrapper = appUserExtensionRepositoryWrapper;
         this.clientBusinessReadPlatformService = clientBusinessReadPlatformService;
+        this.businessTimeRepository = businessTimeRepository;
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Verify authentication", description = "Authenticates the credentials provided and returns the set roles and permissions allowed.")
     @RequestBody(required = true, content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationRequest.class)))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Unauthenticated. Please login") })
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Unauthenticated. Please login")})
     public String authenticate(@Parameter(hidden = true) final String apiRequestBodyAsJson,
             @QueryParam("returnClientList") @DefaultValue("false") boolean returnClientList) {
         // TODO FINERACT-819: sort out Jersey so JSON conversion does not have
@@ -165,6 +173,7 @@ public class AuthenticationApiResource {
             final Set<Role> userRoles = principal.getRoles();
             for (final Role role : userRoles) {
                 roles.add(role.toData());
+                validateBusinessTime(role.getId());
             }
 
             final Long officeId = principal.getOffice().getId();
@@ -208,5 +217,25 @@ public class AuthenticationApiResource {
         // clear login attempts if available
         this.authenticationBusinessWritePlatformService.lockUserAfterMultipleAttempts(username, true);
         return this.apiJsonSerializerService.serialize(authenticatedUserData);
+    }
+
+    private void validateBusinessTime(Long roleId) {
+        LocalDateTime today = LocalDateTime.now(DateUtils.getDateTimeZoneOfTenant());
+        DayOfWeek weekDay = today.getDayOfWeek();
+        LocalTime time = today.toLocalTime();
+
+        BusinessTime businessTime = this.businessTimeRepository.findByRoleIdAndWeekDayId(roleId, weekDay.getValue());
+        if (businessTime != null) {
+            LocalTime businessStartTime = businessTime.getStartTime();
+            LocalTime businessEndTime = businessTime.getEndTime();
+
+            if (businessStartTime != null && !time.isAfter(businessStartTime)) {
+                throw new BusinessTimeNotFoundException(businessStartTime, " before business start");
+            }
+
+            if (businessEndTime != null && !time.isBefore(businessEndTime)) {
+                throw new BusinessTimeNotFoundException(businessEndTime, "after business end");
+            }
+        }
     }
 }

@@ -222,15 +222,15 @@
     <include file="parts/0421_approve_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0422_reject_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0423_read_m_transfer_approval_permission.sql" relativeToChangelogFile="true" />
-    <include file="parts/0180_calculate_commission.sql" relativeToChangelogFile="true" />
-    <include file="parts/0187_m_commision_vat_calculated.sql" relativeToChangelogFile="true" />
-    <include file="parts/0188_m_commission_vend.sql" relativeToChangelogFile="true" />
-    <include file="parts/0189_job_commission_vend.sql" relativeToChangelogFile="true" />
-    <include file="parts/0186_m_permission_menu_detail.xml" relativeToChangelogFile="true" />
     <include file="parts/0430_m_business_time.sql" relativeToChangelogFile="true" />
     <include file="parts/0431_create_m_business_time_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0432_update_m_business_time_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0433_delete_m_business_time_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0434_read_m_business_time_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0435_delete_by_role_m_business_time_permission_1.sql" relativeToChangelogFile="true" />
-</databaseChangeLog>
+    <include file="parts/0180_calculate_commission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0187_m_commision_vat_calculated.sql" relativeToChangelogFile="true" />
+    <include file="parts/0188_m_commission_vend.sql" relativeToChangelogFile="true" />
+    <include file="parts/0189_job_commission_vend.sql" relativeToChangelogFile="true" />
+    <include file="parts/0186_m_permission_menu_detail.xml" relativeToChangelogFile="true" />
+    </databaseChangeLog>

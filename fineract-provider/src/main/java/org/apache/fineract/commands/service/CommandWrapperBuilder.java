@@ -23,6 +23,7 @@ import org.apache.fineract.infrastructure.accountnumberformat.service.AccountNum
 import org.apache.fineract.organisation.business.businesstime.api.BusinessTimeApiResourceConstants;
 import org.apache.fineract.notification.api.business.NotificationBusinessApiResource;
 import org.apache.fineract.portfolio.business.bankTransfer.api.TransferApprovalApiResourceConstants;
+import org.apache.fineract.portfolio.business.accounttier.api.AccountTierApiResouceConstants;
 import org.apache.fineract.portfolio.business.metrics.api.MetricsApiResourceConstants;
 import org.apache.fineract.portfolio.business.overdraft.api.OverdraftApiResourceConstants;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
@@ -3535,6 +3536,7 @@ public class CommandWrapperBuilder {
         this.entityName = "USER";
         this.entityId = userId;
         this.href = "/users/business/" + userId + "/disbale";
+        this.json = "{}";
         return this;
     }
 
@@ -3543,6 +3545,7 @@ public class CommandWrapperBuilder {
         this.entityName = "USER";
         this.entityId = userId;
         this.href = "/users/business/" + userId + "/lock";
+        this.json = "{}";
         return this;
     }
 
@@ -3551,6 +3554,7 @@ public class CommandWrapperBuilder {
         this.entityName = "USER";
         this.entityId = userId;
         this.href = "/users/business/" + userId + "/unlock";
+        this.json = "{}";
         return this;
     }
 
@@ -3559,6 +3563,7 @@ public class CommandWrapperBuilder {
         this.entityName = "USER";
         this.entityId = userId;
         this.href = "/users/business/" + userId + "/enable";
+        this.json = "{}";
         return this;
     }
 
@@ -3984,4 +3989,27 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createAccountTier() {
+        this.actionName = "CREATE";
+        this.entityName = AccountTierApiResouceConstants.RESOURCE_NAME;
+        this.entityId = null;
+        this.href = "/accounttier";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateAccountTier(final Long accountTierId) {
+        this.actionName = "UPDATE";
+        this.entityName = AccountTierApiResouceConstants.RESOURCE_NAME;
+        this.entityId = accountTierId;
+        this.href = "/accounttier/" + productId;
+        return this;
+    }
+
+    public CommandWrapperBuilder deleteAccountTier(final Long accountTierId) {
+        this.actionName = "DELETE";
+        this.entityName = AccountTierApiResouceConstants.RESOURCE_NAME;
+        this.entityId = accountTierId;
+        this.href = "/accounttier/" + productId;
+        return this;
+    }
 }

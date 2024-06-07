@@ -341,15 +341,17 @@ public interface DepositsBusinessApiTemplate {
         if (interestPostingPeriodType != null) {
             jsonObjectLoan.addProperty(SavingsApiConstants.interestPostingPeriodTypeParamName, interestPostingPeriodType);
         }
-        Integer interestCompoundingPeriodType;
+        Integer interestCompoundingPeriodType = null;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.interestCompoundingPeriodTypeParamName, apiRequestBodyAsJsonElement)) {
             interestCompoundingPeriodType = fromApiJsonHelper
                     .extractIntegerSansLocaleNamed(SavingsApiConstants.interestCompoundingPeriodTypeParamName, apiRequestBodyAsJsonElement);
         } else {
-            final JsonElement interestCompoundingPeriodTypeElement = fromApiJsonHelper
-                    .extractJsonObjectNamed(SavingsApiConstants.interestCompoundingPeriodTypeParamName, loanTemplateElement);
-            interestCompoundingPeriodType = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.idParamName,
-                    interestCompoundingPeriodTypeElement);
+            if (fromApiJsonHelper.parameterExists(SavingsApiConstants.interestCompoundingPeriodTypeParamName, loanTemplateElement)) {
+                final JsonElement interestCompoundingPeriodTypeElement = fromApiJsonHelper
+                        .extractJsonObjectNamed(SavingsApiConstants.interestCompoundingPeriodTypeParamName, loanTemplateElement);
+                interestCompoundingPeriodType = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.idParamName,
+                        interestCompoundingPeriodTypeElement);
+            }
         }
         if (interestCompoundingPeriodType != null) {
             jsonObjectLoan.addProperty(SavingsApiConstants.interestCompoundingPeriodTypeParamName, interestCompoundingPeriodType);
@@ -550,15 +552,18 @@ public interface DepositsBusinessApiTemplate {
             jsonObjectLoan.addProperty(DepositsApiConstants.adjustAdvanceTowardsFuturePaymentsParamName,
                     adjustAdvanceTowardsFuturePayments);
         }
-        Integer inMultiplesOfDepositTermTypeId;
+
+        Integer inMultiplesOfDepositTermTypeId = null;
         if (fromApiJsonHelper.parameterExists(DepositsApiConstants.inMultiplesOfDepositTermTypeIdParamName, apiRequestBodyAsJsonElement)) {
             inMultiplesOfDepositTermTypeId = fromApiJsonHelper.extractIntegerSansLocaleNamed(
                     DepositsApiConstants.inMultiplesOfDepositTermTypeIdParamName, apiRequestBodyAsJsonElement);
         } else {
-            final JsonElement inMultiplesOfDepositTermType = fromApiJsonHelper
-                    .extractJsonObjectNamed(DepositsApiConstants.inMultiplesOfDepositTermType, loanTemplateElement);
-            inMultiplesOfDepositTermTypeId = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.idParamName,
-                    inMultiplesOfDepositTermType);
+            if (fromApiJsonHelper.parameterExists(DepositsApiConstants.inMultiplesOfDepositTermType, loanTemplateElement)) {
+                final JsonElement inMultiplesOfDepositTermType = fromApiJsonHelper
+                        .extractJsonObjectNamed(DepositsApiConstants.inMultiplesOfDepositTermType, loanTemplateElement);
+                inMultiplesOfDepositTermTypeId = fromApiJsonHelper.extractIntegerSansLocaleNamed(DepositsApiConstants.idParamName,
+                        inMultiplesOfDepositTermType);
+            }
         }
         if (inMultiplesOfDepositTermTypeId != null) {
             jsonObjectLoan.addProperty(DepositsApiConstants.inMultiplesOfDepositTermTypeIdParamName, inMultiplesOfDepositTermTypeId);

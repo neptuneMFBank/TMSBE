@@ -28,4 +28,6 @@ public interface BusinessTimeRepository extends JpaRepository<BusinessTime, Long
 
     Collection<BusinessTime> findByRoleId(Long roleId);
 
+    void deleteByRoleId(Long roleId);
+
 }

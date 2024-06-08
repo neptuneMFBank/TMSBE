@@ -229,11 +229,15 @@ public class AuthenticationApiResource {
             LocalTime businessStartTime = businessTime.getStartTime();
             LocalTime businessEndTime = businessTime.getEndTime();
 
-            if (businessStartTime != null && !time.isAfter(businessStartTime)) {
+            if (businessStartTime == null || businessEndTime == null) {
+                throw new BusinessTimeNotFoundException("No login time set for user.");
+            }
+
+            if (!time.isAfter(businessStartTime)) {
                 throw new BusinessTimeNotFoundException(businessStartTime, " before business start");
             }
 
-            if (businessEndTime != null && !time.isBefore(businessEndTime)) {
+            if (!time.isBefore(businessEndTime)) {
                 throw new BusinessTimeNotFoundException(businessEndTime, "after business end");
             }
         }

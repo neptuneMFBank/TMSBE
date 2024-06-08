@@ -24,14 +24,14 @@ import org.apache.fineract.infrastructure.core.exception.AbstractPlatformResourc
 public class BusinessTimeNotFoundException extends AbstractPlatformResourceNotFoundException {
 
     public BusinessTimeNotFoundException(final Long id) {
-        super("error.msg.Business.Time.invalid", "Business Time with id " + id + " does not exist", id);
+        super("error.msg.business.time.invalid", "Business time with id " + id + " does not exist", id);
     }
 
     public BusinessTimeNotFoundException(final String msg) {
-        super("error.msg.Business.Time.invalid", msg);
+        super("error.msg.business.time.invalid", msg);
     }
 
     public BusinessTimeNotFoundException(final LocalTime businessTime, final String AccessTimeType) {
-        super("error.msg.Business.Time.invalid", "user is not allowed access " + AccessTimeType + " time for today: " + businessTime, businessTime);
+        super("error.msg.business.time.invalid", "User is not allowed access " + AccessTimeType + " time for today: " + businessTime, businessTime);
     }
 }

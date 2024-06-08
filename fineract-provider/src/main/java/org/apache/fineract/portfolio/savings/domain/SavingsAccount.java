@@ -3555,7 +3555,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
         final BigDecimal totalInterestPosted = this.savingsAccountTransactionSummaryWrapper.calculateTotalInterestPosted(this.currency,
                 this.transactions);
         BigDecimal totalInterestPostedEdited = BigDecimal.ZERO;
-        if (totalInterestPosted == null) {
+        if (totalInterestPosted != null) {
             totalInterestPostedEdited = totalInterestPosted;
         }
         if (withholdTransaction == null && this.withHoldTax()) {

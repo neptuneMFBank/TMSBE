@@ -17,4 +17,4 @@
 -- under the License.
 --
 
-ALTER TABLE fineract_default.m_metrics DROP FOREIGN KEY metrics_FK_saving;
+ALTER TABLE m_metrics DROP FOREIGN KEY metrics_FK_saving;

@@ -55,6 +55,7 @@ public class AccountTransferDTO {
     private final SavingsAccount fromSavingsAccount;
     private final Boolean isRegularTransaction;
     private final Boolean isExceptionForBalanceCheck;
+    private final Boolean isSelfTransfer;
 
     public AccountTransferDTO(final LocalDate transactionDate, final BigDecimal transactionAmount,
             final PortfolioAccountType fromAccountType, final PortfolioAccountType toAccountType, final Long fromAccountId,
@@ -62,7 +63,7 @@ public class AccountTransferDTO {
             final PaymentDetail paymentDetail, final Integer fromTransferType, final Integer toTransferType, final Long chargeId,
             Integer loanInstallmentNumber, Integer transferType, final AccountTransferDetails accountTransferDetails, final String noteText,
             final String txnExternalId, final Loan loan, SavingsAccount toSavingsAccount, final SavingsAccount fromSavingsAccount,
-            final Boolean isRegularTransaction, Boolean isExceptionForBalanceCheck) {
+            final Boolean isRegularTransaction, Boolean isExceptionForBalanceCheck, final Boolean isSelfTransfer) {
         this.transactionDate = transactionDate;
         this.transactionAmount = transactionAmount;
         this.fromAccountType = fromAccountType;
@@ -88,6 +89,7 @@ public class AccountTransferDTO {
         this.fromSavingsAccount = fromSavingsAccount;
         this.isRegularTransaction = isRegularTransaction;
         this.isExceptionForBalanceCheck = isExceptionForBalanceCheck;
+        this.isSelfTransfer = isSelfTransfer;
     }
 
     public AccountTransferDTO(final LocalDate transactionDate, final BigDecimal transactionAmount,
@@ -120,6 +122,7 @@ public class AccountTransferDTO {
         this.fromSavingsAccount = null;
         this.isRegularTransaction = null;
         this.isExceptionForBalanceCheck = null;
+        this.isSelfTransfer = null;
     }
 
     public LocalDate getTransactionDate() {
@@ -216,6 +219,10 @@ public class AccountTransferDTO {
 
     public Boolean isRegularTransaction() {
         return this.isRegularTransaction;
+    }
+
+    public Boolean isSelfTransfer() {
+        return this.isSelfTransfer;
     }
 
     public Boolean isExceptionForBalanceCheck() {

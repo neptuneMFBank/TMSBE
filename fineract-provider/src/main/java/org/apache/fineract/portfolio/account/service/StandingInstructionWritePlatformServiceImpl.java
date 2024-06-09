@@ -257,12 +257,12 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
                 // final boolean isExceptionForBalanceCheck = true;//this would ensure account balance is positive (even
                 // if overDraft is allowed) - 14/12/2023
                 final boolean isExceptionForBalanceCheck = false;// this allow money to be withdrawn from overDraft
-                                                                 // account - 14/12/2023
+                // account - 14/12/2023
                 AccountTransferDTO accountTransferDTO = new AccountTransferDTO(transactionDate, transactionAmount, data.fromAccountType(),
                         data.toAccountType(), data.fromAccount().accountId(), data.toAccount().accountId(),
                         data.name() + " Standing instruction trasfer ", null, null, null, null, data.toTransferType(), null, null,
                         data.transferType().getValue(), null, null, null, null, null, fromSavingsAccount, isRegularTransaction,
-                        isExceptionForBalanceCheck);
+                        isExceptionForBalanceCheck, null);
                 final boolean transferCompleted = transferAmount(errors, accountTransferDTO, data.getId());
 
                 if (transferCompleted) {
@@ -282,7 +282,7 @@ public class StandingInstructionWritePlatformServiceImpl implements StandingInst
         StringBuilder errorLog = new StringBuilder();
         StringBuilder updateQuery = new StringBuilder(
                 "INSERT INTO m_account_transfer_standing_instructions_history (standing_instruction_id, " + sqlGenerator.escape("status")
-                        + ", amount, execution_time, error_log) VALUES (");
+                + ", amount, execution_time, error_log) VALUES (");
         try {
             this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
         } catch (final PlatformApiDataValidationException e) {

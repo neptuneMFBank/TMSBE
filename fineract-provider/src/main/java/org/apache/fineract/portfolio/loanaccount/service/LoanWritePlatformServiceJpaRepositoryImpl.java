@@ -420,7 +420,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                     throw new GeneralPlatformDomainRuleException(
                             "error.msg.loan.disbursal.date.should.be.after.last.transaction.date.of.loan.to.be.closed",
                             "Disbursal date of this loan application " + loan.getDisbursementDate()
-                                    + " should be after last transaction date of loan to be closed " + lastUserTransactionOnLoanToClose);
+                            + " should be after last transaction date of loan to be closed " + lastUserTransactionOnLoanToClose);
                 }
 
                 BigDecimal loanOutstanding = this.loanReadPlatformService
@@ -510,7 +510,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                     PortfolioAccountType.SAVINGS, PortfolioAccountType.LOAN, savingAccountData.accountId(), loanId, "Loan Charge Payment",
                     locale, fmt, null, null, LoanTransactionType.REPAYMENT_AT_DISBURSEMENT.getValue(), entrySet.getKey(), null,
                     AccountTransferType.CHARGE_PAYMENT.getValue(), null, null, null, null, null, fromSavingsAccount, isRegularTransaction,
-                    isExceptionForBalanceCheck);
+                    isExceptionForBalanceCheck, null);
             this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
         }
 
@@ -558,10 +558,10 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
     /**
      * create standing instruction for disbursed loan
      *
-     * @param loan
-     *            the disbursed loan
+     * @param loan the disbursed loan
      *
-     **/
+     *
+     */
     private void createStandingInstruction(Loan loan) {
 
         if (loan.shouldCreateStandingInstructionAtDisbursement()) {
@@ -647,11 +647,13 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         }
     }
 
-    /****
+    /**
+     * **
      * TODO Vishwas: Pair with Ashok and re-factor collection sheet code-base
      *
-     * May of the changes made to disburseLoan aren't being made here, should refactor to reuse disburseLoan ASAP
-     *****/
+     * May of the changes made to disburseLoan aren't being made here, should
+     * refactor to reuse disburseLoan ASAP ***
+     */
     @Transactional
     @Override
     public Map<String, Object> bulkLoanDisbursal(final JsonCommand command, final CollectionSheetBulkDisbursalCommand bulkDisbursalCommand,
@@ -764,7 +766,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                         PortfolioAccountType.SAVINGS, PortfolioAccountType.LOAN, savingAccountData.accountId(), loan.getId(),
                         "Loan Charge Payment", locale, fmt, null, null, LoanTransactionType.REPAYMENT_AT_DISBURSEMENT.getValue(),
                         entrySet.getKey(), null, AccountTransferType.CHARGE_PAYMENT.getValue(), null, null, null, null, null,
-                        fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck);
+                        fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck, null);
                 this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
             }
             updateRecurringCalendarDatesForInterestRecalculation(loan);
@@ -1081,11 +1083,14 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             this.loanTransactionRepository.saveAndFlush(newTransactionDetail);
         }
 
-        /***
-         * TODO Vishwas Batch save is giving me a HibernateOptimisticLockingFailureException, looping and saving for the
-         * time being, not a major issue for now as this loop is entered only in edge cases (when a adjustment is made
-         * before the latest payment recorded against the loan)
-         ***/
+        /**
+         * *
+         * TODO Vishwas Batch save is giving me a
+         * HibernateOptimisticLockingFailureException, looping and saving for
+         * the time being, not a major issue for now as this loop is entered
+         * only in edge cases (when a adjustment is made before the latest
+         * payment recorded against the loan) *
+         */
         saveAndFlushLoanWithDataIntegrityViolationChecks(loan);
         if (changedTransactionDetail != null) {
             for (final Map.Entry<Long, LoanTransaction> mapEntry : changedTransactionDetail.getNewTransactionMappings().entrySet()) {
@@ -1101,8 +1106,10 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             changes.put("note", noteText);
             Note note = null;
             /**
-             * If a new transaction is not created, associate note with the transaction to be adjusted
-             **/
+             * If a new transaction is not created, associate note with the
+             * transaction to be adjusted
+             *
+             */
             if (newTransactionDetail.isGreaterThanZero(loan.getPrincpal().getCurrency())) {
                 note = Note.loanTransactionNote(loan, newTransactionDetail, noteText);
             } else {
@@ -1185,11 +1192,14 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
         this.loanTransactionRepository.saveAndFlush(waiveInterestTransaction);
 
-        /***
-         * TODO Vishwas Batch save is giving me a HibernateOptimisticLockingFailureException, looping and saving for the
-         * time being, not a major issue for now as this loop is entered only in edge cases (when a waiver is made
-         * before the latest payment recorded against the loan)
-         ***/
+        /**
+         * *
+         * TODO Vishwas Batch save is giving me a
+         * HibernateOptimisticLockingFailureException, looping and saving for
+         * the time being, not a major issue for now as this loop is entered
+         * only in edge cases (when a waiver is made before the latest payment
+         * recorded against the loan) *
+         */
         saveAndFlushLoanWithDataIntegrityViolationChecks(loan);
         if (changedTransactionDetail != null) {
             for (final Map.Entry<Long, LoanTransaction> mapEntry : changedTransactionDetail.getNewTransactionMappings().entrySet()) {
@@ -1605,9 +1615,11 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         this.loanChargeRepository.saveAndFlush(loanCharge);
 
         /**
-         * we want to apply charge transactions only for those loans charges that are applied when a loan is active and
-         * the loan product uses Upfront Accruals
-         **/
+         * we want to apply charge transactions only for those loans charges
+         * that are applied when a loan is active and the loan product uses
+         * Upfront Accruals
+         *
+         */
         if (loan.status().isActive() && loan.isNoneOrCashOrUpfrontAccrualAccountingEnabledOnLoanProduct()) {
             final LoanTransaction applyLoanChargeTransaction = loan.handleChargeAppliedTransaction(loanCharge, null);
             this.loanTransactionRepository.saveAndFlush(applyLoanChargeTransaction);
@@ -1980,7 +1992,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                 PortfolioAccountType.LOAN, portfolioAccountData.accountId(), loanId, "Loan Charge Payment", locale, fmt, null, null,
                 LoanTransactionType.CHARGE_PAYMENT.getValue(), loanChargeId, loanInstallmentNumber,
                 AccountTransferType.CHARGE_PAYMENT.getValue(), null, null, null, null, null, fromSavingsAccount, isRegularTransaction,
-                isExceptionForBalanceCheck);
+                isExceptionForBalanceCheck, null);
         this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
@@ -2027,7 +2039,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                 PortfolioAccountType.SAVINGS, loan.getId(), portfolioAccountData.accountId(), "Loan Disbursement", locale, fmt,
                 paymentDetail, LoanTransactionType.DISBURSEMENT.getValue(), null, null, null,
                 AccountTransferType.ACCOUNT_TRANSFER.getValue(), null, null, txnExternalId, loan, null, fromSavingsAccount,
-                isRegularTransaction, isExceptionForBalanceCheck);
+                isRegularTransaction, isExceptionForBalanceCheck, null);
         this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
 
     }
@@ -2058,7 +2070,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                                     portfolioAccountData.accountId(), chargeData.getLoanId(), "Loan Charge Payment", null, null, null, null,
                                     LoanTransactionType.CHARGE_PAYMENT.getValue(), chargeData.getId(),
                                     installmentChargeData.getInstallmentNumber(), AccountTransferType.CHARGE_PAYMENT.getValue(), null, null,
-                                    null, null, null, fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck);
+                                    null, null, null, fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck, null);
                             transferFeeCharge(accountTransferDTO, errors);
                         }
                     }
@@ -2072,7 +2084,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                             portfolioAccountData.accountId(), chargeData.getLoanId(), "Loan Charge Payment", null, null, null, null,
                             LoanTransactionType.CHARGE_PAYMENT.getValue(), chargeData.getId(), null,
                             AccountTransferType.CHARGE_PAYMENT.getValue(), null, null, null, null, null, fromSavingsAccount,
-                            isRegularTransaction, isExceptionForBalanceCheck);
+                            isRegularTransaction, isExceptionForBalanceCheck, null);
                     transferFeeCharge(accountTransferDTO, errors);
                 }
             }
@@ -3023,7 +3035,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                 PortfolioAccountType.LOAN, portfolioAccountData.accountId(), loanId, "Loan Charge Payment", locale, fmt, null, null,
                 LoanTransactionType.CHARGE_PAYMENT.getValue(), loanChargeId, loanInstallmentNumber,
                 AccountTransferType.CHARGE_PAYMENT.getValue(), null, null, null, null, null, fromSavingsAccount, isRegularTransaction,
-                isExceptionForBalanceCheck);
+                isExceptionForBalanceCheck, null);
         this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
 
         return transaction;
@@ -3144,7 +3156,6 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         final LocalDate transactionDate = command.localDateValueOfParameterNamed("transactionDate");
 
         // checkRefundDateIsAfterAtLeastOneRepayment(loanId, transactionDate);
-
         final BigDecimal transactionAmount = command.bigDecimalValueOfParameterNamed("transactionAmount");
         checkIfLoanIsPaidInAdvance(loanId, transactionAmount);
 

@@ -4012,4 +4012,12 @@ public class CommandWrapperBuilder {
         this.href = "/accounttier/" + productId;
         return this;
     }
+
+    public CommandWrapperBuilder extendRecurringDepositAccount(final Long accountId) {
+        this.actionName = "EXTEND";
+        this.entityName = "RECURRINGDEPOSITACCOUNT";
+        this.entityId = accountId;
+        this.href = "/recurringdepositaccounts/" + accountId + "?command=extendRecurring";
+        return this;
+    }
 }

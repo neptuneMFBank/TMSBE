@@ -89,6 +89,7 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountCharge;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountChargeAssembler;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
 import org.apache.fineract.portfolio.savings.domain.SavingsProduct;
 import org.apache.fineract.portfolio.savings.domain.SavingsProductRepository;
 import org.apache.fineract.portfolio.savings.exception.SavingsProductNotFoundException;
@@ -456,6 +457,16 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             handleDataIntegrityIssues(command, throwable, dve);
             return new CommandProcessingResult((long) -1);
         }
+    }
+
+    @Override
+    public CommandProcessingResult businessAllowModifyActiveRDApplication(final Long accountId, final JsonCommand command) {
+        this.depositAccountDataValidator.validateRecurringDepositForUpdate(command.json());
+        final RecurringDepositAccount account = (RecurringDepositAccount) this.depositAccountAssembler.assembleFrom(accountId,
+                DepositAccountType.RECURRING_DEPOSIT);
+        account.setStatus(SavingsAccountStatusType.SUBMITTED_AND_PENDING_APPROVAL.getValue());
+        this.savingAccountRepository.save(account);
+        return modifyRDApplication(accountId, command);
     }
 
     @Transactional

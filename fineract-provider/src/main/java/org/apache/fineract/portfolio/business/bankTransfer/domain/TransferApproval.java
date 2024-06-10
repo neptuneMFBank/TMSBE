@@ -70,6 +70,9 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
     @Column(name = "from_account_number")
     private String fromAccountNumber;
 
+    @Column(name = "from_account_name")
+    private String fromAccountName;
+
     @Column(name = "to_account_id")
     private Long toAccountId;
 
@@ -92,7 +95,7 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
 
     private TransferApproval(BigDecimal amount, Integer status, Integer transferType, Long holdTransactionId, Long releaseTransactionId,
             Long withdrawTransactionId, Long fromAccountId, Integer fromAccountType, String fromAccountNumber,
-            Long toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId, String reason) {
+            Long toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId, String reason, String fromAccountName) {
         this.amount = amount;
         this.status = status;
         this.transferType = transferType;
@@ -108,6 +111,7 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
         this.activationChannelId = activationChannelId;
         this.toBankId = toBankId;
         this.reason = reason;
+        this.fromAccountName = fromAccountName;
     }
 
     public TransferApproval() {
@@ -115,13 +119,13 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
 
     public static TransferApproval instance(BigDecimal amount, Integer status, Integer transferType, Long holdTransactionId,
             Long fromAccountId, Integer fromAccountType, String fromAccountNumber,
-            Long toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId) {
+            Long toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId, String fromAccountName) {
         final Long releaseTransactionId = null;
         final Long withdrawTransactionId = null;
         final String reason = null;
         return new TransferApproval(amount, status, transferType, holdTransactionId, releaseTransactionId,
                 withdrawTransactionId, fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
-                toAccountNumber, activationChannelId, toBankId, reason);
+                toAccountNumber, activationChannelId, toBankId, reason, fromAccountName);
 
     }
 
@@ -266,6 +270,10 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
 
     public String getFromAccountNumber() {
         return fromAccountNumber;
+    }
+
+    public String getFromAccountName() {
+        return fromAccountName;
     }
 
     public String getToAccountNumber() {

@@ -31,6 +31,7 @@ CREATE TABLE `m_transfer_approval` (
   `from_account_id` BIGINT NOT NULL,
   `from_account_type` INT NOT NULL,
   `from_account_number` VARCHAR(255) DEFAULT NULL,
+  `from_account_name` VARCHAR(255) DEFAULT NULL,
   `to_account_id` BIGINT DEFAULT NULL,
   `to_account_type` INT DEFAULT NULL,
   `to_account_number` VARCHAR(255) DEFAULT NULL,

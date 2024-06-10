@@ -21,6 +21,7 @@ package org.apache.fineract.portfolio.business.bankTransfer.service;
 import java.math.BigDecimal;
 import java.util.Map;
 import javax.persistence.PersistenceException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
@@ -93,8 +94,12 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
             final Long fromAccountId = command.longValueOfParameterNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_ID);
             final Integer fromAccountType = command.integerValueOfParameterNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_TYPE);
             final PortfolioAccountType fromPortfolioAccountType = PortfolioAccountType.fromInt(fromAccountType);
+            String fromAccountName = null;
             if (!fromPortfolioAccountType.isSavingsAccount()) {
                 throw new TransferApprovalNotFoundException("Sender Account type not supported");
+            } else {
+                final SavingsAccount fromSavingsAccount = this.savingsAccountRepositoryWrapper.findOneWithNotFoundDetection(fromAccountId);
+                fromAccountName = StringUtils.defaultIfBlank(fromSavingsAccount.getClient().getDisplayName(), "N/A");
             }
             final String fromAccountNumber = command.stringValueOfParameterNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_NUMBER);
             final Long toAccountId = command.longValueOfParameterNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_ID);
@@ -125,7 +130,7 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
 
             final TransferApproval transferApproval = TransferApproval.instance(amount, SavingsAccountStatusType.SUBMITTED_AND_PENDING_APPROVAL.getValue(), transferType, holdTransactionId,
                     fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
-                    toAccountNumber, activationChannel, toBank);
+                    toAccountNumber, activationChannel, toBank, fromAccountName);
 
             this.repository.saveAndFlush(transferApproval);
             return new CommandProcessingResultBuilder() //

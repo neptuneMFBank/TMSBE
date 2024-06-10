@@ -38,6 +38,7 @@ CREATE TABLE `m_transfer_approval` (
   `to_bank_id` INT DEFAULT NULL,
   `activation_channel_id` INT DEFAULT NULL,
   `reason` VARCHAR(255) DEFAULT NULL,
+  `note` VARCHAR(255) DEFAULT NULL,
   `created_by` BIGINT NOT NULL,
   `created_on_utc` DATETIME NULL,
   `last_modified_by` BIGINT NOT NULL,

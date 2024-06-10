@@ -101,6 +101,7 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
                 final SavingsAccount fromSavingsAccount = this.savingsAccountRepositoryWrapper.findOneWithNotFoundDetection(fromAccountId);
                 fromAccountName = StringUtils.defaultIfBlank(fromSavingsAccount.getClient().getDisplayName(), "N/A");
             }
+            final String note = command.stringValueOfParameterNamed(TransferApprovalApiResourceConstants.noteParameterName);
             final String fromAccountNumber = command.stringValueOfParameterNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_NUMBER);
             final Long toAccountId = command.longValueOfParameterNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_ID);
             String externalTransferInfo = "IntraBank";
@@ -130,7 +131,7 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
 
             final TransferApproval transferApproval = TransferApproval.instance(amount, SavingsAccountStatusType.SUBMITTED_AND_PENDING_APPROVAL.getValue(), transferType, holdTransactionId,
                     fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
-                    toAccountNumber, activationChannel, toBank, fromAccountName);
+                    toAccountNumber, activationChannel, toBank, fromAccountName, note);
 
             this.repository.saveAndFlush(transferApproval);
             return new CommandProcessingResultBuilder() //
@@ -184,7 +185,7 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
 
             final Long fromAccountId = transferApproval.getFromAccountId();
             final SavingsAccount fromSavingsAccount = this.savingsAccountRepositoryWrapper.findOneWithNotFoundDetection(fromAccountId);
-            final String note = transferApproval.getReason();
+            final String note = transferApproval.getNote();
             final BigDecimal amount = transferApproval.getAmount();
             if (bankTransferType.isIntraBank()) {
                 //if intraBank

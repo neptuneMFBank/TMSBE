@@ -205,7 +205,7 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
                     + " mta.to_account_number as toAccountNumber,"
                     + " mta.to_bank_id as toBankId,"
                     + " mta.activation_channel_id as activationChannelId,"
-                    + " mta.reason as reason, ");
+                    + " mta.reason as reason, mta.note as note ");
             builder.append(
                     " mta.created_by as createdById,"
                     + " mta.created_on_utc as createdOnUtc,"
@@ -265,11 +265,12 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
             final Long createdById = JdbcSupport.getLong(rs, "createdById");
             final LocalDate createdOn = JdbcSupport.getLocalDate(rs, "createdOnUtc");
             final String fromAccountName = rs.getString("fromAccountName");
+            final String note = rs.getString("note");
 
             return TransferApprovalData.instance(id, amount, status, transferType, holdTransactionId, releaseTransactionId,
                     withdrawTransactionId, fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
                     toAccountNumber, activationChannel, toBank, reason, createdByUsername, createdByFirstname,
-                    createdByLastname, createdById, createdOn, fromAccountName);
+                    createdByLastname, createdById, createdOn, fromAccountName, note);
 
         }
     }

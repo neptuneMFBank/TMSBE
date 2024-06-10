@@ -83,7 +83,7 @@ public class TransferApprovalDataValidator {
         baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.FROM_ACCOUNT_TYPE).value(fromAccountType).notNull().integerZeroOrGreater();
 
         final String fromAccountNumber = this.fromApiJsonHelper.extractStringNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_NUMBER, element);
-        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.FROM_ACCOUNT_NUMBER).value(fromAccountNumber).ignoreIfNull().notExceedingLengthOf(200);
+        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.FROM_ACCOUNT_NUMBER).value(fromAccountNumber).notBlank().notExceedingLengthOf(10);
 
         if (this.fromApiJsonHelper.parameterExists(TransferApprovalApiResourceConstants.TO_ACCOUNT_ID, element)) {
             final Integer toAccountId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_ID, element);
@@ -96,8 +96,12 @@ public class TransferApprovalDataValidator {
         }
 
         final String toAccountNumber = this.fromApiJsonHelper.extractStringNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_NUMBER, element);
-        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TO_ACCOUNT_NUMBER).value(toAccountNumber).ignoreIfNull().notExceedingLengthOf(200);
+        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TO_ACCOUNT_NUMBER).value(toAccountNumber).notBlank().notExceedingLengthOf(10);
 
+        if (this.fromApiJsonHelper.parameterExists(TransferApprovalApiResourceConstants.noteParameterName, element)) {
+            final String note = this.fromApiJsonHelper.extractStringNamed(TransferApprovalApiResourceConstants.noteParameterName, element);
+            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TO_ACCOUNT_NUMBER).value(note).notBlank();
+        }
         final Integer activationChannelId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.ACTIVATION_CHANNEL_ID, element);
         baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.ACTIVATION_CHANNEL_ID).value(activationChannelId).ignoreIfNull().integerZeroOrGreater();
 

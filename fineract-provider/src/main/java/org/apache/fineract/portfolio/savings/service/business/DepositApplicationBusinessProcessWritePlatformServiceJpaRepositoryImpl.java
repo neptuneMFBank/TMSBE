@@ -237,9 +237,9 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
         return calendarInstance;
     }
 
-        @Transactional
+    @Transactional
     @Override
-    public CommandProcessingResult submitRDApplication(final JsonCommand command) {
+    public CommandProcessingResult calculateMaturityRDApplication(final JsonCommand command) {
         try {
             this.depositAccountDataValidator.validateRecurringDepositForSubmit(command.json());
             final AppUser submittedBy = this.context.authenticatedUser();
@@ -295,6 +295,7 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
             return CommandProcessingResult.empty();
         }
     }
+
     @Override
     public CommandProcessingResult businessAllowModifyActiveRDApplication(final Long accountId, final JsonCommand command) {
         this.depositAccountDataValidator.validateRecurringDepositForUpdate(command.json());

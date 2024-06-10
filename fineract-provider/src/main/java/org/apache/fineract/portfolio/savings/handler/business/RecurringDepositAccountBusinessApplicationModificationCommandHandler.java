@@ -22,7 +22,7 @@ import org.apache.fineract.commands.annotation.CommandType;
 import org.apache.fineract.commands.handler.NewCommandSourceHandler;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.portfolio.savings.service.DepositApplicationProcessWritePlatformService;
+import org.apache.fineract.portfolio.savings.service.business.DepositApplicationBusinessProcessWritePlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 @CommandType(entity = "RECURRINGDEPOSITACCOUNT", action = "EXTEND")
 public class RecurringDepositAccountBusinessApplicationModificationCommandHandler implements NewCommandSourceHandler {
 
-    private final DepositApplicationProcessWritePlatformService depositAccountWritePlatformService;
+    private final DepositApplicationBusinessProcessWritePlatformService depositAccountWritePlatformService;
 
     @Autowired
     public RecurringDepositAccountBusinessApplicationModificationCommandHandler(
-            final DepositApplicationProcessWritePlatformService depositAccountWritePlatformService) {
+            final DepositApplicationBusinessProcessWritePlatformService depositAccountWritePlatformService) {
         this.depositAccountWritePlatformService = depositAccountWritePlatformService;
     }
 

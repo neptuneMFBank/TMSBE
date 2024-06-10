@@ -104,7 +104,7 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
         final String toAccountNumber = searchParameters.getToAccountNumber();
         final String fromAccountNumber = searchParameters.getFromAccountNumber();
 
-        final String status = searchParameters.getStatus();
+        final Integer status = searchParameters.getStatusId();
 
         String extraCriteria = "";
 
@@ -130,7 +130,7 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
             paramList.add(transferType);
         }
 
-        if (status != null) {
+        if (searchParameters.isStatusIdPassed()) {
             paramList.add(status);
             extraCriteria += " and mta.status = ? ";
         }

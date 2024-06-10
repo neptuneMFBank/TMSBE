@@ -278,6 +278,12 @@ public class DepositsBusinessApiResource {
             log.info("updateApplication commandParam {}: ", templateJson);
             commandRequest = new CommandWrapperBuilder().updateRecurringDepositAccount(accountId).withJson(templateJson).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        } else if (is(commandParam, "extendRecurring")) {
+            templateJson = DepositsBusinessApiTemplate.recurringTemplateConfig(this.recurringDepositAccountsApiResource,
+                    apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
+            log.info("extendUpdateApplication commandParam {}: ", templateJson);
+            commandRequest = new CommandWrapperBuilder().extendRecurringDepositAccount(accountId).withJson(templateJson).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         }
 
         if (result == null) {
@@ -380,6 +386,26 @@ public class DepositsBusinessApiResource {
             final Long savingsId = this.fromApiJsonHelper.extractLongNamed("resourceId", jsonElement);
             this.depositsBusinessReadPlatformService.approveActivateSavings(savingsId);
         }
+        return result;
+    }
+
+    @PUT
+    @Path("auto/{accountId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Update/Approve/Activate new savings application", description = """
+            Submits new savings application
+            """)
+    @RequestBody(required = true)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        )})
+    public String updateApproveActivateApplication(@Context final UriInfo uriInfo, @QueryParam("command") final String commandParam,
+            @PathParam("accountId") @Parameter(description = "accountId") final Long accountId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+        final String result = this.updateApplication(accountId, uriInfo, commandParam, apiRequestBodyAsJson);
+        //call activate process
+        this.depositsBusinessReadPlatformService.approveActivateSavings(accountId);
         return result;
     }
 }

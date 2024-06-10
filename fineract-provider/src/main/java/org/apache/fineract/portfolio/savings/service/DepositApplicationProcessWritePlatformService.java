@@ -32,6 +32,8 @@ public interface DepositApplicationProcessWritePlatformService {
 
     CommandProcessingResult modifyRDApplication(Long accountId, JsonCommand command);
 
+    CommandProcessingResult businessAllowModifyActiveRDApplication(Long accountId, JsonCommand command);
+
     CommandProcessingResult deleteApplication(Long accountId, DepositAccountType depositAccountType);
 
     CommandProcessingResult approveApplication(Long accountId, JsonCommand command, DepositAccountType depositAccountType);

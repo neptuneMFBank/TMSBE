@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.savings.service.business;
 
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.math.BigDecimal;
@@ -29,6 +30,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.util.Set;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
+import org.apache.fineract.infrastructure.bulkimport.importhandler.helper.DateSerializer;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
@@ -62,6 +64,7 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
 import org.apache.fineract.portfolio.savings.domain.SavingsProductRepository;
 import org.apache.fineract.portfolio.savings.service.DepositApplicationProcessWritePlatformService;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountApplicationTransitionApiJsonValidator;
+import org.apache.fineract.simplifytech.data.GeneralConstants;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -221,7 +224,9 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
                     financialYearBeginningMonth);
             account.validateApplicableInterestRate();
 
-            final String jsonStringRD = this.fromJsonHelper.toJson(account);
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.registerTypeAdapter(LocalDate.class, new DateSerializer(GeneralConstants.DATEFORMET_DEFAULT));
+            final String jsonStringRD = gsonBuilder.create().toJson(account);
             final JsonElement jsonElementRD = this.fromJsonHelper.parse(jsonStringRD);
             final JsonObject jsonObjectRD = jsonElementRD.getAsJsonObject();
             final BigDecimal depositAmount = account.getDepositAmount() == null ? BigDecimal.ZERO : account.getDepositAmount();

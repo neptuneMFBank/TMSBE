@@ -18,7 +18,10 @@
  */
 package org.apache.fineract.infrastructure.core.serialization;
 
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -51,7 +54,11 @@ public class FromJsonHelper {
     private final JsonParserHelper helperDelegator;
 
     public FromJsonHelper() {
-        this.gsonConverter = new Gson();
+        //this.gsonConverter = new Gson();
+        GsonBuilder builder = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, LocalDateSerializer.INSTANCE)
+                .registerTypeAdapter(LocalDateTime.class, LocalDateTimeSerializer.INSTANCE);
+        this.gsonConverter = builder.create();
         this.helperDelegator = new JsonParserHelper();
     }
 

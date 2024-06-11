@@ -230,6 +230,12 @@ public class DepositsBusinessApiResource {
             log.info("commandParam calculateRecurringSchedule {}: ", templateJson);
             final JsonElement jsonElement = this.depositApplicationBusinessProcessWritePlatformService.calculateMaturityRDApplication(templateJson);
             return this.toApiJsonSerializer.serialize(jsonElement);
+        } else if (is(commandParam, "calculateFixedMaturity")) {
+            templateJson = DepositsBusinessApiTemplate.fixedTemplateConfig(this.fixedDepositAccountsApiResource, apiRequestBodyAsJson,
+                    this.fromApiJsonHelper, true, uriInfo, null);
+            log.info("commandParam calculateFixedMaturity {}: ", templateJson);
+            final JsonElement jsonElement = this.depositApplicationBusinessProcessWritePlatformService.calculateMaturityFDApplication(templateJson);
+            return this.toApiJsonSerializer.serialize(jsonElement);
         }
 
         if (result == null) {

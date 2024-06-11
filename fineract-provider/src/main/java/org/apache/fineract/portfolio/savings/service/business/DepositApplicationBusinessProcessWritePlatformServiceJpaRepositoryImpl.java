@@ -18,7 +18,6 @@
  */
 package org.apache.fineract.portfolio.savings.service.business;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.math.BigDecimal;
@@ -27,16 +26,11 @@ import static org.apache.fineract.portfolio.savings.DepositsApiConstants.isCalen
 import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyParamName;
 import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyTypeParamName;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.temporal.ChronoField;
 import java.util.Set;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.api.LocalDateAdapter;
-import org.apache.fineract.infrastructure.core.api.LocalDateTimeAdapter;
-import org.apache.fineract.infrastructure.core.api.OffsetDateTimeAdapter;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
@@ -60,6 +54,7 @@ import org.apache.fineract.portfolio.note.domain.NoteRepository;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.data.DepositAccountDataValidator;
 import org.apache.fineract.portfolio.savings.domain.DepositAccountAssembler;
+import org.apache.fineract.portfolio.savings.domain.FixedDepositAccount;
 import org.apache.fineract.portfolio.savings.domain.FixedDepositAccountRepository;
 import org.apache.fineract.portfolio.savings.domain.RecurringDepositAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountChargeAssembler;
@@ -227,24 +222,36 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
                     financialYearBeginningMonth);
             account.validateApplicableInterestRate();
 
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateAdapter());
-            gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
-            gsonBuilder.registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeAdapter());
-
-            final String jsonStringRD = gsonBuilder.create().toJson(account);
-            final JsonElement jsonElementRD = this.fromJsonHelper.parse(jsonStringRD);
-            final JsonObject jsonObjectRD = jsonElementRD.getAsJsonObject();
+            final BigDecimal nominalAnnualInterestRate = account.getNominalAnnualInterestRate();
             final BigDecimal depositAmount = account.getDepositAmount() == null ? BigDecimal.ZERO : account.getDepositAmount();
             final BigDecimal maturityAmount = account.maturityAmount() == null ? BigDecimal.ZERO : account.maturityAmount();
-            jsonObjectRD.addProperty("expectedInterestAmount", maturityAmount.subtract(depositAmount));
+            final BigDecimal expectedInterestAmount = maturityAmount.subtract(depositAmount);
+            final String maturityDate = account.maturityDate() == null ? null : account.maturityDate().toString();
+            Integer depositPeriod = null;
+            Integer depositPeriodFrequency = null;
+            if (account.getAccountTermAndPreClosure() != null) {
+                depositPeriod = account.getAccountTermAndPreClosure().depositPeriod();
+                depositPeriodFrequency = account.getAccountTermAndPreClosure().depositPeriodFrequency();
+            }
 
-            return jsonObjectRD;
+            return resultJsonMaturity(expectedInterestAmount, depositAmount, maturityAmount, maturityDate, depositPeriod, depositPeriodFrequency, nominalAnnualInterestRate);
         } catch (final Exception dve) {
             LOG.error("calculateMaturityRDApplication: {}", dve);
             throw new GeneralPlatformDomainRuleException(
-                    "error.msg.recurring.deposit.account.calculate.maturity", "Investment maturity could not be derived.");
+                    "error.msg.recurring.deposit.account.calculate.maturity", "Recurring investment maturity could not be derived.");
         }
+    }
+
+    protected JsonElement resultJsonMaturity(final BigDecimal expectedInterestAmount, final BigDecimal depositAmount, final BigDecimal maturityAmount, final String maturityDate, Integer depositPeriod, Integer depositPeriodFrequency, final BigDecimal nominalAnnualInterestRate) {
+        final JsonObject jsonObjectRD = new JsonObject();
+        jsonObjectRD.addProperty("expectedInterestAmount", expectedInterestAmount);
+        jsonObjectRD.addProperty("depositAmount", depositAmount);
+        jsonObjectRD.addProperty("maturityAmount", maturityAmount);
+        jsonObjectRD.addProperty("maturityDate", maturityDate);
+        jsonObjectRD.addProperty("depositPeriod", depositPeriod);
+        jsonObjectRD.addProperty("depositPeriodFrequency", depositPeriodFrequency);
+        jsonObjectRD.addProperty("nominalAnnualInterestRate", nominalAnnualInterestRate);
+        return jsonObjectRD;
     }
 
     @Override
@@ -255,6 +262,47 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
         account.setStatus(SavingsAccountStatusType.SUBMITTED_AND_PENDING_APPROVAL.getValue());
         this.savingAccountRepository.save(account);
         return this.depositApplicationProcessWritePlatformService.modifyRDApplication(accountId, command);
+    }
+
+    @Override
+    public JsonElement calculateMaturityFDApplication(String json) {
+        try {
+            final JsonElement parsedCommand = this.fromJsonHelper.parse(json);
+            final JsonCommand command = JsonCommand.from(json, parsedCommand, this.fromJsonHelper);
+            this.depositAccountDataValidator.validateFixedDepositForSubmit(json);
+            final AppUser submittedBy = this.context.authenticatedUser();
+
+            final boolean isSavingsInterestPostingAtCurrentPeriodEnd = this.configurationDomainService
+                    .isSavingsInterestPostingAtCurrentPeriodEnd();
+            final Integer financialYearBeginningMonth = this.configurationDomainService.retrieveFinancialYearBeginningMonth();
+
+            final FixedDepositAccount account = (FixedDepositAccount) this.depositAccountAssembler.assembleFrom(command, submittedBy,
+                    DepositAccountType.FIXED_DEPOSIT);
+
+            final MathContext mc = MathContext.DECIMAL64;
+            final boolean isPreMatureClosure = false;
+
+            account.updateMaturityDateAndAmountBeforeAccountActivation(mc, isPreMatureClosure, isSavingsInterestPostingAtCurrentPeriodEnd,
+                    financialYearBeginningMonth);
+
+            final BigDecimal nominalAnnualInterestRate = account.getNominalAnnualInterestRate();
+            final BigDecimal depositAmount = account.getDepositAmount() == null ? BigDecimal.ZERO : account.getDepositAmount();
+            final BigDecimal maturityAmount = account.maturityAmount() == null ? BigDecimal.ZERO : account.maturityAmount();
+            final BigDecimal expectedInterestAmount = maturityAmount.subtract(depositAmount);
+            final String maturityDate = account.maturityDate() == null ? null : account.maturityDate().toString();
+            Integer depositPeriod = null;
+            Integer depositPeriodFrequency = null;
+            if (account.getAccountTermAndPreClosure() != null) {
+                depositPeriod = account.getAccountTermAndPreClosure().depositPeriod();
+                depositPeriodFrequency = account.getAccountTermAndPreClosure().depositPeriodFrequency();
+            }
+
+            return resultJsonMaturity(expectedInterestAmount, depositAmount, maturityAmount, maturityDate, depositPeriod, depositPeriodFrequency, nominalAnnualInterestRate);
+        } catch (final Exception dve) {
+            LOG.error("calculateMaturityFDApplication: {}", dve);
+            throw new GeneralPlatformDomainRuleException(
+                    "error.msg.fixed.deposit.account.calculate.maturity", "Fixed investment maturity could not be derived.");
+        }
     }
 
 }

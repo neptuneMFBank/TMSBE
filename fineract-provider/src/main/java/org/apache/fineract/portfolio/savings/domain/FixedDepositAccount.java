@@ -274,18 +274,18 @@ public class FixedDepositAccount extends SavingsAccount {
         switch (this.accountTermAndPreClosure.depositPeriodFrequencyType()) {
             case DAYS:
                 maturityDate = startDate.plusDays(depositPeriod);
-            break;
+                break;
             case WEEKS:
                 maturityDate = startDate.plusWeeks(depositPeriod);
-            break;
+                break;
             case MONTHS:
                 maturityDate = startDate.plusMonths(depositPeriod);
-            break;
+                break;
             case YEARS:
                 maturityDate = startDate.plusYears(depositPeriod);
-            break;
+                break;
             case INVALID:
-            break;
+                break;
         }
 
         return maturityDate;
@@ -500,7 +500,6 @@ public class FixedDepositAccount extends SavingsAccount {
         // closedDate,
         // transactionAmountMoney, new Date());
         // this.transactions.add(withdraw);
-
         actualChanges.put(SavingsApiConstants.statusParamName, SavingsEnumerations.status(this.status));
         actualChanges.put(SavingsApiConstants.localeParamName, command.locale());
         actualChanges.put(SavingsApiConstants.dateFormatParamName, command.dateFormat());
@@ -892,6 +891,10 @@ public class FixedDepositAccount extends SavingsAccount {
 
     public boolean isMatured() {
         return SavingsAccountStatusType.MATURED.getValue().equals(this.status);
+    }
+
+    public DepositAccountTermAndPreClosure getAccountTermAndPreClosure() {
+        return accountTermAndPreClosure;
     }
 
 }

@@ -28,20 +28,14 @@ import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurri
 import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyTypeParamName;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.MonthDay;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.Set;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
-import org.apache.fineract.infrastructure.core.api.JodaDateTimeAdapter;
-import org.apache.fineract.infrastructure.core.api.JodaMonthDayAdapter;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.api.LocalDateAdapter;
 import org.apache.fineract.infrastructure.core.api.LocalDateTimeAdapter;
-import org.apache.fineract.infrastructure.core.api.LocalTimeAdapter;
 import org.apache.fineract.infrastructure.core.api.OffsetDateTimeAdapter;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
@@ -236,9 +230,6 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
             GsonBuilder gsonBuilder = new GsonBuilder();
             gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateAdapter());
             gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
-            gsonBuilder.registerTypeAdapter(LocalTime.class, new LocalTimeAdapter());
-            gsonBuilder.registerTypeAdapter(ZonedDateTime.class, new JodaDateTimeAdapter());
-            gsonBuilder.registerTypeAdapter(MonthDay.class, new JodaMonthDayAdapter());
             gsonBuilder.registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeAdapter());
 
             final String jsonStringRD = gsonBuilder.create().toJson(account);

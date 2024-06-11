@@ -178,8 +178,8 @@ public final class JsonCommand {
         return new JsonCommand(null, jsonCommand, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 
-    public static JsonCommand from(final String jsonCommand, final JsonElement parsedCommand) {
-        return new JsonCommand(null, jsonCommand, parsedCommand, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    public static JsonCommand from(final String jsonCommand, final JsonElement parsedCommand, final FromJsonHelper fromApiJsonHelper) {
+        return new JsonCommand(null, jsonCommand, parsedCommand, fromApiJsonHelper, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 
     public Long getOrganisationCreditBureauId() {

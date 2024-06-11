@@ -195,7 +195,7 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
     public JsonElement calculateMaturityRDApplication(final String json) {
         try {
             final JsonElement parsedCommand = this.fromJsonHelper.parse(json);
-            final JsonCommand command = JsonCommand.from(json, parsedCommand);
+            final JsonCommand command = JsonCommand.from(json, parsedCommand, this.fromJsonHelper);
             this.depositAccountDataValidator.validateRecurringDepositForSubmit(json);
             final AppUser submittedBy = this.context.authenticatedUser();
 

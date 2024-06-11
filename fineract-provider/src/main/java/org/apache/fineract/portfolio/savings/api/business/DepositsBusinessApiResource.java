@@ -86,7 +86,7 @@ public class DepositsBusinessApiResource {
     private final FixedDepositAccountsApiResource fixedDepositAccountsApiResource;
     private final RecurringDepositAccountsApiResource recurringDepositAccountsApiResource;
     private final FromJsonHelper fromApiJsonHelper;
-    private DepositApplicationBusinessProcessWritePlatformService depositApplicationBusinessProcessWritePlatformService;
+    private final DepositApplicationBusinessProcessWritePlatformService depositApplicationBusinessProcessWritePlatformService;
 
     @GET
     @Consumes({MediaType.APPLICATION_JSON})

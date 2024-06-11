@@ -28,4 +28,6 @@ public interface DepositApplicationBusinessProcessWritePlatformService {
 
     JsonElement calculateMaturityRDApplication(final String json);
 
+    JsonElement calculateMaturityFDApplication(final String json);
+
 }

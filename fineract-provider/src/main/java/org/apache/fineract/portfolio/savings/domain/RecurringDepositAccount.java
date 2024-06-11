@@ -302,18 +302,18 @@ public class RecurringDepositAccount extends SavingsAccount {
         switch (this.accountTermAndPreClosure.depositPeriodFrequencyType()) {
             case DAYS:
                 maturityDate = startDate.plusDays(depositPeriod);
-            break;
+                break;
             case WEEKS:
                 maturityDate = startDate.plusWeeks(depositPeriod);
-            break;
+                break;
             case MONTHS:
                 maturityDate = startDate.plusMonths(depositPeriod);
-            break;
+                break;
             case YEARS:
                 maturityDate = startDate.plusYears(depositPeriod);
-            break;
+                break;
             case INVALID:
-            break;
+                break;
         }
 
         return maturityDate;
@@ -326,7 +326,6 @@ public class RecurringDepositAccount extends SavingsAccount {
         // 1. default to calculate interest based on entire history OR
         // 2. determine latest 'posting period' and find interest credited to
         // that period
-
         // A generate list of EndOfDayBalances (not including interest postings)
         final SavingsPostingInterestPeriodType postingPeriodType = SavingsPostingInterestPeriodType.fromInt(this.interestPostingPeriodType);
 
@@ -618,7 +617,6 @@ public class RecurringDepositAccount extends SavingsAccount {
          * SavingsAccountTransaction.withdrawal(this, office(), paymentDetail, closedDate, transactionAmountMoney, new
          * Date()); this.transactions.add(withdraw);
          */
-
         actualChanges.put(SavingsApiConstants.statusParamName, SavingsEnumerations.status(this.status));
         actualChanges.put(SavingsApiConstants.localeParamName, command.locale());
         actualChanges.put(SavingsApiConstants.dateFormatParamName, command.dateFormat());
@@ -948,10 +946,11 @@ public class RecurringDepositAccount extends SavingsAccount {
     }
 
     /**
-     * This method is responsible for checking if the current transaction is 'an advance/early payment' based on the
-     * details passed through.
+     * This method is responsible for checking if the current transaction is 'an
+     * advance/early payment' based on the details passed through.
      *
-     * Default implementation is check transaction date is before installment due date.
+     * Default implementation is check transaction date is before installment
+     * due date.
      */
     protected boolean isTransactionInAdvanceOfInstallment(final int currentInstallmentIndex,
             final List<RecurringDepositScheduleInstallment> installments, final LocalDate transactionDate) {
@@ -1089,12 +1088,14 @@ public class RecurringDepositAccount extends SavingsAccount {
             throw new PlatformApiDataValidationException(dataValidationErrors);
         }
         /**
-         * final boolean recurringFrequencyBeforeDepositPeriod = recurringFrequencyBeforeDepositPeriod();
+         * final boolean recurringFrequencyBeforeDepositPeriod =
+         * recurringFrequencyBeforeDepositPeriod();
          *
          * if (!recurringFrequencyBeforeDepositPeriod) {
          * baseDataValidator.reset().failWithCodeNoParameterAddedToErrorCode(
          * "recurring.frequency.not.before.deposit.period"); }
-         **/
+         *
+         */
     }
 
     public boolean isReinvestOnClosure() {
@@ -1274,4 +1275,9 @@ public class RecurringDepositAccount extends SavingsAccount {
     public BigDecimal getDepositAmount() {
         return this.accountTermAndPreClosure.depositAmount();
     }
+
+    public DepositAccountTermAndPreClosure getAccountTermAndPreClosure() {
+        return accountTermAndPreClosure;
+    }
+
 }

@@ -27,12 +27,14 @@ import static org.apache.fineract.portfolio.savings.DepositsApiConstants.isCalen
 import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyParamName;
 import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyTypeParamName;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.util.Set;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
-import org.apache.fineract.infrastructure.bulkimport.importhandler.helper.DateSerializer;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.api.LocalDateAdapter;
+import org.apache.fineract.infrastructure.core.api.LocalDateTimeAdapter;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
@@ -64,7 +66,6 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
 import org.apache.fineract.portfolio.savings.domain.SavingsProductRepository;
 import org.apache.fineract.portfolio.savings.service.DepositApplicationProcessWritePlatformService;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountApplicationTransitionApiJsonValidator;
-import org.apache.fineract.simplifytech.data.GeneralConstants;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -225,7 +226,8 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
             account.validateApplicableInterestRate();
 
             GsonBuilder gsonBuilder = new GsonBuilder();
-            gsonBuilder.registerTypeAdapter(LocalDate.class, new DateSerializer(GeneralConstants.DATEFORMET_DEFAULT));
+            gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateAdapter());
+            gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
             final String jsonStringRD = gsonBuilder.create().toJson(account);
             final JsonElement jsonElementRD = this.fromJsonHelper.parse(jsonStringRD);
             final JsonObject jsonObjectRD = jsonElementRD.getAsJsonObject();

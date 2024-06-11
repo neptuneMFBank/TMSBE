@@ -224,7 +224,7 @@ public class DepositsBusinessApiResource {
             log.info("commandParam {}: ", templateJson);
             commandRequest = new CommandWrapperBuilder().createRecurringDepositAccount().withJson(templateJson).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-        } else if (is(commandParam, "calculateRecurringSchedule")) {
+        } else if (is(commandParam, "calculateRecurringMaturity")) {
             templateJson = DepositsBusinessApiTemplate.recurringTemplateConfig(this.recurringDepositAccountsApiResource,
                     apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
             log.info("commandParam calculateRecurringSchedule {}: ", templateJson);

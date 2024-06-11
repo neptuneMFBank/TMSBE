@@ -18,31 +18,25 @@
  */
 package org.apache.fineract.portfolio.savings.service.business;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import java.math.BigDecimal;
 import java.math.MathContext;
 import static org.apache.fineract.portfolio.savings.DepositsApiConstants.isCalendarInheritedParamName;
 import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyParamName;
 import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyTypeParamName;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
-import java.util.Map;
 import java.util.Set;
-import javax.persistence.PersistenceException;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormat;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
-import org.apache.fineract.infrastructure.accountnumberformat.domain.EntityAccountType;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
-import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
 import org.apache.fineract.portfolio.account.domain.AccountAssociationsRepository;
-import org.apache.fineract.portfolio.businessevent.domain.deposit.RecurringDepositAccountCreateBusinessEvent;
 import org.apache.fineract.portfolio.businessevent.service.BusinessEventNotifierService;
 import org.apache.fineract.portfolio.calendar.domain.Calendar;
 import org.apache.fineract.portfolio.calendar.domain.CalendarEntityType;
@@ -52,38 +46,26 @@ import org.apache.fineract.portfolio.calendar.domain.CalendarInstanceRepository;
 import org.apache.fineract.portfolio.calendar.domain.CalendarType;
 import org.apache.fineract.portfolio.calendar.service.CalendarUtils;
 import org.apache.fineract.portfolio.client.domain.AccountNumberGenerator;
-import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
-import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.common.domain.PeriodFrequencyType;
 import org.apache.fineract.portfolio.group.domain.Group;
 import org.apache.fineract.portfolio.group.domain.GroupRepository;
-import org.apache.fineract.portfolio.group.exception.CenterNotActiveException;
-import org.apache.fineract.portfolio.group.exception.GroupNotActiveException;
-import org.apache.fineract.portfolio.group.exception.GroupNotFoundException;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
-import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.apache.fineract.portfolio.savings.data.DepositAccountDataValidator;
 import org.apache.fineract.portfolio.savings.domain.DepositAccountAssembler;
 import org.apache.fineract.portfolio.savings.domain.FixedDepositAccountRepository;
 import org.apache.fineract.portfolio.savings.domain.RecurringDepositAccount;
-import org.apache.fineract.portfolio.savings.domain.RecurringDepositAccountRepository;
-import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
-import org.apache.fineract.portfolio.savings.domain.SavingsAccountCharge;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountChargeAssembler;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
-import org.apache.fineract.portfolio.savings.domain.SavingsProduct;
 import org.apache.fineract.portfolio.savings.domain.SavingsProductRepository;
-import org.apache.fineract.portfolio.savings.exception.SavingsProductNotFoundException;
 import org.apache.fineract.portfolio.savings.service.DepositApplicationProcessWritePlatformService;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountApplicationTransitionApiJsonValidator;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,7 +77,6 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
     private final PlatformSecurityContext context;
     private final SavingsAccountRepositoryWrapper savingAccountRepository;
     private final FixedDepositAccountRepository fixedDepositAccountRepository;
-    private final RecurringDepositAccountRepository recurringDepositAccountRepository;
     private final DepositAccountAssembler depositAccountAssembler;
     private final DepositAccountDataValidator depositAccountDataValidator;
     private final AccountNumberGenerator accountNumberGenerator;
@@ -124,7 +105,6 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
             final SavingsAccountApplicationTransitionApiJsonValidator savingsAccountApplicationTransitionApiJsonValidator,
             final SavingsAccountChargeAssembler savingsAccountChargeAssembler,
             final FixedDepositAccountRepository fixedDepositAccountRepository,
-            final RecurringDepositAccountRepository recurringDepositAccountRepository,
             final AccountAssociationsRepository accountAssociationsRepository, final FromJsonHelper fromJsonHelper,
             final CalendarInstanceRepository calendarInstanceRepository, final ConfigurationDomainService configurationDomainService,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository,
@@ -142,7 +122,6 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
         this.savingsAccountApplicationTransitionApiJsonValidator = savingsAccountApplicationTransitionApiJsonValidator;
         this.savingsAccountChargeAssembler = savingsAccountChargeAssembler;
         this.fixedDepositAccountRepository = fixedDepositAccountRepository;
-        this.recurringDepositAccountRepository = recurringDepositAccountRepository;
         this.accountAssociationsRepository = accountAssociationsRepository;
         this.fromJsonHelper = fromJsonHelper;
         this.calendarInstanceRepository = calendarInstanceRepository;
@@ -150,32 +129,6 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
         this.accountNumberFormatRepository = accountNumberFormatRepository;
         this.businessEventNotifierService = businessEventNotifierService;
         this.depositApplicationProcessWritePlatformService = depositApplicationProcessWritePlatformService;
-    }
-
-    /*
-     * Guaranteed to throw an exception no matter what the data integrity issue is.
-     */
-    private void handleDataIntegrityIssues(final JsonCommand command, final Throwable realCause, final Exception dve) {
-
-        final StringBuilder errorCodeBuilder = new StringBuilder("error.msg.").append(SavingsApiConstants.SAVINGS_ACCOUNT_RESOURCE_NAME);
-
-        if (realCause.getMessage().contains("'sa_account_no_UNIQUE'")) {
-            final String accountNo = command.stringValueOfParameterNamed("accountNo");
-            errorCodeBuilder.append(".duplicate.accountNo");
-            throw new PlatformDataIntegrityException(errorCodeBuilder.toString(),
-                    "Savings account with accountNo " + accountNo + " already exists", "accountNo", accountNo);
-
-        } else if (realCause.getMessage().contains("sa_external_id_UNIQUE")) {
-
-            final String externalId = command.stringValueOfParameterNamed("externalId");
-            errorCodeBuilder.append(".duplicate.externalId");
-            throw new PlatformDataIntegrityException(errorCodeBuilder.toString(),
-                    "Savings account with externalId " + externalId + " already exists", "externalId", externalId);
-        }
-
-        errorCodeBuilder.append(".unknown.data.integrity.issue");
-        LOG.error("Error occured.", dve);
-        throw new PlatformDataIntegrityException(errorCodeBuilder.toString(), "Unknown data integrity issue with savings account.");
     }
 
     private CalendarInstance getCalendarInstance(final JsonCommand command, RecurringDepositAccount account) {
@@ -239,9 +192,11 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
 
     @Transactional
     @Override
-    public CommandProcessingResult calculateMaturityRDApplication(final JsonCommand command) {
+    public JsonElement calculateMaturityRDApplication(final String json) {
         try {
-            this.depositAccountDataValidator.validateRecurringDepositForSubmit(command.json());
+            final JsonElement parsedCommand = this.fromJsonHelper.parse(json);
+            final JsonCommand command = JsonCommand.from(json, parsedCommand);
+            this.depositAccountDataValidator.validateRecurringDepositForSubmit(json);
             final AppUser submittedBy = this.context.authenticatedUser();
 
             final boolean isSavingsInterestPostingAtCurrentPeriodEnd = this.configurationDomainService
@@ -251,17 +206,7 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
             final RecurringDepositAccount account = (RecurringDepositAccount) this.depositAccountAssembler.assembleFrom(command,
                     submittedBy, DepositAccountType.RECURRING_DEPOSIT);
 
-            this.recurringDepositAccountRepository.save(account);
-
-            if (account.isAccountNumberRequiresAutoGeneration()) {
-                final AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository
-                        .findByAccountType(EntityAccountType.SAVINGS);
-                account.updateAccountNo(this.accountNumberGenerator.generate(account, accountNumberFormat));
-            }
-
-            final Long savingsId = account.getId();
             final CalendarInstance calendarInstance = getCalendarInstance(command, account);
-            this.calendarInstanceRepository.save(calendarInstance);
 
             // FIXME: Avoid save separately (Calendar instance requires account
             // details)
@@ -275,24 +220,19 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
             account.updateMaturityDateAndAmount(mc, isPreMatureClosure, isSavingsInterestPostingAtCurrentPeriodEnd,
                     financialYearBeginningMonth);
             account.validateApplicableInterestRate();
-            savingAccountRepository.save(account);
-            businessEventNotifierService.notifyPostBusinessEvent(new RecurringDepositAccountCreateBusinessEvent(account));
 
-            return new CommandProcessingResultBuilder() //
-                    .withCommandId(command.commandId()) //
-                    .withEntityId(savingsId) //
-                    .withOfficeId(account.officeId()) //
-                    .withClientId(account.clientId()) //
-                    .withGroupId(account.groupId()) //
-                    .withSavingsId(savingsId) //
-                    .build();
-        } catch (final DataAccessException dve) {
-            handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
-            return CommandProcessingResult.empty();
-        } catch (final PersistenceException dve) {
-            Throwable throwable = ExceptionUtils.getRootCause(dve.getCause());
-            handleDataIntegrityIssues(command, throwable, dve);
-            return CommandProcessingResult.empty();
+            final String jsonStringRD = this.fromJsonHelper.toJson(account);
+            final JsonElement jsonElementRD = this.fromJsonHelper.parse(jsonStringRD);
+            final JsonObject jsonObjectRD = jsonElementRD.getAsJsonObject();
+            final BigDecimal depositAmount = account.getDepositAmount() == null ? BigDecimal.ZERO : account.getDepositAmount();
+            final BigDecimal maturityAmount = account.maturityAmount() == null ? BigDecimal.ZERO : account.maturityAmount();
+            jsonObjectRD.addProperty("expectedInterestAmount", maturityAmount.subtract(depositAmount));
+
+            return jsonObjectRD;
+        } catch (final Exception dve) {
+            LOG.error("calculateMaturityRDApplication: {}", dve);
+            throw new GeneralPlatformDomainRuleException(
+                    "error.msg.recurring.deposit.account.calculate.maturity", "Investment maturity could not be derived.");
         }
     }
 
@@ -306,84 +246,4 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
         return this.depositApplicationProcessWritePlatformService.modifyRDApplication(accountId, command);
     }
 
-    private void updateFDAndRDCommonChanges(final Map<String, Object> changes, final JsonCommand command, final SavingsAccount account) {
-
-        if (changes.containsKey(SavingsApiConstants.clientIdParamName)) {
-            final Long clientId = command.longValueOfParameterNamed(SavingsApiConstants.clientIdParamName);
-            if (clientId != null) {
-                final Client client = this.clientRepository.findOneWithNotFoundDetection(clientId);
-                if (client.isNotActive()) {
-                    throw new ClientNotActiveException(clientId);
-                }
-                account.update(client);
-            } else {
-                final Client client = null;
-                account.update(client);
-            }
-        }
-
-        if (changes.containsKey(SavingsApiConstants.groupIdParamName)) {
-            final Long groupId = command.longValueOfParameterNamed(SavingsApiConstants.groupIdParamName);
-            if (groupId != null) {
-                final Group group = this.groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException(groupId));
-                if (group.isNotActive()) {
-                    if (group.isCenter()) {
-                        throw new CenterNotActiveException(groupId);
-                    }
-                    throw new GroupNotActiveException(groupId);
-                }
-                account.update(group);
-            } else {
-                final Group group = null;
-                account.update(group);
-            }
-        }
-
-        if (changes.containsKey(SavingsApiConstants.productIdParamName)) {
-            final Long productId = command.longValueOfParameterNamed(SavingsApiConstants.productIdParamName);
-            final SavingsProduct product = this.savingsProductRepository.findById(productId)
-                    .orElseThrow(() -> new SavingsProductNotFoundException(productId));
-
-            account.update(product);
-        }
-
-        if (changes.containsKey(SavingsApiConstants.fieldOfficerIdParamName)) {
-            final Long fieldOfficerId = command.longValueOfParameterNamed(SavingsApiConstants.fieldOfficerIdParamName);
-            Staff fieldOfficer = null;
-            if (fieldOfficerId != null) {
-                fieldOfficer = this.staffRepository.findOneWithNotFoundDetection(fieldOfficerId);
-            } else {
-                changes.put(SavingsApiConstants.fieldOfficerIdParamName, "");
-            }
-            account.update(fieldOfficer);
-        }
-
-        if (changes.containsKey("charges")) {
-            final Set<SavingsAccountCharge> charges = this.savingsAccountChargeAssembler.fromParsedJson(command.parsedJson(),
-                    account.getCurrency().getCode());
-            final boolean updated = account.update(charges);
-            if (!updated) {
-                changes.remove("charges");
-            }
-        }
-
-    }
-
-    private void checkClientOrGroupActive(final SavingsAccount account) {
-        final Client client = account.getClient();
-        if (client != null) {
-            if (client.isNotActive()) {
-                throw new ClientNotActiveException(client.getId());
-            }
-        }
-        final Group group = account.group();
-        if (group != null) {
-            if (group.isNotActive()) {
-                if (group.isCenter()) {
-                    throw new CenterNotActiveException(group.getId());
-                }
-                throw new GroupNotActiveException(group.getId());
-            }
-        }
-    }
 }

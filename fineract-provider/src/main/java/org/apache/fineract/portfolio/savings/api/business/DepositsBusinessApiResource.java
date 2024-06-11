@@ -63,6 +63,7 @@ import org.apache.fineract.portfolio.savings.api.RecurringDepositAccountsApiReso
 import org.apache.fineract.portfolio.savings.api.SavingsAccountsApiResource;
 import org.apache.fineract.portfolio.savings.business.DepositsBusinessApiConstants;
 import org.apache.fineract.portfolio.savings.data.business.DepositAccountBusinessData;
+import org.apache.fineract.portfolio.savings.service.business.DepositApplicationBusinessProcessWritePlatformService;
 import org.apache.fineract.portfolio.savings.service.business.DepositsBusinessReadPlatformService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -85,6 +86,7 @@ public class DepositsBusinessApiResource {
     private final FixedDepositAccountsApiResource fixedDepositAccountsApiResource;
     private final RecurringDepositAccountsApiResource recurringDepositAccountsApiResource;
     private final FromJsonHelper fromApiJsonHelper;
+    private DepositApplicationBusinessProcessWritePlatformService depositApplicationBusinessProcessWritePlatformService;
 
     @GET
     @Consumes({MediaType.APPLICATION_JSON})
@@ -222,6 +224,12 @@ public class DepositsBusinessApiResource {
             log.info("commandParam {}: ", templateJson);
             commandRequest = new CommandWrapperBuilder().createRecurringDepositAccount().withJson(templateJson).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        } else if (is(commandParam, "calculateRecurringSchedule")) {
+            templateJson = DepositsBusinessApiTemplate.recurringTemplateConfig(this.recurringDepositAccountsApiResource,
+                    apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
+            log.info("commandParam calculateRecurringSchedule {}: ", templateJson);
+            final JsonElement jsonElement = this.depositApplicationBusinessProcessWritePlatformService.calculateMaturityRDApplication(templateJson);
+            return this.toApiJsonSerializer.serialize(jsonElement);
         }
 
         if (result == null) {

@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.savings.service.business;
 
+import com.google.gson.JsonElement;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
@@ -25,6 +26,6 @@ public interface DepositApplicationBusinessProcessWritePlatformService {
 
     CommandProcessingResult businessAllowModifyActiveRDApplication(Long accountId, JsonCommand command);
 
-    CommandProcessingResult calculateMaturityRDApplication(JsonCommand command);
+    JsonElement calculateMaturityRDApplication(final String json);
 
 }

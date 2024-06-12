@@ -238,7 +238,7 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
         } catch (final Exception dve) {
             LOG.error("calculateMaturityRDApplication: {}", dve);
             throw new GeneralPlatformDomainRuleException(
-                    "error.msg.recurring.deposit.account.calculate.maturity", "Recurring investment maturity could not be derived.");
+                    "error.msg.recurring.deposit.account.calculate.maturity", dve.getMessage());
         }
     }
 
@@ -301,7 +301,7 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
         } catch (final Exception dve) {
             LOG.error("calculateMaturityFDApplication: {}", dve);
             throw new GeneralPlatformDomainRuleException(
-                    "error.msg.fixed.deposit.account.calculate.maturity", "Fixed investment maturity could not be derived.");
+                    "error.msg.fixed.deposit.account.calculate.maturity", dve.getMessage());
         }
     }
 

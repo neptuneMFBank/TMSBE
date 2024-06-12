@@ -48,6 +48,8 @@ public final class FixedDepositAccountData extends DepositAccountData {
     private Integer inMultiplesOfDepositTerm;
     private EnumOptionData inMultiplesOfDepositTermType;
     private BigDecimal depositAmount;
+    private BigDecimal minDepositAmount;
+    private BigDecimal maxDepositAmount;
     private BigDecimal maturityAmount;
     private LocalDate maturityDate;
     private Integer depositPeriod;
@@ -139,7 +141,7 @@ public final class FixedDepositAccountData extends DepositAccountData {
             final Integer inMultiplesOfDepositTerm, final EnumOptionData inMultiplesOfDepositTermType, final BigDecimal depositAmount,
             final BigDecimal maturityAmount, final LocalDate maturityDate, final Integer depositPeriod,
             final EnumOptionData depositPeriodFrequency, final EnumOptionData onAccountClosure, final Boolean transferInterestToSavings,
-            final Long transferToSavingsId) {
+            final Long transferToSavingsId, final BigDecimal minDepositAmount, final BigDecimal maxDepositAmount) {
 
         final PortfolioAccountData linkedAccount = null;
         final PortfolioAccountData transferToSavingsAccount = null;
@@ -171,7 +173,7 @@ public final class FixedDepositAccountData extends DepositAccountData {
                 maxDepositTermType, inMultiplesOfDepositTerm, inMultiplesOfDepositTermType, depositAmount, maturityAmount, maturityDate,
                 depositPeriod, depositPeriodFrequency, periodFrequencyTypeOptions, depositType, onAccountClosure, onAccountClosureOptions,
                 paymentTypeOptions, savingsAccountDatas, linkedAccount, transferInterestToSavings, depositAccountData.withHoldTax,
-                depositAccountData.taxGroup, maturityInstructionOptions, transferToSavingsId, transferToSavingsAccount);
+                depositAccountData.taxGroup, maturityInstructionOptions, transferToSavingsId, transferToSavingsAccount, minDepositAmount, maxDepositAmount);
     }
 
     public static FixedDepositAccountData withInterestChart(final FixedDepositAccountData account,
@@ -193,7 +195,7 @@ public final class FixedDepositAccountData extends DepositAccountData {
                 account.depositPeriod, account.depositPeriodFrequency, account.periodFrequencyTypeOptions, account.depositType,
                 account.onAccountClosure, account.onAccountClosureOptions, account.paymentTypeOptions, account.savingsAccounts,
                 account.linkedAccount, account.transferInterestToSavings, account.withHoldTax, account.taxGroup,
-                account.maturityInstructionOptions, account.transferToSavingsId, account.transferToSavingsAccount);
+                account.maturityInstructionOptions, account.transferToSavingsId, account.transferToSavingsAccount, account.minDepositAmount, account.maxDepositAmount);
     }
 
     public static FixedDepositAccountData associationsAndTemplate(final FixedDepositAccountData account, FixedDepositAccountData template,
@@ -221,7 +223,7 @@ public final class FixedDepositAccountData extends DepositAccountData {
                 account.depositPeriod, account.depositPeriodFrequency, template.periodFrequencyTypeOptions, account.depositType,
                 account.onAccountClosure, account.onAccountClosureOptions, account.paymentTypeOptions, template.savingsAccounts,
                 linkedAccount, account.transferInterestToSavings, account.withHoldTax, account.taxGroup, account.maturityInstructionOptions,
-                account.transferToSavingsId, transferToSavingsAccount);
+                account.transferToSavingsId, transferToSavingsAccount, account.minDepositAmount, account.maxDepositAmount);
     }
 
     public static FixedDepositAccountData withTemplateOptions(final FixedDepositAccountData account,
@@ -252,7 +254,7 @@ public final class FixedDepositAccountData extends DepositAccountData {
                 account.depositPeriod, account.depositPeriodFrequency, periodFrequencyTypeOptions, account.depositType,
                 account.onAccountClosure, account.onAccountClosureOptions, account.paymentTypeOptions, savingsAccounts,
                 account.linkedAccount, account.transferInterestToSavings, account.withHoldTax, account.taxGroup, maturityInstructionOptions,
-                account.transferToSavingsId, account.transferToSavingsAccount);
+                account.transferToSavingsId, account.transferToSavingsAccount, account.minDepositAmount, account.maxDepositAmount);
     }
 
     public static FixedDepositAccountData withClientTemplate(final Long clientId, final String clientName, final Long groupId,
@@ -307,6 +309,8 @@ public final class FixedDepositAccountData extends DepositAccountData {
         final Integer inMultiplesOfDepositTerm = null;
         final EnumOptionData inMultiplesOfDepositTermType = null;
         final BigDecimal depositAmount = null;
+        final BigDecimal minDepositAmount = null;
+        final BigDecimal maxDepositAmount = null;
         final BigDecimal maturityAmount = null;
         final LocalDate maturityDate = null;
         final Integer depositPeriod = null;
@@ -337,7 +341,7 @@ public final class FixedDepositAccountData extends DepositAccountData {
                 depositAmount, maturityAmount, maturityDate, depositPeriod, depositPeriodFrequency, periodFrequencyTypeOptions, depositType,
                 onAccountClosure, onAccountClosureOptions, paymentTypeOptions, savingsAccountDatas, linkedAccount,
                 transferInterestToSavings, withHoldTax, taxGroup, maturityInstructionOptions, transferToSavingsId,
-                transferToSavingsAccount);
+                transferToSavingsAccount, minDepositAmount, maxDepositAmount);
     }
 
     public static FixedDepositAccountData preClosureDetails(final Long accountId, BigDecimal maturityAmount,
@@ -393,6 +397,8 @@ public final class FixedDepositAccountData extends DepositAccountData {
         final Integer inMultiplesOfDepositTerm = null;
         final EnumOptionData inMultiplesOfDepositTermType = null;
         final BigDecimal depositAmount = null;
+        final BigDecimal minDepositAmount = null;
+        final BigDecimal maxDepositAmount = null;
         final LocalDate maturityDate = null;
         final Integer depositPeriod = null;
         final EnumOptionData depositPeriodFrequency = null;
@@ -422,7 +428,7 @@ public final class FixedDepositAccountData extends DepositAccountData {
                 depositAmount, maturityAmount, maturityDate, depositPeriod, depositPeriodFrequency, periodFrequencyTypeOptions, depositType,
                 onAccountClosure, onAccountClosureOptions, paymentTypeOptions, savingsAccountDatas, linkedAccount,
                 transferInterestToSavings, withHoldTax, taxGroup, maturityInstructionOptions, transferToSavingsId,
-                transferToSavingsAccount);
+                transferToSavingsAccount, minDepositAmount, maxDepositAmount);
     }
 
     public static FixedDepositAccountData withClosureTemplateDetails(final FixedDepositAccountData account,
@@ -446,7 +452,7 @@ public final class FixedDepositAccountData extends DepositAccountData {
                 account.depositPeriod, account.depositPeriodFrequency, account.periodFrequencyTypeOptions, account.depositType,
                 account.onAccountClosure, onAccountClosureOptions, paymentTypeOptions, savingsAccountDatas, account.linkedAccount,
                 account.transferInterestToSavings, account.withHoldTax, account.taxGroup, account.maturityInstructionOptions,
-                account.transferToSavingsId, account.transferToSavingsAccount);
+                account.transferToSavingsId, account.transferToSavingsAccount, account.minDepositAmount, account.maxDepositAmount);
 
     }
 
@@ -478,7 +484,7 @@ public final class FixedDepositAccountData extends DepositAccountData {
             final Collection<PaymentTypeData> paymentTypeOptions, final Collection<SavingsAccountData> savingsAccountDatas,
             final PortfolioAccountData linkedAccount, final Boolean transferInterestToSavings, final boolean withHoldTax,
             final TaxGroupData taxGroup, final Collection<EnumOptionData> maturityInstructionOptions, final Long transferToSavingsId,
-            final PortfolioAccountData transferToSavingsAccount) {
+            final PortfolioAccountData transferToSavingsAccount, final BigDecimal minDepositAmount, final BigDecimal maxDepositAmount) {
 
         super(id, accountNo, externalId, groupId, groupName, clientId, clientName, productId, productName, fieldofficerId, fieldofficerName,
                 status, timeline, currency, nominalAnnualInterestRate, interestPeriodType, interestPostingPeriodType,
@@ -498,6 +504,8 @@ public final class FixedDepositAccountData extends DepositAccountData {
         this.inMultiplesOfDepositTerm = inMultiplesOfDepositTerm;
         this.inMultiplesOfDepositTermType = inMultiplesOfDepositTermType;
         this.depositAmount = depositAmount;
+        this.minDepositAmount = minDepositAmount;
+        this.maxDepositAmount = maxDepositAmount;
         this.maturityAmount = maturityAmount;
         this.maturityDate = maturityDate;
         this.depositPeriod = depositPeriod;

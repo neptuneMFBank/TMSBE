@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import org.apache.fineract.accounting.common.AccountingEnumerations;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
@@ -80,10 +81,14 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
         Collection<DepositProductData> depositProductDatas = this.jdbcTemplate.query(sqlBuilder.toString(), depositProductMapper, new Object[]{depositAccountType.getValue()});
         if (!CollectionUtils.isEmpty(depositProductDatas)) {
             final Collection<EnumOptionData> periodFrequencyTypeOptions = this.dropdownReadPlatformService.retrievePeriodFrequencyTypeOptions();
-            //periodFrequencyTypeOptions
-            for (DepositProductData depositProductData : depositProductDatas) {
-                depositProductData.setPeriodFrequencyTypeOptions(periodFrequencyTypeOptions);
-            }
+            Collection<DepositProductData> finalData = depositProductDatas.stream()
+                    .map(val -> {
+                        val.setPeriodFrequencyTypeOptions(periodFrequencyTypeOptions);
+                        return val;
+                    })
+                    .collect(Collectors.toList());
+            depositProductDatas.clear();
+            depositProductDatas.addAll(finalData);
         }
         return depositProductDatas;
     }

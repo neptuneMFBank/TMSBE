@@ -21,8 +21,10 @@ package org.apache.fineract.portfolio.savings.service;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.accounting.common.AccountingEnumerations;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
@@ -44,6 +46,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+@Slf4j
 @Service
 public class DepositProductReadPlatformServiceImpl implements DepositProductReadPlatformService {
 
@@ -87,8 +90,10 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
                         return val;
                     })
                     .collect(Collectors.toList());
+            log.info("retrieveAll finalData: {}", Arrays.toString(finalData.toArray()));
             depositProductDatas.clear();
             depositProductDatas.addAll(finalData);
+            log.info("retrieveAll depositProductDatas: {}", Arrays.toString(depositProductDatas.toArray()));
         }
         return depositProductDatas;
     }

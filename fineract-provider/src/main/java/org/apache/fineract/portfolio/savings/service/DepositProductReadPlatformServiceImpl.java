@@ -27,6 +27,7 @@ import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
+import org.apache.fineract.portfolio.common.service.DropdownReadPlatformService;
 import org.apache.fineract.portfolio.interestratechart.data.InterestRateChartData;
 import org.apache.fineract.portfolio.interestratechart.service.InterestRateChartReadPlatformService;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
@@ -40,6 +41,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class DepositProductReadPlatformServiceImpl implements DepositProductReadPlatformService {
@@ -50,13 +52,15 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
     private final FixedDepositProductMapper fixedDepositProductRowMapper = new FixedDepositProductMapper();
     private final RecurringDepositProductMapper recurringDepositProductRowMapper = new RecurringDepositProductMapper();
     private final DepositProductLookupMapper depositProductLookupsRowMapper = new DepositProductLookupMapper();
+    private final DropdownReadPlatformService dropdownReadPlatformService;
 
     @Autowired
     public DepositProductReadPlatformServiceImpl(final PlatformSecurityContext context, final JdbcTemplate jdbcTemplate,
-            final InterestRateChartReadPlatformService chartReadPlatformService) {
+            final InterestRateChartReadPlatformService chartReadPlatformService, final DropdownReadPlatformService dropdownReadPlatformService) {
         this.context = context;
         this.jdbcTemplate = jdbcTemplate;
         this.chartReadPlatformService = chartReadPlatformService;
+        this.dropdownReadPlatformService = dropdownReadPlatformService;
     }
 
     @Override
@@ -73,7 +77,15 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
         sqlBuilder.append(depositProductMapper.schema());
         sqlBuilder.append(" where sp.deposit_type_enum = ? ");
 
-        return this.jdbcTemplate.query(sqlBuilder.toString(), depositProductMapper, new Object[] { depositAccountType.getValue() });
+        Collection<DepositProductData> depositProductDatas = this.jdbcTemplate.query(sqlBuilder.toString(), depositProductMapper, new Object[]{depositAccountType.getValue()});
+        if (!CollectionUtils.isEmpty(depositProductDatas)) {
+            final Collection<EnumOptionData> periodFrequencyTypeOptions = this.dropdownReadPlatformService.retrievePeriodFrequencyTypeOptions();
+            //periodFrequencyTypeOptions
+            for (DepositProductData depositProductData : depositProductDatas) {
+                depositProductData.setPeriodFrequencyTypeOptions(periodFrequencyTypeOptions);
+            }
+        }
+        return depositProductDatas;
     }
 
     @Override
@@ -85,7 +97,7 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
         sqlBuilder.append(" where sp.deposit_type_enum = ? ");
 
         return this.jdbcTemplate.query(sqlBuilder.toString(), this.depositProductLookupsRowMapper,
-                new Object[] { depositAccountType.getValue() });
+                new Object[]{depositAccountType.getValue()});
     }
 
     @Override
@@ -104,7 +116,7 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
             sqlBuilder.append(" where sp.id = ? and sp.deposit_type_enum = ? ");
 
             return this.jdbcTemplate.queryForObject(sqlBuilder.toString(), depositProductMapper,
-                    new Object[] { fixedDepositProductId, depositAccountType.getValue() });
+                    new Object[]{fixedDepositProductId, depositAccountType.getValue()});
 
         } catch (final EmptyResultDataAccessException e) {
             throw new FixedDepositProductNotFoundException(fixedDepositProductId, e);

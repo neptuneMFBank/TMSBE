@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.accounting.common.AccountingEnumerations;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
@@ -43,15 +42,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 public class DepositProductReadPlatformServiceImpl implements DepositProductReadPlatformService {
 
     private final PlatformSecurityContext context;
     private final JdbcTemplate jdbcTemplate;
     private final InterestRateChartReadPlatformService chartReadPlatformService;
-    private final FixedDepositProductMapper fixedDepositProductRowMapper = new FixedDepositProductMapper();
-    private final RecurringDepositProductMapper recurringDepositProductRowMapper = new RecurringDepositProductMapper();
+    private final FixedDepositProductMapper fixedDepositProductRowMapper;//= new FixedDepositProductMapper();
+    private final RecurringDepositProductMapper recurringDepositProductRowMapper;// = new RecurringDepositProductMapper();
     private final DepositProductLookupMapper depositProductLookupsRowMapper = new DepositProductLookupMapper();
     private final DropdownReadPlatformService dropdownReadPlatformService;
 
@@ -62,6 +60,10 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
         this.jdbcTemplate = jdbcTemplate;
         this.chartReadPlatformService = chartReadPlatformService;
         this.dropdownReadPlatformService = dropdownReadPlatformService;
+        final Collection<EnumOptionData> periodFrequencyTypeOptions
+                = this.dropdownReadPlatformService.retrievePeriodFrequencyTypeOptions();
+        fixedDepositProductRowMapper = new FixedDepositProductMapper(periodFrequencyTypeOptions);
+        recurringDepositProductRowMapper = new RecurringDepositProductMapper(periodFrequencyTypeOptions);
     }
 
     @Override
@@ -78,21 +80,7 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
         sqlBuilder.append(depositProductMapper.schema());
         sqlBuilder.append(" where sp.deposit_type_enum = ? ");
 
-        Collection<DepositProductData> depositProductDatas = this.jdbcTemplate.query(sqlBuilder.toString(), depositProductMapper, new Object[]{depositAccountType.getValue()});
-//        if (!CollectionUtils.isEmpty(depositProductDatas)) {
-//            final Collection<EnumOptionData> periodFrequencyTypeOptions = this.dropdownReadPlatformService.retrievePeriodFrequencyTypeOptions();
-//            Collection<DepositProductData> finalData = depositProductDatas.stream()
-//                    .map(val -> {
-//                        val.setPeriodFrequencyTypeOptions(periodFrequencyTypeOptions);
-//                        return val;
-//                    })
-//                    .collect(Collectors.toList());
-//            log.info("retrieveAll finalData: {}", Arrays.toString(finalData.toArray()));
-//            depositProductDatas.clear();
-//            depositProductDatas.addAll(finalData);
-//            log.info("retrieveAll depositProductDatas: {}", Arrays.toString(depositProductDatas.toArray()));
-//        }
-        return depositProductDatas;
+        return this.jdbcTemplate.query(sqlBuilder.toString(), depositProductMapper, new Object[]{depositAccountType.getValue()});
     }
 
     @Override
@@ -239,8 +227,9 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
     private static class FixedDepositProductMapper extends DepositProductMapper {
 
         private final String schemaSql;
+        private final Collection<EnumOptionData> periodFrequencyTypeOptions;
 
-        FixedDepositProductMapper() {
+        FixedDepositProductMapper(Collection<EnumOptionData> periodFrequencyTypeOptions) {
             final StringBuilder sqlBuilder = new StringBuilder(400);
             sqlBuilder.append(super.schema());
             sqlBuilder.append(", dptp.pre_closure_penal_applicable as preClosurePenalApplicable, ");
@@ -260,6 +249,7 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
             sqlBuilder.append(" left join m_tax_group tg on tg.id = sp.tax_group_id  ");
 
             this.schemaSql = sqlBuilder.toString();
+            this.periodFrequencyTypeOptions = periodFrequencyTypeOptions;
         }
 
         @Override
@@ -294,17 +284,20 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
             final BigDecimal depositAmount = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "depositAmount");
             final BigDecimal maxDepositAmount = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "maxDepositAmount");
 
-            return FixedDepositProductData.instance(depositProductData, preClosurePenalApplicable, preClosurePenalInterest,
+            final FixedDepositProductData fixedDepositProductData = FixedDepositProductData.instance(depositProductData, preClosurePenalApplicable, preClosurePenalInterest,
                     preClosurePenalInterestOnType, minDepositTerm, maxDepositTerm, minDepositTermType, maxDepositTermType,
                     inMultiplesOfDepositTerm, inMultiplesOfDepositTermType, minDepositAmount, depositAmount, maxDepositAmount);
+            fixedDepositProductData.setPeriodFrequencyTypeOptions(periodFrequencyTypeOptions);
+            return fixedDepositProductData;
         }
     }
 
     private static class RecurringDepositProductMapper extends DepositProductMapper {
 
         private final String schemaSql;
+        private final Collection<EnumOptionData> periodFrequencyTypeOptions;
 
-        RecurringDepositProductMapper() {
+        RecurringDepositProductMapper(Collection<EnumOptionData> periodFrequencyTypeOptions) {
             final StringBuilder sqlBuilder = new StringBuilder(400);
             sqlBuilder.append(super.schema());
             sqlBuilder.append(", dptp.pre_closure_penal_applicable as preClosurePenalApplicable, ");
@@ -329,6 +322,7 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
             sqlBuilder.append(" left join m_tax_group tg on tg.id = sp.tax_group_id  ");
 
             this.schemaSql = sqlBuilder.toString();
+            this.periodFrequencyTypeOptions = periodFrequencyTypeOptions;
         }
 
         @Override
@@ -365,10 +359,13 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
             final EnumOptionData inMultiplesOfDepositTermType = (inMultiplesOfDepositTermTypeId == null) ? null
                     : SavingsEnumerations.depositTermFrequencyType(inMultiplesOfDepositTermTypeId);
 
-            return RecurringDepositProductData.instance(depositProductData, preClosurePenalApplicable, preClosurePenalInterest,
+            final RecurringDepositProductData recurringDepositProductData = RecurringDepositProductData.instance(depositProductData, preClosurePenalApplicable, preClosurePenalInterest,
                     preClosurePenalInterestOnType, minDepositTerm, maxDepositTerm, minDepositTermType, maxDepositTermType,
                     inMultiplesOfDepositTerm, inMultiplesOfDepositTermType, isMandatoryDeposit, allowWithdrawal,
                     adjustAdvanceTowardsFuturePayments, minDepositAmount, depositAmount, maxDepositAmount);
+            recurringDepositProductData.setPeriodFrequencyTypeOptions(periodFrequencyTypeOptions);
+
+            return recurringDepositProductData;
         }
     }
 
@@ -389,6 +386,7 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
     }
 
     private DepositProductMapper getDepositProductMapper(final DepositAccountType depositAccountType) {
+
         if (depositAccountType.isFixedDeposit()) {
             return this.fixedDepositProductRowMapper;
         } else if (depositAccountType.isRecurringDeposit()) {

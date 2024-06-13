@@ -85,7 +85,6 @@ public class DepositProductData {
     protected final Collection<ChargeData> penaltyOptions;
     protected final InterestRateChartData chartTemplate;
     protected final Collection<TaxGroupData> taxGroupOptions;
-    private Collection<EnumOptionData> periodFrequencyTypeOptions;
 
     public static DepositProductData template(final CurrencyData currency, final EnumOptionData interestCompoundingPeriodType,
             final EnumOptionData interestPostingPeriodType, final EnumOptionData interestCalculationType,
@@ -452,10 +451,6 @@ public class DepositProductData {
 
     public EnumOptionData getInterestCompoundingPeriodType() {
         return interestCompoundingPeriodType;
-    }
-
-    public void setPeriodFrequencyTypeOptions(Collection<EnumOptionData> periodFrequencyTypeOptions) {
-        this.periodFrequencyTypeOptions = periodFrequencyTypeOptions;
     }
 
 }

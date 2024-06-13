@@ -82,19 +82,19 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
         sqlBuilder.append(" where sp.deposit_type_enum = ? ");
 
         Collection<DepositProductData> depositProductDatas = this.jdbcTemplate.query(sqlBuilder.toString(), depositProductMapper, new Object[]{depositAccountType.getValue()});
-        if (!CollectionUtils.isEmpty(depositProductDatas)) {
-            final Collection<EnumOptionData> periodFrequencyTypeOptions = this.dropdownReadPlatformService.retrievePeriodFrequencyTypeOptions();
-            Collection<DepositProductData> finalData = depositProductDatas.stream()
-                    .map(val -> {
-                        val.setPeriodFrequencyTypeOptions(periodFrequencyTypeOptions);
-                        return val;
-                    })
-                    .collect(Collectors.toList());
-            log.info("retrieveAll finalData: {}", Arrays.toString(finalData.toArray()));
-            depositProductDatas.clear();
-            depositProductDatas.addAll(finalData);
-            log.info("retrieveAll depositProductDatas: {}", Arrays.toString(depositProductDatas.toArray()));
-        }
+//        if (!CollectionUtils.isEmpty(depositProductDatas)) {
+//            final Collection<EnumOptionData> periodFrequencyTypeOptions = this.dropdownReadPlatformService.retrievePeriodFrequencyTypeOptions();
+//            Collection<DepositProductData> finalData = depositProductDatas.stream()
+//                    .map(val -> {
+//                        val.setPeriodFrequencyTypeOptions(periodFrequencyTypeOptions);
+//                        return val;
+//                    })
+//                    .collect(Collectors.toList());
+//            log.info("retrieveAll finalData: {}", Arrays.toString(finalData.toArray()));
+//            depositProductDatas.clear();
+//            depositProductDatas.addAll(finalData);
+//            log.info("retrieveAll depositProductDatas: {}", Arrays.toString(depositProductDatas.toArray()));
+//        }
         return depositProductDatas;
     }
 

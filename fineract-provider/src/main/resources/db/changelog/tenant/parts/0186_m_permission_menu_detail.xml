@@ -38,5 +38,12 @@
             <column name="action_name" value="READ"/>
             <column name="can_maker_checker" valueBoolean="false"/>
         </insert>
+        <insert tableName="m_permission">
+            <column name="grouping" value="special"/>
+            <column name="code" value="BACKDATE_TRANSACTIONS"/>
+            <column name="entity_name" />
+            <column name="action_name" />
+            <column name="can_maker_checker" valueBoolean="false"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>

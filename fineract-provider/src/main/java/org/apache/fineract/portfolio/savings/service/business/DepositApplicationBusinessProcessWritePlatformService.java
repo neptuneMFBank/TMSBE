@@ -16,18 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.organisation.business.businesstime.domain;
+package org.apache.fineract.portfolio.savings.service.business;
 
-import java.util.Collection;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import com.google.gson.JsonElement;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
-public interface BusinessTimeRepository extends JpaRepository<BusinessTime, Long>, JpaSpecificationExecutor<BusinessTime> {
+public interface DepositApplicationBusinessProcessWritePlatformService {
 
-    BusinessTime findByRoleIdAndWeekDayId(Long roleId, Integer weekDayId);
+    CommandProcessingResult businessAllowModifyActiveRDApplication(Long accountId, JsonCommand command);
 
-    Collection<BusinessTime> findByRoleId(Long roleId);
+    JsonElement calculateMaturityRDApplication(final String json);
 
-    void deleteByRoleId(Long roleId);
+    JsonElement calculateMaturityFDApplication(final String json);
 
 }

@@ -40,6 +40,7 @@ public final class TransferApprovalApiResourceConstants {
     public static final String FROM_ACCOUNT_ID = "fromAccountId";
     public static final String FROM_ACCOUNT_TYPE = "fromAccountType";
     public static final String FROM_ACCOUNT_NUMBER = "fromAccountNumber";
+    public static final String FROM_ACCOUNT_NAME = "fromAccountName";
     public static final String TO_ACCOUNT_ID = "toAccountId";
     public static final String TO_ACCOUNT_TYPE = "toAccountType";
     public static final String TO_ACCOUNT_NUMBER = "toAccountNumber";
@@ -58,10 +59,10 @@ public final class TransferApprovalApiResourceConstants {
 
     public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(AMOUNT, STATUS, TRANSFER_TYPE,
             HOLD_TRANSACTION_ID, RELEASE_TRANSACTION_ID, WITHDRAW_TRANSACTION_ID, FROM_ACCOUNT_ID, FROM_ACCOUNT_TYPE, FROM_ACCOUNT_NUMBER,
-            TO_ACCOUNT_ID, TO_ACCOUNT_TYPE, TO_ACCOUNT_NUMBER, ACTIVATION_CHANNEL_ID, TO_BANK_ID, REASON, TRANSFER_TYPE_OPTIONS));
+            TO_ACCOUNT_ID, TO_ACCOUNT_TYPE, TO_ACCOUNT_NUMBER, ACTIVATION_CHANNEL_ID, TO_BANK_ID, REASON, TRANSFER_TYPE_OPTIONS,FROM_ACCOUNT_NAME, noteParameterName));
 
     public static final Set<String> RESQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(AMOUNT, TRANSFER_TYPE,
             FROM_ACCOUNT_ID, FROM_ACCOUNT_TYPE, FROM_ACCOUNT_NUMBER,
-            TO_ACCOUNT_ID, TO_ACCOUNT_TYPE, TO_ACCOUNT_NUMBER, ACTIVATION_CHANNEL_ID, TO_BANK_ID, localeParameterName));
+            TO_ACCOUNT_ID, TO_ACCOUNT_TYPE, TO_ACCOUNT_NUMBER, ACTIVATION_CHANNEL_ID, TO_BANK_ID, localeParameterName, noteParameterName));
 
 }

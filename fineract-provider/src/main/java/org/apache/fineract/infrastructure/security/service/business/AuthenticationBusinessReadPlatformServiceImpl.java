@@ -46,7 +46,7 @@ public class AuthenticationBusinessReadPlatformServiceImpl implements Authentica
             final StringBuilder sqlBuilder = new StringBuilder(200);
             final lastLoginDateMapper ptm = new lastLoginDateMapper();
 
-            String lastLoginSql = "SELECT  mllv.last_login_date  as lastLoginDate" + " FROM fineract_default.m_users_details_view mllv "
+            String lastLoginSql = "SELECT  mllv.last_login_date  as lastLoginDate" + " FROM m_users_details_view mllv "
                     + " where  user_id = " + userId;
             sqlBuilder.append(lastLoginSql);
 

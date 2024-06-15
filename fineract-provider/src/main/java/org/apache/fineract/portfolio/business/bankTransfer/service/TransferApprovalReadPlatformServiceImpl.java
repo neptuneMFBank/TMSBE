@@ -104,7 +104,7 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
         final String toAccountNumber = searchParameters.getToAccountNumber();
         final String fromAccountNumber = searchParameters.getFromAccountNumber();
 
-        final String status = searchParameters.getStatus();
+        final Integer status = searchParameters.getStatusId();
 
         String extraCriteria = "";
 
@@ -130,7 +130,7 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
             paramList.add(transferType);
         }
 
-        if (status != null) {
+        if (searchParameters.isStatusIdPassed()) {
             paramList.add(status);
             extraCriteria += " and mta.status = ? ";
         }
@@ -199,12 +199,13 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
                     + " mta.from_account_id as fromAccountId,"
                     + " mta.from_account_type as fromAccountType,"
                     + " mta.from_account_number as fromAccountNumber,"
+                    + " mta.from_account_name as fromAccountName,"
                     + " mta.to_account_id as toAccountId,"
                     + " mta.to_account_type as toAccountType,"
                     + " mta.to_account_number as toAccountNumber,"
                     + " mta.to_bank_id as toBankId,"
                     + " mta.activation_channel_id as activationChannelId,"
-                    + " mta.reason as reason, ");
+                    + " mta.reason as reason, mta.note as note ");
             builder.append(
                     " mta.created_by as createdById,"
                     + " mta.created_on_utc as createdOnUtc,"
@@ -263,11 +264,13 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
             final String createdByLastname = rs.getString("createdByLastname");
             final Long createdById = JdbcSupport.getLong(rs, "createdById");
             final LocalDate createdOn = JdbcSupport.getLocalDate(rs, "createdOnUtc");
+            final String fromAccountName = rs.getString("fromAccountName");
+            final String note = rs.getString("note");
 
             return TransferApprovalData.instance(id, amount, status, transferType, holdTransactionId, releaseTransactionId,
                     withdrawTransactionId, fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
                     toAccountNumber, activationChannel, toBank, reason, createdByUsername, createdByFirstname,
-                    createdByLastname, createdById, createdOn);
+                    createdByLastname, createdById, createdOn, fromAccountName, note);
 
         }
     }

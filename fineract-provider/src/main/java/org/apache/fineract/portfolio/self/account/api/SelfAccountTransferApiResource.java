@@ -50,7 +50,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.portfolio.account.api.AccountTransfersApiResource;
 import org.apache.fineract.portfolio.account.service.AccountTransfersReadPlatformService;
 import org.apache.fineract.portfolio.business.bankTransfer.api.TransferApprovalApiResource;
-import org.apache.fineract.portfolio.business.bankTransfer.api.TransferApprovalApiResourceConstants;
+import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
 import org.apache.fineract.portfolio.self.account.data.SelfAccountTemplateData;
 import org.apache.fineract.portfolio.self.account.data.SelfAccountTransferData;
 import org.apache.fineract.portfolio.self.account.data.SelfAccountTransferDataValidator;
@@ -58,6 +58,7 @@ import org.apache.fineract.portfolio.self.account.exception.BeneficiaryTransferL
 import org.apache.fineract.portfolio.self.account.exception.DailyTPTTransactionAmountLimitExceededException;
 import org.apache.fineract.portfolio.self.account.service.SelfAccountTransferReadService;
 import org.apache.fineract.portfolio.self.account.service.SelfBeneficiariesTPTReadPlatformService;
+import org.apache.fineract.portfolio.self.client.service.AppuserClientMapperReadService;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -80,6 +81,7 @@ public class SelfAccountTransferApiResource {
     private final ConfigurationDomainService configurationDomainService;
     private final AccountTransfersReadPlatformService accountTransfersReadPlatformService;
     private final TransferApprovalApiResource transferApprovalApiResource;
+    private final AppuserClientMapperReadService appUserClientMapperReadService;
 
     @Autowired
     public SelfAccountTransferApiResource(final PlatformSecurityContext context,
@@ -90,7 +92,7 @@ public class SelfAccountTransferApiResource {
             final SelfBeneficiariesTPTReadPlatformService tptBeneficiaryReadPlatformService,
             final ConfigurationDomainService configurationDomainService,
             final AccountTransfersReadPlatformService accountTransfersReadPlatformService,
-            final TransferApprovalApiResource transferApprovalApiResource) {
+            final TransferApprovalApiResource transferApprovalApiResource, final AppuserClientMapperReadService appUserClientMapperReadService) {
         this.context = context;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.accountTransfersApiResource = accountTransfersApiResource;
@@ -101,6 +103,7 @@ public class SelfAccountTransferApiResource {
         this.configurationDomainService = configurationDomainService;
         this.accountTransfersReadPlatformService = accountTransfersReadPlatformService;
         this.transferApprovalApiResource = transferApprovalApiResource;
+        this.appUserClientMapperReadService = appUserClientMapperReadService;
     }
 
     @GET
@@ -175,47 +178,52 @@ public class SelfAccountTransferApiResource {
     }
 
     @GET
-    @Path("approval/{transferApprovalId}")
+    @Path("approval/{clientId}/{transferApprovalId}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve a TransferApproval")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK")})
-    public String retrieveOne(@PathParam("transferApprovalId")
-            @Parameter(description = "transferApprovalId")
+    public String retrieveOne(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
+            @PathParam("transferApprovalId") @Parameter(description = "transferApprovalId")
             final Long transferApprovalId,
             @Context final UriInfo uriInfo) {
-
-        this.context.authenticatedUser().validateHasReadPermission(TransferApprovalApiResourceConstants.RESOURCE_NAME);
+        validateAppuserClientsMapping(clientId);
         return this.transferApprovalApiResource.retrieveOne(transferApprovalId, uriInfo);
-
     }
 
     @POST
-    @Path("approval")
+    @Path("approval/{clientId}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Create a Transfer Approval", description = "Creates a Transfer Approval\n\n")
     @RequestBody(required = true)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK")})
-    public String create(@Parameter(hidden = true)
-            final String apiRequestBodyAsJson
+    public String create(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId, @Parameter(hidden = true) final String apiRequestBodyAsJson
     ) {
-        this.context.authenticatedUser();
+        validateAppuserClientsMapping(clientId);
         return this.transferApprovalApiResource.create(apiRequestBodyAsJson);
     }
 
     @GET
-    @Path("approval/template")
+    @Path("approval/{clientId}/template")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve a TransferApproval")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "OK")})
-    public String approvalTemplate(
+    public String approvalTemplate(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Context final UriInfo uriInfo) {
+        validateAppuserClientsMapping(clientId);
         return this.transferApprovalApiResource.retrieveTemplate(uriInfo);
+    }
 
+    private void validateAppuserClientsMapping(final Long clientId) {
+        AppUser user = this.context.authenticatedUser();
+        final boolean mappedClientId = this.appUserClientMapperReadService.isClientMappedToUser(clientId, user.getId());
+        if (!mappedClientId) {
+            throw new ClientNotFoundException(clientId);
+        }
     }
 }

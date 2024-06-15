@@ -70,6 +70,9 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
     @Column(name = "from_account_number")
     private String fromAccountNumber;
 
+    @Column(name = "from_account_name")
+    private String fromAccountName;
+
     @Column(name = "to_account_id")
     private Long toAccountId;
 
@@ -90,9 +93,12 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
     @Column(name = "reason")
     private String reason;
 
+    @Column(name = "note")
+    private String note;
+
     private TransferApproval(BigDecimal amount, Integer status, Integer transferType, Long holdTransactionId, Long releaseTransactionId,
             Long withdrawTransactionId, Long fromAccountId, Integer fromAccountType, String fromAccountNumber,
-            Long toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId, String reason) {
+            Long toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId, String reason, String fromAccountName, String note) {
         this.amount = amount;
         this.status = status;
         this.transferType = transferType;
@@ -108,6 +114,8 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
         this.activationChannelId = activationChannelId;
         this.toBankId = toBankId;
         this.reason = reason;
+        this.fromAccountName = fromAccountName;
+        this.note = note;
     }
 
     public TransferApproval() {
@@ -115,13 +123,13 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
 
     public static TransferApproval instance(BigDecimal amount, Integer status, Integer transferType, Long holdTransactionId,
             Long fromAccountId, Integer fromAccountType, String fromAccountNumber,
-            Long toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId) {
+            Long toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId, String fromAccountName, final String note) {
         final Long releaseTransactionId = null;
         final Long withdrawTransactionId = null;
         final String reason = null;
         return new TransferApproval(amount, status, transferType, holdTransactionId, releaseTransactionId,
                 withdrawTransactionId, fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
-                toAccountNumber, activationChannelId, toBankId, reason);
+                toAccountNumber, activationChannelId, toBankId, reason, fromAccountName, note);
 
     }
 
@@ -144,7 +152,7 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
         final Map<String, Object> actualChanges = new LinkedHashMap<>();
 
         this.status = SavingsAccountStatusType.APPROVED.getValue();
-        this.reason = command.stringValueOfParameterNamed(TransferApprovalApiResourceConstants.REASON);
+        this.reason = command.stringValueOfParameterNamed(TransferApprovalApiResourceConstants.noteParameterName);
         actualChanges.put(TransferApprovalApiResourceConstants.STATUS, SavingsEnumerations.status(this.status));
         actualChanges.put(TransferApprovalApiResourceConstants.REASON, this.reason);
 
@@ -182,7 +190,7 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
         final Map<String, Object> actualChanges = new LinkedHashMap<>();
 
         this.status = SavingsAccountStatusType.REJECTED.getValue();
-        this.reason = command.stringValueOfParameterNamed(TransferApprovalApiResourceConstants.REASON);
+        this.reason = command.stringValueOfParameterNamed(TransferApprovalApiResourceConstants.noteParameterName);
         actualChanges.put(TransferApprovalApiResourceConstants.STATUS, SavingsEnumerations.status(this.status));
         actualChanges.put(TransferApprovalApiResourceConstants.REASON, this.reason);
 
@@ -256,6 +264,10 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
         return reason;
     }
 
+    public String getNote() {
+        return note;
+    }
+
     public BigDecimal getAmount() {
         return amount;
     }
@@ -266,6 +278,10 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
 
     public String getFromAccountNumber() {
         return fromAccountNumber;
+    }
+
+    public String getFromAccountName() {
+        return fromAccountName;
     }
 
     public String getToAccountNumber() {

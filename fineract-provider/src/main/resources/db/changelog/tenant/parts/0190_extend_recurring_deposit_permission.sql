@@ -17,4 +17,9 @@
 -- under the License.
 --
 
-ALTER TABLE m_metrics DROP FOREIGN KEY metrics_FK_saving;
+
+-- INSERT m_permission
+
+INSERT INTO `m_permission` (`id`, `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`)
+VALUES
+     (NULL, 'portfolio', 'EXTEND_RECURRINGDEPOSITACCOUNT', 'RECURRINGDEPOSITACCOUNT', 'EXTEND', false);

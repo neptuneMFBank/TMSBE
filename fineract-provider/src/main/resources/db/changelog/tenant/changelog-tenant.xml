@@ -239,4 +239,10 @@
     <include file="parts/0427_delete_m_accounttier_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0428_read_m_accounttier_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0429_alter_m_account_tier_limit.sql" relativeToChangelogFile="true" />
+    <include file="parts/0190_extend_recurring_deposit_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0191_business_time_config.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>
+<!-- 
+    files to exempt when running migration for the first time
+    0063,0138,0067,0095,0117,0163,0140,0143,0164,0172,0173 
+-->

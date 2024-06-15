@@ -142,11 +142,11 @@ public final class RecurringDepositProductData extends DepositProductData {
     }
 
     /**
-     * Returns a {@link RecurringDepositProductData} that contains and exist {@link RecurringDepositProductData} data
-     * with further template data for dropdowns.
+     * Returns a {@link RecurringDepositProductData} that contains and exist
+     * {@link RecurringDepositProductData} data with further template data for
+     * dropdowns.
      *
-     * @param taxGroupOptions
-     *            TODO
+     * @param taxGroupOptions TODO
      */
     public static RecurringDepositProductData withTemplate(final RecurringDepositProductData existingProduct,
             final Collection<CurrencyData> currencyOptions, final Collection<EnumOptionData> interestCompoundingPeriodTypeOptions,
@@ -475,4 +475,9 @@ public final class RecurringDepositProductData extends DepositProductData {
     public boolean isAdjustAdvanceTowardsFuturePayments() {
         return adjustAdvanceTowardsFuturePayments;
     }
+
+    public void setPeriodFrequencyTypeOptions(Collection<EnumOptionData> periodFrequencyTypeOptions) {
+        this.periodFrequencyTypeOptions = periodFrequencyTypeOptions;
+    }
+
 }

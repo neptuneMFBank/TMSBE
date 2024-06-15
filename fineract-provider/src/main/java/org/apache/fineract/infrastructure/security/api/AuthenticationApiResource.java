@@ -43,7 +43,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
+import org.apache.fineract.infrastructure.configuration.service.ConfigurationReadPlatformService;
 import org.apache.fineract.organisation.business.businesstime.domain.BusinessTime;
 import org.apache.fineract.organisation.business.businesstime.domain.BusinessTimeRepositoryWrapper;
 import org.apache.fineract.organisation.business.businesstime.exception.BusinessTimeNotFoundException;
@@ -100,6 +103,7 @@ public class AuthenticationApiResource {
     private final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper;
     private final ClientBusinessReadPlatformService clientBusinessReadPlatformService;
     private final BusinessTimeRepositoryWrapper businessTimeRepository;
+    private final ConfigurationReadPlatformService configurationReadPlatformService;
 
     @Autowired
     public AuthenticationApiResource(
@@ -111,7 +115,7 @@ public class AuthenticationApiResource {
             final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService,
             final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper,
             final ClientBusinessReadPlatformService clientBusinessReadPlatformService,
-            final BusinessTimeRepositoryWrapper businessTimeRepository) {
+            final BusinessTimeRepositoryWrapper businessTimeRepository, final ConfigurationReadPlatformService configurationReadPlatformService) {
         this.customAuthenticationProvider = customAuthenticationProvider;
         this.apiJsonSerializerService = apiJsonSerializerService;
         this.springSecurityPlatformSecurityContext = springSecurityPlatformSecurityContext;
@@ -121,6 +125,7 @@ public class AuthenticationApiResource {
         this.appUserExtensionRepositoryWrapper = appUserExtensionRepositoryWrapper;
         this.clientBusinessReadPlatformService = clientBusinessReadPlatformService;
         this.businessTimeRepository = businessTimeRepository;
+        this.configurationReadPlatformService = configurationReadPlatformService;
     }
 
     @POST
@@ -220,21 +225,30 @@ public class AuthenticationApiResource {
     }
 
     private void validateBusinessTime(Long roleId) {
-        LocalDateTime today = LocalDateTime.now(DateUtils.getDateTimeZoneOfTenant());
-        DayOfWeek weekDay = today.getDayOfWeek();
-        LocalTime time = today.toLocalTime();
+        final GlobalConfigurationPropertyData businessLoginTime = this.configurationReadPlatformService
+                .retrieveGlobalConfigurationX("business-login-time");
+        if (BooleanUtils.isTrue(businessLoginTime.isEnabled())) {
+            // only check Business Time Configured
+            LocalDateTime today = LocalDateTime.now(DateUtils.getDateTimeZoneOfTenant());
+            DayOfWeek weekDay = today.getDayOfWeek();
+            LocalTime time = today.toLocalTime();
 
-        BusinessTime businessTime = this.businessTimeRepository.findByRoleIdAndWeekDayId(roleId, weekDay.getValue());
-        if (businessTime != null) {
-            LocalTime businessStartTime = businessTime.getStartTime();
-            LocalTime businessEndTime = businessTime.getEndTime();
+            BusinessTime businessTime = this.businessTimeRepository.findByRoleIdAndWeekDayId(roleId, weekDay.getValue());
+            if (businessTime != null) {
+                LocalTime businessStartTime = businessTime.getStartTime();
+                LocalTime businessEndTime = businessTime.getEndTime();
 
-            if (businessStartTime != null && !time.isAfter(businessStartTime)) {
-                throw new BusinessTimeNotFoundException(businessStartTime, " before business start");
-            }
+                if (businessStartTime == null || businessEndTime == null) {
+                    throw new BusinessTimeNotFoundException("No login time set for user.");
+                }
 
-            if (businessEndTime != null && !time.isBefore(businessEndTime)) {
-                throw new BusinessTimeNotFoundException(businessEndTime, "after business end");
+                if (!time.isAfter(businessStartTime)) {
+                    throw new BusinessTimeNotFoundException(businessStartTime, " before business start");
+                }
+
+                if (!time.isBefore(businessEndTime)) {
+                    throw new BusinessTimeNotFoundException(businessEndTime, "after business end");
+                }
             }
         }
     }

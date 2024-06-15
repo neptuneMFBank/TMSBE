@@ -17,4 +17,8 @@
 -- under the License.
 --
 
-ALTER TABLE m_metrics DROP FOREIGN KEY metrics_FK_saving;
+
+-- INSERT c_configuration
+INSERT INTO `c_configuration` (`id`, `name`, `value`, `date_value`, `string_value`, `enabled`, `is_trap_door`, `description`)
+VALUES
+     (NULL, 'business-login-time', NULL, NULL, NULL, 0, 0, NULL);

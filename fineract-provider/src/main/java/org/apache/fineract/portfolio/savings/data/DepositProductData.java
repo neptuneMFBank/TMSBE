@@ -144,11 +144,10 @@ public class DepositProductData {
     }
 
     /**
-     * Returns a {@link DepositProductData} that contains and exist {@link DepositProductData} data with further
-     * template data for dropdowns.
+     * Returns a {@link DepositProductData} that contains and exist
+     * {@link DepositProductData} data with further template data for dropdowns.
      *
-     * @param taxGroupOptions
-     *            TODO
+     * @param taxGroupOptions TODO
      */
     public static DepositProductData withTemplate(final DepositProductData existingProduct, final Collection<CurrencyData> currencyOptions,
             final Collection<EnumOptionData> interestCompoundingPeriodTypeOptions,
@@ -367,9 +366,9 @@ public class DepositProductData {
 
         this.charges = charges;// charges associated with Savings product
         this.chargeOptions = chargeOptions;// charges available for adding to
-                                           // Savings product
+        // Savings product
         this.penaltyOptions = penaltyOptions;// penalties available for adding
-                                             // to Savings product
+        // to Savings product
 
         this.feeToIncomeAccountMappings = feeToIncomeAccountMappings;
         this.penaltyToIncomeAccountMappings = penaltyToIncomeAccountMappings;
@@ -453,4 +452,5 @@ public class DepositProductData {
     public EnumOptionData getInterestCompoundingPeriodType() {
         return interestCompoundingPeriodType;
     }
+
 }

@@ -52,4 +52,8 @@ public class BusinessTimeRepositoryWrapper {
     public void delete(BusinessTime businessTime) {
         this.repository.delete(businessTime);
     }
+
+    public void deleteByRoleId(Long roleId) {
+        this.repository.deleteByRoleId(roleId);
+    }
 }

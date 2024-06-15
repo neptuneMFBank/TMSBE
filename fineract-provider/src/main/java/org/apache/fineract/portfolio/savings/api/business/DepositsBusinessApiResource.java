@@ -63,6 +63,7 @@ import org.apache.fineract.portfolio.savings.api.RecurringDepositAccountsApiReso
 import org.apache.fineract.portfolio.savings.api.SavingsAccountsApiResource;
 import org.apache.fineract.portfolio.savings.business.DepositsBusinessApiConstants;
 import org.apache.fineract.portfolio.savings.data.business.DepositAccountBusinessData;
+import org.apache.fineract.portfolio.savings.service.business.DepositApplicationBusinessProcessWritePlatformService;
 import org.apache.fineract.portfolio.savings.service.business.DepositsBusinessReadPlatformService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -85,6 +86,7 @@ public class DepositsBusinessApiResource {
     private final FixedDepositAccountsApiResource fixedDepositAccountsApiResource;
     private final RecurringDepositAccountsApiResource recurringDepositAccountsApiResource;
     private final FromJsonHelper fromApiJsonHelper;
+    private final DepositApplicationBusinessProcessWritePlatformService depositApplicationBusinessProcessWritePlatformService;
 
     @GET
     @Consumes({MediaType.APPLICATION_JSON})
@@ -222,6 +224,18 @@ public class DepositsBusinessApiResource {
             log.info("commandParam {}: ", templateJson);
             commandRequest = new CommandWrapperBuilder().createRecurringDepositAccount().withJson(templateJson).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        } else if (is(commandParam, "calculateRecurringMaturity")) {
+            templateJson = DepositsBusinessApiTemplate.recurringTemplateConfig(this.recurringDepositAccountsApiResource,
+                    apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
+            log.info("commandParam calculateRecurringSchedule {}: ", templateJson);
+            final JsonElement jsonElement = this.depositApplicationBusinessProcessWritePlatformService.calculateMaturityRDApplication(templateJson);
+            return this.toApiJsonSerializer.serialize(jsonElement);
+        } else if (is(commandParam, "calculateFixedMaturity")) {
+            templateJson = DepositsBusinessApiTemplate.fixedTemplateConfig(this.fixedDepositAccountsApiResource, apiRequestBodyAsJson,
+                    this.fromApiJsonHelper, true, uriInfo, null);
+            log.info("commandParam calculateFixedMaturity {}: ", templateJson);
+            final JsonElement jsonElement = this.depositApplicationBusinessProcessWritePlatformService.calculateMaturityFDApplication(templateJson);
+            return this.toApiJsonSerializer.serialize(jsonElement);
         }
 
         if (result == null) {
@@ -277,6 +291,12 @@ public class DepositsBusinessApiResource {
                     apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
             log.info("updateApplication commandParam {}: ", templateJson);
             commandRequest = new CommandWrapperBuilder().updateRecurringDepositAccount(accountId).withJson(templateJson).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        } else if (is(commandParam, "extendRecurring")) {
+            templateJson = DepositsBusinessApiTemplate.recurringTemplateConfig(this.recurringDepositAccountsApiResource,
+                    apiRequestBodyAsJson, this.fromApiJsonHelper, true, uriInfo, null);
+            log.info("extendUpdateApplication commandParam {}: ", templateJson);
+            commandRequest = new CommandWrapperBuilder().extendRecurringDepositAccount(accountId).withJson(templateJson).build();
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         }
 
@@ -380,6 +400,26 @@ public class DepositsBusinessApiResource {
             final Long savingsId = this.fromApiJsonHelper.extractLongNamed("resourceId", jsonElement);
             this.depositsBusinessReadPlatformService.approveActivateSavings(savingsId);
         }
+        return result;
+    }
+
+    @PUT
+    @Path("auto/{accountId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Update/Approve/Activate new savings application", description = """
+            Submits new savings application
+            """)
+    @RequestBody(required = true)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        )})
+    public String updateApproveActivateApplication(@Context final UriInfo uriInfo, @QueryParam("command") final String commandParam,
+            @PathParam("accountId") @Parameter(description = "accountId") final Long accountId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+        final String result = this.updateApplication(accountId, uriInfo, commandParam, apiRequestBodyAsJson);
+        //call activate process
+        this.depositsBusinessReadPlatformService.approveActivateSavings(accountId);
         return result;
     }
 }

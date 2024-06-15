@@ -66,16 +66,11 @@ public class BusinessTimeDataValidator {
         final Integer weekDayId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(BusinessTimeApiResourceConstants.WEEK_DAY_ID, element);
         baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.WEEK_DAY_ID).value(weekDayId).notBlank().integerZeroOrGreater();
 
-        LocalTime endTime = null;
-        LocalTime startTime = null;
-        if (this.fromApiJsonHelper.parameterExists(BusinessTimeApiResourceConstants.START_TIME, element)) {
-            startTime = this.fromApiJsonHelper.extractLocalTimeNamed(BusinessTimeApiResourceConstants.START_TIME, element);
-            baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.START_TIME).value(startTime).ignoreIfNull();
-        }
-        if (this.fromApiJsonHelper.parameterExists(BusinessTimeApiResourceConstants.END_TIME, element)) {
-            endTime = this.fromApiJsonHelper.extractLocalTimeNamed(BusinessTimeApiResourceConstants.END_TIME, element);
-            baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.END_TIME).value(endTime).ignoreIfNull();
-        }
+        LocalTime startTime = this.fromApiJsonHelper.extractLocalTimeNamed(BusinessTimeApiResourceConstants.START_TIME, element);
+        baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.START_TIME).value(startTime).notNull();
+
+        LocalTime endTime = this.fromApiJsonHelper.extractLocalTimeNamed(BusinessTimeApiResourceConstants.END_TIME, element);
+        baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.END_TIME).value(endTime).notNull();
 
         if (this.fromApiJsonHelper.parameterExists(BusinessTimeApiResourceConstants.START_TIME, element)
                 || this.fromApiJsonHelper.parameterExists(BusinessTimeApiResourceConstants.END_TIME, element)) {
@@ -84,10 +79,7 @@ public class BusinessTimeDataValidator {
 
         }
 
-        if (startTime != null && endTime != null && !startTime.isBefore(endTime)) {
-            baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.START_TIME).value(startTime)
-                    .failWithCodeNoParameterAddedToErrorCode("starttime.cannot.be.after.endtime");
-        }
+        timeChecks(startTime, endTime, baseDataValidator);
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
 
     }
@@ -116,12 +108,12 @@ public class BusinessTimeDataValidator {
         LocalTime startTime = null;
         if (this.fromApiJsonHelper.parameterExists(BusinessTimeApiResourceConstants.START_TIME, element)) {
             startTime = this.fromApiJsonHelper.extractLocalTimeNamed(BusinessTimeApiResourceConstants.START_TIME, element);
-            baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.START_TIME).value(startTime).ignoreIfNull();
+            baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.START_TIME).value(startTime).notNull();
 
         }
         if (this.fromApiJsonHelper.parameterExists(BusinessTimeApiResourceConstants.END_TIME, element)) {
             endTime = this.fromApiJsonHelper.extractLocalTimeNamed(BusinessTimeApiResourceConstants.END_TIME, element);
-            baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.END_TIME).value(endTime).ignoreIfNull();
+            baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.END_TIME).value(endTime).notNull();
         }
 
         if (this.fromApiJsonHelper.parameterExists(BusinessTimeApiResourceConstants.START_TIME, element)
@@ -130,12 +122,16 @@ public class BusinessTimeDataValidator {
             baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.TIME_FORMAT).value(timeFormat).notBlank();
 
         }
+        timeChecks(startTime, endTime, baseDataValidator);
+        throwExceptionIfValidationWarningsExist(dataValidationErrors);
+
+    }
+
+    protected void timeChecks(LocalTime startTime, LocalTime endTime, final DataValidatorBuilder baseDataValidator) {
         if (startTime != null && endTime != null && !startTime.isBefore(endTime)) {
             baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.START_TIME).value(startTime)
                     .failWithCodeNoParameterAddedToErrorCode("starttime.cannot.be.after.endtime");
         }
-        throwExceptionIfValidationWarningsExist(dataValidationErrors);
-
     }
 
     private void throwExceptionIfValidationWarningsExist(final List<ApiParameterError> dataValidationErrors) {

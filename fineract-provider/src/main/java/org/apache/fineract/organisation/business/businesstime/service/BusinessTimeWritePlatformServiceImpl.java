@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BusinessTimeWritePlatformServiceImpl implements BusinessTimeWritePlatformService {
@@ -57,6 +58,7 @@ public class BusinessTimeWritePlatformServiceImpl implements BusinessTimeWritePl
         this.roleRepository = roleRepository;
     }
 
+    @Transactional
     @Override
     public CommandProcessingResult create(final JsonCommand command) {
         this.context.authenticatedUser();
@@ -87,6 +89,7 @@ public class BusinessTimeWritePlatformServiceImpl implements BusinessTimeWritePl
         }
     }
 
+    @Transactional
     @Override
     public CommandProcessingResult update(final JsonCommand command, final Long businessTimeId) {
 
@@ -119,6 +122,7 @@ public class BusinessTimeWritePlatformServiceImpl implements BusinessTimeWritePl
         }
     }
 
+    @Transactional
     @Override
     public CommandProcessingResult delete(final Long businessTimeId) {
 
@@ -132,6 +136,7 @@ public class BusinessTimeWritePlatformServiceImpl implements BusinessTimeWritePl
                 .build();
     }
 
+    @Transactional
     @Override
     public CommandProcessingResult deleteByRole(final Long roleId) {
 
@@ -140,9 +145,10 @@ public class BusinessTimeWritePlatformServiceImpl implements BusinessTimeWritePl
         if (businessTimes.isEmpty()) {
             throw new BusinessTimeNotFoundException("No business time for role with id " + roleId);
         }
-        for (BusinessTime businessTime : businessTimes) {
-            this.repository.delete(businessTime);
-        }
+//        for (BusinessTime businessTime : businessTimes) {
+//            this.repository.delete(businessTime);
+//        }
+        this.repository.deleteByRoleId(roleId);
 
         return new CommandProcessingResultBuilder() //
                 .withEntityId(roleId) //

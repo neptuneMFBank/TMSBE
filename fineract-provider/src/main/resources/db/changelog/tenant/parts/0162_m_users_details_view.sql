@@ -22,7 +22,7 @@ CREATE OR REPLACE VIEW m_users_details_view AS
         MAX(maker_id) as user_id,
         MAX(made_on_date) AS last_login_date        
     FROM
-        fineract_default.m_portfolio_command_source
+        m_portfolio_command_source
     WHERE
         action_name = 'LOGIN'
     GROUP BY maker_id;

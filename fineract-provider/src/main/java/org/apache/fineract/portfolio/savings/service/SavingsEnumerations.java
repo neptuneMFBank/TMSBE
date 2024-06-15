@@ -30,6 +30,7 @@ import org.apache.fineract.portfolio.savings.RecurringDepositType;
 import org.apache.fineract.portfolio.savings.SavingsAccountTransactionType;
 import org.apache.fineract.portfolio.savings.SavingsCompoundingInterestPeriodType;
 import org.apache.fineract.portfolio.savings.SavingsInterestCalculationDaysInYearType;
+import static org.apache.fineract.portfolio.savings.SavingsInterestCalculationDaysInYearType.DAYS_365;
 import org.apache.fineract.portfolio.savings.SavingsInterestCalculationType;
 import org.apache.fineract.portfolio.savings.SavingsPeriodFrequencyType;
 import org.apache.fineract.portfolio.savings.SavingsPostingInterestPeriodType;
@@ -491,6 +492,10 @@ public final class SavingsEnumerations {
             case DAYS_365:
                 optionData = new EnumOptionData(SavingsInterestCalculationDaysInYearType.DAYS_365.getValue().longValue(),
                         SavingsInterestCalculationDaysInYearType.DAYS_365.getCode(), "365 Days");
+            break;
+             case DAYS_366:
+                optionData = new EnumOptionData(SavingsInterestCalculationDaysInYearType.DAYS_366.getValue().longValue(),
+                        SavingsInterestCalculationDaysInYearType.DAYS_366.getCode(), "366 Days");
             break;
         }
 

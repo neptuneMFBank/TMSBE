@@ -98,6 +98,7 @@ public final class TemplatePopulateImportConstants {
     // InterestCalculation Day in Year
     public static final String INTEREST_CAL_DAYS_IN_YEAR_360 = "360 Days";
     public static final String INTEREST_CAL_DAYS_IN_YEAR_365 = "365 Days";
+    public static final String INTEREST_CAL_DAYS_IN_YEAR_366 = "366 Days";
 
     // Frequency
     public static final String FREQUENCY_DAYS = "Days";

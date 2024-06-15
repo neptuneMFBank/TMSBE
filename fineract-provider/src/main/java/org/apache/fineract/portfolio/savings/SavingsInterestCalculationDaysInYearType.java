@@ -33,7 +33,8 @@ public enum SavingsInterestCalculationDaysInYearType {
 
     INVALID(0, "savingsInterestCalculationDaysInYearType.invalid"), //
     DAYS_360(360, "savingsInterestCalculationDaysInYearType.days360"), //
-    DAYS_365(365, "savingsInterestCalculationDaysInYearType.days365");
+    DAYS_365(365, "savingsInterestCalculationDaysInYearType.days365"), 
+    DAYS_366(366, "savingsInterestCalculationDaysInYearType.days366");
 
     private final Integer value;
     private final String code;
@@ -71,6 +72,9 @@ public enum SavingsInterestCalculationDaysInYearType {
                 break;
                 case 365:
                     repaymentFrequencyType = SavingsInterestCalculationDaysInYearType.DAYS_365;
+                break;
+                case 366:
+                    repaymentFrequencyType = SavingsInterestCalculationDaysInYearType.DAYS_366;
                 break;
             }
         }

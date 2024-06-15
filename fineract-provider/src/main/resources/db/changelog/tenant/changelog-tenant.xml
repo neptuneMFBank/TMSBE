@@ -240,6 +240,7 @@
     <include file="parts/0428_read_m_accounttier_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0429_alter_m_account_tier_limit.sql" relativeToChangelogFile="true" />
     <include file="parts/0190_extend_recurring_deposit_permission.sql" relativeToChangelogFile="true" />
+    <include file="parts/0191_business_time_config.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>
 <!-- 
     files to exempt when running migration for the first time

@@ -357,33 +357,7 @@ public interface DepositsBusinessApiTemplate {
             jsonObjectLoan.addProperty(SavingsApiConstants.interestCompoundingPeriodTypeParamName, interestCompoundingPeriodType);
         }
 
-        Integer lockinPeriodFrequency;
-        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.lockinPeriodFrequencyParamName, apiRequestBodyAsJsonElement)) {
-            lockinPeriodFrequency = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyParamName,
-                    apiRequestBodyAsJsonElement);
-        } else {
-            lockinPeriodFrequency = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyParamName,
-                    loanTemplateElement);
-        }
-        if (lockinPeriodFrequency != null) {
-            jsonObjectLoan.addProperty(SavingsApiConstants.lockinPeriodFrequencyParamName, lockinPeriodFrequency);
-        }
-        Integer lockinPeriodFrequencyType;
-        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, apiRequestBodyAsJsonElement)) {
-            lockinPeriodFrequencyType = fromApiJsonHelper
-                    .extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, apiRequestBodyAsJsonElement);
-        } else {
-            lockinPeriodFrequencyType = null;
-            // final JsonElement lockinPeriodFrequencyTypeElement
-            // = fromApiJsonHelper.extractJsonObjectNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName,
-            // loanTemplateElement);
-            // lockinPeriodFrequencyType =
-            // fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.idParamName,
-            // lockinPeriodFrequencyTypeElement);
-        }
-        if (lockinPeriodFrequencyType != null) {
-            jsonObjectLoan.addProperty(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, lockinPeriodFrequencyType);
-        }
+        lockInPeriodFrequencyConfig(fromApiJsonHelper, apiRequestBodyAsJsonElement, loanTemplateElement, jsonObjectLoan);
 
         Boolean isCalendarInherited;
         if (fromApiJsonHelper.parameterExists(DepositsApiConstants.isCalendarInheritedParamName, apiRequestBodyAsJsonElement)) {
@@ -655,6 +629,36 @@ public interface DepositsBusinessApiTemplate {
         return jsonObjectLoan.toString();
     }
 
+    static void lockInPeriodFrequencyConfig(final FromJsonHelper fromApiJsonHelper, final JsonElement apiRequestBodyAsJsonElement, JsonElement loanTemplateElement, final JsonObject jsonObjectLoan) {
+        Integer lockinPeriodFrequency;
+        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.lockinPeriodFrequencyParamName, apiRequestBodyAsJsonElement)) {
+            lockinPeriodFrequency = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyParamName,
+                    apiRequestBodyAsJsonElement);
+        } else {
+            lockinPeriodFrequency = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyParamName,
+                    loanTemplateElement);
+        }
+
+        Integer lockinPeriodFrequencyType;
+        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, apiRequestBodyAsJsonElement)) {
+            lockinPeriodFrequencyType = fromApiJsonHelper
+                    .extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, apiRequestBodyAsJsonElement);
+        } else {
+            //lockinPeriodFrequencyType = null;
+            final JsonElement lockinPeriodFrequencyTypeElement
+                    = fromApiJsonHelper.extractJsonObjectNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName,
+                            loanTemplateElement);
+
+            lockinPeriodFrequencyType
+                    = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.idParamName,
+                            lockinPeriodFrequencyTypeElement);
+        }
+        if (lockinPeriodFrequency != null && lockinPeriodFrequencyType != null) {
+            jsonObjectLoan.addProperty(SavingsApiConstants.lockinPeriodFrequencyParamName, lockinPeriodFrequency);
+            jsonObjectLoan.addProperty(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, lockinPeriodFrequencyType);
+        }
+    }
+
     public static String fixedTemplateConfig(final FixedDepositAccountsApiResource fixedDepositAccountsApiResource,
             final String apiRequestBodyAsJson, final FromJsonHelper fromApiJsonHelper, final boolean staffInSelectedOfficeOnly,
             @Context final UriInfo uriInfo, final Long fixedDepositId) {
@@ -914,34 +918,7 @@ public interface DepositsBusinessApiTemplate {
             jsonObjectLoan.addProperty(DepositsApiConstants.depositPeriodParamName, depositPeriod);
         }
 
-        Integer lockinPeriodFrequency;
-        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.lockinPeriodFrequencyParamName, apiRequestBodyAsJsonElement)) {
-            lockinPeriodFrequency = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyParamName,
-                    apiRequestBodyAsJsonElement);
-        } else {
-            lockinPeriodFrequency = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyParamName,
-                    loanTemplateElement);
-        }
-        if (lockinPeriodFrequency != null) {
-            jsonObjectLoan.addProperty(SavingsApiConstants.lockinPeriodFrequencyParamName, lockinPeriodFrequency);
-        }
-        Integer lockinPeriodFrequencyType;
-        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, apiRequestBodyAsJsonElement)) {
-            lockinPeriodFrequencyType = fromApiJsonHelper
-                    .extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, apiRequestBodyAsJsonElement);
-        } else {
-            lockinPeriodFrequencyType = null;
-            // final JsonElement lockinPeriodFrequencyTypeElement
-            // = fromApiJsonHelper.extractJsonObjectNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName,
-            // loanTemplateElement);
-            //
-            // lockinPeriodFrequencyType =
-            // fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.idParamName,
-            // lockinPeriodFrequencyTypeElement);
-        }
-        if (lockinPeriodFrequencyType != null) {
-            jsonObjectLoan.addProperty(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, lockinPeriodFrequencyType);
-        }
+        lockInPeriodFrequencyConfig(fromApiJsonHelper, apiRequestBodyAsJsonElement, loanTemplateElement, jsonObjectLoan); //lockinPeriodFrequencyType = null;
 
         // Boolean withdrawalFeeForTransfers;
         // if (fromApiJsonHelper.parameterExists(SavingsApiConstants.withdrawalFeeForTransfersParamName,
@@ -1382,28 +1359,7 @@ public interface DepositsBusinessApiTemplate {
             jsonObjectLoan.addProperty(SavingsApiConstants.interestCompoundingPeriodTypeParamName, interestCompoundingPeriodType);
         }
 
-        Integer lockinPeriodFrequency;
-        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.lockinPeriodFrequencyParamName, apiRequestBodyAsJsonElement)) {
-            lockinPeriodFrequency = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyParamName,
-                    apiRequestBodyAsJsonElement);
-        } else {
-            lockinPeriodFrequency = fromApiJsonHelper.extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyParamName,
-                    loanTemplateElement);
-        }
-        if (lockinPeriodFrequency != null) {
-            jsonObjectLoan.addProperty(SavingsApiConstants.lockinPeriodFrequencyParamName, lockinPeriodFrequency);
-        }
-        Integer lockinPeriodFrequencyType;
-        if (fromApiJsonHelper.parameterExists(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, apiRequestBodyAsJsonElement)) {
-            lockinPeriodFrequencyType = fromApiJsonHelper
-                    .extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, apiRequestBodyAsJsonElement);
-        } else {
-            lockinPeriodFrequencyType = fromApiJsonHelper
-                    .extractIntegerSansLocaleNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, loanTemplateElement);
-        }
-        if (lockinPeriodFrequencyType != null) {
-            jsonObjectLoan.addProperty(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, lockinPeriodFrequencyType);
-        }
+        lockInPeriodFrequencyConfig(fromApiJsonHelper, apiRequestBodyAsJsonElement, loanTemplateElement, jsonObjectLoan);
 
         Boolean withdrawalFeeForTransfers;
         if (fromApiJsonHelper.parameterExists(SavingsApiConstants.withdrawalFeeForTransfersParamName, apiRequestBodyAsJsonElement)) {

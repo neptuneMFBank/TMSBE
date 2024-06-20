@@ -205,7 +205,7 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
                     + " mta.to_account_number as toAccountNumber,"
                     + " mta.to_bank_id as toBankId,"
                     + " mta.activation_channel_id as activationChannelId,"
-                    + " mta.reason as reason, mta.note as note ");
+                    + " mta.reason as reason, mta.note as note, ");
             builder.append(
                     " mta.created_by as createdById,"
                     + " mta.created_on_utc as createdOnUtc,"

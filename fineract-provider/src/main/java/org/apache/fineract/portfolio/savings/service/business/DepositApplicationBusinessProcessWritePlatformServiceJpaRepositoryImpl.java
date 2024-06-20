@@ -194,11 +194,11 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
     @Transactional
     @Override
     public JsonElement calculateMaturityRDApplication(final String json) {
+        final AppUser submittedBy = this.context.authenticatedUser();
+        final JsonElement parsedCommand = this.fromJsonHelper.parse(json);
+        final JsonCommand command = JsonCommand.from(json, parsedCommand, this.fromJsonHelper);
+        this.depositAccountDataValidator.validateRecurringDepositForSubmit(json);
         try {
-            final JsonElement parsedCommand = this.fromJsonHelper.parse(json);
-            final JsonCommand command = JsonCommand.from(json, parsedCommand, this.fromJsonHelper);
-            this.depositAccountDataValidator.validateRecurringDepositForSubmit(json);
-            final AppUser submittedBy = this.context.authenticatedUser();
 
             final boolean isSavingsInterestPostingAtCurrentPeriodEnd = this.configurationDomainService
                     .isSavingsInterestPostingAtCurrentPeriodEnd();
@@ -266,11 +266,11 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
 
     @Override
     public JsonElement calculateMaturityFDApplication(String json) {
+        final AppUser submittedBy = this.context.authenticatedUser();
+        final JsonElement parsedCommand = this.fromJsonHelper.parse(json);
+        final JsonCommand command = JsonCommand.from(json, parsedCommand, this.fromJsonHelper);
+        this.depositAccountDataValidator.validateFixedDepositForSubmit(json);
         try {
-            final JsonElement parsedCommand = this.fromJsonHelper.parse(json);
-            final JsonCommand command = JsonCommand.from(json, parsedCommand, this.fromJsonHelper);
-            this.depositAccountDataValidator.validateFixedDepositForSubmit(json);
-            final AppUser submittedBy = this.context.authenticatedUser();
 
             final boolean isSavingsInterestPostingAtCurrentPeriodEnd = this.configurationDomainService
                     .isSavingsInterestPostingAtCurrentPeriodEnd();

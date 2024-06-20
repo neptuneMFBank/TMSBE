@@ -94,7 +94,8 @@ public class SavingsDropdownReadPlatformServiceImpl implements SavingsDropdownRe
     public Collection<EnumOptionData> retrieveInterestCalculationDaysInYearTypeOptions() {
         final List<EnumOptionData> allowedOptions = Arrays.asList(
                 SavingsEnumerations.interestCalculationDaysInYearType(SavingsInterestCalculationDaysInYearType.DAYS_360),
-                SavingsEnumerations.interestCalculationDaysInYearType(SavingsInterestCalculationDaysInYearType.DAYS_365));
+                SavingsEnumerations.interestCalculationDaysInYearType(SavingsInterestCalculationDaysInYearType.DAYS_365),
+                SavingsEnumerations.interestCalculationDaysInYearType(SavingsInterestCalculationDaysInYearType.DAYS_366));
 
         return allowedOptions;
     }

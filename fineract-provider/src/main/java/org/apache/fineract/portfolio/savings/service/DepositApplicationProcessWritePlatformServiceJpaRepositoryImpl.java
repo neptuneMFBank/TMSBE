@@ -803,24 +803,25 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
     }
 
     protected Long getAccountNumberPrefix(final Long productId) {
-        Long accountNumberPrefix = null;
-        final GenericResultsetData results = this.readWriteNonCoreDataService
-                .retrieveDataTableGenericResultSet(DepositsBusinessApiConstants.savingsProductExtensionParam, productId, null, null);
-        if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
-            final List<ResultsetRowData> resultsetRowDatas = results.getData();
-            for (ResultsetRowData res : resultsetRowDatas) {
-                try {
+        try {
+            Long accountNumberPrefix = null;
+            final GenericResultsetData results = this.readWriteNonCoreDataService
+                    .retrieveDataTableGenericResultSet(DepositsBusinessApiConstants.savingsProductExtensionParam, productId, null, null);
+            if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
+                final List<ResultsetRowData> resultsetRowDatas = results.getData();
+                for (ResultsetRowData res : resultsetRowDatas) {
                     final Object objectAccountNumberPrefixParam = res.getRow().get(1);
                     if (ObjectUtils.isNotEmpty(objectAccountNumberPrefixParam)) {
                         final String accountNumberPrefixDT = StringUtils
                                 .defaultIfBlank(String.valueOf(objectAccountNumberPrefixParam), "0");
                         accountNumberPrefix = Long.valueOf(accountNumberPrefixDT);
                     }
-                } catch (NumberFormatException e) {
-                    LOG.warn("error.deposit.accountnumber.prefix: {}", e.getMessage());
                 }
             }
+            return accountNumberPrefix > 0 ? accountNumberPrefix : null;
+        } catch (Exception e) {
+            LOG.warn("error.deposit.accountnumber.prefix.no.config: {}", e.getMessage());
+            return null;
         }
-        return accountNumberPrefix > 0 ? accountNumberPrefix : null;
     }
 }

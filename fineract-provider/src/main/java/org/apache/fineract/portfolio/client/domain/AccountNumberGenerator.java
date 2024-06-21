@@ -43,8 +43,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 /**
- * Example {@link AccountNumberGenerator} for clients that takes an entities auto generated database id and zero fills
- * it ensuring the identifier is always of a given <code>maxLength</code>.
+ * Example {@link AccountNumberGenerator} for clients that takes an entities
+ * auto generated database id and zero fills it ensuring the identifier is
+ * always of a given <code>maxLength</code>.
  */
 @Slf4j
 @Component
@@ -144,7 +145,7 @@ public class AccountNumberGenerator {
                 accountMaxLength = customLength.getValue().intValue();
             }
         }
-        accountNumber = nibssNuban(accountNumber);
+        accountNumber = nibssNuban(accountNumber, accountNumberFormat.getPrefixEnum());
 
         final GlobalConfigurationPropertyData randomAccountNumber = this.configurationReadPlatformService
                 .retrieveGlobalConfigurationX("random-account-number");
@@ -160,24 +161,24 @@ public class AccountNumberGenerator {
             switch (accountNumberPrefixType) {
                 case CLIENT_TYPE:
                     prefix = propertyMap.get(CLIENT_TYPE);
-                break;
+                    break;
 
                 case OFFICE_NAME:
                     prefix = propertyMap.get(OFFICE_NAME);
-                break;
+                    break;
 
                 case LOAN_PRODUCT_SHORT_NAME:
                     prefix = propertyMap.get(LOAN_PRODUCT_SHORT_NAME);
-                break;
+                    break;
 
                 case SAVINGS_PRODUCT_SHORT_NAME:
                     prefix = propertyMap.get(SAVINGS_PRODUCT_SHORT_NAME);
-                break;
+                    break;
 
                 case PREFIX_SHORT_NAME:
                     generatePrefix(propertyMap, propertyMap.get(ID), accountMaxLength, accountNumberFormat);
                     prefix = propertyMap.get(PREFIX_SHORT_NAME);
-                break;
+                    break;
             }
 
             // FINERACT-590
@@ -226,7 +227,7 @@ public class AccountNumberGenerator {
             }
         }
 
-        accountNumber = nibssNuban(accountNumber);
+        accountNumber = nibssNuban(accountNumber, accountNumberFormat.getPrefixEnum());
 
         final GlobalConfigurationPropertyData randomAccountNumber = this.configurationReadPlatformService
                 .retrieveGlobalConfiguration("random-account-number");
@@ -242,24 +243,24 @@ public class AccountNumberGenerator {
             switch (accountNumberPrefixType) {
                 case CLIENT_TYPE:
                     prefix = propertyMap.get(CLIENT_TYPE);
-                break;
+                    break;
 
                 case OFFICE_NAME:
                     prefix = propertyMap.get(OFFICE_NAME);
-                break;
+                    break;
 
                 case LOAN_PRODUCT_SHORT_NAME:
                     prefix = propertyMap.get(LOAN_PRODUCT_SHORT_NAME);
-                break;
+                    break;
 
                 case SAVINGS_PRODUCT_SHORT_NAME:
                     prefix = propertyMap.get(SAVINGS_PRODUCT_SHORT_NAME);
-                break;
+                    break;
 
                 case PREFIX_SHORT_NAME:
                     generatePrefix(propertyMap, propertyMap.get(ID), accountMaxLength, accountNumberFormat);
                     prefix = propertyMap.get(PREFIX_SHORT_NAME);
-                break;
+                    break;
             }
 
             // FINERACT-590
@@ -293,15 +294,17 @@ public class AccountNumberGenerator {
         return accountNumber;
     }
 
-    protected String nibssNuban(String accountNumber) {
+    protected String nibssNuban(String accountNumber, Integer dynamicPrefix) {
         // find if the custom NIBSS SORTCODE is defined
         String nibssSortcode = null;
-        Long bankDigit = null;
-        final GlobalConfigurationPropertyData nibssSortcodeConfig = this.configurationReadPlatformService
-                .retrieveGlobalConfigurationX("nibss-sortcode");
-        if (nibssSortcodeConfig.isEnabled()) {
-            nibssSortcode = nibssSortcodeConfig.getStringValue();
-            bankDigit = nibssSortcodeConfig.getValue();
+        Long bankDigit = dynamicPrefix == null ? null : dynamicPrefix.longValue();
+        if (bankDigit == null) {
+            final GlobalConfigurationPropertyData nibssSortcodeConfig = this.configurationReadPlatformService
+                    .retrieveGlobalConfigurationX("nibss-sortcode");
+            if (nibssSortcodeConfig.isEnabled()) {
+                nibssSortcode = nibssSortcodeConfig.getStringValue();
+                bankDigit = nibssSortcodeConfig.getValue();
+            }
         }
         log.error("NUBAN accountNumber Check: {}", accountNumber);
         if (accountNumber != null && accountNumber.length() > 9) {

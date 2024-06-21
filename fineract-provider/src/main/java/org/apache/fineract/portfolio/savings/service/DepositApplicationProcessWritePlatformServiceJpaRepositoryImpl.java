@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.persistence.PersistenceException;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormat;
@@ -48,6 +49,9 @@ import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidati
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
+import org.apache.fineract.infrastructure.dataqueries.data.GenericResultsetData;
+import org.apache.fineract.infrastructure.dataqueries.data.ResultsetRowData;
+import org.apache.fineract.infrastructure.dataqueries.service.ReadWriteNonCoreDataService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
@@ -79,6 +83,7 @@ import org.apache.fineract.portfolio.note.domain.NoteRepository;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.DepositsApiConstants;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
+import org.apache.fineract.portfolio.savings.business.DepositsBusinessApiConstants;
 import org.apache.fineract.portfolio.savings.data.DepositAccountDataValidator;
 import org.apache.fineract.portfolio.savings.domain.DepositAccountAssembler;
 import org.apache.fineract.portfolio.savings.domain.FixedDepositAccount;
@@ -99,6 +104,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl implements DepositApplicationProcessWritePlatformService {
@@ -125,6 +131,7 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
     private final ConfigurationDomainService configurationDomainService;
     private final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository;
     private final BusinessEventNotifierService businessEventNotifierService;
+    private final ReadWriteNonCoreDataService readWriteNonCoreDataService;
 
     @Autowired
     public DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -140,7 +147,7 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             final AccountAssociationsRepository accountAssociationsRepository, final FromJsonHelper fromJsonHelper,
             final CalendarInstanceRepository calendarInstanceRepository, final ConfigurationDomainService configurationDomainService,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository,
-            final BusinessEventNotifierService businessEventNotifierService) {
+            final BusinessEventNotifierService businessEventNotifierService, final ReadWriteNonCoreDataService readWriteNonCoreDataService) {
         this.context = context;
         this.savingAccountRepository = savingAccountRepository;
         this.depositAccountAssembler = depositAccountAssembler;
@@ -161,6 +168,7 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
         this.configurationDomainService = configurationDomainService;
         this.accountNumberFormatRepository = accountNumberFormatRepository;
         this.businessEventNotifierService = businessEventNotifierService;
+        this.readWriteNonCoreDataService = readWriteNonCoreDataService;
     }
 
     /*
@@ -211,7 +219,12 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             this.fixedDepositAccountRepository.saveAndFlush(account);
 
             if (account.isAccountNumberRequiresAutoGeneration()) {
+                final Long productId = account.productId();
+                final Long accountNumberPrefix = getAccountNumberPrefix(productId);
                 AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.CLIENT);
+                if (accountNumberPrefix != null) {
+                    accountNumberFormat.setPrefixEnumDynamic(accountNumberPrefix.intValue());
+                }
                 account.updateAccountNo(this.accountNumberGenerator.generate(account, accountNumberFormat));
 
                 this.savingAccountRepository.save(account);
@@ -267,8 +280,13 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             this.recurringDepositAccountRepository.save(account);
 
             if (account.isAccountNumberRequiresAutoGeneration()) {
+                final Long productId = account.productId();
+                final Long accountNumberPrefix = getAccountNumberPrefix(productId);
                 final AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository
                         .findByAccountType(EntityAccountType.SAVINGS);
+                if (accountNumberPrefix != null) {
+                    accountNumberFormat.setPrefixEnumDynamic(accountNumberPrefix.intValue());
+                }
                 account.updateAccountNo(this.accountNumberGenerator.generate(account, accountNumberFormat));
             }
 
@@ -782,5 +800,27 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
                 throw new GroupNotActiveException(group.getId());
             }
         }
+    }
+
+    protected Long getAccountNumberPrefix(final Long productId) {
+        Long accountNumberPrefix = null;
+        final GenericResultsetData results = this.readWriteNonCoreDataService
+                .retrieveDataTableGenericResultSet(DepositsBusinessApiConstants.savingsProductExtensionParam, productId, null, null);
+        if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
+            final List<ResultsetRowData> resultsetRowDatas = results.getData();
+            for (ResultsetRowData res : resultsetRowDatas) {
+                try {
+                    final Object objectAccountNumberPrefixParam = res.getRow().get(1);
+                    if (ObjectUtils.isNotEmpty(objectAccountNumberPrefixParam)) {
+                        final String accountNumberPrefixDT = StringUtils
+                                .defaultIfBlank(String.valueOf(objectAccountNumberPrefixParam), "0");
+                        accountNumberPrefix = Long.valueOf(accountNumberPrefixDT);
+                    }
+                } catch (NumberFormatException e) {
+                    LOG.warn("error.deposit.accountnumber.prefix: {}", e.getMessage());
+                }
+            }
+        }
+        return accountNumberPrefix > 0 ? accountNumberPrefix : null;
     }
 }

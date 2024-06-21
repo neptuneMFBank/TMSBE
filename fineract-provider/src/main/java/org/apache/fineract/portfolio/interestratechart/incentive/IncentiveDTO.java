@@ -27,11 +27,13 @@ public class IncentiveDTO {
     private final Client client;
     private final BigDecimal interest;
     private final InterestIncentivesFields incentives;
+    private final Long periodFrequency;
 
-    public IncentiveDTO(final Client client, final BigDecimal interest, final InterestIncentivesFields incentives) {
+    public IncentiveDTO(final Client client, final BigDecimal interest, final InterestIncentivesFields incentives, final Long periodFrequency) {
         this.client = client;
         this.interest = interest;
         this.incentives = incentives;
+        this.periodFrequency = periodFrequency;
     }
 
     public Client client() {
@@ -45,4 +47,9 @@ public class IncentiveDTO {
     public InterestIncentivesFields incentives() {
         return this.incentives;
     }
+
+    public Long getPeriodFrequency() {
+        return periodFrequency;
+    }
+
 }

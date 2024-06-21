@@ -89,7 +89,15 @@ public class AccountNumberFormat extends AbstractPersistableCustom {
         this.prefixCharacter = prefixCharacter;
     }
 
-    public void setPrefixEnumDynamic(Integer prefixEnum) {
-        this.prefixEnum = prefixEnum;
+    public static AccountNumberFormat instance(final Integer prefixType) {
+        final Integer accountTypeEnum = null;
+        final String prefixCharacter = null;
+        return new AccountNumberFormat(accountTypeEnum, prefixType, prefixCharacter);
+    }
+
+    public AccountNumberFormat(Integer entityAccountType, Integer prefixType, String prefixCharacter) {
+        this.accountTypeEnum = entityAccountType;
+        this.prefixEnum = prefixType;
+        this.prefixCharacter = prefixCharacter;
     }
 }

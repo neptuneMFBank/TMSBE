@@ -21,6 +21,7 @@ package org.apache.fineract.infrastructure.accountnumberformat.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatEnumerations.AccountNumberPrefixType;
 import org.apache.fineract.infrastructure.accountnumberformat.service.AccountNumberFormatConstants;
@@ -41,6 +42,7 @@ public class AccountNumberFormat extends AbstractPersistableCustom {
     @Column(name = AccountNumberFormatConstants.PREFIX_CHARACTER_COLUMN_NAME, nullable = true)
     private String prefixCharacter;
 
+    @Transient
     private Long dynamicPrefix;
 
     protected AccountNumberFormat() {

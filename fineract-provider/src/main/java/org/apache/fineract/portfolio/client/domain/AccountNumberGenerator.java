@@ -145,7 +145,7 @@ public class AccountNumberGenerator {
                 accountMaxLength = customLength.getValue().intValue();
             }
         }
-        accountNumber = nibssNuban(accountNumber, accountNumberFormat.getPrefixEnum());
+        accountNumber = nibssNuban(accountNumber, accountNumberFormat.getDynamicPrefix());
 
         final GlobalConfigurationPropertyData randomAccountNumber = this.configurationReadPlatformService
                 .retrieveGlobalConfigurationX("random-account-number");
@@ -227,7 +227,7 @@ public class AccountNumberGenerator {
             }
         }
 
-        accountNumber = nibssNuban(accountNumber, accountNumberFormat.getPrefixEnum());
+        accountNumber = nibssNuban(accountNumber, accountNumberFormat.getDynamicPrefix());
 
         final GlobalConfigurationPropertyData randomAccountNumber = this.configurationReadPlatformService
                 .retrieveGlobalConfiguration("random-account-number");
@@ -294,10 +294,10 @@ public class AccountNumberGenerator {
         return accountNumber;
     }
 
-    protected String nibssNuban(String accountNumber, Integer dynamicPrefix) {
+    protected String nibssNuban(String accountNumber, Long dynamicPrefix) {
         // find if the custom NIBSS SORTCODE is defined
         String nibssSortcode = null;
-        Long bankDigit = dynamicPrefix == null ? null : dynamicPrefix.longValue();
+        Long bankDigit = dynamicPrefix;
         if (bankDigit == null) {
             final GlobalConfigurationPropertyData nibssSortcodeConfig = this.configurationReadPlatformService
                     .retrieveGlobalConfigurationX("nibss-sortcode");

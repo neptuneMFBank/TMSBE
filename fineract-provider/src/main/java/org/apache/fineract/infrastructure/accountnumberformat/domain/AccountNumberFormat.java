@@ -41,6 +41,8 @@ public class AccountNumberFormat extends AbstractPersistableCustom {
     @Column(name = AccountNumberFormatConstants.PREFIX_CHARACTER_COLUMN_NAME, nullable = true)
     private String prefixCharacter;
 
+    private Long dynamicPrefix;
+
     protected AccountNumberFormat() {
         //
     }
@@ -89,15 +91,22 @@ public class AccountNumberFormat extends AbstractPersistableCustom {
         this.prefixCharacter = prefixCharacter;
     }
 
-    public static AccountNumberFormat instance(final Integer prefixType) {
+    public static AccountNumberFormat instance(final Long dynamicPrefix) {
         final Integer accountTypeEnum = null;
+        final Integer prefixType = null;
         final String prefixCharacter = null;
-        return new AccountNumberFormat(accountTypeEnum, prefixType, prefixCharacter);
+        return new AccountNumberFormat(accountTypeEnum, prefixType, prefixCharacter, dynamicPrefix);
     }
 
-    public AccountNumberFormat(Integer entityAccountType, Integer prefixType, String prefixCharacter) {
+    public AccountNumberFormat(Integer entityAccountType, Integer prefixType, String prefixCharacter, Long dynamicPrefix) {
         this.accountTypeEnum = entityAccountType;
         this.prefixEnum = prefixType;
         this.prefixCharacter = prefixCharacter;
+        this.dynamicPrefix = dynamicPrefix;
     }
+
+    public Long getDynamicPrefix() {
+        return dynamicPrefix;
+    }
+
 }

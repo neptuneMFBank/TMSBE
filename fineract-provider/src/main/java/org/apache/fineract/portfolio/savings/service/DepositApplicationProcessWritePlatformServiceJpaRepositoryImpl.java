@@ -223,7 +223,7 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
                 final Long accountNumberPrefix = getAccountNumberPrefix(productId);
                 AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.CLIENT);
                 if (accountNumberPrefix != null) {
-                    accountNumberFormat = AccountNumberFormat.instance(accountNumberPrefix.intValue());
+                    accountNumberFormat = AccountNumberFormat.instance(accountNumberPrefix);
                 }
                 account.updateAccountNo(this.accountNumberGenerator.generate(account, accountNumberFormat));
 
@@ -285,7 +285,7 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
                 AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository
                         .findByAccountType(EntityAccountType.SAVINGS);
                 if (accountNumberPrefix != null) {
-                    accountNumberFormat = AccountNumberFormat.instance(accountNumberPrefix.intValue());
+                    accountNumberFormat = AccountNumberFormat.instance(accountNumberPrefix);
                 }
                 account.updateAccountNo(this.accountNumberGenerator.generate(account, accountNumberFormat));
             }

@@ -53,6 +53,8 @@ public final class DepositsBusinessApiConstants {
 
     private static final String externalIdPARAM = "externalId";
 
+    public static final String savingsProductExtensionParam = "savingsProductExtension";
+
     public static final Set<String> DEPOSIT_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(IDPARAM, accountNoPARAM, depositTypePARAM, statusPARAM, clientIdPARAM, clientNamePARAM, officeIdPARAM,
                     officeNamePARAM, depositProductIdPARAM, depositProductNamePARAM, availableBalancePARAM, ledgerBalancePARAM,

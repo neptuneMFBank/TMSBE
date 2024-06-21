@@ -603,7 +603,7 @@ public class MetricsWriteServiceImpl implements MetricsWriteService {
             final Staff newStaff = this.staffRepositoryWrapper.findOneWithNotFoundDetection(staffId);
             if (!Objects.equals(oldStaff.getId(), newStaff.getId())) {
 
-                saveNoteMetrics("Reassign loan from " + oldStaff.displayName() + "to a new approval officer" + newStaff.displayName(),
+                saveNoteMetrics("Reassign loan from " + oldStaff.displayName() + " to a new approval officer " + newStaff.displayName(),
                         loan);
 
                 metrics.setAssignedUser(newStaff);

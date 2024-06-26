@@ -241,6 +241,7 @@
     <include file="parts/0429_alter_m_account_tier_limit.sql" relativeToChangelogFile="true" />
     <include file="parts/0190_extend_recurring_deposit_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0191_business_time_config.sql" relativeToChangelogFile="true" />
+    <include file="parts/0192_alter_portfolio_command_source_with_role_id.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>
 <!-- 
     files to exempt when running migration for the first time

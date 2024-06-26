@@ -97,15 +97,18 @@ public class CommandSource extends AbstractPersistableCustom {
     @Column(name = "organisation_creditbureau_id")
     private Long organisationCreditBureauId;
 
+    @Column(name = "role_id")
+    private String roleId;
+
     public static CommandSource fullEntryFrom(final CommandWrapper wrapper, final JsonCommand command, final AppUser maker) {
         return new CommandSource(wrapper.actionName(), wrapper.entityName(), wrapper.getHref(), command.entityId(), command.subentityId(),
-                command.json(), maker, ZonedDateTime.now(DateUtils.getDateTimeZoneOfTenant()));
+                command.json(), maker, ZonedDateTime.now(DateUtils.getDateTimeZoneOfTenant()), null);
     }
 
     public static CommandSource fullBusinessEntryFrom(final String actionName, final String entityName, final String href,
-            final Long entityId, final String json, final AppUser maker) {
+            final Long entityId, final String json, final AppUser maker, final String roleId) {
         return new CommandSource(actionName, entityName, href, entityId, null, json, maker,
-                ZonedDateTime.now(DateUtils.getDateTimeZoneOfTenant()));
+                ZonedDateTime.now(DateUtils.getDateTimeZoneOfTenant()), roleId);
     }
 
     protected CommandSource() {
@@ -113,7 +116,7 @@ public class CommandSource extends AbstractPersistableCustom {
     }
 
     private CommandSource(final String actionName, final String entityName, final String href, final Long resourceId,
-            final Long subresourceId, final String commandSerializedAsJson, final AppUser maker, final ZonedDateTime madeOnDateTime) {
+            final Long subresourceId, final String commandSerializedAsJson, final AppUser maker, final ZonedDateTime madeOnDateTime, final String roleId) {
         this.actionName = actionName;
         this.entityName = entityName;
         this.resourceGetUrl = href;
@@ -123,6 +126,7 @@ public class CommandSource extends AbstractPersistableCustom {
         this.maker = maker;
         this.madeOnDate = madeOnDateTime != null ? madeOnDateTime.toLocalDateTime() : null;
         this.processingResult = CommandProcessingResultType.PROCESSED.getValue();
+        this.roleId = roleId;
     }
 
     public Long getCreditBureauId() {
@@ -278,4 +282,11 @@ public class CommandSource extends AbstractPersistableCustom {
         this.transactionId = transactionId;
     }
 
+    public String getRoleId() {
+        return roleId;
+    }
+
+    public void updateRoleId(final String roleId) {
+        this.roleId = roleId;
+    }
 }

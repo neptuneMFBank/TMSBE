@@ -24,7 +24,7 @@ SELECT
     pcs.group_id, pcs.client_id, pcs.loan_id, pcs.savings_account_id, mk.username as maker,
     ck.username as checker, ev.enum_message_property as processingResult,
     o.name as officeName, gl.level_name as groupLevelName, g.display_name as groupName, c.display_name as clientName,
-    l.account_no as loanAccountNo, s.account_no as savingsAccountNo
+    l.account_no as loanAccountNo, s.account_no as savingsAccountNo, pcs.role_id
 FROM m_portfolio_command_source pcs
 LEFT JOIN m_office o ON o.id=pcs.office_id
 LEFT JOIN m_appuser mk on mk.id = pcs.maker_id

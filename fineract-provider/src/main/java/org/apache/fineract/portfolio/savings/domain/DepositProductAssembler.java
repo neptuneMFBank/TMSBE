@@ -82,6 +82,7 @@ import org.apache.fineract.portfolio.savings.SavingsPeriodFrequencyType;
 import org.apache.fineract.portfolio.savings.SavingsPostingInterestPeriodType;
 import org.apache.fineract.portfolio.tax.domain.TaxGroup;
 import org.apache.fineract.portfolio.tax.domain.TaxGroupRepositoryWrapper;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.setCustomDefaultInterateRateForInvestmentViewPurpose;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -166,6 +167,7 @@ public class DepositProductAssembler {
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
         if (interestRate == null) {
             interestRate = BigDecimal.ZERO;
+            interestRate = setCustomDefaultInterateRateForInvestmentViewPurpose(charts, interestRate);
         }
         boolean withHoldTax = command.booleanPrimitiveValueOfParameterNamed(withHoldTaxParamName);
 
@@ -263,6 +265,7 @@ public class DepositProductAssembler {
 
         if (interestRate == null) {
             interestRate = BigDecimal.ZERO;
+            interestRate = setCustomDefaultInterateRateForInvestmentViewPurpose(charts, interestRate);
         }
 
         final boolean withHoldTax = command.booleanPrimitiveValueOfParameterNamed(withHoldTaxParamName);

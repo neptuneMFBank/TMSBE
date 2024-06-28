@@ -51,6 +51,8 @@ import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.portfolio.account.AccountDetailConstants;
 import org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants;
 import org.apache.fineract.portfolio.charge.domain.Charge;
+import org.apache.fineract.portfolio.interestratechart.domain.InterestRateChart;
+import org.apache.fineract.portfolio.interestratechart.domain.InterestRateChartSlab;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterest;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestConfig;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterestRepositoryWrapper;
@@ -398,5 +400,21 @@ public class GeneralConstants {
             log.error("paymentTypeGridData Error: {}", e);
         }
         return amount;
+    }
+
+    public static BigDecimal setCustomDefaultInterateRateForInvestmentViewPurpose(final Set<InterestRateChart> charts, BigDecimal interestRate) {
+        //set a default rate if InterestRateChart is not Empty
+        if (!CollectionUtils.isEmpty(charts)) {
+            final InterestRateChart interestRateChart = charts.stream().filter(predicate -> !CollectionUtils.isEmpty(predicate.setOfChartSlabs())).findFirst().orElse(null);
+            if (interestRateChart != null) {
+                final InterestRateChartSlab interestRateChartSlab = interestRateChart.setOfChartSlabs()
+                        .stream()
+                        .filter(predicate -> predicate.slabFields() != null && predicate.slabFields().annualInterestRate() != null).findFirst().orElse(null);
+                if (interestRateChartSlab != null) {
+                    interestRate = interestRateChartSlab.slabFields().annualInterestRate();
+                }
+            }
+        }
+        return interestRate;
     }
 }

@@ -242,7 +242,8 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
         }
     }
 
-    protected JsonElement resultJsonMaturity(final BigDecimal expectedInterestAmount, final BigDecimal depositAmount, final BigDecimal maturityAmount, final String maturityDate, Integer depositPeriod, Integer depositPeriodFrequency, final BigDecimal nominalAnnualInterestRate) {
+    protected JsonElement resultJsonMaturity(final BigDecimal expectedInterestAmount, final BigDecimal depositAmount, final BigDecimal maturityAmount,
+            final String maturityDate, Integer depositPeriod, Integer depositPeriodFrequency, final BigDecimal nominalAnnualInterestRate) {
         final JsonObject jsonObjectRD = new JsonObject();
         jsonObjectRD.addProperty("expectedInterestAmount", expectedInterestAmount);
         jsonObjectRD.addProperty("depositAmount", depositAmount);

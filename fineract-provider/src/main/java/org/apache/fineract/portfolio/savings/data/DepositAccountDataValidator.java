@@ -87,7 +87,6 @@ import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.DepositsApiConstants;
 import org.apache.fineract.portfolio.savings.PreClosurePenalInterestOnType;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
-import static org.apache.fineract.portfolio.savings.SavingsApiConstants.transactionDateParamName;
 import org.apache.fineract.portfolio.savings.SavingsCompoundingInterestPeriodType;
 import org.apache.fineract.portfolio.savings.SavingsInterestCalculationDaysInYearType;
 import org.apache.fineract.portfolio.savings.SavingsInterestCalculationType;

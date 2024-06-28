@@ -408,7 +408,7 @@ public class DepositsBusinessApiResource {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Update/Approve/Activate new savings application", description = """
-            Submits new savings application
+            Update savings application
             """)
     @RequestBody(required = true)
     @ApiResponses({
@@ -422,4 +422,36 @@ public class DepositsBusinessApiResource {
         this.depositsBusinessReadPlatformService.approveActivateSavings(accountId);
         return result;
     }
+
+    @POST
+    @Path("{accountId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Perform action on all savings application type", description = """
+            Actions e.g unLock,lock account
+            """)
+    @RequestBody(required = true)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
+    public String actionDeposits(@PathParam("accountId") @Parameter(description = "accountId") final Long accountId,
+            @Context final UriInfo uriInfo, @QueryParam("command") final String commandParam,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        CommandWrapper commandRequest;
+        CommandProcessingResult result = null;
+        if (is(commandParam, "unLock")) {
+            commandRequest = new CommandWrapperBuilder().unLockDepositAccount(accountId).withJson(apiRequestBodyAsJson).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        } else if (is(commandParam, "lock")) {
+            commandRequest = new CommandWrapperBuilder().lockDepositAccount(accountId).withJson(apiRequestBodyAsJson).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        }
+
+        if (result == null) {
+            throw new UnrecognizedQueryParamException("command", commandParam,
+                    new Object[]{"unLock", "lock"});
+        }
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
 }

@@ -75,6 +75,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
@@ -85,6 +86,7 @@ import org.apache.fineract.portfolio.savings.DepositAccountOnClosureType;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.DepositsApiConstants;
 import org.apache.fineract.portfolio.savings.PreClosurePenalInterestOnType;
+import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.apache.fineract.portfolio.savings.SavingsCompoundingInterestPeriodType;
 import org.apache.fineract.portfolio.savings.SavingsInterestCalculationDaysInYearType;
 import org.apache.fineract.portfolio.savings.SavingsInterestCalculationType;
@@ -111,7 +113,8 @@ public class DepositAccountDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DepositsApiConstants.FIXED_DEPOSIT_ACCOUNT_REQUEST_DATA_PARAMETERS);
 
@@ -134,7 +137,8 @@ public class DepositAccountDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DepositsApiConstants.FIXED_DEPOSIT_ACCOUNT_REQUEST_DATA_PARAMETERS);
 
@@ -157,7 +161,8 @@ public class DepositAccountDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DepositsApiConstants.RECURRING_DEPOSIT_ACCOUNT_REQUEST_DATA_PARAMETERS);
 
@@ -181,7 +186,8 @@ public class DepositAccountDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DepositsApiConstants.RECURRING_DEPOSIT_ACCOUNT_REQUEST_DATA_PARAMETERS);
 
@@ -723,7 +729,6 @@ public class DepositAccountDataValidator {
                     // final Long id =
                     // this.fromApiJsonHelper.extractLongNamed(idParamName,
                     // savingsChargeElement);
-
                     final Long chargeId = this.fromApiJsonHelper.extractLongNamed(chargeIdParamName, savingsChargeElement);
                     baseDataValidator.reset().parameter(chargeIdParamName).value(chargeId).longGreaterThanZero();
 
@@ -759,4 +764,62 @@ public class DepositAccountDataValidator {
         }
     }
 
+    public void unLockDepositAccountValicator(final String json, final boolean isLock) {
+        if (StringUtils.isBlank(json)) {
+            throw new InvalidJsonException();
+        }
+
+        Set<String> setValidator = Set.of(SavingsApiConstants.noteParamName, lockinPeriodFrequencyParamName, lockinPeriodFrequencyTypeParamName);
+
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, setValidator);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+                .resource(DepositsApiConstants.SAVINGS_ACCOUNT_RESOURCE_NAME);
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        if (isLock) {
+            //check Lock validators
+
+            boolean isLockinPeriodFrequencyValidated = false;
+            boolean isLockinPeriodFrequencyTypeValidated = false;
+            if (this.fromApiJsonHelper.parameterExists(lockinPeriodFrequencyParamName, element)) {
+                isLockinPeriodFrequencyValidated = true;
+                final Integer lockinPeriodFrequency = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(lockinPeriodFrequencyParamName,
+                        element);
+                baseDataValidator.reset().parameter(lockinPeriodFrequencyParamName).value(lockinPeriodFrequency).integerZeroOrGreater();
+
+                if (lockinPeriodFrequency != null) {
+                    isLockinPeriodFrequencyTypeValidated = true;
+                    final Integer lockinPeriodFrequencyType = this.fromApiJsonHelper
+                            .extractIntegerSansLocaleNamed(lockinPeriodFrequencyTypeParamName, element);
+                    baseDataValidator.reset().parameter(lockinPeriodFrequencyTypeParamName).value(lockinPeriodFrequencyType).notNull()
+                            .inMinMaxRange(0, 3);
+                }
+            }
+
+            if (!isLockinPeriodFrequencyTypeValidated && this.fromApiJsonHelper.parameterExists(lockinPeriodFrequencyTypeParamName, element)) {
+                final Integer lockinPeriodFrequencyType = this.fromApiJsonHelper
+                        .extractIntegerSansLocaleNamed(lockinPeriodFrequencyTypeParamName, element);
+                baseDataValidator.reset().parameter(lockinPeriodFrequencyTypeParamName).value(lockinPeriodFrequencyType).inMinMaxRange(0, 3);
+
+                if (lockinPeriodFrequencyType != null && !isLockinPeriodFrequencyValidated) {
+                    final Integer lockinPeriodFrequency = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(lockinPeriodFrequencyParamName,
+                            element);
+                    baseDataValidator.reset().parameter(lockinPeriodFrequencyParamName).value(lockinPeriodFrequency).notNull()
+                            .integerZeroOrGreater();
+                }
+            }
+
+        }
+
+        if (this.fromApiJsonHelper.parameterExists(SavingsApiConstants.noteParamName, element)) {
+            final String note = this.fromApiJsonHelper.extractStringNamed(SavingsApiConstants.noteParamName, element);
+            baseDataValidator.reset().parameter(SavingsApiConstants.noteParamName).value(note).notBlank();
+        }
+        throwExceptionIfValidationWarningsExist(dataValidationErrors);
+
+    }
 }

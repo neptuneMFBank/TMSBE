@@ -4059,4 +4059,37 @@ public class SavingsAccount extends AbstractPersistableCustom {
             }
         }
     }
+
+    public void removeLockedInUntilDate() {
+        this.lockedInUntilDate = null;
+    }
+
+    public void updateLockedInUntilDate(final JsonCommand command, final Map<String, Object> actualChanges) {
+        final LocalDate transactionDate = DateUtils.getLocalDateOfTenant();
+        final String localeAsInput = command.locale();
+
+        if (command.isChangeInIntegerParameterNamedDefaultingZeroToNull(SavingsApiConstants.lockinPeriodFrequencyParamName,
+                this.lockinPeriodFrequency)) {
+            final Integer newValue = command
+                    .integerValueOfParameterNamedDefaultToNullIfZero(SavingsApiConstants.lockinPeriodFrequencyParamName);
+            actualChanges.put(SavingsApiConstants.lockinPeriodFrequencyParamName, newValue);
+            this.lockinPeriodFrequency = newValue;
+        }
+
+        if (command.isChangeInIntegerParameterNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName,
+                this.lockinPeriodFrequencyType)) {
+            final Integer newValue = command.integerValueOfParameterNamed(SavingsApiConstants.lockinPeriodFrequencyTypeParamName);
+            actualChanges.put(SavingsApiConstants.lockinPeriodFrequencyTypeParamName, newValue);
+            this.lockinPeriodFrequencyType = newValue != null ? SavingsPeriodFrequencyType.fromInt(newValue).getValue() : newValue;
+        }
+
+        // set period type to null if frequency is null
+        if (this.lockinPeriodFrequency == null) {
+            this.lockinPeriodFrequencyType = null;
+        } else {
+            this.lockedInUntilDate = calculateDateAccountIsLockedUntil(transactionDate);
+            actualChanges.put("locale", localeAsInput);
+        }
+    }
+
 }

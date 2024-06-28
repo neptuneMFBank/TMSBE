@@ -30,4 +30,8 @@ public interface DepositApplicationBusinessProcessWritePlatformService {
 
     JsonElement calculateMaturityFDApplication(final String json);
 
+    CommandProcessingResult lockDepositAccount(Long entityId, JsonCommand command);
+
+    CommandProcessingResult unLockDepositAccount(Long entityId, JsonCommand command);
+
 }

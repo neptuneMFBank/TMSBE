@@ -293,7 +293,6 @@ public final class DepositsApiConstants {
     /**
      * Depost Account parameters
      */
-
     private static final Set<String> DEPOSIT_ACCOUNT_REQUEST_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(localeParamName, dateFormatParamName, monthDayFormatParamName, accountNoParamName, externalIdParamName,
                     clientIdParamName, groupIdParamName, productIdParamName, fieldOfficerIdParamName, submittedOnDateParamName,

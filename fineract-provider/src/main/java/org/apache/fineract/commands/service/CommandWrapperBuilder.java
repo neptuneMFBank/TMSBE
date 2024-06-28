@@ -4020,4 +4020,22 @@ public class CommandWrapperBuilder {
         this.href = "/recurringdepositaccounts/" + accountId + "?command=extendRecurring";
         return this;
     }
+
+    public CommandWrapperBuilder lockDepositAccount(final Long accountId) {
+        this.actionName = "LOCK";
+        this.entityName = "SAVINGSACCOUNT";
+        this.entityId = accountId;
+        this.savingsId = accountId;
+        this.href = "/deposits/" + accountId + "?command=lock";
+        return this;
+    }
+
+    public CommandWrapperBuilder unLockDepositAccount(final Long accountId) {
+        this.actionName = "UNLOCK";
+        this.entityName = "SAVINGSACCOUNT";
+        this.entityId = accountId;
+        this.savingsId = accountId;
+        this.href = "/deposits/" + accountId + "?command=unLock";
+        return this;
+    }
 }

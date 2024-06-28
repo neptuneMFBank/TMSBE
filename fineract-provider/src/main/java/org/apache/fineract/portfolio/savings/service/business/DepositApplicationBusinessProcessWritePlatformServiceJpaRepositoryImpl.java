@@ -27,11 +27,15 @@ import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurri
 import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyTypeParamName;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
@@ -50,6 +54,7 @@ import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.portfolio.common.domain.PeriodFrequencyType;
 import org.apache.fineract.portfolio.group.domain.Group;
 import org.apache.fineract.portfolio.group.domain.GroupRepository;
+import org.apache.fineract.portfolio.note.domain.Note;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.data.DepositAccountDataValidator;
@@ -57,6 +62,7 @@ import org.apache.fineract.portfolio.savings.domain.DepositAccountAssembler;
 import org.apache.fineract.portfolio.savings.domain.FixedDepositAccount;
 import org.apache.fineract.portfolio.savings.domain.FixedDepositAccountRepository;
 import org.apache.fineract.portfolio.savings.domain.RecurringDepositAccount;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountChargeAssembler;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
@@ -304,6 +310,58 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
             throw new GeneralPlatformDomainRuleException(
                     "error.msg.fixed.deposit.account.calculate.maturity", dve.getMessage());
         }
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult lockDepositAccount(Long savingsId, JsonCommand command) {
+        this.context.authenticatedUser();
+        this.depositAccountDataValidator.unLockDepositAccountValicator(command.json(), true);
+        final SavingsAccount account = this.savingAccountRepository.findOneWithNotFoundDetection(savingsId);
+
+        final Map<String, Object> changes = new LinkedHashMap<>(20);
+        account.updateLockedInUntilDate(command, changes);
+        if (!changes.isEmpty()) {
+            this.savingAccountRepository.save(account);
+            saveNoteSavingsAction(command, account);
+        }
+
+        return new CommandProcessingResultBuilder() //
+                .withEntityId(savingsId) //
+                .withOfficeId(account.officeId()) //
+                .withClientId(account.clientId()) //
+                .withGroupId(account.groupId()) //
+                .withSavingsId(savingsId) //
+                .with(changes)
+                .build();
+    }
+
+    protected void saveNoteSavingsAction(JsonCommand command, final SavingsAccount account) {
+        final String noteText = command.stringValueOfParameterNamed("note");
+        if (StringUtils.isNotBlank(noteText)) {
+            final Note note = Note.savingNote(account, noteText);
+            this.noteRepository.save(note);
+        }
+    }
+
+    @Transactional
+    @Override
+    public CommandProcessingResult unLockDepositAccount(Long savingsId, final JsonCommand command) {
+        this.context.authenticatedUser();
+        this.depositAccountDataValidator.unLockDepositAccountValicator(command.json(), false);
+        final SavingsAccount account = this.savingAccountRepository.findOneWithNotFoundDetection(savingsId);
+        account.removeLockedInUntilDate();
+        this.savingAccountRepository.save(account);
+
+        saveNoteSavingsAction(command, account);
+
+        return new CommandProcessingResultBuilder() //
+                .withEntityId(savingsId) //
+                .withOfficeId(account.officeId()) //
+                .withClientId(account.clientId()) //
+                .withGroupId(account.groupId()) //
+                .withSavingsId(savingsId) //
+                .build();
     }
 
 }

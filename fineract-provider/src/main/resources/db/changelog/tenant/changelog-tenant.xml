@@ -159,6 +159,7 @@
     <include file="parts/0143_m_metrics_update_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0144_m_role_overdraft_approval_config.sql" relativeToChangelogFile="true" />
     <include file="parts/0145_m_overdraft_expired_view.sql" relativeToChangelogFile="true" />
+    <include file="parts/0192_alter_portfolio_command_source_with_role_id.sql" relativeToChangelogFile="true" />
     <include file="parts/0146_m_audit_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0147_m_cashier_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0148_m_appuser_merchant_mapping.sql" relativeToChangelogFile="true" />

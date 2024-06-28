@@ -20,6 +20,7 @@ package org.apache.fineract.simplifytech.data;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -60,6 +61,8 @@ import org.apache.fineract.portfolio.paymenttype.data.business.PaymentTypeGridDa
 import org.apache.fineract.portfolio.paymenttype.data.business.PaymentTypeGridJsonData;
 import org.apache.fineract.portfolio.paymenttype.service.business.PaymentTypeGridReadPlatformService;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
+import org.apache.fineract.useradministration.domain.AppUser;
+import org.apache.fineract.useradministration.domain.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -400,6 +403,20 @@ public class GeneralConstants {
             log.error("paymentTypeGridData Error: {}", e);
         }
         return amount;
+    }
+
+    public static String getAuthUserCurrentRoleId(final AppUser appUser, final FromJsonHelper fromApiJsonHelper) {
+        String roleIds = null;
+        final JsonArray roleIdArray = new JsonArray();
+        if (!CollectionUtils.isEmpty(appUser.getRoles())) {
+            for (Role role : appUser.getRoles()) {
+                final JsonObject roleIdObject = new JsonObject();
+                roleIdObject.addProperty(String.valueOf(role.getId()), role.getName());
+                roleIdArray.add(roleIdObject);
+            }
+            roleIds = fromApiJsonHelper.toJson(roleIdArray);
+        }
+        return roleIds;
     }
 
     public static BigDecimal setCustomDefaultInterateRateForInvestmentViewPurpose(final Set<InterestRateChart> charts, BigDecimal interestRate) {

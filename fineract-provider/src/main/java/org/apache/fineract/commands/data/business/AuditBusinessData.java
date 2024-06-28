@@ -53,5 +53,6 @@ public final class AuditBusinessData {
     private final Long loanId;
     private final String url;
     private final StaffData supervisorStaffData;
+    private final String roleId;
 
 }

@@ -249,6 +249,8 @@ public class AuthenticationApiResource {
                 if (!time.isBefore(businessEndTime)) {
                     throw new BusinessTimeNotFoundException(businessEndTime, "after business end");
                 }
+            } else {
+                throw new BusinessTimeNotFoundException("User is not allowed to access the application today.");
             }
         }
     }

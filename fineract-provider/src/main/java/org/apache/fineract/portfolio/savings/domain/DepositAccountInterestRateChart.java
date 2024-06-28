@@ -128,7 +128,7 @@ public class DepositAccountInterestRateChart extends AbstractPersistableCustom {
     }
 
     public BigDecimal getApplicableInterestRate(final BigDecimal depositAmount, final LocalDate periodStartDate,
-            final LocalDate periodEndDate, final Client client) {
+            final LocalDate periodEndDate, final Client client, final Long periodFrequency) {
         BigDecimal effectiveInterestRate = BigDecimal.ZERO;
         for (DepositAccountInterestRateChartSlabs slab : setOfChartSlabs()) {
             if (slab.slabFields().isBetweenPeriod(periodStartDate, periodEndDate) && slab.slabFields().isAmountBetween(depositAmount)) {
@@ -138,7 +138,7 @@ public class DepositAccountInterestRateChart extends AbstractPersistableCustom {
                 for (DepositAccountInterestIncentives incentives : depositInterestIncentives) {
                     AttributeIncentiveCalculation attributeIncentiveCalculation = AttributeIncentiveCalculationFactory
                             .findAttributeIncentiveCalculation(incentives.interestIncentivesFields().entiryType());
-                    IncentiveDTO incentiveDTO = new IncentiveDTO(client, effectiveInterestRate, incentives.interestIncentivesFields());
+                    IncentiveDTO incentiveDTO = new IncentiveDTO(client, effectiveInterestRate, incentives.interestIncentivesFields(), periodFrequency);
                     effectiveInterestRate = attributeIncentiveCalculation.calculateIncentive(incentiveDTO);
                 }
 

@@ -29,7 +29,8 @@ public enum InterestIncentiveAttributeName {
     GENDER(2, "InterestIncentiveAttributeName.gender"), //
     AGE(3, "InterestIncentiveAttributeName.age"), //
     CLIENT_TYPE(4, "InterestIncentiveAttributeName.clientType"), //
-    CLIENT_CLASSIFICATION(5, "InterestIncentiveAttributeName.clientClassification"); //
+    CLIENT_CLASSIFICATION(5, "InterestIncentiveAttributeName.clientClassification"), //
+    ACCOUNT_LOCKED(6, "InterestIncentiveAttributeName.accountLocked"); //
 
     private final Integer value;
     private final String code;
@@ -81,6 +82,10 @@ public enum InterestIncentiveAttributeName {
         return InterestIncentiveAttributeName.CLIENT_CLASSIFICATION.getValue().equals(this.value);
     }
 
+    public boolean isAccountLocked() {
+        return InterestIncentiveAttributeName.ACCOUNT_LOCKED.getValue().equals(this.value);
+    }
+
     public boolean isInvalid() {
         return InterestIncentiveAttributeName.INVALID.getValue().equals(this.value);
     }
@@ -92,9 +97,9 @@ public enum InterestIncentiveAttributeName {
             case CLIENT_TYPE:
             case CLIENT_CLASSIFICATION:
                 isCodeValue = true;
-            break;
+                break;
             default:
-            break;
+                break;
         }
         return isCodeValue;
     }

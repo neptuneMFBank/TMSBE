@@ -177,7 +177,8 @@ public class FixedDepositAccount extends SavingsAccount {
             }
 
             final BigDecimal depositAmount = accountTermAndPreClosure.depositAmount();
-            applicableInterestRate = this.chart.getApplicableInterestRate(depositAmount, depositStartDate(), depositCloseDate, this.client);
+            final Long lockinPeriodFrequencyTypeChartSlabIncentives = (this.lockinPeriodFrequency == null || this.lockinPeriodFrequencyType == null) ? null : this.lockinPeriodFrequencyType.longValue();
+            applicableInterestRate = this.chart.getApplicableInterestRate(depositAmount, depositStartDate(), depositCloseDate, this.client, lockinPeriodFrequencyTypeChartSlabIncentives);
 
             if (applyPreMaturePenalty) {
                 applicableInterestRate = applicableInterestRate.subtract(penalInterest);
@@ -774,8 +775,9 @@ public class FixedDepositAccount extends SavingsAccount {
             }
 
             final BigDecimal depositAmount = accountTermAndPreClosure.depositAmount();
+            final Long lockinPeriodFrequencyTypeChartSlabIncentives = (this.lockinPeriodFrequency == null || this.lockinPeriodFrequencyType == null) ? null : this.lockinPeriodFrequencyType.longValue();
             BigDecimal applicableInterestRate = this.chart.getApplicableInterestRate(depositAmount, depositStartDate(),
-                    calculateMaturityDate(), this.client);
+                    calculateMaturityDate(), this.client, lockinPeriodFrequencyTypeChartSlabIncentives);
 
             if (applicableInterestRate.compareTo(BigDecimal.ZERO) == 0 ? Boolean.TRUE : Boolean.FALSE) {
                 baseDataValidator.reset()

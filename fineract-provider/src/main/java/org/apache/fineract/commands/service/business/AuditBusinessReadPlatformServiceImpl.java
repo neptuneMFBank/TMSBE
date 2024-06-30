@@ -154,7 +154,7 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
                 }
             }
         }
-        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.auditMapper);
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.auditWaitingApprovalMapper);
     }
 
     private static final class AuditMapper implements RowMapper<AuditBusinessData> {

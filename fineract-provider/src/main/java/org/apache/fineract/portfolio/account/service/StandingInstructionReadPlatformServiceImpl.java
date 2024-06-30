@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
@@ -104,7 +105,7 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
     @Override
     public StandingInstructionData retrieveTemplate(final Long fromOfficeId, final Long fromClientId, final Long fromAccountId,
             final Integer fromAccountType, final Long toOfficeId, final Long toClientId, final Long toAccountId,
-            final Integer toAccountType, Integer transferType) {
+            final Integer toAccountType, Integer transferType, final Boolean showClients) {
 
         AccountTransferType accountTransferType = AccountTransferType.INVALID;
         if (transferType != null) {
@@ -170,7 +171,7 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
             mostRelevantFromOfficeId = fromClient.officeId();
             long[] loanStatus = null;
             if (mostRelevantFromAccountType == 1) {
-                loanStatus = new long[] { 300, 700 };
+                loanStatus = new long[]{300, 700};
             }
             PortfolioAccountDTO portfolioAccountDTO = new PortfolioAccountDTO(mostRelevantFromAccountType, mostRelevantFromClientId,
                     loanStatus);
@@ -182,7 +183,9 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
 
         if (mostRelevantFromOfficeId != null) {
             fromOffice = this.officeReadPlatformService.retrieveOffice(mostRelevantFromOfficeId);
-            fromClientOptions = this.clientReadPlatformService.retrieveAllForLookupByOfficeId(mostRelevantFromOfficeId);
+            if (BooleanUtils.isTrue(showClients)) {
+                fromClientOptions = this.clientReadPlatformService.retrieveAllForLookupByOfficeId(mostRelevantFromOfficeId);
+            }
         }
 
         // defaults
@@ -199,8 +202,9 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
         if (mostRelevantToClientId != null) {
             toClient = this.clientReadPlatformService.retrieveOne(mostRelevantToClientId);
             mostRelevantToOfficeId = toClient.officeId();
-
-            toClientOptions = this.clientReadPlatformService.retrieveAllForLookupByOfficeId(mostRelevantToOfficeId);
+            if (BooleanUtils.isTrue(showClients)) {
+                toClientOptions = this.clientReadPlatformService.retrieveAllForLookupByOfficeId(mostRelevantToOfficeId);
+            }
 
             toAccountOptions = retrieveToAccounts(fromAccount, mostRelevantToAccountType, mostRelevantToClientId);
         }
@@ -208,8 +212,9 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
         if (mostRelevantToOfficeId != null) {
             toOffice = this.officeReadPlatformService.retrieveOffice(mostRelevantToOfficeId);
             toOfficeOptions = this.officeReadPlatformService.retrieveAllOfficesForDropdown();
-
-            toClientOptions = this.clientReadPlatformService.retrieveAllForLookupByOfficeId(mostRelevantToOfficeId);
+            if (BooleanUtils.isTrue(showClients)) {
+                toClientOptions = this.clientReadPlatformService.retrieveAllForLookupByOfficeId(mostRelevantToOfficeId);
+            }
             if (toClientOptions != null && toClientOptions.size() == 1) {
                 toClient = new ArrayList<>(toClientOptions).get(0);
 
@@ -221,7 +226,7 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
                 transferType(
                         AccountTransferType.LOAN_REPAYMENT)/*
                                                             * , transferType( AccountTransferType . CHARGE_PAYMENT )
-                                                            */);
+         */);
         final Collection<EnumOptionData> statusOptions = Arrays.asList(standingInstructionStatus(StandingInstructionStatus.ACTIVE),
                 standingInstructionStatus(StandingInstructionStatus.DISABLED));
         final Collection<EnumOptionData> instructionTypeOptions = Arrays.asList(standingInstructionType(StandingInstructionType.FIXED),
@@ -351,7 +356,7 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
         try {
             final String sql = "select " + this.standingInstructionMapper.schema() + " where atsi.id = ?";
 
-            return this.jdbcTemplate.queryForObject(sql, this.standingInstructionMapper, new Object[] { instructionId }); // NOSONAR
+            return this.jdbcTemplate.queryForObject(sql, this.standingInstructionMapper, new Object[]{instructionId}); // NOSONAR
         } catch (final EmptyResultDataAccessException e) {
             throw new AccountTransferNotFoundException(instructionId, e);
         }
@@ -362,7 +367,7 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
         final StandingInstructionLoanDuesMapper rm = new StandingInstructionLoanDuesMapper();
         final String sql = "select " + rm.schema() + " where ml.id= ? and ls.duedate <= " + sqlGenerator.currentBusinessDate()
                 + " and ls.completed_derived <> 1";
-        return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { loanId }); // NOSONAR
+        return this.jdbcTemplate.queryForObject(sql, rm, new Object[]{loanId}); // NOSONAR
     }
 
     private static final class StandingInstructionMapper implements RowMapper<StandingInstructionData> {

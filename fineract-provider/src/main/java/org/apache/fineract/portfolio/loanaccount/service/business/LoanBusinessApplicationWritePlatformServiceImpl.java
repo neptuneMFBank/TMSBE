@@ -91,7 +91,6 @@ import org.apache.fineract.portfolio.account.domain.AccountAssociationType;
 import org.apache.fineract.portfolio.account.domain.AccountAssociations;
 import org.apache.fineract.portfolio.account.domain.AccountAssociationsRepository;
 import org.apache.fineract.portfolio.accountdetails.domain.AccountType;
-import org.apache.fineract.portfolio.business.employer.api.EmployerApiResourceConstants;
 import org.apache.fineract.portfolio.businessevent.domain.loan.LoanCreatedBusinessEvent;
 import org.apache.fineract.portfolio.businessevent.service.BusinessEventNotifierService;
 import org.apache.fineract.portfolio.calendar.domain.Calendar;
@@ -736,7 +735,6 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             activationChannelId = this.fromJsonHelper.extractLongNamed(activationChannelIdParam, command.parsedJson());
             LOG.info("command: activationChannelId {}:", activationChannelId);
         }
-        CodeValue industry = null;
         Long employerId = null;
 
         final GenericResultsetData results = this.readWriteNonCoreDataService

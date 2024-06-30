@@ -729,6 +729,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         CodeValue activationChannel = null;
         LOG.info("command: {}", command.json());
         final Long loanId = loanApplication.getId();
+        final Long clientId = loanApplication.getClientId();
         Long activationChannelId = null;
         final String activationChannelIdParam = LoanBusinessApiConstants.activationChannelIdParam;
         if (this.fromJsonHelper.parameterExists(activationChannelIdParam, command.parsedJson())) {
@@ -738,7 +739,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         Long employerId = null;
 
         final GenericResultsetData results = this.readWriteNonCoreDataService
-                .retrieveDataTableGenericResultSet(LoanBusinessApiConstants.EMPLOYERKYCPARAM, loanId, null, null);
+                .retrieveDataTableGenericResultSet(LoanBusinessApiConstants.EMPLOYERKYCPARAM, clientId, null, null);
         if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
 
             final List<ResultsetRowData> resultsetRowDatas = results.getData();

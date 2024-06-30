@@ -19,7 +19,7 @@
 
 ALTER TABLE m_loan_other
     ADD `employer_id` BIGINT DEFAULT NULL,
-    CONSTRAINT `loan_FK_employer_id` FOREIGN KEY (`employer_id`) REFERENCES `m_employer` (`id`)
+    ADD CONSTRAINT `loan_FK_employer_id` FOREIGN KEY (`employer_id`) REFERENCES `m_employer` (`id`)
 
 
 

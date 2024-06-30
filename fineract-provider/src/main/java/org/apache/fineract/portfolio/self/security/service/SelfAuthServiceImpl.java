@@ -36,7 +36,6 @@ import org.apache.fineract.useradministration.domain.AppUserClientMappingReposit
 import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -67,7 +66,7 @@ public class SelfAuthServiceImpl implements SelfAuthService {
         this.selfServiceRegistrationRepository = selfServiceRegistrationRepository;
     }
 
-    @Transactional
+    //@Transactional
     @Override
     public String authenticate(String apiRequestBodyAsJson) {
         // check if user exists
@@ -96,7 +95,7 @@ public class SelfAuthServiceImpl implements SelfAuthService {
 
         // check if user is not self client
         if (!appUser.isSelfServiceUser()) {
-            throw new NoAuthorizationException("Your account has been locked, contact customer service support.");
+            throw new NoAuthorizationException("Your account has been locked, contact customer service to verify credentials.");
         }
 
         final String emailAddress = client.emailAddress();

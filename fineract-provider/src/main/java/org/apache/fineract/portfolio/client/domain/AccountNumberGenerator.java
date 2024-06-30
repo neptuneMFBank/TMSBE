@@ -145,7 +145,8 @@ public class AccountNumberGenerator {
                 accountMaxLength = customLength.getValue().intValue();
             }
         }
-        accountNumber = nibssNuban(accountNumber, accountNumberFormat.getDynamicPrefix());
+        final Long dynamicPrefix = accountNumberFormat == null ? null : accountNumberFormat.getDynamicPrefix();
+        accountNumber = nibssNuban(accountNumber, dynamicPrefix);
 
         final GlobalConfigurationPropertyData randomAccountNumber = this.configurationReadPlatformService
                 .retrieveGlobalConfigurationX("random-account-number");
@@ -226,7 +227,7 @@ public class AccountNumberGenerator {
                 accountMaxLength = customLength.getValue().intValue();
             }
         }
-        final Long dynamicPrefix = accountNumberFormat == null  ? null : accountNumberFormat.getDynamicPrefix();
+        final Long dynamicPrefix = accountNumberFormat == null ? null : accountNumberFormat.getDynamicPrefix();
         accountNumber = nibssNuban(accountNumber, dynamicPrefix);
 
         final GlobalConfigurationPropertyData randomAccountNumber = this.configurationReadPlatformService

@@ -91,6 +91,7 @@ import org.apache.fineract.portfolio.account.domain.AccountAssociationType;
 import org.apache.fineract.portfolio.account.domain.AccountAssociations;
 import org.apache.fineract.portfolio.account.domain.AccountAssociationsRepository;
 import org.apache.fineract.portfolio.accountdetails.domain.AccountType;
+import org.apache.fineract.portfolio.business.employer.api.EmployerApiResourceConstants;
 import org.apache.fineract.portfolio.businessevent.domain.loan.LoanCreatedBusinessEvent;
 import org.apache.fineract.portfolio.businessevent.service.BusinessEventNotifierService;
 import org.apache.fineract.portfolio.calendar.domain.Calendar;
@@ -460,7 +461,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                         throw new GeneralPlatformDomainRuleException(
                                 "error.msg.loan.submitted.date.should.be.after.topup.loan.disbursal.date",
                                 "Submitted date of this loan application " + newLoanApplication.getSubmittedOnDate()
-                                        + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
+                                + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
                     }
                     if (!loanToClose.getCurrencyCode().equals(newLoanApplication.getCurrencyCode())) {
                         throw new GeneralPlatformDomainRuleException("error.msg.loan.to.be.closed.has.different.currency",
@@ -471,8 +472,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                         throw new GeneralPlatformDomainRuleException(
                                 "error.msg.loan.disbursal.date.should.be.after.last.transaction.date.of.loan.to.be.closed",
                                 "Disbursal date of this loan application " + newLoanApplication.getDisbursementDate()
-                                        + " should be after last transaction date of loan to be closed "
-                                        + lastUserTransactionOnLoanToClose);
+                                + " should be after last transaction date of loan to be closed "
+                                + lastUserTransactionOnLoanToClose);
                     }
                     BigDecimal loanOutstanding = this.loanReadPlatformService.retrieveLoanPrePaymentTemplate(LoanTransactionType.REPAYMENT,
                             loanIdToClose, newLoanApplication.getDisbursementDate()).getAmount();
@@ -735,14 +736,34 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             activationChannelId = this.fromJsonHelper.extractLongNamed(activationChannelIdParam, command.parsedJson());
             LOG.info("command: activationChannelId {}:", activationChannelId);
         }
+        CodeValue industry = null;
+        Long employerId = null;
+
+        final GenericResultsetData results = this.readWriteNonCoreDataService
+                .retrieveDataTableGenericResultSet(LoanBusinessApiConstants.EMPLOYERKYCPARAM, loanId, null, null);
+        if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
+
+            final List<ResultsetRowData> resultsetRowDatas = results.getData();
+            final ResultsetRowData resultsetRowData = resultsetRowDatas.stream().filter(res -> BooleanUtils.toBoolean(res.getRow().get(12)))
+                    .findFirst().orElse(null);
+            if (resultsetRowData != null) {
+                final String objectEmployerId = resultsetRowData.getRow().get(2);
+                if (StringUtils.isNotBlank(objectEmployerId)) {
+                    employerId = Long.valueOf(objectEmployerId);
+                }
+            }
+        }
+
         if (isUpdate) {
             LoanOther exitingLoanOther = this.loanOtherRepositoryWrapper.findOneByLoanId(loanId);
 
             Long existingLoanActivationChannelId = null;
+            Long existingEmployerId = null;
             if (exitingLoanOther != null) {
                 existingLoanActivationChannelId = exitingLoanOther.getActivationChannel().getId();
+                existingEmployerId = exitingLoanOther.getEmployerId();
             } else {
-                exitingLoanOther = LoanOther.instance(activationChannel, loanApplication);
+                exitingLoanOther = LoanOther.instance(employerId, activationChannel, loanApplication);
             }
             if (exitingLoanOther.getActivationChannel() == null
                     && command.isChangeInLongParameterNamed(activationChannelIdParam, existingLoanActivationChannelId)) {
@@ -752,12 +773,17 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                 activationChannel = this.loanAssembler.findCodeValueByIdIfProvided(activationChannelId);
                 exitingLoanOther.setActivationChannel(activationChannel);
             }
+            if (!Objects.equals(employerId, existingEmployerId)) {
+                //  update employerId, if changed
+                changes.put("employerId", employerId);
+                exitingLoanOther.setEmployerId(employerId);
+            }
             LOG.info("command: 2");
             loanOther = exitingLoanOther;
         } else {
             LOG.info("command: 1");
             activationChannel = this.loanAssembler.findCodeValueByIdIfProvided(activationChannelId);
-            loanOther = LoanOther.instance(activationChannel, loanApplication);
+            loanOther = LoanOther.instance(employerId, activationChannel, loanApplication);
         }
         LOG.info("command: 3");
         this.loanOtherRepositoryWrapper.saveAndFlush(loanOther);
@@ -789,7 +815,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                     throw new GeneralPlatformDomainRuleException(
                             "error.msg.loan.applied.or.to.be.disbursed.can.not.co-exist.with.the.loan.already.active.to.this.client",
                             "This loan could not be applied/disbursed as the loan and `" + StringUtils.defaultIfBlank(restrictedProduct.getName(), "")
-                                    + "` are not allowed to co-exist");
+                            + "` are not allowed to co-exist");
                 }
             }
         }
@@ -883,10 +909,10 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
         switch (recalculationFrequencyType) {
             case DAILY:
                 calendarFrequencyType = CalendarFrequencyType.DAILY;
-            break;
+                break;
             case MONTHLY:
                 calendarFrequencyType = CalendarFrequencyType.MONTHLY;
-            break;
+                break;
             case SAME_AS_REPAYMENT_PERIOD:
                 frequency = loan.repaymentScheduleDetail().getRepayEvery();
                 calendarFrequencyType = CalendarFrequencyType.from(loan.repaymentScheduleDetail().getRepaymentPeriodFrequencyType());
@@ -894,12 +920,12 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                 if (updatedRepeatsOnDay == null) {
                     updatedRepeatsOnDay = calendarStartDate.get(ChronoField.DAY_OF_WEEK);
                 }
-            break;
+                break;
             case WEEKLY:
                 calendarFrequencyType = CalendarFrequencyType.WEEKLY;
-            break;
+                break;
             default:
-            break;
+                break;
         }
 
         final Calendar calendar = Calendar.createRepeatingCalendar(title, calendarStartDate, CalendarType.COLLECTION.getValue(),
@@ -944,7 +970,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                     .fetchDisbursementData(command.parsedJson().getAsJsonObject());
 
             /**
-             * Stores all charges which are passed in during modify loan application
+             * Stores all charges which are passed in during modify loan
+             * application
              *
              */
             final Set<LoanCharge> possiblyModifedLoanCharges = this.loanChargeAssembler.fromParsedJson(command.parsedJson(),
@@ -960,8 +987,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             }
 
             /**
-             * If there are any charges already present, which are now not passed in as a part of the request, deem the
-             * charges as modified
+             * If there are any charges already present, which are now not
+             * passed in as a part of the request, deem the charges as modified
              *
              */
             if (!possiblyModifedLoanCharges.isEmpty()) {
@@ -971,7 +998,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             }
 
             /**
-             * If any new charges are added or values of existing charges are modified
+             * If any new charges are added or values of existing charges are
+             * modified
              *
              */
             for (LoanCharge loanCharge : possiblyModifedLoanCharges) {
@@ -1104,7 +1132,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                             throw new GeneralPlatformDomainRuleException(
                                     "error.msg.loan.submitted.date.should.be.after.topup.loan.disbursal.date",
                                     "Submitted date of this loan application " + existingLoanApplication.getSubmittedOnDate()
-                                            + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
+                                    + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
                         }
                         if (!loanToClose.getCurrencyCode().equals(existingLoanApplication.getCurrencyCode())) {
                             throw new GeneralPlatformDomainRuleException("error.msg.loan.to.be.closed.has.different.currency",
@@ -1115,8 +1143,8 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                             throw new GeneralPlatformDomainRuleException(
                                     "error.msg.loan.disbursal.date.should.be.after.last.transaction.date.of.loan.to.be.closed",
                                     "Disbursal date of this loan application " + existingLoanApplication.getDisbursementDate()
-                                            + " should be after last transaction date of loan to be closed "
-                                            + lastUserTransactionOnLoanToClose);
+                                    + " should be after last transaction date of loan to be closed "
+                                    + lastUserTransactionOnLoanToClose);
                         }
                         BigDecimal loanOutstanding = this.loanReadPlatformService.retrieveLoanPrePaymentTemplate(
                                 LoanTransactionType.REPAYMENT, loanIdToClose, existingLoanApplication.getDisbursementDate()).getAmount();
@@ -1555,7 +1583,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             if (BooleanUtils.isNotTrue(loanProductPaymentTypeConfigData.getActive())) {
                 throw new LoanProductPaymentTypeConfigNotFoundException(
                         "Loan product " + loanProductPaymentTypeConfigData.getLoanProductData().getName() + " with payment type config "
-                                + loanProductPaymentTypeConfigData.getName() + " is not active.");
+                        + loanProductPaymentTypeConfigData.getName() + " is not active.");
             }
             final Collection<PaymentTypeData> paymentTypeDatas = loanProductPaymentTypeConfigData.getPaymentTypes();
             if (ObjectUtils.isNotEmpty(paymentTypeDatas)) {
@@ -1564,7 +1592,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             } else {
                 throw new LoanProductPaymentTypeConfigNotFoundException(
                         "Loan product " + loanProductPaymentTypeConfigData.getLoanProductData().getName() + " with payment type config "
-                                + loanProductPaymentTypeConfigData.getName() + " does not have a source payment type configuration.");
+                        + loanProductPaymentTypeConfigData.getName() + " does not have a source payment type configuration.");
             }
         } else {
             log.warn("No configuration for Loan Product Payment Type.");
@@ -1766,7 +1794,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
             // sum the upfront fees
             BigDecimal sumUpfrontCharges = loanCharges.stream()
                     .filter(chg -> chg.getChargePaymentMode().isPaymentModeAccountTransfer() && chg.isChargePending() && chg.isActive()
-                            && (chg.isUpfrontCharge() || chg.isUpfrontHoldCharge()))
+                    && (chg.isUpfrontCharge() || chg.isUpfrontHoldCharge()))
                     .map(mapper -> mapper.amountOutstanding()).reduce(BigDecimal.ZERO, BigDecimal::add);
             sumUpfrontCharges = sumUpfrontCharges.setScale(2, RoundingMode.HALF_EVEN);
             if (sumUpfrontCharges.compareTo(BigDecimal.ZERO) > 0) {

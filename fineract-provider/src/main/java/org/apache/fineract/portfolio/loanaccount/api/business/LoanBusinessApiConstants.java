@@ -57,6 +57,7 @@ public interface LoanBusinessApiConstants {
     String startPeriodParameterName = "startPeriod";
     String endPeriodParameterName = "endPeriod";
 
+    String EMPLOYERKYCPARAM = "employerKYC";
     String activationChannelIdParam = "activationChannelId";
     String activationChannelNameParam = "activationChannelName";
     String metricsDataParam = "metricsData";

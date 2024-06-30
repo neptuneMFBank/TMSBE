@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.loanaccount.domain.business;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -34,6 +35,9 @@ import org.springframework.stereotype.Component;
 @Table(name = "m_loan_other")
 public class LoanOther extends AbstractPersistableCustom {
 
+    @Column(name = "employer_id")
+    private Long employerId;
+
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "activation_channel_id", nullable = false)
     private CodeValue activationChannel;
@@ -42,13 +46,15 @@ public class LoanOther extends AbstractPersistableCustom {
     @JoinColumn(name = "loan_id", nullable = false)
     private Loan loan;
 
-    protected LoanOther() {}
-
-    public static LoanOther instance(CodeValue activationChannel, Loan loan) {
-        return new LoanOther(activationChannel, loan);
+    protected LoanOther() {
     }
 
-    public LoanOther(CodeValue activationChannel, Loan loan) {
+    public static LoanOther instance(Long employerId, CodeValue activationChannel, Loan loan) {
+        return new LoanOther(employerId, activationChannel, loan);
+    }
+
+    public LoanOther(Long employerId, CodeValue activationChannel, Loan loan) {
+        this.employerId = employerId;
         this.activationChannel = activationChannel;
         this.loan = loan;
     }
@@ -63,6 +69,14 @@ public class LoanOther extends AbstractPersistableCustom {
 
     public Loan getLoan() {
         return loan;
+    }
+
+    public Long getEmployerId() {
+        return employerId;
+    }
+
+    public void setEmployerId(Long employerId) {
+        this.employerId = employerId;
     }
 
 }

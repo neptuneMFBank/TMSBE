@@ -243,6 +243,7 @@
     <include file="parts/0190_extend_recurring_deposit_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0191_business_time_config.sql" relativeToChangelogFile="true" />
     <include file="parts/0193_m_permission_lock_unlock_deposit.xml" relativeToChangelogFile="true" />
+    <include file="parts/0194_alter_m_loan_other_employer.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>
 <!-- 
     files to exempt when running migration for the first time

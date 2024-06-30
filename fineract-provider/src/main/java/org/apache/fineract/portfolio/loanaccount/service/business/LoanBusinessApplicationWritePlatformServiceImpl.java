@@ -813,7 +813,7 @@ public class LoanBusinessApplicationWritePlatformServiceImpl implements LoanBusi
                 if (activeLoansLoanProductIds.contains(restrictedProduct.getId())) {
                     throw new GeneralPlatformDomainRuleException(
                             "error.msg.loan.applied.or.to.be.disbursed.can.not.co-exist.with.the.loan.already.active.to.this.client",
-                            "This loan could not be applied/disbursed as the loan and `" + StringUtils.defaultIfBlank(restrictedProduct.getName(), "")
+                            "This loan could not be applied/disbursed as the loan (" + StringUtils.defaultIfBlank(productName, "") + ") and `" + StringUtils.defaultIfBlank(restrictedProduct.getName(), "")
                             + "` are not allowed to co-exist");
                 }
             }

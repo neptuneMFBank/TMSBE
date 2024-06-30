@@ -376,7 +376,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                         throw new GeneralPlatformDomainRuleException(
                                 "error.msg.loan.submitted.date.should.be.after.topup.loan.disbursal.date",
                                 "Submitted date of this loan application " + newLoanApplication.getSubmittedOnDate()
-                                        + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
+                                + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
                     }
                     if (!loanToClose.getCurrencyCode().equals(newLoanApplication.getCurrencyCode())) {
                         throw new GeneralPlatformDomainRuleException("error.msg.loan.to.be.closed.has.different.currency",
@@ -387,8 +387,8 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                         throw new GeneralPlatformDomainRuleException(
                                 "error.msg.loan.disbursal.date.should.be.after.last.transaction.date.of.loan.to.be.closed",
                                 "Disbursal date of this loan application " + newLoanApplication.getDisbursementDate()
-                                        + " should be after last transaction date of loan to be closed "
-                                        + lastUserTransactionOnLoanToClose);
+                                + " should be after last transaction date of loan to be closed "
+                                + lastUserTransactionOnLoanToClose);
                     }
                     BigDecimal loanOutstanding = this.loanReadPlatformService.retrieveLoanPrePaymentTemplate(LoanTransactionType.REPAYMENT,
                             loanIdToClose, newLoanApplication.getDisbursementDate()).getAmount();
@@ -489,7 +489,6 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                         }
 
                         // reset in cases of last child application of glim
-
                         if (isLastChildApplication) {
                             this.glimAccountInfoWritePlatformService
                                     .resetIsAcceptingChild(glimRepository.findOneByIsAcceptingChildAndApplicationId(true, applicationId));
@@ -643,8 +642,8 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                 if (activeLoansLoanProductIds.contains(restrictedProduct.getId())) {
                     throw new GeneralPlatformDomainRuleException(
                             "error.msg.loan.applied.or.to.be.disbursed.can.not.co-exist.with.the.loan.already.active.to.this.client",
-                            "This loan could not be applied/disbursed as the loan and `" + StringUtils.defaultIfBlank(restrictedProduct.getName(), "")
-                                    + "` are not allowed to co-exist");
+                            "This loan could not be applied/disbursed as the loan (" + StringUtils.defaultIfBlank(productName, "") + ") and `" + StringUtils.defaultIfBlank(restrictedProduct.getName(), "")
+                            + "` are not allowed to co-exist");
                 }
             }
         }
@@ -738,10 +737,10 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
         switch (recalculationFrequencyType) {
             case DAILY:
                 calendarFrequencyType = CalendarFrequencyType.DAILY;
-            break;
+                break;
             case MONTHLY:
                 calendarFrequencyType = CalendarFrequencyType.MONTHLY;
-            break;
+                break;
             case SAME_AS_REPAYMENT_PERIOD:
                 frequency = loan.repaymentScheduleDetail().getRepayEvery();
                 calendarFrequencyType = CalendarFrequencyType.from(loan.repaymentScheduleDetail().getRepaymentPeriodFrequencyType());
@@ -749,12 +748,12 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                 if (updatedRepeatsOnDay == null) {
                     updatedRepeatsOnDay = calendarStartDate.get(ChronoField.DAY_OF_WEEK);
                 }
-            break;
+                break;
             case WEEKLY:
                 calendarFrequencyType = CalendarFrequencyType.WEEKLY;
-            break;
+                break;
             default:
-            break;
+                break;
         }
 
         final Calendar calendar = Calendar.createRepeatingCalendar(title, calendarStartDate, CalendarType.COLLECTION.getValue(),
@@ -799,11 +798,15 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                     .fetchDisbursementData(command.parsedJson().getAsJsonObject());
 
             /**
-             * Stores all charges which are passed in during modify loan application
-             **/
+             * Stores all charges which are passed in during modify loan
+             * application
+             *
+             */
             final Set<LoanCharge> possiblyModifedLoanCharges = this.loanChargeAssembler.fromParsedJson(command.parsedJson(),
                     disbursementDetails);
-            /** Boolean determines if any charge has been modified **/
+            /**
+             * Boolean determines if any charge has been modified *
+             */
             boolean isChargeModified = false;
 
             Set<Charge> newTrancheChages = this.loanChargeAssembler.getNewLoanTrancheCharges(command.parsedJson());
@@ -812,9 +815,10 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
             }
 
             /**
-             * If there are any charges already present, which are now not passed in as a part of the request, deem the
-             * charges as modified
-             **/
+             * If there are any charges already present, which are now not
+             * passed in as a part of the request, deem the charges as modified
+             *
+             */
             if (!possiblyModifedLoanCharges.isEmpty()) {
                 if (!possiblyModifedLoanCharges.containsAll(existingCharges)) {
                     isChargeModified = true;
@@ -822,8 +826,10 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
             }
 
             /**
-             * If any new charges are added or values of existing charges are modified
-             **/
+             * If any new charges are added or values of existing charges are
+             * modified
+             *
+             */
             for (LoanCharge loanCharge : possiblyModifedLoanCharges) {
                 if (loanCharge.getId() == null) {
                     isChargeModified = true;
@@ -953,7 +959,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                             throw new GeneralPlatformDomainRuleException(
                                     "error.msg.loan.submitted.date.should.be.after.topup.loan.disbursal.date",
                                     "Submitted date of this loan application " + existingLoanApplication.getSubmittedOnDate()
-                                            + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
+                                    + " should be after the disbursed date of loan to be closed " + disbursalDateOfLoanToClose);
                         }
                         if (!loanToClose.getCurrencyCode().equals(existingLoanApplication.getCurrencyCode())) {
                             throw new GeneralPlatformDomainRuleException("error.msg.loan.to.be.closed.has.different.currency",
@@ -964,8 +970,8 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                             throw new GeneralPlatformDomainRuleException(
                                     "error.msg.loan.disbursal.date.should.be.after.last.transaction.date.of.loan.to.be.closed",
                                     "Disbursal date of this loan application " + existingLoanApplication.getDisbursementDate()
-                                            + " should be after last transaction date of loan to be closed "
-                                            + lastUserTransactionOnLoanToClose);
+                                    + " should be after last transaction date of loan to be closed "
+                                    + lastUserTransactionOnLoanToClose);
                         }
                         BigDecimal loanOutstanding = this.loanReadPlatformService.retrieveLoanPrePaymentTemplate(
                                 LoanTransactionType.REPAYMENT, loanIdToClose, existingLoanApplication.getDisbursementDate()).getAmount();
@@ -1464,7 +1470,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                     throw new GeneralPlatformDomainRuleException(
                             "error.msg.loan.disbursal.date.should.be.after.last.transaction.date.of.loan.to.be.closed",
                             "Disbursal date of this loan application " + loan.getDisbursementDate()
-                                    + " should be after last transaction date of loan to be closed " + lastUserTransactionOnLoanToClose);
+                            + " should be after last transaction date of loan to be closed " + lastUserTransactionOnLoanToClose);
                 }
                 BigDecimal loanOutstanding = this.loanReadPlatformService
                         .retrieveLoanPrePaymentTemplate(LoanTransactionType.REPAYMENT, loanIdToClose, expectedDisbursementDate).getAmount();
@@ -1547,7 +1553,6 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 
             // If loan approved amount is not same as loan amount demanded, then
             // during undo, restore the demand amount to principal amount.
-
             if (changes.containsKey(LoanApiConstants.approvedLoanAmountParameterName)
                     || changes.containsKey(LoanApiConstants.disbursementPrincipalParameterName)) {
                 LocalDate recalculateFrom = null;

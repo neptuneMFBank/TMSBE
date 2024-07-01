@@ -131,7 +131,7 @@ public class SelfDocumentManagementApiResource {
         } else if (StringUtils.equalsIgnoreCase(entityType, DocumentManagementEntity.CLIENTS.name())) {
             validateAppuserClientsMapping(entityId);
         } else if (StringUtils.equalsIgnoreCase(entityType, DocumentManagementEntity.CLIENT_IDENTIFIERS.name())) {
-            validateAppuserClientIdentfiersMapping(documentId);
+            validateAppuserClientIdentfiersMapping(entityId);
         } else if (StringUtils.equalsIgnoreCase(entityType, DocumentManagementEntity.SAVINGS.name())) {
             validateAppuserSavingsAccountMapping(entityId);
         } else {

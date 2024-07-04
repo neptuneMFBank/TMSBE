@@ -35,6 +35,7 @@ import org.apache.fineract.useradministration.domain.AppUserClientMapping;
 import org.apache.fineract.useradministration.domain.AppUserClientMappingRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -51,19 +52,21 @@ public class SelfAuthServiceImpl implements SelfAuthService {
     private final AppUserClientMappingRepositoryWrapper appUserClientMappingRepositoryWrapper;
     private final AppUserRepositoryWrapper appUserRepositoryWrapper;
     private final SelfServiceRegistrationRepository selfServiceRegistrationRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public SelfAuthServiceImpl(final AuthenticationApiResource authenticationApiResource, final FromJsonHelper fromJsonHelper,
             final ClientRepositoryWrapper clientRepositoryWrapper,
             final AppUserClientMappingRepositoryWrapper appUserClientMappingRepositoryWrapper,
             final SelfServiceRegistrationRepository selfServiceRegistrationRepository,
-            final AppUserRepositoryWrapper appUserRepositoryWrapper) {
+            final AppUserRepositoryWrapper appUserRepositoryWrapper, final JdbcTemplate jdbcTemplate) {
         this.authenticationApiResource = authenticationApiResource;
         this.fromJsonHelper = fromJsonHelper;
         this.clientRepositoryWrapper = clientRepositoryWrapper;
         this.appUserClientMappingRepositoryWrapper = appUserClientMappingRepositoryWrapper;
         this.appUserRepositoryWrapper = appUserRepositoryWrapper;
         this.selfServiceRegistrationRepository = selfServiceRegistrationRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     //@Transactional
@@ -104,7 +107,10 @@ public class SelfAuthServiceImpl implements SelfAuthService {
             if (isUsernameStillExistsInRegistrationLog) {
                 // delete audit registration logs for uniqueness to have dropOff of users who are yet to complete their
                 // onboarding
-                this.selfServiceRegistrationRepository.deleteByUsername(emailAddress);
+                //this.selfServiceRegistrationRepository.deleteByUsername(emailAddress);
+
+                String deleteByUsername = "DELETE FROM request_audit_table WHERE username=?";
+                jdbcTemplate.update(deleteByUsername, emailAddress);
             }
         }
 

@@ -4062,6 +4062,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
 
     public void removeLockedInUntilDate() {
         this.lockedInUntilDate = null;
+        this.lockinPeriodFrequency = null;
+        this.lockinPeriodFrequencyType = null;
     }
 
     public void updateLockedInUntilDate(final JsonCommand command, final Map<String, Object> actualChanges) {

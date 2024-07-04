@@ -584,6 +584,7 @@ public class DepositAccountReadPlatformServiceImpl implements DepositAccountRead
             selectFieldsSqlBuilder.append("sa.min_required_opening_balance as minRequiredOpeningBalance, ");
             selectFieldsSqlBuilder.append("sa.lockin_period_frequency as lockinPeriodFrequency,");
             selectFieldsSqlBuilder.append("sa.lockin_period_frequency_enum as lockinPeriodFrequencyType, ");
+            selectFieldsSqlBuilder.append("sa.lockedin_until_date_derived as lockedinUntilDateDerived, ");
             selectFieldsSqlBuilder.append("sa.withdrawal_fee_for_transfer as withdrawalFeeForTransfers, ");
             selectFieldsSqlBuilder.append("sa.total_deposits_derived as totalDeposits, ");
             selectFieldsSqlBuilder.append("sa.total_withdrawals_derived as totalWithdrawals, ");
@@ -677,6 +678,7 @@ public class DepositAccountReadPlatformServiceImpl implements DepositAccountRead
             final String activatedByFirstname = rs.getString("activatedByFirstname");
             final String activatedByLastname = rs.getString("activatedByLastname");
 
+            final LocalDate lockedinUntilDateDerived = JdbcSupport.getLocalDate(rs, "lockedinUntilDateDerived");
             final LocalDate closedOnDate = JdbcSupport.getLocalDate(rs, "closedOnDate");
             final String closedByUsername = rs.getString("closedByUsername");
             final String closedByFirstname = rs.getString("closedByFirstname");
@@ -687,7 +689,9 @@ public class DepositAccountReadPlatformServiceImpl implements DepositAccountRead
                     rejectedByLastname, withdrawnOnDate, withdrawnByUsername, withdrawnByFirstname, withdrawnByLastname, approvedOnDate,
                     approvedByUsername, approvedByFirstname, approvedByLastname, activatedOnDate, activatedByUsername, activatedByFirstname,
                     activatedByLastname, closedOnDate, closedByUsername, closedByFirstname, closedByLastname);
-
+            if (lockedinUntilDateDerived != null) {
+                timeline.setLockedinUntilDateDerived(lockedinUntilDateDerived);
+            }
             final Integer depositTypeId = JdbcSupport.getInteger(rs, "depositTypeId");
             final EnumOptionData depositType = (depositTypeId == null) ? null : SavingsEnumerations.depositType(depositTypeId);
 

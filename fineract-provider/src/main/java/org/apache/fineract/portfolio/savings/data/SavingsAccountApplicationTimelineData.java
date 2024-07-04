@@ -22,7 +22,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
- * Immutable data object represent the important time-line events of a savings account application.
+ * Immutable data object represent the important time-line events of a savings
+ * account application.
  */
 @SuppressWarnings("unused")
 public class SavingsAccountApplicationTimelineData implements Serializable {
@@ -51,6 +52,7 @@ public class SavingsAccountApplicationTimelineData implements Serializable {
     private final String closedByUsername;
     private final String closedByFirstname;
     private final String closedByLastname;
+    private LocalDate lockedinUntilDateDerived;
 
     public static SavingsAccountApplicationTimelineData templateDefault() {
 
@@ -123,4 +125,9 @@ public class SavingsAccountApplicationTimelineData implements Serializable {
     public LocalDate getActivatedOnDate() {
         return activatedOnDate;
     }
+
+    public void setLockedinUntilDateDerived(LocalDate lockedinUntilDateDerived) {
+        this.lockedinUntilDateDerived = lockedinUntilDateDerived;
+    }
+
 }

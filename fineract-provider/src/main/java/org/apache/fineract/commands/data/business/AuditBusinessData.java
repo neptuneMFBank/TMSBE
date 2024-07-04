@@ -18,7 +18,7 @@
  */
 package org.apache.fineract.commands.data.business;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,9 +37,9 @@ public final class AuditBusinessData {
     private final Long resourceId;
     private final Long subresourceId;
     private final String maker;
-    private final ZonedDateTime madeOnDate;
+    private final LocalDateTime madeOnDate;
     private final String checker;
-    private final ZonedDateTime checkedOnDate;
+    private final LocalDateTime checkedOnDate;
     private final String processingResult;
     @Setter
     private String commandAsJson;

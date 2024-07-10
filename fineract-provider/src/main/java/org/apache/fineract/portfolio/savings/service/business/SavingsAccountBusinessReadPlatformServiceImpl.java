@@ -440,7 +440,7 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
                         toTransferDescription, toTransferReversed);
             }
             final String submittedByUsername = rs.getString("submittedByUsername");
-            final String note = rs.getString("transactionNote");
+            final String note = rs.getString("refNo");
             final String refNo = rs.getString("refNo");
 
             final long chargeId = rs.getLong("chargeId");

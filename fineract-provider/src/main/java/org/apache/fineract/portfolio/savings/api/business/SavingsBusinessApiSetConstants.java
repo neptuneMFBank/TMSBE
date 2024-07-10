@@ -33,11 +33,11 @@ import java.util.Set;
 public class SavingsBusinessApiSetConstants {
 
     public static final String startPeriodParameterName = "startPeriod";
-
     public static final String endPeriodParameterName = "endPeriod";
+    public static final String refNoParamName = "refNo";
 
     protected static final Set<String> SAVINGS_TRANSACTION_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(idParamName, "accountId", accountNoParamName, "currency", "amount", dateParamName, paymentDetailDataParamName,
-                    runningBalanceParamName, reversedParamName, noteParamName, "chargeData", "submittedOnDateTime"));
+                    runningBalanceParamName, reversedParamName, noteParamName, "chargeData", "submittedOnDateTime", refNoParamName));
 
 }

@@ -100,7 +100,7 @@ public final class SavingsAccountTransactionData implements Serializable {
     private Integer balanceNumberOfDays;
     private BigDecimal overdraftAmount;
     private transient Long modifiedId;
-    private transient String refNo;
+    private String refNo;
     private ChargeData chargeData;
     private LocalDateTime submittedOnDateTime;
 

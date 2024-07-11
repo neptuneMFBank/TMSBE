@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,8 +20,10 @@ package org.apache.fineract.commands.service;
 
 import com.google.gson.JsonElement;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.security.SecureRandom;
 import java.time.ZonedDateTime;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.commands.domain.CommandSource;
@@ -59,17 +61,20 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
     @Override
     @SuppressWarnings("AvoidHidingCauseException")
     @SuppressFBWarnings(value = {
-            "DMI_RANDOM_USED_ONLY_ONCE" }, justification = "False positive for random object created and used only once")
+            "DMI_RANDOM_USED_ONLY_ONCE"}, justification = "False positive for random object created and used only once")
     public CommandProcessingResult logCommandSource(final CommandWrapper wrapper) {
 
         boolean isApprovedByChecker = false;
         // check if is update of own account details
-        if (wrapper.isUpdateOfOwnUserDetails(this.context.authenticatedUser(wrapper).getId())) {
+        if (wrapper.isUpdateOfOwnUserDetails(this.context.authenticatedUser(wrapper).getId())
+                // custom-built business request 11th July 2024 Ucee by Simplify Tech (Gasper Rasak Thompson)
+                || this.context.authenticatedUser(wrapper).canByPassMakerCheckerPermission()
+        ) {
             // then allow this operation to proceed.
             // maker checker doesnt mean anything here.
             isApprovedByChecker = true; // set to true in case permissions have
-                                        // been maker-checker enabled by
-                                        // accident.
+            // been maker-checker enabled by
+            // accident.
         } else {
             // if not user changing their own details - check user has
             // permission to perform specific task.

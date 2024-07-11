@@ -244,8 +244,9 @@
     <include file="parts/0191_business_time_config.sql" relativeToChangelogFile="true" />
     <include file="parts/0193_m_permission_lock_unlock_deposit.xml" relativeToChangelogFile="true" />
     <include file="parts/0194_alter_m_loan_other_employer.sql" relativeToChangelogFile="true" />
+    <include file="parts/0195_m_permission_makercheckerbypass.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
-<!-- 
+<!--
     files to exempt when running migration for the first time
     0063,0138,0067,0095,0117,0163,0140,0143,0164,0172,0173 
 -->

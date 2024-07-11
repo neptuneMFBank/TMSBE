@@ -18,4 +18,4 @@
 -- under the License.
 --
 
-INSERT INTO `fineract_default`.`m_role` (`name`, `description`, `is_disabled`) VALUES ( 'Merchant User', 'Merchant User role', b'0');
+INSERT INTO `m_role` (`name`, `description`, `is_disabled`) VALUES ( 'Merchant User', 'Merchant User role', b'0');

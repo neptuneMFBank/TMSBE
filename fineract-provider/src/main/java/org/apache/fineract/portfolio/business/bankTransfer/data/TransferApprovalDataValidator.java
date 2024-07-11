@@ -54,60 +54,78 @@ public class TransferApprovalDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
-        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, TransferApprovalApiResourceConstants.RESQUEST_DATA_PARAMETERS);
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
+                TransferApprovalApiResourceConstants.RESQUEST_DATA_PARAMETERS);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
                 .resource(TransferApprovalApiResourceConstants.RESOURCE_NAME);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
 
-        final BigDecimal amount = this.fromApiJsonHelper
-                .extractBigDecimalWithLocaleNamed(TransferApprovalApiResourceConstants.AMOUNT, element);
-        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.AMOUNT).value(amount).notNull()
-                .zeroOrPositiveAmount();
-//
-//        if (this.fromApiJsonHelper.parameterExists(TransferApprovalApiResourceConstants.STATUS, element)) {
-//            final Integer status = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.STATUS, element);
-//            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.STATUS).value(status).ignoreIfNull().integerZeroOrGreater();
-//        }
+        final BigDecimal amount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(TransferApprovalApiResourceConstants.AMOUNT,
+                element);
+        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.AMOUNT).value(amount).notNull().zeroOrPositiveAmount();
+        //
+        // if (this.fromApiJsonHelper.parameterExists(TransferApprovalApiResourceConstants.STATUS, element)) {
+        // final Integer status =
+        // this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.STATUS, element);
+        // baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.STATUS).value(status).ignoreIfNull().integerZeroOrGreater();
+        // }
 
-        final Integer transferType = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.TRANSFER_TYPE, element);
-        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TRANSFER_TYPE).value(transferType).notNull().integerZeroOrGreater();
+        final Integer transferType = this.fromApiJsonHelper
+                .extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.TRANSFER_TYPE, element);
+        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TRANSFER_TYPE).value(transferType).notNull()
+                .integerZeroOrGreater();
 
-        final Integer fromAccountId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_ID, element);
-        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.FROM_ACCOUNT_ID).value(fromAccountId).notNull().integerZeroOrGreater();
+        final Integer fromAccountId = this.fromApiJsonHelper
+                .extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_ID, element);
+        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.FROM_ACCOUNT_ID).value(fromAccountId).notNull()
+                .integerZeroOrGreater();
 
-        final Integer fromAccountType = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_TYPE, element);
-        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.FROM_ACCOUNT_TYPE).value(fromAccountType).notNull().integerZeroOrGreater();
+        final Integer fromAccountType = this.fromApiJsonHelper
+                .extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_TYPE, element);
+        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.FROM_ACCOUNT_TYPE).value(fromAccountType).notNull()
+                .integerZeroOrGreater();
 
-        final String fromAccountNumber = this.fromApiJsonHelper.extractStringNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_NUMBER, element);
-        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.FROM_ACCOUNT_NUMBER).value(fromAccountNumber).notBlank().notExceedingLengthOf(10);
+        final String fromAccountNumber = this.fromApiJsonHelper.extractStringNamed(TransferApprovalApiResourceConstants.FROM_ACCOUNT_NUMBER,
+                element);
+        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.FROM_ACCOUNT_NUMBER).value(fromAccountNumber).notBlank()
+                .notExceedingLengthOf(10);
 
         if (this.fromApiJsonHelper.parameterExists(TransferApprovalApiResourceConstants.TO_ACCOUNT_ID, element)) {
-            final Integer toAccountId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_ID, element);
-            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TO_ACCOUNT_ID).value(toAccountId).ignoreIfNull().integerZeroOrGreater();
+            final Integer toAccountId = this.fromApiJsonHelper
+                    .extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_ID, element);
+            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TO_ACCOUNT_ID).value(toAccountId).ignoreIfNull()
+                    .integerZeroOrGreater();
         }
 
         if (this.fromApiJsonHelper.parameterExists(TransferApprovalApiResourceConstants.TO_ACCOUNT_TYPE, element)) {
-            final Integer toAccountType = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_TYPE, element);
-            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TO_ACCOUNT_TYPE).value(toAccountType).ignoreIfNull().integerZeroOrGreater();
+            final Integer toAccountType = this.fromApiJsonHelper
+                    .extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_TYPE, element);
+            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TO_ACCOUNT_TYPE).value(toAccountType).ignoreIfNull()
+                    .integerZeroOrGreater();
         }
 
-        final String toAccountNumber = this.fromApiJsonHelper.extractStringNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_NUMBER, element);
-        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TO_ACCOUNT_NUMBER).value(toAccountNumber).notBlank().notExceedingLengthOf(10);
+        final String toAccountNumber = this.fromApiJsonHelper.extractStringNamed(TransferApprovalApiResourceConstants.TO_ACCOUNT_NUMBER,
+                element);
+        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TO_ACCOUNT_NUMBER).value(toAccountNumber).notBlank()
+                .notExceedingLengthOf(10);
 
         if (this.fromApiJsonHelper.parameterExists(TransferApprovalApiResourceConstants.noteParameterName, element)) {
             final String note = this.fromApiJsonHelper.extractStringNamed(TransferApprovalApiResourceConstants.noteParameterName, element);
             baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TO_ACCOUNT_NUMBER).value(note).notBlank();
         }
-        final Integer activationChannelId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.ACTIVATION_CHANNEL_ID, element);
-        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.ACTIVATION_CHANNEL_ID).value(activationChannelId).ignoreIfNull().integerZeroOrGreater();
+        final Integer activationChannelId = this.fromApiJsonHelper
+                .extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.ACTIVATION_CHANNEL_ID, element);
+        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.ACTIVATION_CHANNEL_ID).value(activationChannelId)
+                .ignoreIfNull().integerZeroOrGreater();
 
         if (this.fromApiJsonHelper.parameterExists(TransferApprovalApiResourceConstants.TO_BANK_ID, element)) {
-            final Integer toBankId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.TO_BANK_ID, element);
-            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TO_BANK_ID).value(toBankId).ignoreIfNull().integerZeroOrGreater();
+            final Integer toBankId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TransferApprovalApiResourceConstants.TO_BANK_ID,
+                    element);
+            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.TO_BANK_ID).value(toBankId).ignoreIfNull()
+                    .integerZeroOrGreater();
         }
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
@@ -125,26 +143,24 @@ public class TransferApprovalDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Set<String> approvalParameters = new HashSet<>(
-                Arrays.asList(
-                        //TransferApprovalApiResourceConstants.approvedOnDateParameterName,
-                        TransferApprovalApiResourceConstants.noteParameterName, TransferApprovalApiResourceConstants.localeParameterName,
-                        TransferApprovalApiResourceConstants.dateFormatParameterName
-                ));
+        final Set<String> approvalParameters = new HashSet<>(Arrays.asList(
+                // TransferApprovalApiResourceConstants.approvedOnDateParameterName,
+                TransferApprovalApiResourceConstants.noteParameterName, TransferApprovalApiResourceConstants.localeParameterName,
+                TransferApprovalApiResourceConstants.dateFormatParameterName));
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, approvalParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
-        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).
-                resource(TransferApprovalApiResourceConstants.RESOURCE_NAME);
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+                .resource(TransferApprovalApiResourceConstants.RESOURCE_NAME);
 
         final JsonElement element = this.fromApiJsonHelper.parse(json);
 
-//        final LocalDate approvedOnDate = this.fromApiJsonHelper.extractLocalDateNamed(TransferApprovalApiResourceConstants.approvedOnDateParameterName,
-//                element);
-//        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.approvedOnDateParameterName).value(approvedOnDate).notNull();
+        // final LocalDate approvedOnDate =
+        // this.fromApiJsonHelper.extractLocalDateNamed(TransferApprovalApiResourceConstants.approvedOnDateParameterName,
+        // element);
+        // baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.approvedOnDateParameterName).value(approvedOnDate).notNull();
         final String note = this.fromApiJsonHelper.extractStringNamed(TransferApprovalApiResourceConstants.noteParameterName, element);
         baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.noteParameterName).value(note).notExceedingLengthOf(1000);
 
@@ -158,21 +174,21 @@ public class TransferApprovalDataValidator {
         }
 
         final Set<String> rejectParameters = new HashSet<>(Arrays.asList(
-                //TransferApprovalApiResourceConstants.rejectedOnDateParameterName,
+                // TransferApprovalApiResourceConstants.rejectedOnDateParameterName,
                 TransferApprovalApiResourceConstants.noteParameterName, TransferApprovalApiResourceConstants.localeParameterName,
                 TransferApprovalApiResourceConstants.dateFormatParameterName));
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, rejectParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("loanapplication");
 
         final JsonElement element = this.fromApiJsonHelper.parse(json);
-//        final LocalDate rejectedOnDate = this.fromApiJsonHelper.extractLocalDateNamed(TransferApprovalApiResourceConstants.rejectedOnDateParameterName,
-//                element);
-//        baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.rejectedOnDateParameterName).value(rejectedOnDate).notNull();
+        // final LocalDate rejectedOnDate =
+        // this.fromApiJsonHelper.extractLocalDateNamed(TransferApprovalApiResourceConstants.rejectedOnDateParameterName,
+        // element);
+        // baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.rejectedOnDateParameterName).value(rejectedOnDate).notNull();
 
         final String note = this.fromApiJsonHelper.extractStringNamed(TransferApprovalApiResourceConstants.noteParameterName, element);
         baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.noteParameterName).value(note).notExceedingLengthOf(1000);

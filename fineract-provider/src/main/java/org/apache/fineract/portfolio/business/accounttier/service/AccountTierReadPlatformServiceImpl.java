@@ -56,8 +56,7 @@ public class AccountTierReadPlatformServiceImpl implements AccountTierReadPlatfo
     @Autowired
     public AccountTierReadPlatformServiceImpl(final PlatformSecurityContext context, final JdbcTemplate jdbcTemplate,
             final SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper,
-            final CodeValueReadPlatformService codeValueReadPlatformService
-    ) {
+            final CodeValueReadPlatformService codeValueReadPlatformService) {
         this.context = context;
         this.jdbcTemplate = jdbcTemplate;
         this.savingsAccountRepositoryWrapper = savingsAccountRepositoryWrapper;
@@ -90,7 +89,7 @@ public class AccountTierReadPlatformServiceImpl implements AccountTierReadPlatfo
             final String sql = "select " + this.accountTierMapper.schema() + " where matl.id = ? ";
 
             AccountTierData accountTierData = this.jdbcTemplate.queryForObject(sql, this.accountTierMapper, // NOSONAR
-                    new Object[]{accountTierId});
+                    new Object[] { accountTierId });
             Long parentId = accountTierData.getParentId();
             Long id = accountTierData.getId();
 
@@ -153,8 +152,8 @@ public class AccountTierReadPlatformServiceImpl implements AccountTierReadPlatfo
             final String activationchannelValue = rs.getString("activationchannelValue");
             final CodeValueData activationChannel = CodeValueData.instance(activationChannelId, activationchannelValue);
 
-            return AccountTierData.instance(id, clientType, parentId, activationChannel,
-                    dailyWithdrawalLimit, singleDepositLimit, cumulativeBalance, description, name);
+            return AccountTierData.instance(id, clientType, parentId, activationChannel, dailyWithdrawalLimit, singleDepositLimit,
+                    cumulativeBalance, description, name);
 
         }
     }
@@ -171,14 +170,13 @@ public class AccountTierReadPlatformServiceImpl implements AccountTierReadPlatfo
 
         final String cumulativeDepositAmountsql = cumulativeTransactionMapper.schema()
                 + " where sa.id = ? and transaction_type_enum = ? and tr.transaction_date = ? ";
-        final String savingsAccountBalancesql = savingsAccountBalanceMapper.schema()
-                + " where sa.id = ?  ";
+        final String savingsAccountBalancesql = savingsAccountBalanceMapper.schema() + " where sa.id = ?  ";
 
         BigDecimal savingsAccountBalance = this.jdbcTemplate.queryForObject(savingsAccountBalancesql, savingsAccountBalanceMapper,
-                new Object[]{savingsId});
+                new Object[] { savingsId });
 
         BigDecimal cumulativeWithdrawalAmount = this.jdbcTemplate.queryForObject(cumulativeDepositAmountsql, cumulativeTransactionMapper,
-                new Object[]{savingsId, SavingsAccountTransactionType.WITHDRAWAL.getValue(), today});
+                new Object[] { savingsId, SavingsAccountTransactionType.WITHDRAWAL.getValue(), today });
 
         List<Object> paramList = new ArrayList<>(Arrays.asList());
         String sql = "select " + this.accountTierMapper.schema() + " where matl.client_type_cv_id = ? ";
@@ -200,8 +198,7 @@ public class AccountTierReadPlatformServiceImpl implements AccountTierReadPlatfo
 
         CumulativeTransactionMapper() {
             final StringBuilder builder = new StringBuilder(400);
-            builder.append("select  sum(tr.amount) as cummulativeTransactionAmount "
-                    + "from m_savings_account_transaction tr ");
+            builder.append("select  sum(tr.amount) as cummulativeTransactionAmount " + "from m_savings_account_transaction tr ");
             builder.append("left join m_savings_account sa on tr.savings_account_id = sa.id ");
 
             this.schema = builder.toString();
@@ -213,7 +210,8 @@ public class AccountTierReadPlatformServiceImpl implements AccountTierReadPlatfo
 
         @Override
         public BigDecimal mapRow(final ResultSet rs, final int rowNum) throws SQLException {
-            final BigDecimal cummulativeTransactionAmount = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "cummulativeTransactionAmount");
+            final BigDecimal cummulativeTransactionAmount = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs,
+                    "cummulativeTransactionAmount");
 
             return cummulativeTransactionAmount;
 
@@ -226,8 +224,7 @@ public class AccountTierReadPlatformServiceImpl implements AccountTierReadPlatfo
 
         SavingsAccountBalanceMapper() {
             final StringBuilder builder = new StringBuilder(400);
-            builder.append("select  account_balance_derived as accountBalanceDerived "
-                    + "from m_savings_account sa ");
+            builder.append("select  account_balance_derived as accountBalanceDerived " + "from m_savings_account sa ");
 
             this.schema = builder.toString();
         }

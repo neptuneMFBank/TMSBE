@@ -63,8 +63,8 @@ public class MerchantSavingsApiResource {
 
     @GET
     @Path("{savingsId}/transactions")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
             @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,

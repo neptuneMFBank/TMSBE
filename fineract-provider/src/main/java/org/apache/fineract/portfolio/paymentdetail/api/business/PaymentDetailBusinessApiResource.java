@@ -62,14 +62,14 @@ public class PaymentDetailBusinessApiResource {
 
     @GET
     @Path("{receiptNumber}/receipt-number-exits")
-    @Consumes({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.TEXT_HTML, MediaType.APPLICATION_JSON })
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Check a Payment Detail Receipt Number", description = "Confirm Exist")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String isReceiptNumberExisting(@PathParam("receiptNumber") @Parameter(description = "receiptNumber") final String receiptNumber,
             @Context final UriInfo uriInfo) {
-        this.securityContext.authenticatedUser().validateHasReadPermission(PaymentDetailBusinessApiResourceConstants.resourceNameForPermissions);
+        this.securityContext.authenticatedUser()
+                .validateHasReadPermission(PaymentDetailBusinessApiResourceConstants.resourceNameForPermissions);
         final JsonObject jsonObject = this.paymentDetailReadPlatformService.isReceiptNumberExisting(receiptNumber);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.jsonSerializer.serialize(settings, jsonObject, PaymentDetailBusinessApiResourceConstants.RESPONSE_DATA_PARAMETERS);

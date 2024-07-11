@@ -24,17 +24,14 @@ import org.springframework.dao.EmptyResultDataAccessException;
 public class InventoryNotFound extends AbstractPlatformResourceNotFoundException {
 
     public InventoryNotFound(final Long resourceId) {
-        super("error.msg.inventory.identifier.not.found", "inventory with identifier `" + resourceId + "` does not exist",
-                resourceId);
+        super("error.msg.inventory.identifier.not.found", "inventory with identifier `" + resourceId + "` does not exist", resourceId);
     }
 
     public InventoryNotFound(final Long resourceId, EmptyResultDataAccessException e) {
-        super("error.msg.inventory.identifier.not.found", "inventory with identifier `" + resourceId + "` does not exist", resourceId,
-                e);
+        super("error.msg.inventory.identifier.not.found", "inventory with identifier `" + resourceId + "` does not exist", resourceId, e);
     }
 
     public InventoryNotFound(final String link, EmptyResultDataAccessException e) {
-        super("error.msg.inventory.identifier.not.found", "inventory with link `" + link + "` does not exist",
-                e);
+        super("error.msg.inventory.identifier.not.found", "inventory with link `" + link + "` does not exist", e);
     }
 }

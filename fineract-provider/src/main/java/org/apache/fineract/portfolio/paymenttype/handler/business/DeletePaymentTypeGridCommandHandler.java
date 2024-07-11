@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@CommandType(entity = PaymentTypeGridApiResourceConstants.RESOURCE_NAME , action = "DELETE")
+@CommandType(entity = PaymentTypeGridApiResourceConstants.RESOURCE_NAME, action = "DELETE")
 public class DeletePaymentTypeGridCommandHandler implements NewCommandSourceHandler {
 
     private final PaymentTypeGridWriteService writePlatformService;

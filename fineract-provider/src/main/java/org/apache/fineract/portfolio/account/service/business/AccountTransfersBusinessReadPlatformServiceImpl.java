@@ -110,9 +110,8 @@ public class AccountTransfersBusinessReadPlatformServiceImpl implements AccountT
             findClientJson.addProperty(AccountTransfersBusinessApiConstants.keyParam, key);
             findClientJson.addProperty(AccountTransfersBusinessApiConstants.valueParam, value);
             if (StringUtils.equalsIgnoreCase(key, "account_no")) {
-                //check which account, LOANS/SAVINGS
-                final Collection<Integer> statuses = new ArrayList<>(
-                        Arrays.asList(300));
+                // check which account, LOANS/SAVINGS
+                final Collection<Integer> statuses = new ArrayList<>(Arrays.asList(300));
                 toAccount = this.portfolioAccountReadPlatformService.retrieveOneViaAccountNumber(value, toAccountType, statuses);
                 toClientId = toAccount.clientId();
             } else {

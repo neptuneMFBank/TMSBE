@@ -93,5 +93,4 @@ public class ProductVisibilityConfigData implements Serializable {
                 clientTypeOptions, clientClassificationOptions, clientLegalFormOptions, loanProductOptions, savingsProductOptions);
     }
 
-    
 }

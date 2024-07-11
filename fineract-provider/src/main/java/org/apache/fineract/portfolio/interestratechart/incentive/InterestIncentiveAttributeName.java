@@ -97,9 +97,9 @@ public enum InterestIncentiveAttributeName {
             case CLIENT_TYPE:
             case CLIENT_CLASSIFICATION:
                 isCodeValue = true;
-                break;
+            break;
             default:
-                break;
+            break;
         }
         return isCodeValue;
     }

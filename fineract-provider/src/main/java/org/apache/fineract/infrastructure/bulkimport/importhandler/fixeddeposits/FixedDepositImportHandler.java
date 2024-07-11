@@ -196,8 +196,7 @@ public class FixedDepositImportHandler implements ImportHandler {
                 interestCalculationDaysInYearTypeId = 360L;
             } else if (interestCalculationDaysInYearType.equalsIgnoreCase(TemplatePopulateImportConstants.INTEREST_CAL_DAYS_IN_YEAR_365)) {
                 interestCalculationDaysInYearTypeId = 365L;
-            }
-            else if (interestCalculationDaysInYearType.equalsIgnoreCase(TemplatePopulateImportConstants.INTEREST_CAL_DAYS_IN_YEAR_366)) {
+            } else if (interestCalculationDaysInYearType.equalsIgnoreCase(TemplatePopulateImportConstants.INTEREST_CAL_DAYS_IN_YEAR_366)) {
                 interestCalculationDaysInYearTypeId = 366L;
             }
             interestCalculationDaysInYearTypeEnum = new EnumOptionData(interestCalculationDaysInYearTypeId, null, null);

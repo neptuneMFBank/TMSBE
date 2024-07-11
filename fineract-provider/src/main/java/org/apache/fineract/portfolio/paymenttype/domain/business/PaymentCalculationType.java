@@ -43,22 +43,17 @@ public enum PaymentCalculationType {
     }
 
     public static Object[] validValues() {
-        return new Integer[]{PaymentCalculationType.FLAT.getValue(), PaymentCalculationType.PERCENT.getValue(),
-            PaymentCalculationType.CAPPED.getValue()
-        };
+        return new Integer[] { PaymentCalculationType.FLAT.getValue(), PaymentCalculationType.PERCENT.getValue(),
+                PaymentCalculationType.CAPPED.getValue() };
     }
 
     public static PaymentCalculationType fromInt(final Integer chargeCalculation) {
         PaymentCalculationType chargeCalculationType = PaymentCalculationType.INVALID;
         chargeCalculationType = switch (chargeCalculation) {
-            case 1 ->
-                FLAT;
-            case 2 ->
-                PERCENT;
-            case 3 ->
-                CAPPED;
-            default ->
-                INVALID;
+            case 1 -> FLAT;
+            case 2 -> PERCENT;
+            case 3 -> CAPPED;
+            default -> INVALID;
         };
         return chargeCalculationType;
     }

@@ -116,7 +116,8 @@ public class CommandSource extends AbstractPersistableCustom {
     }
 
     private CommandSource(final String actionName, final String entityName, final String href, final Long resourceId,
-            final Long subresourceId, final String commandSerializedAsJson, final AppUser maker, final ZonedDateTime madeOnDateTime, final String roleId) {
+            final Long subresourceId, final String commandSerializedAsJson, final AppUser maker, final ZonedDateTime madeOnDateTime,
+            final String roleId) {
         this.actionName = actionName;
         this.entityName = entityName;
         this.resourceGetUrl = href;

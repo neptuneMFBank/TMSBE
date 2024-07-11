@@ -138,7 +138,8 @@ public class DepositAccountInterestRateChart extends AbstractPersistableCustom {
                 for (DepositAccountInterestIncentives incentives : depositInterestIncentives) {
                     AttributeIncentiveCalculation attributeIncentiveCalculation = AttributeIncentiveCalculationFactory
                             .findAttributeIncentiveCalculation(incentives.interestIncentivesFields().entiryType());
-                    IncentiveDTO incentiveDTO = new IncentiveDTO(client, effectiveInterestRate, incentives.interestIncentivesFields(), periodFrequency);
+                    IncentiveDTO incentiveDTO = new IncentiveDTO(client, effectiveInterestRate, incentives.interestIncentivesFields(),
+                            periodFrequency);
                     effectiveInterestRate = attributeIncentiveCalculation.calculateIncentive(incentiveDTO);
                 }
 

@@ -145,12 +145,12 @@ public class CentersApiResource {
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Center Template", description = "Retrieves a Center Template\n\n" + "Example Requests:\n\n" + "\n\n"
             + "centers/template\n\n" + "\n\n" + "centers/template?officeId=2")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.GetCentersTemplateResponse.class)))})
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.GetCentersTemplateResponse.class))) })
     public String retrieveTemplate(@Context final UriInfo uriInfo,
             @QueryParam("command") @Parameter(description = "command") final String commandParam,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
@@ -175,13 +175,13 @@ public class CentersApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Centers", description = "The default implementation supports pagination and sorting with the default pagination size set to 200 records. The parameter limit with description -1 will return all entries.\n\n"
             + "Example Requests:\n\n" + "\n\n" + "centers\n\n" + "\n\n" + "centers?fields=name,officeName,joinedDate\n\n" + "\n\n"
             + "centers?offset=10&limit=50\n\n" + "\n\n" + "centers?orderBy=name&sortOrder=DESC")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.GetCentersResponse.class)))})
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.GetCentersResponse.class))) })
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
             @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
@@ -223,12 +223,12 @@ public class CentersApiResource {
 
     @GET
     @Path("{centerId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Center", description = "Retrieves a Center\n\n" + "Example Requests:\n\n" + "\n\n" + "centers/1\n\n"
             + "\n\n" + "centers/1?associations=groupMembers")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.GetCentersCenterIdResponse.class)))})
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.GetCentersCenterIdResponse.class))) })
     public String retrieveOne(@Context final UriInfo uriInfo,
             @PathParam("centerId") @Parameter(description = "centerId") final Long centerId,
             @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly) {
@@ -277,14 +277,14 @@ public class CentersApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create a Center", description = "Creates a Center\n\n"
             + "Mandatory Fields: name, officeId, active, activationDate (if active=true)\n\n"
             + "Optional Fields: externalId, staffId, groupMembers")
     @RequestBody(required = true, content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.PostCentersRequest.class)))
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.PostCentersResponse.class)))})
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.PostCentersResponse.class))) })
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
@@ -298,12 +298,12 @@ public class CentersApiResource {
 
     @PUT
     @Path("{centerId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update a Center", description = "Updates a Center")
     @RequestBody(required = true, content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.PutCentersCenterIdRequest.class)))
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.PutCentersCenterIdResponse.class)))})
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.PutCentersCenterIdResponse.class))) })
     public String update(@PathParam("centerId") @Parameter(description = "centerId") final Long centerId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -317,11 +317,11 @@ public class CentersApiResource {
 
     @DELETE
     @Path("{centerId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Delete a Center", description = "A Center can be deleted if it is in pending state and has no association - groups, loans or savings")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.DeleteCentersCenterIdResponse.class)))})
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.DeleteCentersCenterIdResponse.class))) })
     public String delete(@PathParam("centerId") @Parameter(description = "centerId") final Long centerId) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
@@ -333,8 +333,8 @@ public class CentersApiResource {
 
     @POST
     @Path("{centerId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Activate a Center | Generate Collection Sheet | Save Collection Sheet | Close a Center | Associate Groups | Disassociate Groups", description = "Activate a Center:\n\n"
             + "Centers can be created in a Pending state. This API exists to enable center activation. If the center happens to be already active, this API will result in an error.\n\n"
             + "Close a Center:\n\n"
@@ -348,7 +348,7 @@ public class CentersApiResource {
             + "Showing Request/Response for Close a Center")
     @RequestBody(required = true, content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.PostCentersCenterIdRequest.class)))
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.PostCentersCenterIdResponse.class)))})
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.PostCentersCenterIdResponse.class))) })
     public String activate(@PathParam("centerId") @Parameter(description = "centerId") final Long centerId,
             @QueryParam("command") @Parameter(description = "command") final String commandParam,
             @Parameter(hidden = true) final String apiRequestBodyAsJson, @Context final UriInfo uriInfo) {
@@ -384,8 +384,8 @@ public class CentersApiResource {
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
             return this.toApiJsonSerializer.serialize(result);
         } else {
-            throw new UnrecognizedQueryParamException("command", commandParam, new Object[]{"activate", "generateCollectionSheet",
-                "saveCollectionSheet", "close", "associateGroups", "disassociateGroups"});
+            throw new UnrecognizedQueryParamException("command", commandParam, new Object[] { "activate", "generateCollectionSheet",
+                    "saveCollectionSheet", "close", "associateGroups", "disassociateGroups" });
         }
 
     }
@@ -396,13 +396,13 @@ public class CentersApiResource {
 
     @GET
     @Path("{centerId}/accounts")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Center accounts overview", description = "An example of how a savings summary for a Center can be provided. This is requested in a specific use case of the reference application.\n\n"
             + "It is quite reasonable to add resources like this to simplify User Interface development.\n\n" + "\n\n"
             + "Example Requests:\n\n" + "\n\n" + "centers/9/accounts")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.GetCentersCenterIdAccountsResponse.class)))})
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CentersApiResourceSwagger.GetCentersCenterIdAccountsResponse.class))) })
     public String retrieveGroupAccount(@PathParam("centerId") @Parameter(description = "centerId") final Long centerId,
             @Context final UriInfo uriInfo) {
 
@@ -429,7 +429,7 @@ public class CentersApiResource {
     @Path("uploadtemplate")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @RequestBody(description = "Upload centers template", content = {
-        @Content(mediaType = MediaType.MULTIPART_FORM_DATA, schema = @Schema(implementation = UploadRequest.class))})
+            @Content(mediaType = MediaType.MULTIPART_FORM_DATA, schema = @Schema(implementation = UploadRequest.class)) })
     public String postCentersTemplate(@FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetail, @FormDataParam("locale") final String locale,
             @FormDataParam("dateFormat") final String dateFormat) {

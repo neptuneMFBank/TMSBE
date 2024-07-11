@@ -42,14 +42,13 @@ public class PaymentTypeGridData implements Serializable {
     private BigDecimal percent;
     private EnumOptionData chargeData;
 
-//    template 
+    // template
     private final Collection<ChargeData> chargeOptions;
     private final Collection<PaymentTypeData> paymentTypeOptions;
 
-    public PaymentTypeGridData(final Long id, PaymentTypeData paymentType,
-            String name, String gridJson, Boolean isGrid, Boolean isCommission, EnumOptionData paymentCalculationType,
-            BigDecimal amount, BigDecimal percent, EnumOptionData chargeData, Collection<ChargeData> chargeOptions,
-            Collection<PaymentTypeData> paymentTypeOptions) {
+    public PaymentTypeGridData(final Long id, PaymentTypeData paymentType, String name, String gridJson, Boolean isGrid,
+            Boolean isCommission, EnumOptionData paymentCalculationType, BigDecimal amount, BigDecimal percent, EnumOptionData chargeData,
+            Collection<ChargeData> chargeOptions, Collection<PaymentTypeData> paymentTypeOptions) {
         this.id = id;
         this.paymentType = paymentType;
         this.name = name;
@@ -64,23 +63,19 @@ public class PaymentTypeGridData implements Serializable {
         this.paymentTypeOptions = paymentTypeOptions;
     }
 
-    public static PaymentTypeGridData instance(final Long id, final PaymentTypeData paymentType,
-            final String name,
-            final String gridJson,
-            final Boolean isGrid,
-            final Boolean isCommission,
-            final EnumOptionData paymentCalculationType,
-            final BigDecimal amount,
+    public static PaymentTypeGridData instance(final Long id, final PaymentTypeData paymentType, final String name, final String gridJson,
+            final Boolean isGrid, final Boolean isCommission, final EnumOptionData paymentCalculationType, final BigDecimal amount,
             final BigDecimal percent, EnumOptionData chargeData) {
         final Collection<ChargeData> chargeOptions = null;
         final Collection<PaymentTypeData> paymentTypeOptions = null;
 
-        return new PaymentTypeGridData(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType,
-                amount, percent, chargeData, chargeOptions, paymentTypeOptions);
+        return new PaymentTypeGridData(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType, amount, percent,
+                chargeData, chargeOptions, paymentTypeOptions);
 
     }
 
-    public static PaymentTypeGridData template(final Collection<ChargeData> chargeOptions, final Collection<PaymentTypeData> paymentTypeOptions) {
+    public static PaymentTypeGridData template(final Collection<ChargeData> chargeOptions,
+            final Collection<PaymentTypeData> paymentTypeOptions) {
         final Long id = null;
         final PaymentTypeData paymentType = null;
         final String name = null;
@@ -92,7 +87,7 @@ public class PaymentTypeGridData implements Serializable {
         final BigDecimal percent = null;
         EnumOptionData chargeData = null;
 
-        return new PaymentTypeGridData(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType,
-                amount, percent, chargeData, chargeOptions, paymentTypeOptions);
+        return new PaymentTypeGridData(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType, amount, percent,
+                chargeData, chargeOptions, paymentTypeOptions);
     }
 }

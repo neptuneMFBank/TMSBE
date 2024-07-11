@@ -134,11 +134,11 @@ public final class FixedDepositProductData extends DepositProductData {
     }
 
     /**
-     * Returns a {@link FixedDepositProductData} that contains and exist
-     * {@link FixedDepositProductData} data with further template data for
-     * dropdowns.
+     * Returns a {@link FixedDepositProductData} that contains and exist {@link FixedDepositProductData} data with
+     * further template data for dropdowns.
      *
-     * @param taxGroupOptions TODO
+     * @param taxGroupOptions
+     *            TODO
      */
     public static FixedDepositProductData withTemplate(final FixedDepositProductData existingProduct,
             final Collection<CurrencyData> currencyOptions, final Collection<EnumOptionData> interestCompoundingPeriodTypeOptions,

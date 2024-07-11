@@ -42,8 +42,8 @@ public final class PaymentTypeGridApiResourceConstants {
     public static final String PERCENT = "percent";
     public static final String LOCALE = "locale";
 
-    static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ID, NAME, GRID_JSON, ISGRID,
-            PAYMENT_TYPE, PAYMENTCALCULATIONTYPE, AMOUNT, PERCENT, ISCOMMISION, CHARGE_DATA));
-    public static final Set<String> REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(NAME, GRID_JSON, ISGRID,
-            PAYMENT_TYPE, PAYMENTCALCULATIONTYPE, AMOUNT, PERCENT, ISCOMMISION, CHARGE_DATA, LOCALE));
+    static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(
+            Arrays.asList(ID, NAME, GRID_JSON, ISGRID, PAYMENT_TYPE, PAYMENTCALCULATIONTYPE, AMOUNT, PERCENT, ISCOMMISION, CHARGE_DATA));
+    public static final Set<String> REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(NAME, GRID_JSON, ISGRID, PAYMENT_TYPE,
+            PAYMENTCALCULATIONTYPE, AMOUNT, PERCENT, ISCOMMISION, CHARGE_DATA, LOCALE));
 }

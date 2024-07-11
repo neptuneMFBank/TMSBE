@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.infrastructure.security.service.business;
 
+import static org.apache.fineract.simplifytech.data.GeneralConstants.getAuthUserCurrentRoleId;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.security.SecureRandom;
@@ -46,7 +48,6 @@ import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.portfolio.group.domain.Group;
 import org.apache.fineract.portfolio.self.registration.SelfServiceApiConstants;
 import org.apache.fineract.simplifytech.data.ApiResponseMessage;
-import static org.apache.fineract.simplifytech.data.GeneralConstants.getAuthUserCurrentRoleId;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.UserDomainService;
@@ -113,8 +114,8 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
             // appUser = this.appUserRepositoryWrapper.findAppUserByName(value);
             appUser = this.appUserRepositoryWrapper.findAppUserByEmail(value);
         } // else if (isMobileAuthenticationMode) {
-        // check mobile
-        // }
+          // check mobile
+          // }
         else {
             throw new PlatformDataIntegrityException("error.msg.reset.mode", "Password reset mode not supported");
         }
@@ -207,8 +208,10 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
         fullBusinessEntryFrom(actionName, entityName, href, appUserId, json, appUser, roleIds);
     }
 
-    protected void fullBusinessEntryFrom(final String actionName, final String entityName, final String href, final Long appUserId, final String json, final AppUser appUser, final String roleIds) {
-        CommandSource commandSourceResult = CommandSource.fullBusinessEntryFrom(actionName, entityName, href, appUserId, json, appUser, roleIds);
+    protected void fullBusinessEntryFrom(final String actionName, final String entityName, final String href, final Long appUserId,
+            final String json, final AppUser appUser, final String roleIds) {
+        CommandSource commandSourceResult = CommandSource.fullBusinessEntryFrom(actionName, entityName, href, appUserId, json, appUser,
+                roleIds);
         this.commandSourceRepository.saveAndFlush(commandSourceResult);
     }
 

@@ -206,8 +206,7 @@ public class DepositAccountDomainServiceJpa implements DepositAccountDomainServi
         final Set<Long> existingTransactionIds = new HashSet<>();
         final Set<Long> existingReversedTransactionIds = new HashSet<>();
         /**
-         * *
-         * Update account transactionIds for post journal entries.
+         * * Update account transactionIds for post journal entries.
          */
         updateExistingTransactionsDetails(account, existingTransactionIds, existingReversedTransactionIds);
         /*
@@ -278,8 +277,7 @@ public class DepositAccountDomainServiceJpa implements DepositAccountDomainServi
         final Set<Long> existingTransactionIds = new HashSet<>();
         final Set<Long> existingReversedTransactionIds = new HashSet<>();
         /**
-         * *
-         * Update account transactionIds for post journal entries.
+         * * Update account transactionIds for post journal entries.
          */
         updateExistingTransactionsDetails(account, existingTransactionIds, existingReversedTransactionIds);
 
@@ -355,8 +353,7 @@ public class DepositAccountDomainServiceJpa implements DepositAccountDomainServi
         final Set<Long> existingTransactionIds = new HashSet<>();
         final Set<Long> existingReversedTransactionIds = new HashSet<>();
         /**
-         * *
-         * Update account transactionIds for post journal entries.
+         * * Update account transactionIds for post journal entries.
          */
         updateExistingTransactionsDetails(account, existingTransactionIds, existingReversedTransactionIds);
 
@@ -471,8 +468,7 @@ public class DepositAccountDomainServiceJpa implements DepositAccountDomainServi
         final Set<Long> existingTransactionIds = new HashSet<>();
         final Set<Long> existingReversedTransactionIds = new HashSet<>();
         /**
-         * *
-         * Update account transactionIds for post journal entries.
+         * * Update account transactionIds for post journal entries.
          */
         updateExistingTransactionsDetails(account, existingTransactionIds, existingReversedTransactionIds);
 
@@ -529,8 +525,7 @@ public class DepositAccountDomainServiceJpa implements DepositAccountDomainServi
         final Set<Long> existingTransactionIds = new HashSet<>();
         final Set<Long> existingReversedTransactionIds = new HashSet<>();
         /**
-         * *
-         * Update account transactionIds for post journal entries.
+         * * Update account transactionIds for post journal entries.
          */
         updateExistingTransactionsDetails(account, existingTransactionIds, existingReversedTransactionIds);
 

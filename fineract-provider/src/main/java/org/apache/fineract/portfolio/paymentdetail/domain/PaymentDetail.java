@@ -64,7 +64,8 @@ public final class PaymentDetail extends AbstractPersistableCustom {
         final String accountNumber = command.stringValueOfParameterNamed(PaymentDetailConstants.accountNumberParamName);
         final String checkNumber = command.stringValueOfParameterNamed(PaymentDetailConstants.checkNumberParamName);
         final String routingCode = command.stringValueOfParameterNamed(PaymentDetailConstants.routingCodeParamName);
-//        String receiptNumber = null;// command.stringValueOfParameterNamed(PaymentDetailConstants.receiptNumberParamName);
+        // String receiptNumber = null;//
+        // command.stringValueOfParameterNamed(PaymentDetailConstants.receiptNumberParamName);
         String receiptNumber = command.stringValueOfParameterNamed(PaymentDetailConstants.receiptNumberParamName);
         final String bankNumber = command.stringValueOfParameterNamed(PaymentDetailConstants.bankNumberParamName);
 

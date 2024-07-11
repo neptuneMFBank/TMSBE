@@ -21,5 +21,3 @@
 ALTER TABLE m_loanproduct_visibility_config_mapping
     DROP CONSTRAINT m_loanproduct_visibility_config_id,
     ADD    CONSTRAINT `m_loanproduct_visibility_mapping_config_id` FOREIGN KEY (`config_id`) REFERENCES `m_product_visibility_config` (`id`);
-
-

@@ -202,7 +202,7 @@
     <include file="parts/0412_m_inventory.sql" relativeToChangelogFile="true" />
     <include file="parts/0413_create_m_inventory_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0414_update_m_inventory_permission.sql" relativeToChangelogFile="true" />
-    <include file="parts/0415_delete_m_inventory_permission.sql" relativeToChangelogFile="true" /> 
+    <include file="parts/0415_delete_m_inventory_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0416_read_m_inventory_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0174_m_payment_types.xml" relativeToChangelogFile="true" />
     <include file="parts/0175_m_payment_type_grid.sql" relativeToChangelogFile="true" />
@@ -248,5 +248,5 @@
 </databaseChangeLog>
 <!--
     files to exempt when running migration for the first time
-    0063,0138,0067,0095,0117,0163,0140,0143,0164,0172,0173 
+    0063,0138,0067,0095,0117,0163,0140,0143,0164,0172,0173
 -->

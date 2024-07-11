@@ -23,5 +23,5 @@ CREATE TABLE `m_loanproduct_visibility_legalenum_mapping` (
   `legalenum_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `config_id_legalenum_id` (`config_id`,`legalenum_id`),
-  CONSTRAINT `m_legalenum_mapping_visibility_config_id` FOREIGN KEY (`config_id`) REFERENCES `m_loanproduct_visibility_config` (`id`) 
+  CONSTRAINT `m_legalenum_mapping_visibility_config_id` FOREIGN KEY (`config_id`) REFERENCES `m_loanproduct_visibility_config` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

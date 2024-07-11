@@ -48,20 +48,21 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
     private final PlatformSecurityContext context;
     private final JdbcTemplate jdbcTemplate;
     private final InterestRateChartReadPlatformService chartReadPlatformService;
-    private final FixedDepositProductMapper fixedDepositProductRowMapper;//= new FixedDepositProductMapper();
-    private final RecurringDepositProductMapper recurringDepositProductRowMapper;// = new RecurringDepositProductMapper();
+    private final FixedDepositProductMapper fixedDepositProductRowMapper;// = new FixedDepositProductMapper();
+    private final RecurringDepositProductMapper recurringDepositProductRowMapper;// = new
+                                                                                 // RecurringDepositProductMapper();
     private final DepositProductLookupMapper depositProductLookupsRowMapper = new DepositProductLookupMapper();
     private final DropdownReadPlatformService dropdownReadPlatformService;
 
     @Autowired
     public DepositProductReadPlatformServiceImpl(final PlatformSecurityContext context, final JdbcTemplate jdbcTemplate,
-            final InterestRateChartReadPlatformService chartReadPlatformService, final DropdownReadPlatformService dropdownReadPlatformService) {
+            final InterestRateChartReadPlatformService chartReadPlatformService,
+            final DropdownReadPlatformService dropdownReadPlatformService) {
         this.context = context;
         this.jdbcTemplate = jdbcTemplate;
         this.chartReadPlatformService = chartReadPlatformService;
         this.dropdownReadPlatformService = dropdownReadPlatformService;
-        final Collection<EnumOptionData> periodFrequencyTypeOptions
-                = this.dropdownReadPlatformService.retrievePeriodFrequencyTypeOptions();
+        final Collection<EnumOptionData> periodFrequencyTypeOptions = this.dropdownReadPlatformService.retrievePeriodFrequencyTypeOptions();
         fixedDepositProductRowMapper = new FixedDepositProductMapper(periodFrequencyTypeOptions);
         recurringDepositProductRowMapper = new RecurringDepositProductMapper(periodFrequencyTypeOptions);
     }
@@ -80,7 +81,7 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
         sqlBuilder.append(depositProductMapper.schema());
         sqlBuilder.append(" where sp.deposit_type_enum = ? ");
 
-        return this.jdbcTemplate.query(sqlBuilder.toString(), depositProductMapper, new Object[]{depositAccountType.getValue()});
+        return this.jdbcTemplate.query(sqlBuilder.toString(), depositProductMapper, new Object[] { depositAccountType.getValue() });
     }
 
     @Override
@@ -92,7 +93,7 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
         sqlBuilder.append(" where sp.deposit_type_enum = ? ");
 
         return this.jdbcTemplate.query(sqlBuilder.toString(), this.depositProductLookupsRowMapper,
-                new Object[]{depositAccountType.getValue()});
+                new Object[] { depositAccountType.getValue() });
     }
 
     @Override
@@ -111,7 +112,7 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
             sqlBuilder.append(" where sp.id = ? and sp.deposit_type_enum = ? ");
 
             return this.jdbcTemplate.queryForObject(sqlBuilder.toString(), depositProductMapper,
-                    new Object[]{fixedDepositProductId, depositAccountType.getValue()});
+                    new Object[] { fixedDepositProductId, depositAccountType.getValue() });
 
         } catch (final EmptyResultDataAccessException e) {
             throw new FixedDepositProductNotFoundException(fixedDepositProductId, e);
@@ -284,9 +285,10 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
             final BigDecimal depositAmount = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "depositAmount");
             final BigDecimal maxDepositAmount = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "maxDepositAmount");
 
-            final FixedDepositProductData fixedDepositProductData = FixedDepositProductData.instance(depositProductData, preClosurePenalApplicable, preClosurePenalInterest,
-                    preClosurePenalInterestOnType, minDepositTerm, maxDepositTerm, minDepositTermType, maxDepositTermType,
-                    inMultiplesOfDepositTerm, inMultiplesOfDepositTermType, minDepositAmount, depositAmount, maxDepositAmount);
+            final FixedDepositProductData fixedDepositProductData = FixedDepositProductData.instance(depositProductData,
+                    preClosurePenalApplicable, preClosurePenalInterest, preClosurePenalInterestOnType, minDepositTerm, maxDepositTerm,
+                    minDepositTermType, maxDepositTermType, inMultiplesOfDepositTerm, inMultiplesOfDepositTermType, minDepositAmount,
+                    depositAmount, maxDepositAmount);
             fixedDepositProductData.setPeriodFrequencyTypeOptions(periodFrequencyTypeOptions);
             return fixedDepositProductData;
         }
@@ -359,10 +361,10 @@ public class DepositProductReadPlatformServiceImpl implements DepositProductRead
             final EnumOptionData inMultiplesOfDepositTermType = (inMultiplesOfDepositTermTypeId == null) ? null
                     : SavingsEnumerations.depositTermFrequencyType(inMultiplesOfDepositTermTypeId);
 
-            final RecurringDepositProductData recurringDepositProductData = RecurringDepositProductData.instance(depositProductData, preClosurePenalApplicable, preClosurePenalInterest,
-                    preClosurePenalInterestOnType, minDepositTerm, maxDepositTerm, minDepositTermType, maxDepositTermType,
-                    inMultiplesOfDepositTerm, inMultiplesOfDepositTermType, isMandatoryDeposit, allowWithdrawal,
-                    adjustAdvanceTowardsFuturePayments, minDepositAmount, depositAmount, maxDepositAmount);
+            final RecurringDepositProductData recurringDepositProductData = RecurringDepositProductData.instance(depositProductData,
+                    preClosurePenalApplicable, preClosurePenalInterest, preClosurePenalInterestOnType, minDepositTerm, maxDepositTerm,
+                    minDepositTermType, maxDepositTermType, inMultiplesOfDepositTerm, inMultiplesOfDepositTermType, isMandatoryDeposit,
+                    allowWithdrawal, adjustAdvanceTowardsFuturePayments, minDepositAmount, depositAmount, maxDepositAmount);
             recurringDepositProductData.setPeriodFrequencyTypeOptions(periodFrequencyTypeOptions);
 
             return recurringDepositProductData;

@@ -21,7 +21,6 @@ package org.apache.fineract.portfolio.business.accounttier.execption;
 import org.apache.fineract.infrastructure.core.exception.AbstractPlatformResourceNotFoundException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-
 public class AccountTierNotFoundException extends AbstractPlatformResourceNotFoundException {
 
     public AccountTierNotFoundException(final Long id) {

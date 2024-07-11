@@ -24,11 +24,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
-import org.apache.fineract.organisation.business.businesstime.data.BusinessTimeData;
-import org.apache.fineract.organisation.business.businesstime.exception.BusinessTimeNotFoundException;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.organisation.business.businesstime.data.BusinessTimeData;
+import org.apache.fineract.organisation.business.businesstime.exception.BusinessTimeNotFoundException;
 import org.apache.fineract.portfolio.calendar.domain.CalendarWeekDaysType;
 import org.apache.fineract.portfolio.calendar.service.CalendarEnumerations;
 import org.apache.fineract.useradministration.data.RoleData;
@@ -64,17 +64,15 @@ public class BusinessTimeReadPlatformServiceImpl implements BusinessTimeReadPlat
 
         String sql = "select " + this.businessTimeMapper.schema() + "where mbt.role_id = ?";
 
-        return this.jdbcTemplate.query(sql, this.businessTimeMapper, new Object[]{roleId});
+        return this.jdbcTemplate.query(sql, this.businessTimeMapper, new Object[] { roleId });
     }
 
     @Override
     public BusinessTimeData retrieveOne(final Long businessTimeId) {
         this.context.authenticatedUser();
         try {
-            final String sql = "select " + this.businessTimeMapper.schema()
-                    + " where  mbt.id = ?";
-            final BusinessTimeData businessTimeData = this.jdbcTemplate.queryForObject(sql, this.businessTimeMapper,
-                    businessTimeId);
+            final String sql = "select " + this.businessTimeMapper.schema() + " where  mbt.id = ?";
+            final BusinessTimeData businessTimeData = this.jdbcTemplate.queryForObject(sql, this.businessTimeMapper, businessTimeId);
 
             return businessTimeData;
         } catch (final EmptyResultDataAccessException e) {
@@ -133,8 +131,8 @@ public class BusinessTimeReadPlatformServiceImpl implements BusinessTimeReadPlat
             final Long lastModifiedById = JdbcSupport.getLong(rs, "lastModifiedById");
             final LocalDate lastModifiedOnUtc = JdbcSupport.getLocalDate(rs, "lastModifiedOnUtc");
 
-            return BusinessTimeData.instance(id, weekDayId, roleId, startTime, endTime, createdByUsername,
-                    createdById, createdOn, lastModifiedByUsername, lastModifiedById, lastModifiedOnUtc);
+            return BusinessTimeData.instance(id, weekDayId, roleId, startTime, endTime, createdByUsername, createdById, createdOn,
+                    lastModifiedByUsername, lastModifiedById, lastModifiedOnUtc);
 
         }
     }

@@ -37,9 +37,8 @@ import org.apache.fineract.portfolio.savings.domain.SavingsProduct;
 import org.springframework.util.CollectionUtils;
 
 @Entity
-@Table(name = "m_role_loan_product_approval", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"name"}, name = "rlpa_UNIQUE_name"),
-    @UniqueConstraint(columnNames = {"loan_product_id"}, name = "rlpa_UNIQUE_loan_product")})
+@Table(name = "m_role_loan_product_approval", uniqueConstraints = { @UniqueConstraint(columnNames = { "name" }, name = "rlpa_UNIQUE_name"),
+        @UniqueConstraint(columnNames = { "loan_product_id" }, name = "rlpa_UNIQUE_loan_product") })
 public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom {
 
     @Column(name = "name", nullable = false)
@@ -56,10 +55,10 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "LoanProductApproval", orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<LoanProductApprovalConfig> loanProductApprovalConfig = new HashSet<>();
 
-    protected LoanProductApproval() {
-    }
+    protected LoanProductApproval() {}
 
-    private LoanProductApproval(String name, LoanProduct loanProduct, Set<LoanProductApprovalConfig> loanProductApprovalConfig, SavingsProduct savingsProduct) {
+    private LoanProductApproval(String name, LoanProduct loanProduct, Set<LoanProductApprovalConfig> loanProductApprovalConfig,
+            SavingsProduct savingsProduct) {
         this.name = name;
         this.loanProduct = loanProduct;
         this.savingsProduct = savingsProduct;
@@ -71,8 +70,8 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
         return new LoanProductApproval(name, loanProduct, loanProductApprovalConfig, savingsProduct);
     }
 
-    public static LoanProductApproval create(String name, LoanProduct loanProduct,
-            Set<LoanProductApprovalConfig> loanProductApprovalConfig, SavingsProduct savingsProduct) {
+    public static LoanProductApproval create(String name, LoanProduct loanProduct, Set<LoanProductApprovalConfig> loanProductApprovalConfig,
+            SavingsProduct savingsProduct) {
         return new LoanProductApproval(name, loanProduct, loanProductApprovalConfig, savingsProduct);
     }
 
@@ -114,7 +113,7 @@ public class LoanProductApproval extends AbstractAuditableWithUTCDateTimeCustom 
             final Integer rank = singleLoanProductApprovalConfig.getRank();
             final boolean exist = this.loanProductApprovalConfig.stream()
                     .anyMatch(action -> !Objects.equals(singleLoanProductApprovalConfig.getId(), action.getId())
-                    && Objects.equals(action.getRank(), rank));
+                            && Objects.equals(action.getRank(), rank));
             if (exist) {
                 throw new PlatformDataIntegrityException("error.msg.product.approval.config.duplicate",
                         "Loan Product Approval config with index `" + rank + "` already exists");

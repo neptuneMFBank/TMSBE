@@ -54,15 +54,13 @@ public class PaymentTypeGridWriteServiceImpl implements PaymentTypeGridWriteServ
 
     @Autowired
     public PaymentTypeGridWriteServiceImpl(final PaymentTypeGridDataValidator fromApiJsonDeserializer,
-            final PlatformSecurityContext context,
-            final PaymentTypeGridRepositoryWrapper repositoryWrapper,
-            final PaymentTypeRepositoryWrapper paymentTypeRepositoryWrapper,
-            final ChargeRepositoryWrapper chargeRepositoryWrapper) {
+            final PlatformSecurityContext context, final PaymentTypeGridRepositoryWrapper repositoryWrapper,
+            final PaymentTypeRepositoryWrapper paymentTypeRepositoryWrapper, final ChargeRepositoryWrapper chargeRepositoryWrapper) {
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.context = context;
         this.repositoryWrapper = repositoryWrapper;
         this.paymentTypeRepositoryWrapper = paymentTypeRepositoryWrapper;
-        this. chargeRepositoryWrapper = chargeRepositoryWrapper;
+        this.chargeRepositoryWrapper = chargeRepositoryWrapper;
     }
 
     @Transactional
@@ -77,18 +75,19 @@ public class PaymentTypeGridWriteServiceImpl implements PaymentTypeGridWriteServ
             final Boolean isCommision = command.booleanObjectValueOfParameterNamed(PaymentTypeGridApiResourceConstants.ISCOMMISION);
             final Boolean isGrid = command.booleanObjectValueOfParameterNamed(PaymentTypeGridApiResourceConstants.ISGRID);
             final BigDecimal amount = command.bigDecimalValueOfParameterNamed(PaymentTypeGridApiResourceConstants.AMOUNT);
-            final Integer paymentCalculationType = command.integerValueOfParameterNamed(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE);
+            final Integer paymentCalculationType = command
+                    .integerValueOfParameterNamed(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE);
             final Long paymentTypeId = command.longValueOfParameterNamed(PaymentTypeGridApiResourceConstants.PAYMENT_TYPE);
             final BigDecimal percent = command.bigDecimalValueOfParameterNamed(PaymentTypeGridApiResourceConstants.PERCENT);
             final Long chargeDataId = command.longValueOfParameterNamed(PaymentTypeGridApiResourceConstants.CHARGE_DATA);
-            Charge charge =this.chargeRepositoryWrapper.findOneWithNotFoundDetection(chargeDataId);
+            Charge charge = this.chargeRepositoryWrapper.findOneWithNotFoundDetection(chargeDataId);
             PaymentType paymentType = paymentTypeRepositoryWrapper.findOneWithNotFoundDetection(paymentTypeId);
-            PaymentTypeGrid paymentTypeGrid = PaymentTypeGrid.instance(paymentType, name, gridJson, isGrid, isCommision, paymentCalculationType, amount, percent, charge);
+            PaymentTypeGrid paymentTypeGrid = PaymentTypeGrid.instance(paymentType, name, gridJson, isGrid, isCommision,
+                    paymentCalculationType, amount, percent, charge);
 
             this.repositoryWrapper.saveAndFlush(paymentTypeGrid);
 
-            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(paymentTypeGrid.getId())
-                    .build();
+            return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(paymentTypeGrid.getId()).build();
 
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
@@ -138,10 +137,7 @@ public class PaymentTypeGridWriteServiceImpl implements PaymentTypeGridWriteServ
                 this.repositoryWrapper.saveAndFlush(paymentTypeGrid);
             }
 
-            return new CommandProcessingResultBuilder()
-                    .with(changes)
-                    .withEntityId(paymentTypeGrid.getId())
-                    .build();
+            return new CommandProcessingResultBuilder().with(changes).withEntityId(paymentTypeGrid.getId()).build();
 
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);
@@ -158,8 +154,7 @@ public class PaymentTypeGridWriteServiceImpl implements PaymentTypeGridWriteServ
     public CommandProcessingResult delete(final Long paymentTypeGridId) {
 
         try {
-            PaymentTypeGrid paymentTypeGrid = this.repositoryWrapper
-                    .findOneWithNotFoundDetection(paymentTypeGridId);
+            PaymentTypeGrid paymentTypeGrid = this.repositoryWrapper.findOneWithNotFoundDetection(paymentTypeGridId);
             this.repositoryWrapper.delete(paymentTypeGrid);
             this.repositoryWrapper.flush();
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {

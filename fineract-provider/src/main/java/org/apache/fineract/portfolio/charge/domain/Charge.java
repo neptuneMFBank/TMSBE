@@ -55,8 +55,7 @@ import org.apache.fineract.portfolio.tax.data.TaxGroupData;
 import org.apache.fineract.portfolio.tax.domain.TaxGroup;
 
 @Entity
-@Table(name = "m_charge", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"name"}, name = "name")})
+@Table(name = "m_charge", uniqueConstraints = { @UniqueConstraint(columnNames = { "name" }, name = "name") })
 public class Charge extends AbstractPersistableCustom {
 
     @Column(name = "name", length = 100)
@@ -179,8 +178,7 @@ public class Charge extends AbstractPersistableCustom {
                 restartCountFrequency, countFrequencyType, account, taxGroup, enablePaymentType, paymentType);
     }
 
-    protected Charge() {
-    }
+    protected Charge() {}
 
     private Charge(final String name, final BigDecimal amount, final String currencyCode, final ChargeAppliesTo chargeAppliesTo,
             final ChargeTimeType chargeTime, final ChargeCalculationType chargeCalculationType, final boolean penalty, final boolean active,
@@ -649,8 +647,7 @@ public class Charge extends AbstractPersistableCustom {
     }
 
     /**
-     * Delete is a <i>soft delete</i>. Updates flag on charge so it wont appear
-     * in query/report results.
+     * Delete is a <i>soft delete</i>. Updates flag on charge so it wont appear in query/report results.
      *
      * Any fields with unique constraints and prepended with id of record.
      */

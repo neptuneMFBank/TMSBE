@@ -26,12 +26,12 @@ import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import org.apache.fineract.organisation.business.businesstime.api.BusinessTimeApiResourceConstants;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
+import org.apache.fineract.organisation.business.businesstime.api.BusinessTimeApiResourceConstants;
 
 @Entity
 @Table(name = "m_business_time")
@@ -56,8 +56,7 @@ public class BusinessTime extends AbstractAuditableWithUTCDateTimeCustom {
         this.endTime = endTime;
     }
 
-    protected BusinessTime() {
-    }
+    protected BusinessTime() {}
 
     public static BusinessTime instance(Long roleId, Integer weekDayId, LocalTime startTime, LocalTime endTime) {
         return new BusinessTime(roleId, weekDayId, startTime, endTime);

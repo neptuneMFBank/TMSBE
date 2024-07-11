@@ -69,7 +69,7 @@ public class SelfAuthServiceImpl implements SelfAuthService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    //@Transactional
+    // @Transactional
     @Override
     public String authenticate(String apiRequestBodyAsJson) {
         // check if user exists
@@ -107,7 +107,7 @@ public class SelfAuthServiceImpl implements SelfAuthService {
             if (isUsernameStillExistsInRegistrationLog) {
                 // delete audit registration logs for uniqueness to have dropOff of users who are yet to complete their
                 // onboarding
-                //this.selfServiceRegistrationRepository.deleteByUsername(emailAddress);
+                // this.selfServiceRegistrationRepository.deleteByUsername(emailAddress);
 
                 String deleteByUsername = "DELETE FROM request_audit_table WHERE username=?";
                 jdbcTemplate.update(deleteByUsername, emailAddress);

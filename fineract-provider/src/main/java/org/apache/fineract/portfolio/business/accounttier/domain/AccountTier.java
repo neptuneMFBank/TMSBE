@@ -57,16 +57,14 @@ public class AccountTier extends AbstractAuditableWithUTCDateTimeCustom {
 
     @Column(name = "description")
     private String description;
-    
+
     @Column(name = "name")
     private String name;
 
-    public AccountTier() {
-    }
+    public AccountTier() {}
 
     private AccountTier(CodeValue clientType, Long parentId, CodeValue activationChannel, BigDecimal dailyWithdrawalLimit,
-            BigDecimal singleDepositLimit,
-            BigDecimal cumulativeBalance, String description, String name) {
+            BigDecimal singleDepositLimit, BigDecimal cumulativeBalance, String description, String name) {
         this.clientType = clientType;
         this.parentId = parentId;
         this.activationChannel = activationChannel;
@@ -74,13 +72,13 @@ public class AccountTier extends AbstractAuditableWithUTCDateTimeCustom {
         this.singleDepositLimit = singleDepositLimit;
         this.cumulativeBalance = cumulativeBalance;
         this.description = description;
-        this.name= name;
+        this.name = name;
     }
 
     public static AccountTier instance(CodeValue clientType, Long parentId, CodeValue activationChannel, BigDecimal dailyWithdrawalLimit,
             BigDecimal singleDepositLimit, BigDecimal cumulativeBalance, String description, String name) {
-        return new AccountTier(clientType, parentId, activationChannel, dailyWithdrawalLimit, singleDepositLimit,
-                cumulativeBalance, description, name);
+        return new AccountTier(clientType, parentId, activationChannel, dailyWithdrawalLimit, singleDepositLimit, cumulativeBalance,
+                description, name);
     }
 
     public Map<String, Object> update(final JsonCommand command) {
@@ -126,7 +124,7 @@ public class AccountTier extends AbstractAuditableWithUTCDateTimeCustom {
             actualChanges.put(AccountTierApiResouceConstants.SINGLE_DEPOSIT_LIMIT, newValue);
             this.singleDepositLimit = newValue;
         }
-        
+
         if (command.isChangeInStringParameterNamed(AccountTierApiResouceConstants.NAME, this.name)) {
             final String newValue = command.stringValueOfParameterNamed(AccountTierApiResouceConstants.NAME);
             actualChanges.put(AccountTierApiResouceConstants.NAME, newValue);
@@ -146,6 +144,5 @@ public class AccountTier extends AbstractAuditableWithUTCDateTimeCustom {
     public CodeValue getClientType() {
         return clientType;
     }
-    
 
 }

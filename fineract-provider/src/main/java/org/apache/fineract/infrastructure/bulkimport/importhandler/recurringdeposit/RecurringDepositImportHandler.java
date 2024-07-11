@@ -175,7 +175,7 @@ public class RecurringDepositImportHandler implements ImportHandler {
                 interestCalculationDaysInYearTypeId = 360L;
             } else if (interestCalculationDaysInYearType.equalsIgnoreCase("365 Days")) {
                 interestCalculationDaysInYearTypeId = 365L;
-            }else if (interestCalculationDaysInYearType.equalsIgnoreCase("366 Days")) {
+            } else if (interestCalculationDaysInYearType.equalsIgnoreCase("366 Days")) {
                 interestCalculationDaysInYearTypeId = 366L;
             }
             interestCalculationDaysInYearTypeEnum = new EnumOptionData(interestCalculationDaysInYearTypeId, null, null);

@@ -67,7 +67,8 @@ public class TransferApprovalApiResource {
     private final ApiRequestParameterHelper apiRequestParameterHelper;
 
     @Autowired
-    public TransferApprovalApiResource(PlatformSecurityContext securityContext, DefaultToApiJsonSerializer<TransferApprovalData> jsonSerializer,
+    public TransferApprovalApiResource(PlatformSecurityContext securityContext,
+            DefaultToApiJsonSerializer<TransferApprovalData> jsonSerializer,
             final TransferApprovalReadPlatformService transferApprovalReadPlatformService,
             ApiRequestParameterHelper apiRequestParameterHelper, PortfolioCommandSourceWritePlatformService commandWritePlatformService) {
         this.securityContext = securityContext;
@@ -79,12 +80,10 @@ public class TransferApprovalApiResource {
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Transfer Template", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
         this.securityContext.authenticatedUser().validateHasReadPermission(TransferApprovalApiResourceConstants.RESOURCE_NAME);
@@ -96,13 +95,11 @@ public class TransferApprovalApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Transfer Approval ", description = "List Transfer Approval")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
-    public String retrieveAll(@Context final UriInfo uriInfo,
-            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String retrieveAll(@Context final UriInfo uriInfo, @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
             @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
             @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
             @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
@@ -114,8 +111,7 @@ public class TransferApprovalApiResource {
             @QueryParam("toAccountNumber") @Parameter(description = "toAccountNumber") final String toAccountNumber,
             @QueryParam("fromAccountNumber") @Parameter(description = "fromAccountNumber") final String fromAccountNumber,
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat,
-            @DefaultValue("en") @QueryParam("locale") final String locale
-    ) {
+            @DefaultValue("en") @QueryParam("locale") final String locale) {
         this.securityContext.authenticatedUser().validateHasReadPermission(TransferApprovalApiResourceConstants.RESOURCE_NAME);
 
         LocalDate fromDate = null;
@@ -127,8 +123,8 @@ public class TransferApprovalApiResource {
             toDate = endPeriod.getDate("endPeriod", dateFormat, locale);
         }
 
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forOverdraft(offset, limit, orderBy, sortOrder,
-                null, fromDate, toDate, status);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forOverdraft(offset, limit, orderBy, sortOrder, null,
+                fromDate, toDate, status);
 
         searchParameters.setTobankId(tobankId);
         searchParameters.setToAccountNumber(toAccountNumber);
@@ -142,14 +138,11 @@ public class TransferApprovalApiResource {
 
     @GET
     @Path("{transferApprovalId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a TransferApproval")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
-    public String retrieveOne(@PathParam("transferApprovalId")
-            @Parameter(description = "transferApprovalId")
-            final Long transferApprovalId,
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String retrieveOne(@PathParam("transferApprovalId") @Parameter(description = "transferApprovalId") final Long transferApprovalId,
             @Context final UriInfo uriInfo) {
 
         this.securityContext.authenticatedUser().validateHasReadPermission(TransferApprovalApiResourceConstants.RESOURCE_NAME);
@@ -162,15 +155,12 @@ public class TransferApprovalApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create a Transfer Approval", description = "Creates a Transfer Approval\n\n")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
-    public String create(@Parameter(hidden = true)
-            final String apiRequestBodyAsJson
-    ) {
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().createTransferApproval().withJson(apiRequestBodyAsJson).build();
 
@@ -181,13 +171,13 @@ public class TransferApprovalApiResource {
 
     @POST
     @Path("{transferApprovalId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Approve a transfer  | Reject a transfer  ")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
-    public String handleCommands(@PathParam("transferApprovalId") @Parameter(description = "transferApprovalId") final Long transferApprovalId,
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String handleCommands(
+            @PathParam("transferApprovalId") @Parameter(description = "transferApprovalId") final Long transferApprovalId,
             @QueryParam("command") @Parameter(description = "command") final String commandParam,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -204,8 +194,7 @@ public class TransferApprovalApiResource {
         }
 
         if (result == null) {
-            throw new UnrecognizedQueryParamException("command", commandParam,
-                    new Object[]{"reject", "approve"});
+            throw new UnrecognizedQueryParamException("command", commandParam, new Object[] { "reject", "approve" });
         }
 
         return this.jsonSerializer.serialize(result);

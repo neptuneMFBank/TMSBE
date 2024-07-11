@@ -73,8 +73,7 @@ public final class UserBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParameters);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -153,8 +152,7 @@ public final class UserBusinessDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, this.supportedParametersPassword);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();

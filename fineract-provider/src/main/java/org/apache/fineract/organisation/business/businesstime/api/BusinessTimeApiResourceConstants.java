@@ -41,6 +41,7 @@ public class BusinessTimeApiResourceConstants {
 
     public static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ROLE_ID, ID, WEEK_DAY_ID, START_TIME, END_TIME));
 
-    public static final Set<String> RESQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ROLE_ID, WEEK_DAY_ID, START_TIME, END_TIME, TIME_FORMAT, LOCALE));
+    public static final Set<String> RESQUEST_DATA_PARAMETERS = new HashSet<>(
+            Arrays.asList(ROLE_ID, WEEK_DAY_ID, START_TIME, END_TIME, TIME_FORMAT, LOCALE));
 
 }

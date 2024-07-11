@@ -39,13 +39,13 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
-import org.apache.fineract.organisation.business.businesstime.data.BusinessTimeData;
-import org.apache.fineract.organisation.business.businesstime.service.BusinessTimeReadPlatformService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.organisation.business.businesstime.data.BusinessTimeData;
+import org.apache.fineract.organisation.business.businesstime.service.BusinessTimeReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -75,12 +75,10 @@ public class BusinessTimeApiResource {
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Business Time Template", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
         this.securityContext.authenticatedUser().validateHasReadPermission(BusinessTimeApiResourceConstants.RESOURCE_NAME);
@@ -93,14 +91,11 @@ public class BusinessTimeApiResource {
 
     @GET
     @Path("role/{roleId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Business Time", description = "List Business Time ")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
-    public String retrieveAll(@Context final UriInfo uriInfo,
-            @PathParam("roleId") @Parameter(description = "roleId") final Long roleId
-    ) {
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String retrieveAll(@Context final UriInfo uriInfo, @PathParam("roleId") @Parameter(description = "roleId") final Long roleId) {
         this.securityContext.authenticatedUser().validateHasReadPermission(BusinessTimeApiResourceConstants.RESOURCE_NAME);
 
         final Collection<BusinessTimeData> businessTimeData = this.businessTimeReadPlatformService.retrieveAll(roleId);
@@ -111,11 +106,10 @@ public class BusinessTimeApiResource {
 
     @GET
     @Path("{businessTimeId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a business time")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveOne(@PathParam("businessTimeId") @Parameter(description = "businessTimeId") final Long businessTimeId,
             @Context final UriInfo uriInfo) {
 
@@ -129,12 +123,11 @@ public class BusinessTimeApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create a business time", description = "Creates a business time")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().createBusinessTime().withJson(apiRequestBodyAsJson).build();
@@ -146,11 +139,10 @@ public class BusinessTimeApiResource {
 
     @PUT
     @Path("{businessTimeId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update a business time", description = "Updates a business time")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String update(@PathParam("businessTimeId") @Parameter(description = "businessTimeId") final Long businessTimeId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -165,11 +157,10 @@ public class BusinessTimeApiResource {
 
     @DELETE
     @Path("role/{roleId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Delete a a business time by role", description = "Deletes  a business time by role")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String deleteByRole(@PathParam("roleId") @Parameter(description = "roleId") final Long roleId) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().deleteBusinessTimeByRole(roleId).build();
@@ -182,11 +173,10 @@ public class BusinessTimeApiResource {
 
     @DELETE
     @Path("{businessTimeId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Delete a a business time", description = "Deletes  a business time")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String delete(@PathParam("businessTimeId") @Parameter(description = "businessTimeId") final Long businessTimeId) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().deleteBusinessTime(businessTimeId).build();

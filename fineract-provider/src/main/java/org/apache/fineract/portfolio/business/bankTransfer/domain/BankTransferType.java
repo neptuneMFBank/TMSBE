@@ -34,10 +34,8 @@ public enum BankTransferType {
 
         BankTransferType enumeration = BankTransferType.INVALID;
         switch (statusValue) {
-            case 1 ->
-                enumeration = BankTransferType.INTRABANK;
-            case 2 ->
-                enumeration = BankTransferType.INTERBANK_EBILLS;
+            case 1 -> enumeration = BankTransferType.INTRABANK;
+            case 2 -> enumeration = BankTransferType.INTERBANK_EBILLS;
         }
         return enumeration;
     }

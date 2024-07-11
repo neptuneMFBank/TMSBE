@@ -43,9 +43,8 @@ public class PaymentDetailReadPlatformServiceImpl implements PaymentDetailReadPl
     @Override
     public JsonObject isReceiptNumberExisting(final String receiptNumber) {
         this.context.authenticatedUser();
-        Integer cnt = this.jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM m_payment_detail WHERE receipt_number=? ",
-                Integer.class, receiptNumber);
+        Integer cnt = this.jdbcTemplate.queryForObject("SELECT count(*) FROM m_payment_detail WHERE receipt_number=? ", Integer.class,
+                receiptNumber);
         Boolean receiptNumberExists = cnt != null && cnt > 0;
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("receiptNumber", receiptNumberExists);

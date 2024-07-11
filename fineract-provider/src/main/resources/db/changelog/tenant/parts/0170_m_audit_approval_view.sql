@@ -19,9 +19,9 @@
 
 CREATE OR REPLACE VIEW m_audit_approval_view AS
 SELECT mav.*, ms.organisational_role_parent_staff_id supervisor_id, mss.display_name supervisor_name
-FROM 
-m_audit_view mav 
+FROM
+m_audit_view mav
 JOIN m_appuser ma ON ma.id=mav.maker_id
-LEFT JOIN m_staff ms ON ms.id=ma.staff_id 
-LEFT JOIN m_staff mss ON mss.id=ms.organisational_role_parent_staff_id 
+LEFT JOIN m_staff ms ON ms.id=ma.staff_id
+LEFT JOIN m_staff mss ON mss.id=ms.organisational_role_parent_staff_id
 WHERE mav.processing_result_enum=2

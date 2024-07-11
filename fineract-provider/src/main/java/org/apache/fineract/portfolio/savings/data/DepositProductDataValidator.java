@@ -467,7 +467,7 @@ public class DepositProductDataValidator {
             final Integer interestCalculationDaysInYearType = fromApiJsonHelper
                     .extractIntegerSansLocaleNamed(interestCalculationDaysInYearTypeParamName, element);
             baseDataValidator.reset().parameter(interestCalculationDaysInYearTypeParamName).value(interestCalculationDaysInYearType)
-                    .notNull().isOneOfTheseValues(360, 365,366);
+                    .notNull().isOneOfTheseValues(360, 365, 366);
         }
 
         if (fromApiJsonHelper.parameterExists(minRequiredOpeningBalanceParamName, element)) {

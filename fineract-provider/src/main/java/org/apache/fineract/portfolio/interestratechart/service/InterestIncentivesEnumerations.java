@@ -41,27 +41,27 @@ public final class InterestIncentivesEnumerations {
 
         switch (type) {
             case INVALID:
-                break;
+            break;
             case AGE:
                 nameOptionData = new EnumOptionData(InterestIncentiveAttributeName.AGE.getValue().longValue(),
                         InterestIncentiveAttributeName.AGE.getCode(), "age");
-                break;
+            break;
             case GENDER:
                 nameOptionData = new EnumOptionData(InterestIncentiveAttributeName.GENDER.getValue().longValue(),
                         InterestIncentiveAttributeName.GENDER.getCode(), "Gender");
-                break;
+            break;
             case CLIENT_TYPE:
                 nameOptionData = new EnumOptionData(InterestIncentiveAttributeName.CLIENT_TYPE.getValue().longValue(),
                         InterestIncentiveAttributeName.CLIENT_TYPE.getCode(), "Client Type");
-                break;
+            break;
             case CLIENT_CLASSIFICATION:
                 nameOptionData = new EnumOptionData(InterestIncentiveAttributeName.CLIENT_CLASSIFICATION.getValue().longValue(),
                         InterestIncentiveAttributeName.CLIENT_CLASSIFICATION.getCode(), "Client Classification");
-                break;
+            break;
             case ACCOUNT_LOCKED:
                 nameOptionData = new EnumOptionData(InterestIncentiveAttributeName.ACCOUNT_LOCKED.getValue().longValue(),
                         InterestIncentiveAttributeName.ACCOUNT_LOCKED.getCode(), "Account Locked");
-                break;
+            break;
         }
 
         return nameOptionData;
@@ -87,15 +87,15 @@ public final class InterestIncentivesEnumerations {
 
         switch (type) {
             case INVALID:
-                break;
+            break;
             case ACCOUNT:
                 nameOptionData = new EnumOptionData(InterestIncentiveEntityType.ACCOUNT.getValue().longValue(),
                         InterestIncentiveEntityType.ACCOUNT.getCode(), "account");
-                break;
+            break;
             case CUSTOMER:
                 nameOptionData = new EnumOptionData(InterestIncentiveEntityType.CUSTOMER.getValue().longValue(),
                         InterestIncentiveEntityType.CUSTOMER.getCode(), "Customer");
-                break;
+            break;
         }
 
         return nameOptionData;
@@ -121,15 +121,15 @@ public final class InterestIncentivesEnumerations {
 
         switch (type) {
             case INVALID:
-                break;
+            break;
             case FIXED:
                 nameOptionData = new EnumOptionData(InterestIncentiveType.FIXED.getValue().longValue(),
                         InterestIncentiveType.FIXED.getCode(), "Fixed");
-                break;
+            break;
             case INCENTIVE:
                 nameOptionData = new EnumOptionData(InterestIncentiveType.INCENTIVE.getValue().longValue(),
                         InterestIncentiveType.INCENTIVE.getCode(), "Incentive");
-                break;
+            break;
         }
 
         return nameOptionData;

@@ -56,9 +56,9 @@ public class TransferApprovalData implements Serializable {
 
     private TransferApprovalData(Long id, BigDecimal amount, Integer status, EnumOptionData transferType, Integer holdTransactionId,
             Integer releaseTransactionId, Integer withdrawTransactionId, Integer fromAccountId, Integer fromAccountType,
-            String fromAccountNumber, Integer toAccountId, Integer toAccountType, String toAccountNumber,
-            CodeValueData activationChannel, CodeValueData toBank, String reason, String createdByUsername, String createdByFirstname,
-            String createdByLastname, Long createdById, LocalDate createdOn, Collection<EnumOptionData> transferTypeOptions, String fromAccountName, String note) {
+            String fromAccountNumber, Integer toAccountId, Integer toAccountType, String toAccountNumber, CodeValueData activationChannel,
+            CodeValueData toBank, String reason, String createdByUsername, String createdByFirstname, String createdByLastname,
+            Long createdById, LocalDate createdOn, Collection<EnumOptionData> transferTypeOptions, String fromAccountName, String note) {
         this.id = id;
         this.amount = amount;
         this.status = status;
@@ -85,15 +85,16 @@ public class TransferApprovalData implements Serializable {
         this.note = note;
     }
 
-    public static TransferApprovalData instance(Long id, BigDecimal amount, Integer status, EnumOptionData transferType, Integer holdTransactionId,
-            Integer releaseTransactionId, Integer withdrawTransactionId, Integer fromAccountId, Integer fromAccountType,
-            String fromAccountNumber, Integer toAccountId, Integer toAccountType, String toAccountNumber,
+    public static TransferApprovalData instance(Long id, BigDecimal amount, Integer status, EnumOptionData transferType,
+            Integer holdTransactionId, Integer releaseTransactionId, Integer withdrawTransactionId, Integer fromAccountId,
+            Integer fromAccountType, String fromAccountNumber, Integer toAccountId, Integer toAccountType, String toAccountNumber,
             CodeValueData activationChannel, CodeValueData toBank, String reason, String createdByUsername, String createdByFirstname,
             String createdByLastname, Long createdById, LocalDate createdOn, String fromAccountName, String note) {
         Collection<EnumOptionData> transferTypeOptions = null;
-        return new TransferApprovalData(id, amount, status, transferType, holdTransactionId, releaseTransactionId,
-                withdrawTransactionId, fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
-                toAccountNumber, activationChannel, toBank, reason, createdByUsername, createdByFirstname, createdByLastname, createdById, createdOn, transferTypeOptions, fromAccountName, note);
+        return new TransferApprovalData(id, amount, status, transferType, holdTransactionId, releaseTransactionId, withdrawTransactionId,
+                fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType, toAccountNumber, activationChannel, toBank,
+                reason, createdByUsername, createdByFirstname, createdByLastname, createdById, createdOn, transferTypeOptions,
+                fromAccountName, note);
 
     }
 
@@ -121,9 +122,10 @@ public class TransferApprovalData implements Serializable {
         LocalDate createdOn = null;
         String fromAccountName = null;
         String note = null;
-        return new TransferApprovalData(id, amount, status, transferType, holdTransactionId, releaseTransactionId,
-                withdrawTransactionId, fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
-                toAccountNumber, activationChannel, toBank, reason, createdByUsername, createdByFirstname, createdByLastname, createdById, createdOn, transferTypeOptions, fromAccountName, note);
+        return new TransferApprovalData(id, amount, status, transferType, holdTransactionId, releaseTransactionId, withdrawTransactionId,
+                fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType, toAccountNumber, activationChannel, toBank,
+                reason, createdByUsername, createdByFirstname, createdByLastname, createdById, createdOn, transferTypeOptions,
+                fromAccountName, note);
 
     }
 }

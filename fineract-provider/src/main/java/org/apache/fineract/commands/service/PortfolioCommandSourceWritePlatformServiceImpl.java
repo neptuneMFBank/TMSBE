@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -67,9 +67,7 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
         boolean isApprovedByChecker = false;
         // check if is update of own account details
         if (wrapper.isUpdateOfOwnUserDetails(this.context.authenticatedUser(wrapper).getId())
-                // custom-built business request 11th July 2024 Ucee by Simplify Tech (Gasper Rasak Thompson)
-                || this.context.authenticatedUser(wrapper).canByPassMakerCheckerPermission()
-        ) {
+                || this.context.authenticatedUser(wrapper).canByPassMakerCheckerPermission()) {
             // then allow this operation to proceed.
             // maker checker doesnt mean anything here.
             isApprovedByChecker = true; // set to true in case permissions have

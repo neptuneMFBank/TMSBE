@@ -71,20 +71,23 @@ public class AccountTierWritePlatformServiceImpl implements AccountTierWritePlat
             final Long activationChannelId = command.longValueOfParameterNamed(AccountTierApiResouceConstants.ACTIVATION_CHANNEL_ID);
             CodeValue activationChannel = null;
             if (activationChannelId != null) {
-                activationChannel = this.codeValueRepository
-                        .findOneByCodeNameAndIdWithNotFoundDetection(AccountTierApiResouceConstants.ACTIVATION_CHANNEL, activationChannelId);
+                activationChannel = this.codeValueRepository.findOneByCodeNameAndIdWithNotFoundDetection(
+                        AccountTierApiResouceConstants.ACTIVATION_CHANNEL, activationChannelId);
             }
 
             final BigDecimal cumulativeBalance = command.bigDecimalValueOfParameterNamed(AccountTierApiResouceConstants.CUMULATIVE_BALANCE);
-            final BigDecimal singleDepositLimit = command.bigDecimalValueOfParameterNamed(AccountTierApiResouceConstants.SINGLE_DEPOSIT_LIMIT);
-            final BigDecimal dailyWithdrawalLimit = command.bigDecimalValueOfParameterNamed(AccountTierApiResouceConstants.DALIY_WITHDRAWAL_LIMIT);
+            final BigDecimal singleDepositLimit = command
+                    .bigDecimalValueOfParameterNamed(AccountTierApiResouceConstants.SINGLE_DEPOSIT_LIMIT);
+            final BigDecimal dailyWithdrawalLimit = command
+                    .bigDecimalValueOfParameterNamed(AccountTierApiResouceConstants.DALIY_WITHDRAWAL_LIMIT);
             final String description = command.stringValueOfParameterNamed(AccountTierApiResouceConstants.DESCRIPTION);
             final String name = command.stringValueOfParameterNamed(AccountTierApiResouceConstants.NAME);
             final Long parentId = command.longValueOfParameterNamed(AccountTierApiResouceConstants.PARENT_ID);
 
             CodeValue clientType = null;
             if (parentId != null) {
-                AccountTier parentAccountTier = this.accountTierRepository.findById(parentId).orElseThrow(() -> new AccountTierNotFoundException(parentId));
+                AccountTier parentAccountTier = this.accountTierRepository.findById(parentId)
+                        .orElseThrow(() -> new AccountTierNotFoundException(parentId));
                 clientType = parentAccountTier.getClientType();
             } else {
                 final Long clientTypeId = command.longValueOfParameterNamed(AccountTierApiResouceConstants.CLIENT_TYPE_ID);
@@ -94,8 +97,8 @@ public class AccountTierWritePlatformServiceImpl implements AccountTierWritePlat
                 }
             }
 
-            AccountTier accountTier = AccountTier.instance(clientType,
-                    parentId, activationChannel, dailyWithdrawalLimit, singleDepositLimit, cumulativeBalance, description, name);
+            AccountTier accountTier = AccountTier.instance(clientType, parentId, activationChannel, dailyWithdrawalLimit,
+                    singleDepositLimit, cumulativeBalance, description, name);
             this.accountTierRepository.saveAndFlush(accountTier);
 
             return new CommandProcessingResultBuilder() //
@@ -126,8 +129,8 @@ public class AccountTierWritePlatformServiceImpl implements AccountTierWritePlat
 
             if (changes.containsKey(AccountTierApiResouceConstants.ACTIVATION_CHANNEL_ID)) {
                 final Long activationChannelId = command.longValueOfParameterNamed(AccountTierApiResouceConstants.ACTIVATION_CHANNEL_ID);
-                CodeValue activationChannel = this.codeValueRepository
-                        .findOneByCodeNameAndIdWithNotFoundDetection(AccountTierApiResouceConstants.ACTIVATION_CHANNEL, activationChannelId);
+                CodeValue activationChannel = this.codeValueRepository.findOneByCodeNameAndIdWithNotFoundDetection(
+                        AccountTierApiResouceConstants.ACTIVATION_CHANNEL, activationChannelId);
                 accountTier.setActivationChannel(activationChannel);
             }
 

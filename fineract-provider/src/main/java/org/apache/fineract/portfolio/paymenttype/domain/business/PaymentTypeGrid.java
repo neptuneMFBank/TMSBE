@@ -64,11 +64,10 @@ public class PaymentTypeGrid extends AbstractAuditableWithUTCDateTimeCustom {
     @JoinColumn(name = "charge_id")
     private Charge charge;
 
-    public PaymentTypeGrid() {
-    }
+    public PaymentTypeGrid() {}
 
-    private PaymentTypeGrid(PaymentType paymentType, String name, String gridJson, Boolean isGrid,
-            Boolean isCommission, Integer paymentCalculationType, BigDecimal amount, BigDecimal percent, Charge chargeId) {
+    private PaymentTypeGrid(PaymentType paymentType, String name, String gridJson, Boolean isGrid, Boolean isCommission,
+            Integer paymentCalculationType, BigDecimal amount, BigDecimal percent, Charge chargeId) {
         this.paymentType = paymentType;
         this.name = name;
         this.gridJson = gridJson;
@@ -83,8 +82,7 @@ public class PaymentTypeGrid extends AbstractAuditableWithUTCDateTimeCustom {
     public static PaymentTypeGrid instance(PaymentType paymentType, String name, String gridJson, Boolean isGrid, Boolean isCommission,
             Integer paymentCalculationType, BigDecimal amount, BigDecimal percent, Charge charge) {
 
-        return new PaymentTypeGrid(paymentType, name, gridJson, isGrid, isCommission,
-                paymentCalculationType, amount, percent, charge);
+        return new PaymentTypeGrid(paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType, amount, percent, charge);
     }
 
     public Map<String, Object> update(final JsonCommand command) {
@@ -120,7 +118,8 @@ public class PaymentTypeGrid extends AbstractAuditableWithUTCDateTimeCustom {
             this.isCommission = newValue;
         }
 
-        if (command.isChangeInIntegerParameterNamed(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE, this.paymentCalculationType)) {
+        if (command.isChangeInIntegerParameterNamed(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE,
+                this.paymentCalculationType)) {
             final Integer newValue = command.integerValueOfParameterNamed(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE);
             actualChanges.put(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE, newValue);
             this.paymentCalculationType = newValue;
@@ -136,9 +135,9 @@ public class PaymentTypeGrid extends AbstractAuditableWithUTCDateTimeCustom {
             actualChanges.put(PaymentTypeGridApiResourceConstants.PERCENT, newValue);
             this.percent = newValue;
         }
-        
+
         Long chargeId = this.charge.getId();
-        if (command.isChangeInLongParameterNamed(PaymentTypeGridApiResourceConstants.CHARGE_DATA,chargeId)) {
+        if (command.isChangeInLongParameterNamed(PaymentTypeGridApiResourceConstants.CHARGE_DATA, chargeId)) {
             final Long newValue = command.longValueOfParameterNamed(PaymentTypeGridApiResourceConstants.CHARGE_DATA);
             actualChanges.put(PaymentTypeGridApiResourceConstants.CHARGE_DATA, newValue);
         }

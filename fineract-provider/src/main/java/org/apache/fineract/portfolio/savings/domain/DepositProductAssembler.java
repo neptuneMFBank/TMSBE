@@ -54,6 +54,7 @@ import static org.apache.fineract.portfolio.savings.SavingsApiConstants.nominalA
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.shortNameParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.taxGroupIdParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.withHoldTaxParamName;
+import static org.apache.fineract.simplifytech.data.GeneralConstants.setCustomDefaultInterateRateForInvestmentViewPurpose;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -82,7 +83,6 @@ import org.apache.fineract.portfolio.savings.SavingsPeriodFrequencyType;
 import org.apache.fineract.portfolio.savings.SavingsPostingInterestPeriodType;
 import org.apache.fineract.portfolio.tax.domain.TaxGroup;
 import org.apache.fineract.portfolio.tax.domain.TaxGroupRepositoryWrapper;
-import static org.apache.fineract.simplifytech.data.GeneralConstants.setCustomDefaultInterateRateForInvestmentViewPurpose;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

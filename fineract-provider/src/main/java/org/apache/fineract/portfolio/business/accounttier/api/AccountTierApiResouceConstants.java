@@ -44,13 +44,11 @@ public class AccountTierApiResouceConstants {
     public static final String CLIENT_TYPE = "ClientType";
     public static final String CLIENT_CLASSIFICATION = "ClientClassification";
     public static final String ACTIVATION_CHANNEL = "ActivationChannel";
-    
-
 
     static final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(ID, PARENT_ID, CLIENT_TYPE_ID, ACTIVATION_CHANNEL_ID,
             DALIY_WITHDRAWAL_LIMIT, SINGLE_DEPOSIT_LIMIT, CUMULATIVE_BALANCE, DESCRIPTION, NAME));
-    public static final Set<String> PARENT_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(PARENT_ID, CLIENT_TYPE_ID, ACTIVATION_CHANNEL_ID,
-            DALIY_WITHDRAWAL_LIMIT, SINGLE_DEPOSIT_LIMIT, CUMULATIVE_BALANCE, DESCRIPTION, LOCALE, NAME));
+    public static final Set<String> PARENT_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(PARENT_ID, CLIENT_TYPE_ID,
+            ACTIVATION_CHANNEL_ID, DALIY_WITHDRAWAL_LIMIT, SINGLE_DEPOSIT_LIMIT, CUMULATIVE_BALANCE, DESCRIPTION, LOCALE, NAME));
     public static final Set<String> REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(PARENT_ID, ACTIVATION_CHANNEL_ID,
             DALIY_WITHDRAWAL_LIMIT, SINGLE_DEPOSIT_LIMIT, CUMULATIVE_BALANCE, DESCRIPTION, LOCALE, NAME));
 

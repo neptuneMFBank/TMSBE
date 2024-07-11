@@ -28,15 +28,16 @@ public final class CumulativeTransactionsData implements Serializable {
     private final BigDecimal savingsAccountBalance;
     private final Collection<AccountTierData> accountTierData;
 
-    private CumulativeTransactionsData(Collection<AccountTierData> accountTierData, BigDecimal cumulativeWithdrawalAmount, BigDecimal savingsAccountBalance) {
+    private CumulativeTransactionsData(Collection<AccountTierData> accountTierData, BigDecimal cumulativeWithdrawalAmount,
+            BigDecimal savingsAccountBalance) {
         this.cumulativeWithdrawalAmount = cumulativeWithdrawalAmount;
         this.savingsAccountBalance = savingsAccountBalance;
         this.accountTierData = accountTierData;
 
     }
 
-    public static CumulativeTransactionsData instance(Collection<AccountTierData> accountTierData,
-            BigDecimal cumulativeWithdrawalAmount, BigDecimal savingsAccountBalance) {
+    public static CumulativeTransactionsData instance(Collection<AccountTierData> accountTierData, BigDecimal cumulativeWithdrawalAmount,
+            BigDecimal savingsAccountBalance) {
         return new CumulativeTransactionsData(accountTierData, cumulativeWithdrawalAmount, savingsAccountBalance);
 
     }

@@ -26,7 +26,7 @@ public interface TransferApprovalWritePlatformService {
     CommandProcessingResult create(JsonCommand command);
 
     CommandProcessingResult approve(JsonCommand command, Long transferApprovalId);
-    
+
     CommandProcessingResult reject(JsonCommand command, Long entityId);
 
 }

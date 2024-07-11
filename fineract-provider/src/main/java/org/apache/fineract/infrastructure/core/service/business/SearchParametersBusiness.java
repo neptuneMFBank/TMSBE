@@ -968,8 +968,8 @@ public final class SearchParametersBusiness {
 
     }
 
-    public static SearchParametersBusiness forInventory(final Integer offset, final String name, final Long clientId,
-            final Integer limit, final String orderBy, final String sortOrder) {
+    public static SearchParametersBusiness forInventory(final Integer offset, final String name, final Long clientId, final Integer limit,
+            final String orderBy, final String sortOrder) {
         final Long transactionId = null;
         final Long transactionTypeId = null;
         final LocalDate fromDate = null;
@@ -1011,9 +1011,9 @@ public final class SearchParametersBusiness {
         final String username = null;
         final Boolean active = null;
 
-        return new SearchParametersBusiness(sqlSearch, officeId, externalId, name, hierarchy, firstname, lastname, offset, limit,
-                orderBy, sortOrder, supervisorId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status,
-                categoryId, productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
+        return new SearchParametersBusiness(sqlSearch, officeId, externalId, name, hierarchy, firstname, lastname, offset, limit, orderBy,
+                sortOrder, supervisorId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status, categoryId,
+                productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
                 showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId,
                 username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer, overdraftId, transactionTypeId, transactionId);
 
@@ -1078,59 +1078,65 @@ public final class SearchParametersBusiness {
         this.transactionId = transactionId;
     }
 
-//           @QueryParam("fromAccountNumber") @Parameter(description = "fromAccountNumber") final String fromAccountNumber,
-//    public static SearchParametersBusiness forBankTransfer(final Integer offset,
-//            final Integer limit, final String orderBy, final String sortOrder, LocalDate startPeriod, LocalDate endPeriod, Long transferType,
-//            String status, Long tobankId, String toAccountNumber, String fromAccountNumber) {
-//        final Long transactionId = null;
-//        final Long transactionTypeId = null;
-//        final LocalDate fromDate = null;
-//        final LocalDate toDate = null;
-//        final Long organisationalRoleEnumId = null;
-//        final Long supervisorId = null;
-//        final Long industryId = null;
-//        final Long classificationId = null;
-//        final String accountNo = null;
-//        final Boolean orphansOnly = null;
-//        final String email = null;
-//        final String mobile = null;
-//        final Integer legalFormId = null;
-//        final Boolean showLoanProducts = null;
-//        final Boolean showSavingsProducts = null;
-//        final Long savingsId = null;
-//        final Long categoryId = null;
-//        final Long productId = null;
-//        final Long provisioningEntryId = null;
-//        final String currencyCode = null;
-//        final String firstname = null;
-//        final String lastname = null;
-//        final Long loanId = null;
-//        final Long overdraftId = null;
-//        final Integer statusId = null;
-//        final String sqlSearch = null;
-//        final String externalId = null;
-//        final String hierarchy = null;
-//        final Integer type = null;
-//        final Long documentConfigId = null;
-//
-//        final Integer depositTypeId = null;
-//        final Long staffSupervisorId = null;
-//        final Boolean isSupervisor = null;
-//        final Boolean isLoanOfficer = null;
-//        final Long officeId = null;
-//        final Boolean isSelfUser = null;
-//        final String username = null;
-//        final Boolean active = null;
-//        final String name = null;
-//        final Long clientId = null;
-//
-//        return new SearchParametersBusiness(sqlSearch, officeId, externalId, name, hierarchy, firstname, lastname, offset, limit,
-//                orderBy, sortOrder, supervisorId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate, status,
-//                categoryId, productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active, clientId,
-//                showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId, organisationalRoleEnumId,
-//                username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer, overdraftId, transactionTypeId, transactionId);
-//
-//    }
+    // @QueryParam("fromAccountNumber") @Parameter(description = "fromAccountNumber") final String fromAccountNumber,
+    // public static SearchParametersBusiness forBankTransfer(final Integer offset,
+    // final Integer limit, final String orderBy, final String sortOrder, LocalDate startPeriod, LocalDate endPeriod,
+    // Long transferType,
+    // String status, Long tobankId, String toAccountNumber, String fromAccountNumber) {
+    // final Long transactionId = null;
+    // final Long transactionTypeId = null;
+    // final LocalDate fromDate = null;
+    // final LocalDate toDate = null;
+    // final Long organisationalRoleEnumId = null;
+    // final Long supervisorId = null;
+    // final Long industryId = null;
+    // final Long classificationId = null;
+    // final String accountNo = null;
+    // final Boolean orphansOnly = null;
+    // final String email = null;
+    // final String mobile = null;
+    // final Integer legalFormId = null;
+    // final Boolean showLoanProducts = null;
+    // final Boolean showSavingsProducts = null;
+    // final Long savingsId = null;
+    // final Long categoryId = null;
+    // final Long productId = null;
+    // final Long provisioningEntryId = null;
+    // final String currencyCode = null;
+    // final String firstname = null;
+    // final String lastname = null;
+    // final Long loanId = null;
+    // final Long overdraftId = null;
+    // final Integer statusId = null;
+    // final String sqlSearch = null;
+    // final String externalId = null;
+    // final String hierarchy = null;
+    // final Integer type = null;
+    // final Long documentConfigId = null;
+    //
+    // final Integer depositTypeId = null;
+    // final Long staffSupervisorId = null;
+    // final Boolean isSupervisor = null;
+    // final Boolean isLoanOfficer = null;
+    // final Long officeId = null;
+    // final Boolean isSelfUser = null;
+    // final String username = null;
+    // final Boolean active = null;
+    // final String name = null;
+    // final Long clientId = null;
+    //
+    // return new SearchParametersBusiness(sqlSearch, officeId, externalId, name, hierarchy, firstname, lastname,
+    // offset, limit,
+    // orderBy, sortOrder, supervisorId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, fromDate, toDate,
+    // status,
+    // categoryId, productId, provisioningEntryId, currencyCode, statusId, email, mobile, legalFormId, type, active,
+    // clientId,
+    // showLoanProducts, showSavingsProducts, documentConfigId, null, industryId, classificationId,
+    // organisationalRoleEnumId,
+    // username, depositTypeId, staffSupervisorId, isSupervisor, isLoanOfficer, overdraftId, transactionTypeId,
+    // transactionId);
+    //
+    // }
     public boolean isOrderByRequested() {
         return StringUtils.isNotBlank(this.orderBy);
     }

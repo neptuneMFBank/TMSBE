@@ -36,7 +36,7 @@ public class MerchantInventoryMapperReadServiceImpl implements MerchantInventory
     public Boolean isInventoryMappedToMerchant(Long inventoryId, Long appUserId) {
         return this.jdbcTemplate.queryForObject(
                 "select case when (count(*) > 0) then true else false end " + " from m_appuser_merchant_mapping as m "
-                + " left join m_inventory as s on s.client_id = m.client_id " + " where s.id = ? and m.appuser_id = ? ",
+                        + " left join m_inventory as s on s.client_id = m.client_id " + " where s.id = ? and m.appuser_id = ? ",
                 Boolean.class, inventoryId, appUserId);
     }
 

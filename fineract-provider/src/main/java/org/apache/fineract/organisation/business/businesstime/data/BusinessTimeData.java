@@ -43,10 +43,10 @@ public class BusinessTimeData {
     private final Collection<EnumOptionData> weeksList;
     private final Collection<RoleData> roles;
 
-    private BusinessTimeData(final Long id, final Integer weekDayId, final Long roleId, final LocalTime startTime,
-            final LocalTime endTime, final String createdByUsername, final Long createdById, final LocalDate createdOn,
-            final String lastModifiedByUsername, final Long lastModifiedById, final LocalDate lastModifiedOnUtc,
-            final Collection<EnumOptionData> weeksList, final Collection<RoleData> roles) {
+    private BusinessTimeData(final Long id, final Integer weekDayId, final Long roleId, final LocalTime startTime, final LocalTime endTime,
+            final String createdByUsername, final Long createdById, final LocalDate createdOn, final String lastModifiedByUsername,
+            final Long lastModifiedById, final LocalDate lastModifiedOnUtc, final Collection<EnumOptionData> weeksList,
+            final Collection<RoleData> roles) {
         this.id = id;
         this.weekDayId = weekDayId;
         this.roleId = roleId;

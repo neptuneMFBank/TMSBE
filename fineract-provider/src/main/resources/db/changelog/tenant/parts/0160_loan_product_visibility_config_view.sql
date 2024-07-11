@@ -18,7 +18,7 @@
 --
 
 CREATE OR REPLACE VIEW loan_product_visibility_config_view AS
-    SELECT 
+    SELECT
         mlpvc.id,
         mlpvc.name,
         mlpvc.description,

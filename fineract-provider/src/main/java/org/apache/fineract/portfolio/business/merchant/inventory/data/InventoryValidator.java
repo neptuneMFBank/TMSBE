@@ -53,8 +53,8 @@ public class InventoryValidator {
     protected static final Set<String> supportedParams = new HashSet<>(Arrays.asList(nameParamName, descriptionParamName, priceParamName,
             skuCodeParamName, discountRateParamName, localeParamName, clientIdParamName));
 
-    protected static final Set<String> supportedParamsForUpdate = new HashSet<>(Arrays.asList(descriptionParamName, priceParamName,
-            skuCodeParamName, discountRateParamName, localeParamName));
+    protected static final Set<String> supportedParamsForUpdate = new HashSet<>(
+            Arrays.asList(descriptionParamName, priceParamName, skuCodeParamName, discountRateParamName, localeParamName));
 
     private final FromJsonHelper fromApiJsonHelper;
 
@@ -68,8 +68,7 @@ public class InventoryValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, InventoryValidator.supportedParams);
 
         final JsonElement element = this.fromApiJsonHelper.parse(json);
@@ -83,7 +82,8 @@ public class InventoryValidator {
         baseDataValidator.reset().parameter(InventoryValidator.nameParamName).value(name).notBlank().notExceedingLengthOf(100);
 
         final String description = this.fromApiJsonHelper.extractStringNamed(InventoryValidator.descriptionParamName, element);
-        baseDataValidator.reset().parameter(InventoryValidator.descriptionParamName).value(description).notBlank().notExceedingLengthOf(400);
+        baseDataValidator.reset().parameter(InventoryValidator.descriptionParamName).value(description).notBlank()
+                .notExceedingLengthOf(400);
 
         final BigDecimal price = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(InventoryValidator.priceParamName, element);
         baseDataValidator.reset().parameter(InventoryValidator.priceParamName).value(price).notNull().positiveAmount();
@@ -92,8 +92,10 @@ public class InventoryValidator {
         baseDataValidator.reset().parameter(InventoryValidator.skuCodeParamName).value(skuCode).notBlank().notExceedingLengthOf(100);
 
         if (this.fromApiJsonHelper.parameterExists(InventoryValidator.discountRateParamName, element)) {
-            final BigDecimal discountRate = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(InventoryValidator.discountRateParamName, element);
-            baseDataValidator.reset().parameter(InventoryValidator.discountRateParamName).value(discountRate).notNull().zeroOrPositiveAmount();
+            final BigDecimal discountRate = this.fromApiJsonHelper
+                    .extractBigDecimalWithLocaleNamed(InventoryValidator.discountRateParamName, element);
+            baseDataValidator.reset().parameter(InventoryValidator.discountRateParamName).value(discountRate).notNull()
+                    .zeroOrPositiveAmount();
         }
         final Long clientId = this.fromApiJsonHelper.extractLongNamed(InventoryValidator.clientIdParamName, element);
         if (clientId != null) {
@@ -107,8 +109,7 @@ public class InventoryValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, InventoryValidator.supportedParamsForUpdate);
         final JsonElement element = this.fromApiJsonHelper.parse(json);
 
@@ -119,7 +120,8 @@ public class InventoryValidator {
 
         if (this.fromApiJsonHelper.parameterExists(InventoryValidator.descriptionParamName, element)) {
             final String description = this.fromApiJsonHelper.extractStringNamed(InventoryValidator.descriptionParamName, element);
-            baseDataValidator.reset().parameter(InventoryValidator.descriptionParamName).value(description).notBlank().notExceedingLengthOf(400);
+            baseDataValidator.reset().parameter(InventoryValidator.descriptionParamName).value(description).notBlank()
+                    .notExceedingLengthOf(400);
         }
         if (this.fromApiJsonHelper.parameterExists(InventoryValidator.priceParamName, element)) {
             final BigDecimal price = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(InventoryValidator.priceParamName, element);
@@ -132,8 +134,10 @@ public class InventoryValidator {
         }
 
         if (this.fromApiJsonHelper.parameterExists(InventoryValidator.discountRateParamName, element)) {
-            final BigDecimal discountRate = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(InventoryValidator.discountRateParamName, element);
-            baseDataValidator.reset().parameter(InventoryValidator.discountRateParamName).value(discountRate).notNull().zeroOrPositiveAmount();
+            final BigDecimal discountRate = this.fromApiJsonHelper
+                    .extractBigDecimalWithLocaleNamed(InventoryValidator.discountRateParamName, element);
+            baseDataValidator.reset().parameter(InventoryValidator.discountRateParamName).value(discountRate).notNull()
+                    .zeroOrPositiveAmount();
         }
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);

@@ -1559,8 +1559,7 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
                 .resource(SAVINGS_ACCOUNT_CHARGE_RESOURCE_NAME);
 
         /**
-         * *
-         * Only recurring fees are allowed to inactivate
+         * * Only recurring fees are allowed to inactivate
          */
         if (!savingsAccountCharge.isRecurringFee()) {
             baseDataValidator.reset().parameter(null).value(savingsAccountCharge.getId())
@@ -1590,8 +1589,7 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
                         }
                     }
                     /**
-                     * *
-                     * Reverse the excess payments of charge transactions
+                     * * Reverse the excess payments of charge transactions
                      */
                     SavingsAccountTransaction lastChargePayment = getLastChargePayment(chargePayments);
                     this.undoTransaction(savingsAccountCharge.savingsAccount().getId(), lastChargePayment.getId(), false);
@@ -1754,10 +1752,10 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
     }
 
     /**
-     * Disable all standing instructions linked to the savings account if the
-     * status is "closed"
+     * Disable all standing instructions linked to the savings account if the status is "closed"
      *
-     * @param savingsAccount -- the savings account object
+     * @param savingsAccount
+     *            -- the savings account object
      *
      *
      */

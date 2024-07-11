@@ -175,7 +175,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             // final String hierarchySearchString = hierarchy + "%";
 
             final String sql = "select " + this.clientBusinessMapper.schema()
-                    // + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
+            // + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
                     + " where c.id = ?";
             ClientBusinessData clientData = this.jdbcTemplate.queryForObject(sql, this.clientBusinessMapper, // NOSONAR
                     // hierarchySearchString, hierarchySearchString,
@@ -311,8 +311,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 new ArrayList<>(Arrays.asList(address)), isAddressEnabled, datatableTemplates // ,countryValuesOptions,
                 // stateValuesOptions
                 // , lgaValuesOptions
-                ,
-                 activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
+                , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions
         // , industryOptions
         );

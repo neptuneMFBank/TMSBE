@@ -72,7 +72,8 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
     public SavingsAccountDomainServiceJpa(final SavingsAccountRepositoryWrapper savingsAccountRepository,
             final SavingsAccountTransactionRepository savingsAccountTransactionRepository, final FromJsonHelper fromJsonHelper,
             final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepositoryWrapper,
-            final JournalEntryWritePlatformService journalEntryWritePlatformService, final PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService,
+            final JournalEntryWritePlatformService journalEntryWritePlatformService,
+            final PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService,
             final ConfigurationDomainService configurationDomainService, final PlatformSecurityContext context,
             final DepositAccountOnHoldTransactionRepository depositAccountOnHoldTransactionRepository,
             final BusinessEventNotifierService businessEventNotifierService) {
@@ -119,11 +120,12 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         final SavingsAccountTransactionDTO transactionDTO = new SavingsAccountTransactionDTO(fmt, transactionDate, transactionAmount,
                 paymentDetail, DateUtils.getLocalDateTimeOfSystem(), user, accountType);
         UUID refNo = UUID.randomUUID();
-//        final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(this.fromJsonHelper, this.paymentTypeGridReadPlatformService, paymentDetail, transactionAmount);
-//        log.info("chargeAmount: {}", chargeAmount);
-//        if (chargeAmount != null) {
-//            transactionDTO.setChargeAmount(chargeAmount);
-//        }
+        // final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(this.fromJsonHelper,
+        // this.paymentTypeGridReadPlatformService, paymentDetail, transactionAmount);
+        // log.info("chargeAmount: {}", chargeAmount);
+        // if (chargeAmount != null) {
+        // transactionDTO.setChargeAmount(chargeAmount);
+        // }
         final SavingsAccountTransaction withdrawal = account.withdraw(transactionDTO, transactionBooleanValues.isApplyWithdrawFee(),
                 backdatedTxnsAllowedTill, relaxingDaysConfigForPivotDate, refNo.toString(), this.paymentTypeGridReadPlatformService);
         final MathContext mc = MathContext.DECIMAL64;
@@ -174,7 +176,8 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
     @Override
     public SavingsAccountTransaction handleDeposit(final SavingsAccount account, final DateTimeFormatter fmt,
             final LocalDate transactionDate, final BigDecimal transactionAmount, final PaymentDetail paymentDetail,
-            final boolean isAccountTransfer, final boolean isRegularTransaction, final boolean backdatedTxnsAllowedTill, final boolean isSelfTransfer) {
+            final boolean isAccountTransfer, final boolean isRegularTransaction, final boolean backdatedTxnsAllowedTill,
+            final boolean isSelfTransfer) {
         final SavingsAccountTransactionType savingsAccountTransactionType = SavingsAccountTransactionType.DEPOSIT;
         return handleDeposit(account, fmt, transactionDate, transactionAmount, paymentDetail, isAccountTransfer, isRegularTransaction,
                 savingsAccountTransactionType, backdatedTxnsAllowedTill, isSelfTransfer);
@@ -183,7 +186,8 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
     private SavingsAccountTransaction handleDeposit(final SavingsAccount account, final DateTimeFormatter fmt,
             final LocalDate transactionDate, final BigDecimal transactionAmount, final PaymentDetail paymentDetail,
             final boolean isAccountTransfer, final boolean isRegularTransaction,
-            final SavingsAccountTransactionType savingsAccountTransactionType, final boolean backdatedTxnsAllowedTill, final boolean isSelfTransfer) {
+            final SavingsAccountTransactionType savingsAccountTransactionType, final boolean backdatedTxnsAllowedTill,
+            final boolean isSelfTransfer) {
         AppUser user = getAppUserIfPresent();
         account.validateForAccountBlock();
         account.validateForCreditBlock();

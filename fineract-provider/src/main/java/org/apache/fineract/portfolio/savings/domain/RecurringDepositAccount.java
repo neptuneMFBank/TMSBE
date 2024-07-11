@@ -227,7 +227,8 @@ public class RecurringDepositAccount extends SavingsAccount {
         }
 
         final BigDecimal depositAmount = accountTermAndPreClosure.depositAmount();
-        final Long lockinPeriodFrequencyTypeChartSlabIncentives = (this.lockinPeriodFrequency == null || this.lockinPeriodFrequencyType == null) ? null : this.lockinPeriodFrequencyType.longValue();
+        final Long lockinPeriodFrequencyTypeChartSlabIncentives = (this.lockinPeriodFrequency == null
+                || this.lockinPeriodFrequencyType == null) ? null : this.lockinPeriodFrequencyType.longValue();
         BigDecimal applicableInterestRate = this.chart.getApplicableInterestRate(depositAmount, depositStartDate(), depositCloseDate,
                 this.client, lockinPeriodFrequencyTypeChartSlabIncentives);
 
@@ -303,18 +304,18 @@ public class RecurringDepositAccount extends SavingsAccount {
         switch (this.accountTermAndPreClosure.depositPeriodFrequencyType()) {
             case DAYS:
                 maturityDate = startDate.plusDays(depositPeriod);
-                break;
+            break;
             case WEEKS:
                 maturityDate = startDate.plusWeeks(depositPeriod);
-                break;
+            break;
             case MONTHS:
                 maturityDate = startDate.plusMonths(depositPeriod);
-                break;
+            break;
             case YEARS:
                 maturityDate = startDate.plusYears(depositPeriod);
-                break;
+            break;
             case INVALID:
-                break;
+            break;
         }
 
         return maturityDate;
@@ -947,11 +948,10 @@ public class RecurringDepositAccount extends SavingsAccount {
     }
 
     /**
-     * This method is responsible for checking if the current transaction is 'an
-     * advance/early payment' based on the details passed through.
+     * This method is responsible for checking if the current transaction is 'an advance/early payment' based on the
+     * details passed through.
      *
-     * Default implementation is check transaction date is before installment
-     * due date.
+     * Default implementation is check transaction date is before installment due date.
      */
     protected boolean isTransactionInAdvanceOfInstallment(final int currentInstallmentIndex,
             final List<RecurringDepositScheduleInstallment> installments, final LocalDate transactionDate) {
@@ -1073,7 +1073,8 @@ public class RecurringDepositAccount extends SavingsAccount {
             }
 
             final BigDecimal maturityAmount = this.accountTermAndPreClosure.depositAmount();
-            final Long lockinPeriodFrequencyTypeChartSlabIncentives = (this.lockinPeriodFrequency == null || this.lockinPeriodFrequencyType == null) ? null : this.lockinPeriodFrequencyType.longValue();
+            final Long lockinPeriodFrequencyTypeChartSlabIncentives = (this.lockinPeriodFrequency == null
+                    || this.lockinPeriodFrequencyType == null) ? null : this.lockinPeriodFrequencyType.longValue();
             BigDecimal applicableInterestRate = this.chart.getApplicableInterestRate(maturityAmount, depositStartDate(), maturityDate,
                     this.client, lockinPeriodFrequencyTypeChartSlabIncentives);
 
@@ -1090,8 +1091,7 @@ public class RecurringDepositAccount extends SavingsAccount {
             throw new PlatformApiDataValidationException(dataValidationErrors);
         }
         /**
-         * final boolean recurringFrequencyBeforeDepositPeriod =
-         * recurringFrequencyBeforeDepositPeriod();
+         * final boolean recurringFrequencyBeforeDepositPeriod = recurringFrequencyBeforeDepositPeriod();
          *
          * if (!recurringFrequencyBeforeDepositPeriod) {
          * baseDataValidator.reset().failWithCodeNoParameterAddedToErrorCode(

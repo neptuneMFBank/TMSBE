@@ -126,13 +126,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 @Entity
-@Table(name = "m_savings_account", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"account_no"}, name = "sa_account_no_UNIQUE"),
-    @UniqueConstraint(columnNames = {"external_id"}, name = "sa_external_id_UNIQUE")})
+@Table(name = "m_savings_account", uniqueConstraints = { @UniqueConstraint(columnNames = { "account_no" }, name = "sa_account_no_UNIQUE"),
+        @UniqueConstraint(columnNames = { "external_id" }, name = "sa_external_id_UNIQUE") })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "deposit_type_enum", discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorValue("100")
-@SuppressWarnings({"MemberName"})
+@SuppressWarnings({ "MemberName" })
 public class SavingsAccount extends AbstractPersistableCustom {
 
     private static final Logger LOG = LoggerFactory.getLogger(SavingsAccount.class);
@@ -227,11 +226,9 @@ public class SavingsAccount extends AbstractPersistableCustom {
     protected BigDecimal nominalAnnualInterestRate;
 
     /**
-     * The interest period is the span of time at the end of which savings in a
-     * client's account earn interest.
+     * The interest period is the span of time at the end of which savings in a client's account earn interest.
      *
-     * A value from the {@link SavingsCompoundingInterestPeriodType}
-     * enumeration.
+     * A value from the {@link SavingsCompoundingInterestPeriodType} enumeration.
      */
     @Column(name = "interest_compounding_period_enum", nullable = false)
     protected Integer interestCompoundingPeriodType;
@@ -249,8 +246,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
     protected Integer interestCalculationType;
 
     /**
-     * A value from the {@link SavingsInterestCalculationDaysInYearType}
-     * enumeration.
+     * A value from the {@link SavingsInterestCalculationDaysInYearType} enumeration.
      */
     @Column(name = "interest_calculation_days_in_year_type_enum", nullable = false)
     protected Integer interestCalculationDaysInYearType;
@@ -265,8 +261,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
     protected Integer lockinPeriodFrequencyType;
 
     /**
-     * When account becomes <code>active</code> this field is derived if
-     * <code>lockinPeriodFrequency</code> and
+     * When account becomes <code>active</code> this field is derived if <code>lockinPeriodFrequency</code> and
      * <code>lockinPeriodFrequencyType</code> details are present.
      */
     @Column(name = "lockedin_until_date_derived", nullable = true)
@@ -451,9 +446,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
     }
 
     /**
-     * Used after fetching/hydrating a {@link SavingsAccount} object to inject
-     * helper services/components used for update summary details after
-     * events/transactions on a {@link SavingsAccount}.
+     * Used after fetching/hydrating a {@link SavingsAccount} object to inject helper services/components used for
+     * update summary details after events/transactions on a {@link SavingsAccount}.
      */
     public void setHelpers(final SavingsAccountTransactionSummaryWrapper savingsAccountTransactionSummaryWrapper,
             final SavingsHelper savingsHelper) {
@@ -801,18 +795,16 @@ public class SavingsAccount extends AbstractPersistableCustom {
     /**
      * All interest calculation based on END-OF-DAY-BALANCE.
      *
-     * Interest calculation is performed on-the-fly over all account
-     * transactions.
+     * Interest calculation is performed on-the-fly over all account transactions.
      *
      *
-     * 1. Calculate Interest From Beginning Of Account 1a. determine the
-     * 'crediting' periods that exist for this savings acccount 1b. determine
-     * the 'compounding' periods that exist within each 'crediting' period
-     * calculate the amount of interest due at the end of each 'crediting'
-     * period check if an existing 'interest posting' transaction exists for
-     * date and matches the amount posted
+     * 1. Calculate Interest From Beginning Of Account 1a. determine the 'crediting' periods that exist for this savings
+     * acccount 1b. determine the 'compounding' periods that exist within each 'crediting' period calculate the amount
+     * of interest due at the end of each 'crediting' period check if an existing 'interest posting' transaction exists
+     * for date and matches the amount posted
      *
-     * @param isInterestTransfer TODO
+     * @param isInterestTransfer
+     *            TODO
      */
     public List<PostingPeriod> calculateInterestUsing(final MathContext mc, final LocalDate upToInterestCalculationDate,
             boolean isInterestTransfer, final boolean isSavingsInterestPostingAtCurrentPeriodEnd, final Integer financialYearBeginningMonth,
@@ -1150,7 +1142,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
         if (isAccountTransfer && !isSelfTransfer) {
             // auto pay deposit fee (Stamp Duty) only when isAccountTransfer and is not self tranfer
             payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
-                    //transactionDTO.getPaymentDetail(), 
+                    // transactionDTO.getPaymentDetail(),
                     backdatedTxnsAllowedTill, refNo);
         }
         final Money amount = Money.of(this.currency, transactionDTO.getTransactionAmount());
@@ -1230,7 +1222,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
     }
 
     public SavingsAccountTransaction withdraw(final SavingsAccountTransactionDTO transactionDTO, final boolean applyWithdrawFee,
-            final boolean backdatedTxnsAllowedTill, final Long relaxingDaysConfigForPivotDate, String refNo, final PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService) {
+            final boolean backdatedTxnsAllowedTill, final Long relaxingDaysConfigForPivotDate, String refNo,
+            final PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService) {
 
         if (!isTransactionsAllowed()) {
 
@@ -1289,9 +1282,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
             // auto pay withdrawal fee
             payWithdrawalFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
                     transactionDTO.getPaymentDetail(), backdatedTxnsAllowedTill, refNo,
-                    //transactionDTO.getChargeAmount()
-                    paymentTypeGridReadPlatformService
-            );
+                    // transactionDTO.getChargeAmount()
+                    paymentTypeGridReadPlatformService);
         }
 
         final Money transactionAmountMoney = Money.of(this.currency, transactionDTO.getTransactionAmount());
@@ -1330,7 +1322,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
 
     private void payWithdrawalFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user,
             final PaymentDetail paymentDetail, final boolean backdatedTxnsAllowedTill, final String refNo,
-            //final BigDecimal chargeTransactionAmount,
+            // final BigDecimal chargeTransactionAmount,
             final PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService) {
         for (SavingsAccountCharge charge : this.charges()) {
 
@@ -1346,16 +1338,19 @@ public class SavingsAccount extends AbstractPersistableCustom {
                         resetFreeChargeDaysCount(charge, transactionAmount, transactionDate, user, refNo);
                     }
                 } else if (charge.isEnablePaymentType()) { // normal charge-transaction to specific paymentType
-//                    final Boolean isPaymentModeAccountTransfer = charge.getCharge() == null ? null : charge.getCharge().getChargePaymentMode() == null ? null : charge.getChargePaymentMode().isPaymentModeAccountTransfer();
-//                    if (paymentTypeId != null && BooleanUtils.isTrue(isPaymentModeAccountTransfer)) {
-//                        final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
-//                                paymentTypeGridReadPlatformService,
-//                                //paymentDetail,
-//                                transactionAmount, paymentTypeId);
-//                        charge.updateFlatWithdrawalFee(chargeAmount);
-//                        this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
-//                                backdatedTxnsAllowedTill, refNo);
-//                    } else 
+                    // final Boolean isPaymentModeAccountTransfer = charge.getCharge() == null ? null :
+                    // charge.getCharge().getChargePaymentMode() == null ? null :
+                    // charge.getChargePaymentMode().isPaymentModeAccountTransfer();
+                    // if (paymentTypeId != null && BooleanUtils.isTrue(isPaymentModeAccountTransfer)) {
+                    // final BigDecimal chargeAmount =
+                    // GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper,
+                    // paymentTypeGridReadPlatformService,
+                    // //paymentDetail,
+                    // transactionAmount, paymentTypeId);
+                    // charge.updateFlatWithdrawalFee(chargeAmount);
+                    // this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
+                    // backdatedTxnsAllowedTill, refNo);
+                    // } else
                     if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
                         calculateExternalCharges(charge, transactionAmount, "real-", paymentTypeGridReadPlatformService);
                         this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
@@ -1365,14 +1360,18 @@ public class SavingsAccount extends AbstractPersistableCustom {
                         final Long paymentTypeId = paymentDetail.getPaymentType().getId();
                         LOG.info("check- chargeId & paymentTypeId: {}-{}", chargeId, paymentTypeId);
 
-                        //final Long paymentTypeId = charge.getCharge() == null ? null : charge.getCharge().getPaymentType() == null ? null : charge.getCharge().getPaymentType().getId();
-                        //LOG.info("Else charge paymentTypeId: {}", paymentTypeId);
-                        //if (paymentTypeId != null) {
-                        calculateExternalChargesPaymentId(charge, transactionAmount, "realElse-", paymentTypeGridReadPlatformService, transactionDate, user, backdatedTxnsAllowedTill, refNo, paymentTypeId);
-                        //LOG.info("check- charge-getAmountOutstanding: {}", charge.getAmountOutstanding(this.getCurrency()));
-                        //} else {
-                        //charge.updateWithdralFeeAmount(transactionAmount);
-                        //}
+                        // final Long paymentTypeId = charge.getCharge() == null ? null :
+                        // charge.getCharge().getPaymentType() == null ? null :
+                        // charge.getCharge().getPaymentType().getId();
+                        // LOG.info("Else charge paymentTypeId: {}", paymentTypeId);
+                        // if (paymentTypeId != null) {
+                        calculateExternalChargesPaymentId(charge, transactionAmount, "realElse-", paymentTypeGridReadPlatformService,
+                                transactionDate, user, backdatedTxnsAllowedTill, refNo, paymentTypeId);
+                        // LOG.info("check- charge-getAmountOutstanding: {}",
+                        // charge.getAmountOutstanding(this.getCurrency()));
+                        // } else {
+                        // charge.updateWithdralFeeAmount(transactionAmount);
+                        // }
 
                     }
                 } else if (!charge.isEnablePaymentType() && charge.isEnableFreeWithdrawal()) { // discount transaction
@@ -1873,8 +1872,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
     }
 
     /**
-     * If overdrafts are allowed and the overdraft limit is not set, set the
-     * same to Zero
+     * If overdrafts are allowed and the overdraft limit is not set, set the same to Zero
      *
      */
     private void esnureOverdraftLimitsSetForOverdraftAccounts() {
@@ -2930,22 +2928,22 @@ public class SavingsAccount extends AbstractPersistableCustom {
         final PeriodFrequencyType lockinPeriodFrequencyType = PeriodFrequencyType.fromInt(this.lockinPeriodFrequencyType);
         switch (lockinPeriodFrequencyType) {
             case INVALID:
-                break;
+            break;
             case DAYS:
                 lockedInUntilLocalDate = activationLocalDate.plusDays(this.lockinPeriodFrequency);
-                break;
+            break;
             case WEEKS:
                 lockedInUntilLocalDate = activationLocalDate.plusWeeks(this.lockinPeriodFrequency);
-                break;
+            break;
             case MONTHS:
                 lockedInUntilLocalDate = activationLocalDate.plusMonths(this.lockinPeriodFrequency);
-                break;
+            break;
             case YEARS:
                 lockedInUntilLocalDate = activationLocalDate.plusYears(this.lockinPeriodFrequency);
-                break;
+            break;
             case WHOLE_TERM:
                 LOG.error("TODO Implement calculateDateAccountIsLockedUntil for WHOLE_TERM");
-                break;
+            break;
         }
 
         return lockedInUntilLocalDate;
@@ -3379,24 +3377,24 @@ public class SavingsAccount extends AbstractPersistableCustom {
         Map<SavingsPostingInterestPeriodType, List<SavingsCompoundingInterestPeriodType>> postingtoCompoundMap = new HashMap<>();
 
         postingtoCompoundMap.put(SavingsPostingInterestPeriodType.DAILY,
-                Arrays.asList(new SavingsCompoundingInterestPeriodType[]{SavingsCompoundingInterestPeriodType.DAILY}));
+                Arrays.asList(new SavingsCompoundingInterestPeriodType[] { SavingsCompoundingInterestPeriodType.DAILY }));
 
-        postingtoCompoundMap.put(SavingsPostingInterestPeriodType.MONTHLY, Arrays.asList(new SavingsCompoundingInterestPeriodType[]{
-            SavingsCompoundingInterestPeriodType.DAILY, SavingsCompoundingInterestPeriodType.MONTHLY}));
+        postingtoCompoundMap.put(SavingsPostingInterestPeriodType.MONTHLY, Arrays.asList(new SavingsCompoundingInterestPeriodType[] {
+                SavingsCompoundingInterestPeriodType.DAILY, SavingsCompoundingInterestPeriodType.MONTHLY }));
 
         postingtoCompoundMap.put(SavingsPostingInterestPeriodType.QUATERLY,
-                Arrays.asList(new SavingsCompoundingInterestPeriodType[]{SavingsCompoundingInterestPeriodType.DAILY,
-            SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY}));
+                Arrays.asList(new SavingsCompoundingInterestPeriodType[] { SavingsCompoundingInterestPeriodType.DAILY,
+                        SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY }));
 
         postingtoCompoundMap.put(SavingsPostingInterestPeriodType.BIANNUAL,
-                Arrays.asList(new SavingsCompoundingInterestPeriodType[]{SavingsCompoundingInterestPeriodType.DAILY,
-            SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY,
-            SavingsCompoundingInterestPeriodType.BI_ANNUAL}));
+                Arrays.asList(new SavingsCompoundingInterestPeriodType[] { SavingsCompoundingInterestPeriodType.DAILY,
+                        SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY,
+                        SavingsCompoundingInterestPeriodType.BI_ANNUAL }));
 
         postingtoCompoundMap.put(SavingsPostingInterestPeriodType.ANNUAL,
-                Arrays.asList(new SavingsCompoundingInterestPeriodType[]{SavingsCompoundingInterestPeriodType.DAILY,
-            SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY,
-            SavingsCompoundingInterestPeriodType.BI_ANNUAL, SavingsCompoundingInterestPeriodType.ANNUAL}));
+                Arrays.asList(new SavingsCompoundingInterestPeriodType[] { SavingsCompoundingInterestPeriodType.DAILY,
+                        SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY,
+                        SavingsCompoundingInterestPeriodType.BI_ANNUAL, SavingsCompoundingInterestPeriodType.ANNUAL }));
 
         SavingsPostingInterestPeriodType savingsPostingInterestPeriodType = SavingsPostingInterestPeriodType
                 .fromInt(interestPostingPeriodType);
@@ -3559,7 +3557,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
             totalInterestPostedEdited = totalInterestPosted;
         }
         if (withholdTransaction == null && this.withHoldTax()) {
-            boolean isWithholdTaxAdded = createWithHoldTransaction(totalInterestPostedEdited, interestPostingUpToDate, backdatedTxnsAllowedTill);
+            boolean isWithholdTaxAdded = createWithHoldTransaction(totalInterestPostedEdited, interestPostingUpToDate,
+                    backdatedTxnsAllowedTill);
             recalucateDailyBalance = recalucateDailyBalance || isWithholdTaxAdded;
         } else {
             boolean isWithholdTaxAdded = updateWithHoldTransaction(totalInterestPostedEdited, withholdTransaction);
@@ -3965,7 +3964,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
     }
 
     private void payDepositFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user,
-            //final PaymentDetail paymentDetail, 
+            // final PaymentDetail paymentDetail,
             final boolean backdatedTxnsAllowedTill, final String refNo) {
         for (SavingsAccountCharge charge : this.charges()) {
 
@@ -3975,61 +3974,56 @@ public class SavingsAccount extends AbstractPersistableCustom {
                     final BigDecimal minCap = chargeConf.getMinCap();
                     if (minCap == null || transactionAmount.compareTo(minCap) >= 0) {
                         charge.updateWithdralFeeAmount(transactionAmount);
-                        this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user, backdatedTxnsAllowedTill,
-                                refNo);
-                    }
-//                    else if (transactionAmount.compareTo(minCap) < 0) {
-//                        LOG.info("No deposit fee (Stamp Duty) to collect for charge: {}-{}-{}", chargeConf.getId(), transactionAmount, refNo);
-//                        continue;
-//                    }
-                }
-
-                /*
-                if (charge.getFreeWithdrawalCount() == null) {
-                  charge.setFreeWithdrawalCount(0);
-                }
-                if (charge.isEnablePaymentType() && charge.isEnableFreeWithdrawal()) { // discount transaction to
-                    // specific paymentType
-                    if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
-                        resetFreeChargeDaysCount(charge, transactionAmount, transactionDate, user, refNo);
-                    }
-                } else if (charge.isEnablePaymentType()) { // normal charge-transaction to specific paymentType
-                    if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
-                        charge.updateWithdralFeeAmount(transactionAmount);
                         this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
                                 backdatedTxnsAllowedTill, refNo);
                     }
-                } else if (!charge.isEnablePaymentType() && charge.isEnableFreeWithdrawal()) { // discount transaction
-                    // irrespective of
-                    // PaymentTypes.
-                    resetFreeChargeDaysCount(charge, transactionAmount, transactionDate, user, refNo);
+                    // else if (transactionAmount.compareTo(minCap) < 0) {
+                    // LOG.info("No deposit fee (Stamp Duty) to collect for charge: {}-{}-{}", chargeConf.getId(),
+                    // transactionAmount, refNo);
+                    // continue;
+                    // }
+                }
 
-                } else { // normal-withdraw*/
-                //}
+                /*
+                 * if (charge.getFreeWithdrawalCount() == null) { charge.setFreeWithdrawalCount(0); } if
+                 * (charge.isEnablePaymentType() && charge.isEnableFreeWithdrawal()) { // discount transaction to //
+                 * specific paymentType if
+                 * (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().
+                 * getPaymentName())) { resetFreeChargeDaysCount(charge, transactionAmount, transactionDate, user,
+                 * refNo); } } else if (charge.isEnablePaymentType()) { // normal charge-transaction to specific
+                 * paymentType if
+                 * (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().
+                 * getPaymentName())) { charge.updateWithdralFeeAmount(transactionAmount); this.payCharge(charge,
+                 * charge.getAmountOutstanding(this.getCurrency()), transactionDate, user, backdatedTxnsAllowedTill,
+                 * refNo); } } else if (!charge.isEnablePaymentType() && charge.isEnableFreeWithdrawal()) { // discount
+                 * transaction // irrespective of // PaymentTypes. resetFreeChargeDaysCount(charge, transactionAmount,
+                 * transactionDate, user, refNo);
+                 *
+                 * } else { // normal-withdraw
+                 */
+                // }
             }
 
         }
     }
 
-    private void calculateExternalCharges(SavingsAccountCharge charge, BigDecimal transactionAmount, String real, PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService) {
+    private void calculateExternalCharges(SavingsAccountCharge charge, BigDecimal transactionAmount, String real,
+            PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService) {
         final Long chargeId = charge.getCharge() == null ? null : charge.getCharge().getId();
-        //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
-        //if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
-        //final Long paymentTypeId = paymentDetail.getPaymentType().getId();
-        //LOG.info("charge paymentTypeId: {}", paymentTypeId);
+        // if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
+        // if (chargeTransactionAmount != null && chargeTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
+        // final Long paymentTypeId = paymentDetail.getPaymentType().getId();
+        // LOG.info("charge paymentTypeId: {}", paymentTypeId);
         LOG.info("{}- chargeId: {}", real, chargeId);
         if (chargeId == null) {
             throw new SavingsAccountChargeNotFoundException();
         }
-        final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
+        final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(// this.fromJsonHelper,
                 paymentTypeGridReadPlatformService,
-                //paymentDetail,
-                transactionAmount,
-                null,
-                chargeId
-        );
+                // paymentDetail,
+                transactionAmount, null, chargeId);
         LOG.info("{}- chargeAmount paymentTypeId: {}", real, chargeAmount);
-        //}
+        // }
         if (chargeAmount != null && chargeAmount.compareTo(BigDecimal.ZERO) > 0) {
             charge.updateFlatWithdrawalFee(chargeAmount);
         } else {
@@ -4037,25 +4031,23 @@ public class SavingsAccount extends AbstractPersistableCustom {
         }
     }
 
-    private void calculateExternalChargesPaymentId(SavingsAccountCharge charge, BigDecimal transactionAmount, String real, PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService,
-            final LocalDate transactionDate, final AppUser user, final boolean backdatedTxnsAllowedTill, final String refNo, final Long paymentTypeId) {
+    private void calculateExternalChargesPaymentId(SavingsAccountCharge charge, BigDecimal transactionAmount, String real,
+            PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService, final LocalDate transactionDate, final AppUser user,
+            final boolean backdatedTxnsAllowedTill, final String refNo, final Long paymentTypeId) {
         final Long chargeId = charge.getCharge() == null ? null : charge.getCharge().getId();
-        //final Long paymentTypeId = paymentDetail == null ? null : paymentDetail.getPaymentType().getId();
+        // final Long paymentTypeId = paymentDetail == null ? null : paymentDetail.getPaymentType().getId();
         LOG.info("{}- charge- paymentTypeId: {}-{}", real, chargeId, paymentTypeId);
         if (chargeId != null && paymentTypeId != null) {
-            final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(//this.fromJsonHelper, 
+            final BigDecimal chargeAmount = GeneralConstants.paymentExtensionGridCharge(// this.fromJsonHelper,
                     paymentTypeGridReadPlatformService,
-                    //paymentDetail,
-                    transactionAmount,
-                    paymentTypeId,
-                    chargeId
-            );
+                    // paymentDetail,
+                    transactionAmount, paymentTypeId, chargeId);
             LOG.info("{}- chargeAmount-: {}", real, chargeAmount);
-            //}
+            // }
             if (chargeAmount != null && chargeAmount.compareTo(BigDecimal.ZERO) > 0) {
                 charge.updateFlatWithdrawalFee(chargeAmount);
-                this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
-                        backdatedTxnsAllowedTill, refNo);
+                this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user, backdatedTxnsAllowedTill,
+                        refNo);
             }
         }
     }

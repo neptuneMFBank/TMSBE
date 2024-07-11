@@ -159,8 +159,7 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
     public TransferApprovalData retrieveOne(final Long transferApprovalId) {
         this.context.authenticatedUser();
         try {
-            final String sql = "select " + this.transferApprovalMapper.schema()
-                    + " where  mta.id = ?";
+            final String sql = "select " + this.transferApprovalMapper.schema() + " where  mta.id = ?";
             final TransferApprovalData transferApprovalData = this.jdbcTemplate.queryForObject(sql, this.transferApprovalMapper, // NOSONAR
                     transferApprovalId);
 
@@ -188,29 +187,16 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
 
             final StringBuilder builder = new StringBuilder(400);
 
-            builder.append(
-                    "mta.id as id,"
-                    + " mta.amount as amount,"
-                    + " mta.status as status, "
-                    + " mta.transfer_type as transferType,"
-                    + " mta.hold_transaction_id as holdTransactionId,"
-                    + " mta.release_transaction_id as releaseTransactionId,"
-                    + " mta.withdraw_transaction_id as withdrawTransactionId,"
-                    + " mta.from_account_id as fromAccountId,"
-                    + " mta.from_account_type as fromAccountType,"
-                    + " mta.from_account_number as fromAccountNumber,"
-                    + " mta.from_account_name as fromAccountName,"
-                    + " mta.to_account_id as toAccountId,"
-                    + " mta.to_account_type as toAccountType,"
-                    + " mta.to_account_number as toAccountNumber,"
-                    + " mta.to_bank_id as toBankId,"
-                    + " mta.activation_channel_id as activationChannelId,"
+            builder.append("mta.id as id," + " mta.amount as amount," + " mta.status as status, " + " mta.transfer_type as transferType,"
+                    + " mta.hold_transaction_id as holdTransactionId," + " mta.release_transaction_id as releaseTransactionId,"
+                    + " mta.withdraw_transaction_id as withdrawTransactionId," + " mta.from_account_id as fromAccountId,"
+                    + " mta.from_account_type as fromAccountType," + " mta.from_account_number as fromAccountNumber,"
+                    + " mta.from_account_name as fromAccountName," + " mta.to_account_id as toAccountId,"
+                    + " mta.to_account_type as toAccountType," + " mta.to_account_number as toAccountNumber,"
+                    + " mta.to_bank_id as toBankId," + " mta.activation_channel_id as activationChannelId,"
                     + " mta.reason as reason, mta.note as note, ");
-            builder.append(
-                    " mta.created_by as createdById,"
-                    + " mta.created_on_utc as createdOnUtc,"
-                    + " mta.last_modified_by as lastModifiedBy,"
-                    + " mta.last_modified_on_utc as lastModifiedOnUtc, ");
+            builder.append(" mta.created_by as createdById," + " mta.created_on_utc as createdOnUtc,"
+                    + " mta.last_modified_by as lastModifiedBy," + " mta.last_modified_on_utc as lastModifiedOnUtc, ");
 
             builder.append(" sbu.username as createdByUsername, ");
             builder.append(" sbu.firstname as createdByFirstname, ");
@@ -268,9 +254,9 @@ public class TransferApprovalReadPlatformServiceImpl implements TransferApproval
             final String note = rs.getString("note");
 
             return TransferApprovalData.instance(id, amount, status, transferType, holdTransactionId, releaseTransactionId,
-                    withdrawTransactionId, fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
-                    toAccountNumber, activationChannel, toBank, reason, createdByUsername, createdByFirstname,
-                    createdByLastname, createdById, createdOn, fromAccountName, note);
+                    withdrawTransactionId, fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType, toAccountNumber,
+                    activationChannel, toBank, reason, createdByUsername, createdByFirstname, createdByLastname, createdById, createdOn,
+                    fromAccountName, note);
 
         }
     }

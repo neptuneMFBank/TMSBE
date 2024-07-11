@@ -433,7 +433,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
         this.context.authenticatedUser();
         try {
             final String sql = "select " + savingsAmountOnHoldDataMapper.schema() + " where sav.id = ?";
-            return this.jdbcTemplate.queryForObject(sql, savingsAmountOnHoldDataMapper, new Object[]{savingsAmountOnHoldId});
+            return this.jdbcTemplate.queryForObject(sql, savingsAmountOnHoldDataMapper, new Object[] { savingsAmountOnHoldId });
         } catch (DataAccessException e) {
             log.error("SavingsAmountOnHold not found: {}", e);
             throw new SavingsAccountTransactionNotFoundException(savingsAmountOnHoldId, savingsAmountOnHoldId);
@@ -457,9 +457,9 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
         public String schema() {
             final StringBuilder accountsSummary = new StringBuilder(
                     " sav.id, sav.savings_account_id, sav.amount, sav.account_no, sav.product_id, sav.product_name, sav.client_id, "
-                    + " sav.display_name, sav.office_id, sav.office_name, sav.mobile_no, sav.email_address, sav.bvn, sav.nin, "
-                    + " sav.tin, sav.alternateMobileNumber, sav.appuser_id, sav.originator, sav.reason_for_block, "
-                    + " sav.created_date from m_savings_amount_on_hold_view sav ");
+                            + " sav.display_name, sav.office_id, sav.office_name, sav.mobile_no, sav.email_address, sav.bvn, sav.nin, "
+                            + " sav.tin, sav.alternateMobileNumber, sav.appuser_id, sav.originator, sav.reason_for_block, "
+                            + " sav.created_date from m_savings_amount_on_hold_view sav ");
 
             return accountsSummary.toString();
         }

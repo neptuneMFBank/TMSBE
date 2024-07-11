@@ -165,7 +165,7 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
         try {
             final String sql = "select " + loanProductApprovalMapper.schema() + " where lpa.id = ?";
             LoanProductApprovalData loanProductApprovalData = this.jdbcTemplate.queryForObject(sql, loanProductApprovalMapper,
-                    new Object[]{loanProductApprovalId});
+                    new Object[] { loanProductApprovalId });
             Collection<LoanProductApprovalConfigData> retrieveConfig = retrieveConfig(loanProductApprovalId);
             if (!CollectionUtils.isEmpty(retrieveConfig)) {
                 loanProductApprovalData = LoanProductApprovalData.lookUpFinal(retrieveConfig, loanProductApprovalData);
@@ -183,7 +183,7 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
         try {
             final String sql = "select " + loanProductApprovalMapper.schema() + " where lpa.loan_product_id = ?";
             LoanProductApprovalData loanProductApprovalData = this.jdbcTemplate.queryForObject(sql, loanProductApprovalMapper,
-                    new Object[]{loanProductId});
+                    new Object[] { loanProductId });
             if (loanProductApprovalData != null) {
                 Collection<LoanProductApprovalConfigData> retrieveConfig = retrieveConfig(loanProductApprovalData.getId());
                 if (!CollectionUtils.isEmpty(retrieveConfig)) {
@@ -201,7 +201,7 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
     public Collection<LoanProductApprovalConfigData> retrieveConfig(Long loanProductApprovalId) {
         this.context.authenticatedUser();
         final String sql = "select " + loanProductApprovalConfigMapper.schema() + " WHERE lpac.rlpa_id = ? ORDER BY lpac.rank ASC ";
-        return this.jdbcTemplate.query(sql, loanProductApprovalConfigMapper, new Object[]{loanProductApprovalId}); // NOSONAR
+        return this.jdbcTemplate.query(sql, loanProductApprovalConfigMapper, new Object[] { loanProductApprovalId }); // NOSONAR
     }
 
     @Override
@@ -210,7 +210,7 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
         try {
             final String sql = "select " + loanProductApprovalMapper.schema() + " where lpa.savings_product_id = ?";
             LoanProductApprovalData loanProductApprovalData = this.jdbcTemplate.queryForObject(sql, loanProductApprovalMapper,
-                    new Object[]{savingsProductId});
+                    new Object[] { savingsProductId });
             if (loanProductApprovalData != null) {
                 Collection<LoanProductApprovalConfigData> retrieveConfig = retrieveConfig(loanProductApprovalData.getId());
                 if (!CollectionUtils.isEmpty(retrieveConfig)) {
@@ -228,8 +228,7 @@ public class LoanProductApprovalReadPlatformServiceImpl implements LoanProductAp
 
         public String schema() {
             return " lpa.id, lpa.name, lpa.loan_product_id loanProductId, mpl.name loanProductName "
-                    + " , lpa.savings_product_id savingsProductId, msp.name savingsProductName "
-                    + " from m_role_loan_product_approval lpa "
+                    + " , lpa.savings_product_id savingsProductId, msp.name savingsProductName " + " from m_role_loan_product_approval lpa "
                     + " LEFT JOIN m_product_loan mpl ON mpl.id=lpa.loan_product_id "
                     + " LEFT JOIN m_savings_product msp ON msp.id=lpa.savings_product_id ";
         }

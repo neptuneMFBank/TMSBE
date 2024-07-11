@@ -147,7 +147,8 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             final AccountAssociationsRepository accountAssociationsRepository, final FromJsonHelper fromJsonHelper,
             final CalendarInstanceRepository calendarInstanceRepository, final ConfigurationDomainService configurationDomainService,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository,
-            final BusinessEventNotifierService businessEventNotifierService, final ReadWriteNonCoreDataService readWriteNonCoreDataService) {
+            final BusinessEventNotifierService businessEventNotifierService,
+            final ReadWriteNonCoreDataService readWriteNonCoreDataService) {
         this.context = context;
         this.savingAccountRepository = savingAccountRepository;
         this.depositAccountAssembler = depositAccountAssembler;
@@ -282,8 +283,7 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             if (account.isAccountNumberRequiresAutoGeneration()) {
                 final Long productId = account.productId();
                 final Long accountNumberPrefix = getAccountNumberPrefix(productId);
-                AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository
-                        .findByAccountType(EntityAccountType.SAVINGS);
+                AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.SAVINGS);
                 if (accountNumberPrefix != null) {
                     accountNumberFormat = AccountNumberFormat.instance(accountNumberPrefix);
                 }
@@ -812,8 +812,8 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
                 for (ResultsetRowData res : resultsetRowDatas) {
                     final Object objectAccountNumberPrefixParam = res.getRow().get(1);
                     if (ObjectUtils.isNotEmpty(objectAccountNumberPrefixParam)) {
-                        final String accountNumberPrefixDT = StringUtils
-                                .defaultIfBlank(String.valueOf(objectAccountNumberPrefixParam), "0");
+                        final String accountNumberPrefixDT = StringUtils.defaultIfBlank(String.valueOf(objectAccountNumberPrefixParam),
+                                "0");
                         accountNumberPrefix = Long.valueOf(accountNumberPrefixDT);
                     }
                 }

@@ -61,8 +61,7 @@ public class CommissionVend extends AbstractPersistableCustom {
     @Column(name = "currency_code")
     private String currencyCode;
 
-    protected CommissionVend() {
-    }
+    protected CommissionVend() {}
 
     public Long getAccountingRules() {
         return accountingRules;

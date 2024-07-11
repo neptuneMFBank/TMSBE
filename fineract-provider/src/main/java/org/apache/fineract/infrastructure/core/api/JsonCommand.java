@@ -43,8 +43,8 @@ import org.apache.fineract.infrastructure.security.service.PlatformPasswordEncod
 /**
  * Immutable representation of a command.
  *
- * Wraps the provided JSON with convenience functions for extracting parameter
- * values and checking for changes against an existing value.
+ * Wraps the provided JSON with convenience functions for extracting parameter values and checking for changes against
+ * an existing value.
  */
 public final class JsonCommand {
 
@@ -179,7 +179,8 @@ public final class JsonCommand {
     }
 
     public static JsonCommand from(final String jsonCommand, final JsonElement parsedCommand, final FromJsonHelper fromApiJsonHelper) {
-        return new JsonCommand(null, jsonCommand, parsedCommand, fromApiJsonHelper, null, null, null, null, null, null, null, null, null, null, null, null);
+        return new JsonCommand(null, jsonCommand, parsedCommand, fromApiJsonHelper, null, null, null, null, null, null, null, null, null,
+                null, null, null);
     }
 
     public Long getOrganisationCreditBureauId() {
@@ -440,15 +441,13 @@ public final class JsonCommand {
     }
 
     public Map<String, String> mapValueOfParameterNamed(final String json) {
-        final Type typeOfMap = new TypeToken<Map<String, String>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, String>>() {}.getType();
         final Map<String, String> value = this.fromApiJsonHelper.extractDataMap(typeOfMap, json);
         return value;
     }
 
     public Map<String, Object> mapObjectValueOfParameterNamed(final String json) {
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         final Map<String, Object> value = this.fromApiJsonHelper.extractObjectMap(typeOfMap, json);
         return value;
     }

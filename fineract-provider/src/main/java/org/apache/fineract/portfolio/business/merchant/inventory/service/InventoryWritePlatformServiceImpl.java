@@ -53,9 +53,8 @@ public class InventoryWritePlatformServiceImpl implements InventoryWritePlatform
     private final InventoryRepository inventoryRepository;
 
     @Autowired
-    public InventoryWritePlatformServiceImpl(final PlatformSecurityContext context,
-            final InventoryValidator inventoryValidator, final ClientRepositoryWrapper clientRepository,
-            final InventoryRepository inventoryRepository) {
+    public InventoryWritePlatformServiceImpl(final PlatformSecurityContext context, final InventoryValidator inventoryValidator,
+            final ClientRepositoryWrapper clientRepository, final InventoryRepository inventoryRepository) {
         this.context = context;
         this.inventoryValidator = inventoryValidator;
         this.clientRepository = clientRepository;
@@ -63,7 +62,7 @@ public class InventoryWritePlatformServiceImpl implements InventoryWritePlatform
 
     }
 
-    @Transactional 
+    @Transactional
     @Override
     public CommandProcessingResult create(JsonCommand command) {
         try {
@@ -97,8 +96,6 @@ public class InventoryWritePlatformServiceImpl implements InventoryWritePlatform
             return CommandProcessingResult.empty();
         }
     }
-    
-    
 
     @Transactional
     @Override
@@ -107,8 +104,7 @@ public class InventoryWritePlatformServiceImpl implements InventoryWritePlatform
             this.context.authenticatedUser();
 
             this.inventoryValidator.validateForUpdate(command.json());
-            final Inventory inventory = this.inventoryRepository.findById(resourceId)
-                    .orElseThrow(() -> new InventoryNotFound(resourceId));
+            final Inventory inventory = this.inventoryRepository.findById(resourceId).orElseThrow(() -> new InventoryNotFound(resourceId));
 
             final Map<String, Object> changes = inventory.update(command);
 
@@ -141,8 +137,7 @@ public class InventoryWritePlatformServiceImpl implements InventoryWritePlatform
     @Override
     public CommandProcessingResult delete(final Long resourceId) {
         this.context.authenticatedUser();
-        final Inventory inventory = this.inventoryRepository.findById(resourceId)
-                .orElseThrow(() -> new InventoryNotFound(resourceId));
+        final Inventory inventory = this.inventoryRepository.findById(resourceId).orElseThrow(() -> new InventoryNotFound(resourceId));
         this.inventoryRepository.delete(inventory);
 
         return new CommandProcessingResultBuilder() //
@@ -174,5 +169,4 @@ public class InventoryWritePlatformServiceImpl implements InventoryWritePlatform
                 "Unknown data integrity issue with resource.");
     }
 
-  
 }

@@ -36,12 +36,12 @@ public final class BankTransferEnumerations {
         EnumOptionData optionData = new EnumOptionData(BankTransferType.INVALID.getValue().longValue(), BankTransferType.INVALID.getCode(),
                 "Invalid");
         switch (status) {
-            case INVALID ->
-                optionData = new EnumOptionData(BankTransferType.INVALID.getValue().longValue(), BankTransferType.INVALID.getCode(), "INVALID");
-            case INTRABANK ->
-                optionData = new EnumOptionData(BankTransferType.INTRABANK.getValue().longValue(), BankTransferType.INTRABANK.getCode(), "INTRABANK");
-            case INTERBANK_EBILLS ->
-                optionData = new EnumOptionData(BankTransferType.INTERBANK_EBILLS.getValue().longValue(), BankTransferType.INTERBANK_EBILLS.getCode(), "INTERBANK_EBILLS");
+            case INVALID -> optionData = new EnumOptionData(BankTransferType.INVALID.getValue().longValue(),
+                    BankTransferType.INVALID.getCode(), "INVALID");
+            case INTRABANK -> optionData = new EnumOptionData(BankTransferType.INTRABANK.getValue().longValue(),
+                    BankTransferType.INTRABANK.getCode(), "INTRABANK");
+            case INTERBANK_EBILLS -> optionData = new EnumOptionData(BankTransferType.INTERBANK_EBILLS.getValue().longValue(),
+                    BankTransferType.INTERBANK_EBILLS.getCode(), "INTERBANK_EBILLS");
         }
 
         return optionData;

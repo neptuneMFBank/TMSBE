@@ -23,5 +23,4 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface AccountTierRepository extends JpaRepository<AccountTier, Long>, JpaSpecificationExecutor<AccountTier> {
 
-
 }

@@ -92,8 +92,11 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
     @Autowired
     public SavingsAccountBusinessReadPlatformServiceImpl(final ColumnValidator columnValidator,
             final SavingsAccountAssembler savingAccountAssembler, PaginationHelper paginationHelper,
-            final DatabaseSpecificSQLGenerator sqlGenerator, final JdbcTemplate jdbcTemplate, final CommissionVendRepository commissionVendRepository, final ConfigurationReadPlatformService configurationReadPlatformService,
-            final AccountingRuleReadPlatformService accountingRuleReadPlatformService, final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+            final DatabaseSpecificSQLGenerator sqlGenerator, final JdbcTemplate jdbcTemplate,
+            final CommissionVendRepository commissionVendRepository,
+            final ConfigurationReadPlatformService configurationReadPlatformService,
+            final AccountingRuleReadPlatformService accountingRuleReadPlatformService,
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.transactionsMapper = new SavingsAccountTransactionsMapper();
 
         this.columnValidator = columnValidator;
@@ -113,7 +116,7 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
         final GlobalConfigurationPropertyData calculateCommission = this.configurationReadPlatformService
                 .retrieveGlobalConfigurationX("calculate-commission");
         if (calculateCommission.isEnabled()) {
-            //run commission vend calculation
+            // run commission vend calculation
             final List<CommissionVend> commissionVends = this.commissionVendRepository.findAll();
             if (commissionVends != null) {
                 for (CommissionVend commissionVend : commissionVends) {
@@ -134,7 +137,7 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
                     } else if (paymentCalculationType.isPercentage()) {
                         commissionAmount = amount.multiply(gridPercent).divide(BigDecimal.valueOf(100L), MoneyHelper.getRoundingMode());
                     } else {
-                        //isFlat or zero
+                        // isFlat or zero
                         commissionAmount = gridAmount;
                     }
 
@@ -142,7 +145,7 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
                     if (commissionAmount == null || commissionAmount.compareTo(BigDecimal.ZERO) <= 0) {
                         status = SavingsAccountStatusType.REJECTED.getValue();
                     } else {
-                        //run frequent posting
+                        // run frequent posting
 
                         final String bankNumber = commissionVend.getBankNumber();
                         final String note = commissionVend.getNote();
@@ -151,7 +154,8 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
                         final Long accountingRuleId = commissionVend.getAccountingRules();
                         final String currencyCode = commissionVend.getCurrencyCode();
                         final Long paymentTypeId = commissionVend.getPaymentTypeId();
-                        final AccountingRuleData accountingRuleData = this.accountingRuleReadPlatformService.retrieveAccountingRuleById(accountingRuleId);
+                        final AccountingRuleData accountingRuleData = this.accountingRuleReadPlatformService
+                                .retrieveAccountingRuleById(accountingRuleId);
                         final Long officeId = accountingRuleData.getOfficeId();
 
                         JsonArray credits = new JsonArray();
@@ -174,34 +178,34 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
                                 debits.add(jsonObject);
                             }
                         }
-//                        {
-//    "locale": "en",
-//    "dateFormat": "dd MMMM yyyy",
-//    "officeId": 1,
-//    "transactionDate": "14 May 2024",
-//    "referenceNumber": "6678",
-//    "comments": "Checks",
-//    "accountingRule": 1,
-//    "currencyCode": "EUR",
-//    "paymentTypeId": 1,
-//    "accountNumber": "1234456778",
-//    "checkNumber": "11",
-//    "routingCode": "11",
-//    "receiptNumber": "11",
-//    "bankNumber": "Sterling Bank",
-//    "credits": [
-//        {
-//            "glAccountId": 27,
-//            "amount": "10"
-//        }
-//    ],
-//    "debits": [
-//        {
-//            "glAccountId": 17,
-//            "amount": "10"
-//        }
-//    ]
-//}
+                        // {
+                        // "locale": "en",
+                        // "dateFormat": "dd MMMM yyyy",
+                        // "officeId": 1,
+                        // "transactionDate": "14 May 2024",
+                        // "referenceNumber": "6678",
+                        // "comments": "Checks",
+                        // "accountingRule": 1,
+                        // "currencyCode": "EUR",
+                        // "paymentTypeId": 1,
+                        // "accountNumber": "1234456778",
+                        // "checkNumber": "11",
+                        // "routingCode": "11",
+                        // "receiptNumber": "11",
+                        // "bankNumber": "Sterling Bank",
+                        // "credits": [
+                        // {
+                        // "glAccountId": 27,
+                        // "amount": "10"
+                        // }
+                        // ],
+                        // "debits": [
+                        // {
+                        // "glAccountId": 17,
+                        // "amount": "10"
+                        // }
+                        // ]
+                        // }
 
                         final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
                         final JsonObject accountEntryJson = new JsonObject();
@@ -345,8 +349,7 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
             sqlBuilder.append(
                     "sa.currency_code as currencyCode, sa.currency_digits as currencyDigits, sa.currency_multiplesof as inMultiplesOf, ");
 
-            sqlBuilder.append(
-                    "msac.charge_id as chargeId, mc.name as chargeName, ");
+            sqlBuilder.append("msac.charge_id as chargeId, mc.name as chargeName, ");
 
             sqlBuilder.append("curr.name as currencyName, curr.internationalized_name_code as currencyNameCode, ");
             sqlBuilder.append("curr.display_symbol as currencyDisplaySymbol, ");
@@ -450,9 +453,10 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
                 chargeData = ChargeData.lookup(chargeId, chargeName, false);
             }
 
-            final SavingsAccountTransactionData savingsAccountTransactionData = SavingsAccountTransactionData.create(id, transactionType, paymentDetailData, savingsId, accountNo, date, currency,
-                    amount, outstandingChargeAmount, runningBalance, reversed, transfer, submittedOnDate, postInterestAsOn,
-                    submittedByUsername, note, isReversal, originalTransactionId, lienTransaction, releaseTransactionId, reasonForBlock);
+            final SavingsAccountTransactionData savingsAccountTransactionData = SavingsAccountTransactionData.create(id, transactionType,
+                    paymentDetailData, savingsId, accountNo, date, currency, amount, outstandingChargeAmount, runningBalance, reversed,
+                    transfer, submittedOnDate, postInterestAsOn, submittedByUsername, note, isReversal, originalTransactionId,
+                    lienTransaction, releaseTransactionId, reasonForBlock);
             savingsAccountTransactionData.setChargeData(chargeData);
             savingsAccountTransactionData.setSubmittedOnDateTime(submittedOnDateTime);
             savingsAccountTransactionData.setRefNo(refNo);

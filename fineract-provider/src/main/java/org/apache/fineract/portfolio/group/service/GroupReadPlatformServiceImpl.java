@@ -246,7 +246,7 @@ public class GroupReadPlatformServiceImpl implements GroupReadPlatformService {
             final String hierarchySearchString = hierarchy + "%";
 
             final String sql = "select " + this.allGroupTypesDataMapper.schema() + " where g.id = ? and o.hierarchy like ?";
-            return this.jdbcTemplate.queryForObject(sql, this.allGroupTypesDataMapper, new Object[]{groupId, hierarchySearchString}); // NOSONAR
+            return this.jdbcTemplate.queryForObject(sql, this.allGroupTypesDataMapper, new Object[] { groupId, hierarchySearchString }); // NOSONAR
         } catch (final EmptyResultDataAccessException e) {
             throw new GroupNotFoundException(groupId, e);
         }
@@ -257,7 +257,7 @@ public class GroupReadPlatformServiceImpl implements GroupReadPlatformService {
         this.context.authenticatedUser();
         final GroupLookupDataMapper rm = new GroupLookupDataMapper();
         final String sql = "Select " + rm.schema() + " and g.office_id=?";
-        return this.jdbcTemplate.query(sql, rm, new Object[]{officeId}); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, new Object[] { officeId }); // NOSONAR
     }
 
     private static final class GroupLookupDataMapper implements RowMapper<GroupGeneralData> {

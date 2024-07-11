@@ -49,8 +49,9 @@ public final class AccountTierData implements Serializable {
     private final Collection<CodeValueData> channelOptions;
 
     private AccountTierData(final Long id, final CodeValueData clientType, final Long parentId, final CodeValueData activationChannel,
-            final BigDecimal dailyWithdrawalLimit, final BigDecimal singleDepositLimit, final BigDecimal cumulativeBalance, final String description,
-            final String name, final Collection<CodeValueData> clientTypeOptions, final Collection<CodeValueData> channelOptions) {
+            final BigDecimal dailyWithdrawalLimit, final BigDecimal singleDepositLimit, final BigDecimal cumulativeBalance,
+            final String description, final String name, final Collection<CodeValueData> clientTypeOptions,
+            final Collection<CodeValueData> channelOptions) {
         this.id = id;
         this.clientType = clientType;
         this.parentId = parentId;
@@ -64,13 +65,13 @@ public final class AccountTierData implements Serializable {
         this.clientTypeOptions = clientTypeOptions;
     }
 
-    public static AccountTierData instance(final Long id, final CodeValueData clientType, final Long parentId, final CodeValueData activationChannel,
-            final BigDecimal dailyWithdrawalLimit, final BigDecimal singleDepositLimit, final BigDecimal cumulativeBalance, final String description,
-            final String name) {
+    public static AccountTierData instance(final Long id, final CodeValueData clientType, final Long parentId,
+            final CodeValueData activationChannel, final BigDecimal dailyWithdrawalLimit, final BigDecimal singleDepositLimit,
+            final BigDecimal cumulativeBalance, final String description, final String name) {
         final Collection<CodeValueData> clientTypeOptions = null;
         final Collection<CodeValueData> channelOptions = null;
-        return new AccountTierData(id, clientType, parentId, activationChannel,
-                dailyWithdrawalLimit, singleDepositLimit, cumulativeBalance, description, name, clientTypeOptions, channelOptions);
+        return new AccountTierData(id, clientType, parentId, activationChannel, dailyWithdrawalLimit, singleDepositLimit, cumulativeBalance,
+                description, name, clientTypeOptions, channelOptions);
 
     }
 
@@ -86,7 +87,8 @@ public final class AccountTierData implements Serializable {
         return id;
     }
 
-    public static AccountTierData template(final Collection<CodeValueData> clientTypeOptions, final Collection<CodeValueData> channelOptions) {
+    public static AccountTierData template(final Collection<CodeValueData> clientTypeOptions,
+            final Collection<CodeValueData> channelOptions) {
         final Long id = null;
         final CodeValueData clientType = null;
         final Long parentId = null;
@@ -97,8 +99,8 @@ public final class AccountTierData implements Serializable {
         final String name = null;
         final String description = null;
 
-        return new AccountTierData(id, clientType, parentId, activationChannel,
-                dailyWithdrawalLimit, singleDepositLimit, cumulativeBalance, description, name, clientTypeOptions, channelOptions);
+        return new AccountTierData(id, clientType, parentId, activationChannel, dailyWithdrawalLimit, singleDepositLimit, cumulativeBalance,
+                description, name, clientTypeOptions, channelOptions);
     }
 
 }

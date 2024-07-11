@@ -53,12 +53,11 @@ public class AccountTierDataValidator {
 
         final JsonElement element = this.fromApiJsonHelper.parse(json);
 
-        Integer parentId = this.fromApiJsonHelper
-                .extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.PARENT_ID, element);
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        Integer parentId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.PARENT_ID, element);
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         if (parentId == null) {
-            this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, AccountTierApiResouceConstants.PARENT_REQUEST_DATA_PARAMETERS);
+            this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
+                    AccountTierApiResouceConstants.PARENT_REQUEST_DATA_PARAMETERS);
         } else {
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, AccountTierApiResouceConstants.REQUEST_DATA_PARAMETERS);
 
@@ -70,60 +69,54 @@ public class AccountTierDataValidator {
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.ACTIVATION_CHANNEL_ID, element)) {
             final Integer activationChannelId = this.fromApiJsonHelper
                     .extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.ACTIVATION_CHANNEL_ID, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.ACTIVATION_CHANNEL_ID)
-                    .value(activationChannelId).notBlank().integerGreaterThanZero();
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.ACTIVATION_CHANNEL_ID).value(activationChannelId).notBlank()
+                    .integerGreaterThanZero();
         }
 
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.CUMULATIVE_BALANCE, element)) {
             final BigDecimal cummulativeBalance = this.fromApiJsonHelper
                     .extractBigDecimalWithLocaleNamed(AccountTierApiResouceConstants.CUMULATIVE_BALANCE, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.CUMULATIVE_BALANCE)
-                    .value(cummulativeBalance).notNull()
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.CUMULATIVE_BALANCE).value(cummulativeBalance).notNull()
                     .zeroOrPositiveAmount();
         }
 
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.DALIY_WITHDRAWAL_LIMIT, element)) {
             final BigDecimal dailyWithdrawalLimit = this.fromApiJsonHelper
                     .extractBigDecimalWithLocaleNamed(AccountTierApiResouceConstants.DALIY_WITHDRAWAL_LIMIT, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.DALIY_WITHDRAWAL_LIMIT)
-                    .value(dailyWithdrawalLimit).notNull()
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.DALIY_WITHDRAWAL_LIMIT).value(dailyWithdrawalLimit).notNull()
                     .zeroOrPositiveAmount();
         }
 
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.SINGLE_DEPOSIT_LIMIT, element)) {
             final BigDecimal singDepositLimit = this.fromApiJsonHelper
                     .extractBigDecimalWithLocaleNamed(AccountTierApiResouceConstants.SINGLE_DEPOSIT_LIMIT, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.SINGLE_DEPOSIT_LIMIT)
-                    .value(singDepositLimit).notNull()
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.SINGLE_DEPOSIT_LIMIT).value(singDepositLimit).notNull()
                     .zeroOrPositiveAmount();
         }
 
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.DESCRIPTION, element)) {
             final String description = this.fromApiJsonHelper.extractStringNamed(AccountTierApiResouceConstants.DESCRIPTION, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.DESCRIPTION)
-                    .value(description).notBlank().notExceedingLengthOf(400);
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.DESCRIPTION).value(description).notBlank()
+                    .notExceedingLengthOf(400);
         }
 
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.LOCALE, element)) {
             final String locale = this.fromApiJsonHelper.extractStringNamed(AccountTierApiResouceConstants.LOCALE, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.LOCALE)
-                    .value(locale).notBlank().notExceedingLengthOf(400);
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.LOCALE).value(locale).notBlank().notExceedingLengthOf(400);
         }
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.PARENT_ID, element)) {
-            parentId = this.fromApiJsonHelper
-                    .extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.PARENT_ID, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.PARENT_ID)
-                    .value(parentId).notBlank().integerGreaterThanZero();
+            parentId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.PARENT_ID, element);
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.PARENT_ID).value(parentId).notBlank()
+                    .integerGreaterThanZero();
         }
         if (parentId == null) {
-            final Integer clientTypeId = this.fromApiJsonHelper.
-                    extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.CLIENT_TYPE_ID, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.CLIENT_TYPE_ID)
-                    .value(clientTypeId).notBlank().integerGreaterThanZero();
+            final Integer clientTypeId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.CLIENT_TYPE_ID,
+                    element);
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.CLIENT_TYPE_ID).value(clientTypeId).notBlank()
+                    .integerGreaterThanZero();
         }
         final String name = this.fromApiJsonHelper.extractStringNamed(AccountTierApiResouceConstants.NAME, element);
-        baseDataValidator.reset().parameter(AccountTierApiResouceConstants.NAME)
-                .value(name).notBlank().notExceedingLengthOf(250);
+        baseDataValidator.reset().parameter(AccountTierApiResouceConstants.NAME).value(name).notBlank().notExceedingLengthOf(250);
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }
@@ -135,13 +128,12 @@ public class AccountTierDataValidator {
         }
         final JsonElement element = this.fromApiJsonHelper.parse(json);
 
-        Integer parentId = this.fromApiJsonHelper
-                .extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.PARENT_ID, element);
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        Integer parentId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.PARENT_ID, element);
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
 
         if (parentId == null) {
-            this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, AccountTierApiResouceConstants.PARENT_REQUEST_DATA_PARAMETERS);
+            this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
+                    AccountTierApiResouceConstants.PARENT_REQUEST_DATA_PARAMETERS);
         } else {
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, AccountTierApiResouceConstants.REQUEST_DATA_PARAMETERS);
 
@@ -153,61 +145,54 @@ public class AccountTierDataValidator {
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.ACTIVATION_CHANNEL_ID, element)) {
             final Integer activationChannelId = this.fromApiJsonHelper
                     .extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.ACTIVATION_CHANNEL_ID, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.ACTIVATION_CHANNEL_ID)
-                    .value(activationChannelId).notBlank().integerGreaterThanZero();
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.ACTIVATION_CHANNEL_ID).value(activationChannelId).notBlank()
+                    .integerGreaterThanZero();
         }
 
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.CUMULATIVE_BALANCE, element)) {
             final BigDecimal cummulativeBalance = this.fromApiJsonHelper
                     .extractBigDecimalWithLocaleNamed(AccountTierApiResouceConstants.CUMULATIVE_BALANCE, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.CUMULATIVE_BALANCE)
-                    .value(cummulativeBalance).notNull()
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.CUMULATIVE_BALANCE).value(cummulativeBalance).notNull()
                     .zeroOrPositiveAmount();
         }
 
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.DALIY_WITHDRAWAL_LIMIT, element)) {
             final BigDecimal dailyWithdrawalLimit = this.fromApiJsonHelper
                     .extractBigDecimalWithLocaleNamed(AccountTierApiResouceConstants.DALIY_WITHDRAWAL_LIMIT, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.DALIY_WITHDRAWAL_LIMIT)
-                    .value(dailyWithdrawalLimit).notNull()
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.DALIY_WITHDRAWAL_LIMIT).value(dailyWithdrawalLimit).notNull()
                     .zeroOrPositiveAmount();
         }
 
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.SINGLE_DEPOSIT_LIMIT, element)) {
             final BigDecimal singDepositLimit = this.fromApiJsonHelper
                     .extractBigDecimalWithLocaleNamed(AccountTierApiResouceConstants.SINGLE_DEPOSIT_LIMIT, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.SINGLE_DEPOSIT_LIMIT)
-                    .value(singDepositLimit).notNull()
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.SINGLE_DEPOSIT_LIMIT).value(singDepositLimit).notNull()
                     .zeroOrPositiveAmount();
         }
 
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.DESCRIPTION, element)) {
             final String description = this.fromApiJsonHelper.extractStringNamed(AccountTierApiResouceConstants.DESCRIPTION, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.DESCRIPTION)
-                    .value(description).notBlank().notExceedingLengthOf(400);
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.DESCRIPTION).value(description).notBlank()
+                    .notExceedingLengthOf(400);
         }
 
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.LOCALE, element)) {
             final String locale = this.fromApiJsonHelper.extractStringNamed(AccountTierApiResouceConstants.LOCALE, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.LOCALE)
-                    .value(locale).notBlank().notExceedingLengthOf(400);
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.LOCALE).value(locale).notBlank().notExceedingLengthOf(400);
         }
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.PARENT_ID, element)) {
-            parentId = this.fromApiJsonHelper
-                    .extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.PARENT_ID, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.PARENT_ID)
-                    .value(parentId).integerGreaterThanZero();
+            parentId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.PARENT_ID, element);
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.PARENT_ID).value(parentId).integerGreaterThanZero();
         }
         if (parentId == null && this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.PARENT_ID, element)) {
-            final Integer clientTypeId = this.fromApiJsonHelper.
-                    extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.CLIENT_TYPE_ID, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.CLIENT_TYPE_ID)
-                    .value(clientTypeId).notBlank().integerGreaterThanZero();
+            final Integer clientTypeId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(AccountTierApiResouceConstants.CLIENT_TYPE_ID,
+                    element);
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.CLIENT_TYPE_ID).value(clientTypeId).notBlank()
+                    .integerGreaterThanZero();
         }
         if (this.fromApiJsonHelper.parameterExists(AccountTierApiResouceConstants.NAME, element)) {
             final String name = this.fromApiJsonHelper.extractStringNamed(AccountTierApiResouceConstants.NAME, element);
-            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.NAME)
-                    .value(name).notBlank().notExceedingLengthOf(250);
+            baseDataValidator.reset().parameter(AccountTierApiResouceConstants.NAME).value(name).notBlank().notExceedingLengthOf(250);
         }
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }

@@ -97,7 +97,7 @@ public class TaxGroup extends AbstractAuditableCustom {
     public TaxGroupMappings findOneBy(final TaxGroupMappings groupMapping) {
         if (groupMapping.getId() != null) {
             for (TaxGroupMappings groupMappings : this.taxGroupMappings) {
-//                if (groupMappings.getId().equals(groupMapping.getId())) {
+                // if (groupMappings.getId().equals(groupMapping.getId())) {
                 if (Objects.equals(groupMappings.getId(), groupMapping.getId())) {
                     return groupMappings;
                 }

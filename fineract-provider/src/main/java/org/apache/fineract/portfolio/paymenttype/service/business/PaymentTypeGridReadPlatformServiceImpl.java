@@ -52,8 +52,7 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
     @Autowired
     public PaymentTypeGridReadPlatformServiceImpl(final FromJsonHelper fromJsonHelper, final PlatformSecurityContext context,
             final JdbcTemplate jdbcTemplate, final ChargeReadPlatformService chargeReadPlatformService,
-            final PaymentTypeReadPlatformService paymentTypeReadPlatformService
-    ) {
+            final PaymentTypeReadPlatformService paymentTypeReadPlatformService) {
         this.context = context;
         this.jdbcTemplate = jdbcTemplate;
         this.fromJsonHelper = fromJsonHelper;
@@ -68,7 +67,7 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
         try {
             final PaymentTypeGridMapper ptm = new PaymentTypeGridMapper();
             final String sql = "select " + ptm.schema() + " where pt.payment_type_id = ? ";
-            final Collection<PaymentTypeGridData> paymentTypeGridData = this.jdbcTemplate.query(sql, ptm, new Object[]{paymentTypeId}); // NOSONAR
+            final Collection<PaymentTypeGridData> paymentTypeGridData = this.jdbcTemplate.query(sql, ptm, new Object[] { paymentTypeId }); // NOSONAR
             if (!CollectionUtils.isEmpty(paymentTypeGridData)) {
                 paymentTypeGridData.forEach(obj -> {
                     if (StringUtils.isNotBlank(obj.getGridJson())) {
@@ -91,7 +90,7 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
         try {
             final PaymentTypeGridMapper ptm = new PaymentTypeGridMapper();
             final String sql = "select " + ptm.schema() + " where pt.charge_id = ? ";
-            final Collection<PaymentTypeGridData> paymentTypeGridData = this.jdbcTemplate.query(sql, ptm, new Object[]{chargeId}); // NOSONAR
+            final Collection<PaymentTypeGridData> paymentTypeGridData = this.jdbcTemplate.query(sql, ptm, new Object[] { chargeId }); // NOSONAR
             if (!CollectionUtils.isEmpty(paymentTypeGridData)) {
                 paymentTypeGridData.forEach(obj -> {
                     if (StringUtils.isNotBlank(obj.getGridJson())) {
@@ -114,7 +113,8 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
         try {
             final PaymentTypeGridMapper ptm = new PaymentTypeGridMapper();
             final String sql = "select " + ptm.schema() + " where pt.charge_id = ? and  pt.payment_type_id = ? ";
-            final Collection<PaymentTypeGridData> paymentTypeGridData = this.jdbcTemplate.query(sql, ptm, new Object[]{chargeId, paymentTypeId}); // NOSONAR
+            final Collection<PaymentTypeGridData> paymentTypeGridData = this.jdbcTemplate.query(sql, ptm,
+                    new Object[] { chargeId, paymentTypeId }); // NOSONAR
             if (!CollectionUtils.isEmpty(paymentTypeGridData)) {
                 paymentTypeGridData.forEach(obj -> {
                     if (StringUtils.isNotBlank(obj.getGridJson())) {
@@ -169,7 +169,8 @@ public class PaymentTypeGridReadPlatformServiceImpl implements PaymentTypeGridRe
                 paymentCalculationType = PaymentTypeEnumerations.paymentCalculationType(calculationType);
             }
 
-            return PaymentTypeGridData.instance(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType, amount, percent, chargeData);
+            return PaymentTypeGridData.instance(id, paymentType, name, gridJson, isGrid, isCommission, paymentCalculationType, amount,
+                    percent, chargeData);
         }
 
     }

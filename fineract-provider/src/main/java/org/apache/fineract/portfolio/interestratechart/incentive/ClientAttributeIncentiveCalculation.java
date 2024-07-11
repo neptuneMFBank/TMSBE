@@ -40,7 +40,7 @@ public class ClientAttributeIncentiveCalculation extends AttributeIncentiveCalcu
                     applyIncentive = applyIncentive(incentivesFields.conditionType(), Long.valueOf(incentivesFields.attributeValue()),
                             client.genderId());
                 }
-                break;
+            break;
             case AGE:
                 if (client.dateOfBirth() != null) {
                     final LocalDate dobLocalDate = client.dateOfBirth();
@@ -48,40 +48,40 @@ public class ClientAttributeIncentiveCalculation extends AttributeIncentiveCalcu
                     applyIncentive = applyIncentive(incentivesFields.conditionType(), Long.valueOf(incentivesFields.attributeValue()),
                             (long) age);
                 }
-                break;
+            break;
             case CLIENT_TYPE:
                 if (client.clientTypeId() != null) {
                     applyIncentive = applyIncentive(incentivesFields.conditionType(), Long.valueOf(incentivesFields.attributeValue()),
                             client.clientTypeId());
                 }
-                break;
+            break;
             case CLIENT_CLASSIFICATION:
                 if (client.clientClassificationId() != null) {
                     applyIncentive = applyIncentive(incentivesFields.conditionType(), Long.valueOf(incentivesFields.attributeValue()),
                             client.clientClassificationId());
                 }
-                break;
-            case ACCOUNT_LOCKED://Simplify Tech Logic
+            break;
+            case ACCOUNT_LOCKED:// Simplify Tech Logic
                 if (periodFrequency != null) {
                     applyIncentive = applyIncentive(incentivesFields.conditionType(), Long.valueOf(incentivesFields.attributeValue()),
                             periodFrequency);
                 }
-                break;
+            break;
 
             default:
-                break;
+            break;
 
         }
         if (applyIncentive) {
             switch (incentivesFields.incentiveType()) {
                 case FIXED:
                     interest = incentivesFields.amount();
-                    break;
+                break;
                 case INCENTIVE:
                     interest = interest.add(incentivesFields.amount());
-                    break;
+                break;
                 default:
-                    break;
+                break;
 
             }
         }

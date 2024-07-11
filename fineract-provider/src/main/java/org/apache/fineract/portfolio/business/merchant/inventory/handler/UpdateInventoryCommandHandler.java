@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @CommandType(entity = "INVENTORY", action = "UPDATE")
 public class UpdateInventoryCommandHandler implements NewCommandSourceHandler {
 
-    private  final InventoryWritePlatformService inventoryWritePlatformService;
+    private final InventoryWritePlatformService inventoryWritePlatformService;
 
     @Autowired
     public UpdateInventoryCommandHandler(final InventoryWritePlatformService inventoryWritePlatformService) {

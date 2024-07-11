@@ -67,7 +67,8 @@ public final class StaffBusinessData implements Serializable {
     private StaffBusinessData(final Long id, final String firstname, final String lastname, final String displayName, final Long officeId,
             final String officeName, final Boolean isLoanOfficer, final String externalId, final String mobileNo,
             final Collection<OfficeData> allowedOffices, final Boolean isActive, final LocalDate joiningDate,
-            final CodeValueData organisationalRoleType, final StaffData organisationalRoleParentStaff, final Boolean isSupervisor, final String emailAddress) {
+            final CodeValueData organisationalRoleType, final StaffData organisationalRoleParentStaff, final Boolean isSupervisor,
+            final String emailAddress) {
         this.isSupervisor = isSupervisor;
         this.id = id;
         this.firstname = firstname;

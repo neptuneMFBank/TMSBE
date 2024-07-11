@@ -97,8 +97,9 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
     private String note;
 
     private TransferApproval(BigDecimal amount, Integer status, Integer transferType, Long holdTransactionId, Long releaseTransactionId,
-            Long withdrawTransactionId, Long fromAccountId, Integer fromAccountType, String fromAccountNumber,
-            Long toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId, String reason, String fromAccountName, String note) {
+            Long withdrawTransactionId, Long fromAccountId, Integer fromAccountType, String fromAccountNumber, Long toAccountId,
+            Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId, String reason,
+            String fromAccountName, String note) {
         this.amount = amount;
         this.status = status;
         this.transferType = transferType;
@@ -118,18 +119,17 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
         this.note = note;
     }
 
-    public TransferApproval() {
-    }
+    public TransferApproval() {}
 
     public static TransferApproval instance(BigDecimal amount, Integer status, Integer transferType, Long holdTransactionId,
-            Long fromAccountId, Integer fromAccountType, String fromAccountNumber,
-            Long toAccountId, Integer toAccountType, String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId, String fromAccountName, final String note) {
+            Long fromAccountId, Integer fromAccountType, String fromAccountNumber, Long toAccountId, Integer toAccountType,
+            String toAccountNumber, CodeValue activationChannelId, CodeValue toBankId, String fromAccountName, final String note) {
         final Long releaseTransactionId = null;
         final Long withdrawTransactionId = null;
         final String reason = null;
-        return new TransferApproval(amount, status, transferType, holdTransactionId, releaseTransactionId,
-                withdrawTransactionId, fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType,
-                toAccountNumber, activationChannelId, toBankId, reason, fromAccountName, note);
+        return new TransferApproval(amount, status, transferType, holdTransactionId, releaseTransactionId, withdrawTransactionId,
+                fromAccountId, fromAccountType, fromAccountNumber, toAccountId, toAccountType, toAccountNumber, activationChannelId,
+                toBankId, reason, fromAccountName, note);
 
     }
 
@@ -156,26 +156,28 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
         actualChanges.put(TransferApprovalApiResourceConstants.STATUS, SavingsEnumerations.status(this.status));
         actualChanges.put(TransferApprovalApiResourceConstants.REASON, this.reason);
 
-//        final Locale locale = command.extractLocale();
-//
-//        final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(locale);
-//        LocalDate approvedOn = command.localDateValueOfParameterNamed(TransferApprovalApiResourceConstants.approvedOnDateParameterName);
-//
-//        actualChanges.put("locale", locale);
-//        actualChanges.put(TransferApprovalApiResourceConstants.approvalIdTobeApproved, command.entityId());
-//        actualChanges.put("dateFormat", command.dateFormat());
-//        actualChanges.put("approvedOnDate", approvedOn.format(fmt));
-//
-//        final OffsetDateTime submittalDate = this.getCreatedDate().orElse(OffsetDateTime.now(ZoneId.systemDefault()));
-//        OffsetDateTime approvedOnOffSet = OffsetDateTime.of(approvedOn.atTime(LocalTime.MAX), ZoneOffset.UTC);
-//
-//        if (approvedOnOffSet.isBefore(submittalDate)) {
-//            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.approvedOnDateParameterName).value(approvedOn)
-//                    .failWithCode("must.be.after.createdOn.date");
-//            if (!dataValidationErrors.isEmpty()) {
-//                throw new PlatformApiDataValidationException(dataValidationErrors);
-//            }
-//        }
+        // final Locale locale = command.extractLocale();
+        //
+        // final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(locale);
+        // LocalDate approvedOn =
+        // command.localDateValueOfParameterNamed(TransferApprovalApiResourceConstants.approvedOnDateParameterName);
+        //
+        // actualChanges.put("locale", locale);
+        // actualChanges.put(TransferApprovalApiResourceConstants.approvalIdTobeApproved, command.entityId());
+        // actualChanges.put("dateFormat", command.dateFormat());
+        // actualChanges.put("approvedOnDate", approvedOn.format(fmt));
+        //
+        // final OffsetDateTime submittalDate =
+        // this.getCreatedDate().orElse(OffsetDateTime.now(ZoneId.systemDefault()));
+        // OffsetDateTime approvedOnOffSet = OffsetDateTime.of(approvedOn.atTime(LocalTime.MAX), ZoneOffset.UTC);
+        //
+        // if (approvedOnOffSet.isBefore(submittalDate)) {
+        // baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.approvedOnDateParameterName).value(approvedOn)
+        // .failWithCode("must.be.after.createdOn.date");
+        // if (!dataValidationErrors.isEmpty()) {
+        // throw new PlatformApiDataValidationException(dataValidationErrors);
+        // }
+        // }
         return actualChanges;
 
     }
@@ -185,8 +187,8 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
 
         checkSubmittedState(dataValidationErrors);
-        //final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
-        //      .resource(TransferApprovalApiResourceConstants.RESOURCE_NAME);
+        // final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+        // .resource(TransferApprovalApiResourceConstants.RESOURCE_NAME);
         final Map<String, Object> actualChanges = new LinkedHashMap<>();
 
         this.status = SavingsAccountStatusType.REJECTED.getValue();
@@ -194,23 +196,25 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
         actualChanges.put(TransferApprovalApiResourceConstants.STATUS, SavingsEnumerations.status(this.status));
         actualChanges.put(TransferApprovalApiResourceConstants.REASON, this.reason);
 
-        //final Locale locale = command.extractLocale();
-        //final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(locale);
-        //LocalDate rejectedOn = command.localDateValueOfParameterNamed(TransferApprovalApiResourceConstants.rejectedOnDateParameterName);
-        //actualChanges.put("locale", command.locale());
-        //actualChanges.put(TransferApprovalApiResourceConstants.approvalIdTobeApproved, command.entityId());
-        //actualChanges.put("dateFormat", command.dateFormat());
-        //actualChanges.put(TransferApprovalApiResourceConstants.rejectedOnDateParameterName, rejectedOn.format(fmt));
-//        final OffsetDateTime submittalDate = this.getCreatedDate().orElse(OffsetDateTime.now(ZoneId.systemDefault()));
-//        OffsetDateTime rejectedOnOffSet = OffsetDateTime.of(rejectedOn.atTime(LocalTime.MAX), ZoneOffset.UTC);
-//
-//        if (rejectedOnOffSet.isBefore(submittalDate)) {
-//            baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.rejectedOnDateParameterName).value(rejectedOn)
-//                    .failWithCode("must.be.after.createdOn.date");
-//            if (!dataValidationErrors.isEmpty()) {
-//                throw new PlatformApiDataValidationException(dataValidationErrors);
-//            }
-//        }
+        // final Locale locale = command.extractLocale();
+        // final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(locale);
+        // LocalDate rejectedOn =
+        // command.localDateValueOfParameterNamed(TransferApprovalApiResourceConstants.rejectedOnDateParameterName);
+        // actualChanges.put("locale", command.locale());
+        // actualChanges.put(TransferApprovalApiResourceConstants.approvalIdTobeApproved, command.entityId());
+        // actualChanges.put("dateFormat", command.dateFormat());
+        // actualChanges.put(TransferApprovalApiResourceConstants.rejectedOnDateParameterName, rejectedOn.format(fmt));
+        // final OffsetDateTime submittalDate =
+        // this.getCreatedDate().orElse(OffsetDateTime.now(ZoneId.systemDefault()));
+        // OffsetDateTime rejectedOnOffSet = OffsetDateTime.of(rejectedOn.atTime(LocalTime.MAX), ZoneOffset.UTC);
+        //
+        // if (rejectedOnOffSet.isBefore(submittalDate)) {
+        // baseDataValidator.reset().parameter(TransferApprovalApiResourceConstants.rejectedOnDateParameterName).value(rejectedOn)
+        // .failWithCode("must.be.after.createdOn.date");
+        // if (!dataValidationErrors.isEmpty()) {
+        // throw new PlatformApiDataValidationException(dataValidationErrors);
+        // }
+        // }
         return actualChanges;
 
     }
@@ -218,8 +222,8 @@ public class TransferApproval extends AbstractAuditableWithUTCDateTimeCustom {
     private void checkSubmittedState(final List<ApiParameterError> dataValidationErrors) throws PlatformApiDataValidationException {
         if (!isSubmittedAndPendingApproval()) {
             final String defaultUserMessage = "Transfer Approval is not allowed. Transfer Approval is not in submitted and pending approval state.";
-            final ApiParameterError error = ApiParameterError
-                    .generalError("error.msg.transfer.approval.is.not.submitted.and.pending.state", defaultUserMessage);
+            final ApiParameterError error = ApiParameterError.generalError("error.msg.transfer.approval.is.not.submitted.and.pending.state",
+                    defaultUserMessage);
             dataValidationErrors.add(error);
         }
 

@@ -26,7 +26,7 @@ import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 import org.apache.fineract.useradministration.data.RoleData;
 
 @SuppressWarnings("unused")
-//@Data
+// @Data
 public class LoanProductApprovalData implements Serializable {
 
     private Long id;
@@ -37,7 +37,9 @@ public class LoanProductApprovalData implements Serializable {
     private Collection<RoleData> roleOptions;
     private SavingsProductData savingsProductData;
 
-    public LoanProductApprovalData(Long id, String name, LoanProductData loanProductData, Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData, Collection<LoanProductData> loanProductOptions, Collection<RoleData> roleOptions) {
+    public LoanProductApprovalData(Long id, String name, LoanProductData loanProductData,
+            Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData, Collection<LoanProductData> loanProductOptions,
+            Collection<RoleData> roleOptions) {
         this.id = id;
         this.name = name;
         this.loanProductData = loanProductData;
@@ -110,11 +112,13 @@ public class LoanProductApprovalData implements Serializable {
         return new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions);
     }
 
-    public static LoanProductApprovalData lookUp(Long id, String name, LoanProductData loanProductData, SavingsProductData savingsProductData) {
+    public static LoanProductApprovalData lookUp(Long id, String name, LoanProductData loanProductData,
+            SavingsProductData savingsProductData) {
         Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData = null;
         Collection<LoanProductData> loanProductOptions = null;
         Collection<RoleData> roleOptions = null;
-        final LoanProductApprovalData loanProductApprovalData1 = new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions);
+        final LoanProductApprovalData loanProductApprovalData1 = new LoanProductApprovalData(id, name, loanProductData,
+                loanProductApprovalConfigData, loanProductOptions, roleOptions);
         loanProductApprovalData1.setSavingsProductData(savingsProductData);
         return loanProductApprovalData1;
 
@@ -128,7 +132,8 @@ public class LoanProductApprovalData implements Serializable {
         final SavingsProductData savingsProductData = loanProductApprovalData.getSavingsProductData();
         Collection<LoanProductData> loanProductOptions = null;
         Collection<RoleData> roleOptions = null;
-        final LoanProductApprovalData loanProductApprovalData1 = new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions);
+        final LoanProductApprovalData loanProductApprovalData1 = new LoanProductApprovalData(id, name, loanProductData,
+                loanProductApprovalConfigData, loanProductOptions, roleOptions);
         loanProductApprovalData1.setSavingsProductData(savingsProductData);
         return loanProductApprovalData1;
     }
@@ -136,7 +141,8 @@ public class LoanProductApprovalData implements Serializable {
     public static LoanProductApprovalData instance(Long id, String name, LoanProductData loanProductData,
             Collection<LoanProductApprovalConfigData> loanProductApprovalConfigData, Collection<LoanProductData> loanProductOptions,
             Collection<RoleData> roleOptions, LocalDate createdOn, LocalDate modifiedOn, SavingsProductData savingsProductData) {
-        final LoanProductApprovalData loanProductApprovalData = new LoanProductApprovalData(id, name, loanProductData, loanProductApprovalConfigData, loanProductOptions, roleOptions);
+        final LoanProductApprovalData loanProductApprovalData = new LoanProductApprovalData(id, name, loanProductData,
+                loanProductApprovalConfigData, loanProductOptions, roleOptions);
         loanProductApprovalData.setSavingsProductData(savingsProductData);
         return loanProductApprovalData;
     }

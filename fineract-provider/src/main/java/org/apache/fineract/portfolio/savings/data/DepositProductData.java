@@ -144,10 +144,11 @@ public class DepositProductData {
     }
 
     /**
-     * Returns a {@link DepositProductData} that contains and exist
-     * {@link DepositProductData} data with further template data for dropdowns.
+     * Returns a {@link DepositProductData} that contains and exist {@link DepositProductData} data with further
+     * template data for dropdowns.
      *
-     * @param taxGroupOptions TODO
+     * @param taxGroupOptions
+     *            TODO
      */
     public static DepositProductData withTemplate(final DepositProductData existingProduct, final Collection<CurrencyData> currencyOptions,
             final Collection<EnumOptionData> interestCompoundingPeriodTypeOptions,

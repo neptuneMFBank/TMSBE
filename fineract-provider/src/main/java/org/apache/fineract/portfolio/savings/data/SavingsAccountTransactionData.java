@@ -494,10 +494,8 @@ public final class SavingsAccountTransactionData implements Serializable {
         }
 
         /**
-         * *
-         * Sending data in a map, though in savings we currently expect a
-         * transaction to always repay a single charge (or may repay a part of a
-         * single charge too) *
+         * * Sending data in a map, though in savings we currently expect a transaction to always repay a single charge
+         * (or may repay a part of a single charge too) *
          */
         if (!this.chargesPaidByData.isEmpty()) {
             final List<Map<String, Object>> savingsChargesPaidData = new ArrayList<>();

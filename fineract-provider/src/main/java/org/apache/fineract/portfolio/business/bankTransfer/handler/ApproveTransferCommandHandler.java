@@ -40,6 +40,6 @@ public class ApproveTransferCommandHandler implements NewCommandSourceHandler {
 
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
-        return this.writePlatformService.approve(command,command.entityId());
+        return this.writePlatformService.approve(command, command.entityId());
     }
 }

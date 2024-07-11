@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,6 +17,8 @@
  * under the License.
  */
 package org.apache.fineract.useradministration.domain;
+
+import static org.apache.fineract.useradministration.service.AppUserConstants.FORCE_PASSWORD_RESET;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -39,7 +41,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,9 +59,6 @@ import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.useradministration.domain.business.AppUserExtension;
 import org.apache.fineract.useradministration.domain.business.AppUserMerchantMapping;
 import org.apache.fineract.useradministration.service.AppUserConstants;
-
-import static org.apache.fineract.useradministration.service.AppUserConstants.FORCE_PASSWORD_RESET;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -69,9 +67,8 @@ import org.springframework.security.core.userdetails.User;
 @Entity
 @Table(name = "m_appuser",
         // uniqueConstraints = @UniqueConstraint(columnNames = { "username" }, name = "username_org")
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"username"}, name = "username_org"),
-                @UniqueConstraint(columnNames = {"email"}, name = "email_org")})
+        uniqueConstraints = { @UniqueConstraint(columnNames = { "username" }, name = "username_org"),
+                @UniqueConstraint(columnNames = { "email" }, name = "email_org") })
 public class AppUser extends AbstractPersistableCustom implements PlatformUser {
 
     @Column(name = "email", nullable = false, length = 100)
@@ -141,7 +138,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     private Boolean cannotChangePassword;
 
     public static AppUser fromJson(final Office userOffice, final Staff linkedStaff, final Set<Role> allRoles,
-                                   final Collection<Client> clients, final JsonCommand command) {
+            final Collection<Client> clients, final JsonCommand command) {
 
         final String username = command.stringValueOfParameterNamed("username");
         String password = command.stringValueOfParameterNamed("password");
@@ -186,8 +183,8 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     }
 
     public AppUser(final Office office, final User user, final Set<Role> roles, final String email, final String firstname,
-                   final String lastname, final Staff staff, final boolean passwordNeverExpire, final boolean isSelfServiceUser,
-                   final Collection<Client> clients, final Boolean cannotChangePassword) {
+            final String lastname, final Staff staff, final boolean passwordNeverExpire, final boolean isSelfServiceUser,
+            final Collection<Client> clients, final Boolean cannotChangePassword) {
         this.office = office;
         this.email = email.trim();
         this.username = user.getUsername().trim();
@@ -254,7 +251,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     }
 
     public Map<String, Object> update(final JsonCommand command, final PlatformPasswordEncoder platformPasswordEncoder,
-                                      final Collection<Client> clients) {
+            final Collection<Client> clients) {
 
         final Map<String, Object> actualChanges = new LinkedHashMap<>(7);
 
@@ -386,8 +383,7 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     }
 
     /**
-     * Delete is a <i>soft delete</i>. Updates flag so it wont appear in
-     * query/report results.
+     * Delete is a <i>soft delete</i>. Updates flag so it wont appear in query/report results.
      * <p>
      * Any fields with unique constraints and prepended with id of record.
      */
@@ -570,7 +566,8 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     /**
      * Checks whether the user has a given permission explicitly.
      *
-     * @param permissionCode the permission code to check for.
+     * @param permissionCode
+     *            the permission code to check for.
      * @return whether the user has the specified permission
      */
     public boolean hasSpecificPermissionTo(final String permissionCode) {
@@ -812,7 +809,6 @@ public class AppUser extends AbstractPersistableCustom implements PlatformUser {
     public void setFirstTimeLoginRemaining(boolean firstTimeLoginRemaining) {
         this.firstTimeLoginRemaining = firstTimeLoginRemaining;
     }
-
 
     public boolean canByPassMakerCheckerPermission() {
         return hasSpecificPermissionTo("BYPASS_MAKERCHECKER");

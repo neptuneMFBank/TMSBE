@@ -47,9 +47,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
 import org.apache.fineract.infrastructure.configuration.service.ConfigurationReadPlatformService;
-import org.apache.fineract.organisation.business.businesstime.domain.BusinessTime;
-import org.apache.fineract.organisation.business.businesstime.domain.BusinessTimeRepositoryWrapper;
-import org.apache.fineract.organisation.business.businesstime.exception.BusinessTimeNotFoundException;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
@@ -59,6 +56,9 @@ import org.apache.fineract.infrastructure.security.exception.NoAuthorizationExce
 import org.apache.fineract.infrastructure.security.service.SpringSecurityPlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.service.business.AuthenticationBusinessReadPlatformService;
 import org.apache.fineract.infrastructure.security.service.business.AuthenticationBusinessWritePlatformService;
+import org.apache.fineract.organisation.business.businesstime.domain.BusinessTime;
+import org.apache.fineract.organisation.business.businesstime.domain.BusinessTimeRepositoryWrapper;
+import org.apache.fineract.organisation.business.businesstime.exception.BusinessTimeNotFoundException;
 import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
 import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformService;
 import org.apache.fineract.useradministration.data.RoleData;
@@ -115,7 +115,8 @@ public class AuthenticationApiResource {
             final AuthenticationBusinessReadPlatformService authenticationBusinessReadPlatformService,
             final AppUserExtensionRepositoryWrapper appUserExtensionRepositoryWrapper,
             final ClientBusinessReadPlatformService clientBusinessReadPlatformService,
-            final BusinessTimeRepositoryWrapper businessTimeRepository, final ConfigurationReadPlatformService configurationReadPlatformService) {
+            final BusinessTimeRepositoryWrapper businessTimeRepository,
+            final ConfigurationReadPlatformService configurationReadPlatformService) {
         this.customAuthenticationProvider = customAuthenticationProvider;
         this.apiJsonSerializerService = apiJsonSerializerService;
         this.springSecurityPlatformSecurityContext = springSecurityPlatformSecurityContext;
@@ -129,13 +130,13 @@ public class AuthenticationApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Verify authentication", description = "Authenticates the credentials provided and returns the set roles and permissions allowed.")
     @RequestBody(required = true, content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationRequest.class)))
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationResponse.class))),
-        @ApiResponse(responseCode = "400", description = "Unauthenticated. Please login")})
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Unauthenticated. Please login") })
     public String authenticate(@Parameter(hidden = true) final String apiRequestBodyAsJson,
             @QueryParam("returnClientList") @DefaultValue("false") boolean returnClientList) {
         // TODO FINERACT-819: sort out Jersey so JSON conversion does not have
@@ -204,7 +205,8 @@ public class AuthenticationApiResource {
                         organisationalRole, roles, permissions, principal.getId(),
                         new String(base64EncodedAuthenticationKey, StandardCharsets.UTF_8), isTwoFactorRequired,
                         returnClientList
-                                ? (isMerchant ? clientBusinessReadPlatformService.retrieveMerchantClients(userId) : clientReadPlatformService.retrieveUserClients(userId))
+                                ? (isMerchant ? clientBusinessReadPlatformService.retrieveMerchantClients(userId)
+                                        : clientReadPlatformService.retrieveUserClients(userId))
                                 : null);
             }
             authenticatedUserData.setFirstTimeLoginRemaining(principal.isFirstTimeLoginRemaining());

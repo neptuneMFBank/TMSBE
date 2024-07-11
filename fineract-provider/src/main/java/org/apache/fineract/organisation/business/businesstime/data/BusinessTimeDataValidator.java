@@ -26,12 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.fineract.organisation.business.businesstime.api.BusinessTimeApiResourceConstants;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
 import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.apache.fineract.organisation.business.businesstime.api.BusinessTimeApiResourceConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -51,8 +51,7 @@ public class BusinessTimeDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, BusinessTimeApiResourceConstants.RESQUEST_DATA_PARAMETERS);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -63,8 +62,10 @@ public class BusinessTimeDataValidator {
         final Integer roleId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(BusinessTimeApiResourceConstants.ROLE_ID, element);
         baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.ROLE_ID).value(roleId).notBlank().integerZeroOrGreater();
 
-        final Integer weekDayId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(BusinessTimeApiResourceConstants.WEEK_DAY_ID, element);
-        baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.WEEK_DAY_ID).value(weekDayId).notBlank().integerZeroOrGreater();
+        final Integer weekDayId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(BusinessTimeApiResourceConstants.WEEK_DAY_ID,
+                element);
+        baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.WEEK_DAY_ID).value(weekDayId).notBlank()
+                .integerZeroOrGreater();
 
         LocalTime startTime = this.fromApiJsonHelper.extractLocalTimeNamed(BusinessTimeApiResourceConstants.START_TIME, element);
         baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.START_TIME).value(startTime).notNull();
@@ -90,8 +91,7 @@ public class BusinessTimeDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, BusinessTimeApiResourceConstants.RESQUEST_DATA_PARAMETERS);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -102,7 +102,8 @@ public class BusinessTimeDataValidator {
         final Integer roleId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(BusinessTimeApiResourceConstants.ROLE_ID, element);
         baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.ROLE_ID).value(roleId).notNull().integerZeroOrGreater();
 
-        final Integer weekDayId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(BusinessTimeApiResourceConstants.WEEK_DAY_ID, element);
+        final Integer weekDayId = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(BusinessTimeApiResourceConstants.WEEK_DAY_ID,
+                element);
         baseDataValidator.reset().parameter(BusinessTimeApiResourceConstants.WEEK_DAY_ID).value(weekDayId).notNull().integerZeroOrGreater();
         LocalTime endTime = null;
         LocalTime startTime = null;

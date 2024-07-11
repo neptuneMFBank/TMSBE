@@ -40,6 +40,6 @@ public class RejectTransferCommandHandler implements NewCommandSourceHandler {
 
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
-        return this.writePlatformService.reject(command,command.entityId());
+        return this.writePlatformService.reject(command, command.entityId());
     }
 }

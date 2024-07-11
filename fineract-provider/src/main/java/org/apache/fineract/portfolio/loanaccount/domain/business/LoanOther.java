@@ -46,8 +46,7 @@ public class LoanOther extends AbstractPersistableCustom {
     @JoinColumn(name = "loan_id", nullable = false)
     private Loan loan;
 
-    protected LoanOther() {
-    }
+    protected LoanOther() {}
 
     public static LoanOther instance(Long employerId, CodeValue activationChannel, Loan loan) {
         return new LoanOther(employerId, activationChannel, loan);

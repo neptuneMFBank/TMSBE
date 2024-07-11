@@ -18,9 +18,9 @@
  */
 package org.apache.fineract.portfolio.self.savings.api.business;
 
-import io.swagger.v3.oas.annotations.Operation;
 import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.SAVINGS_PRODUCT_RECONCILE_ID_API;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -77,8 +77,7 @@ public class SelfSavingsBusinessApiResource {
             final SavingsAccountTransactionsBusinessApiResource savingsAccountTransactionsBusinessApiResource,
             final ApplicationContext applicationContext, final SelfSavingsDataValidator dataValidator,
             final AppuserSavingsMapperReadService appuserSavingsMapperReadService,
-            final AppuserClientMapperReadService appUserClientMapperReadService,
-            final AccountTierApiResource accountTierApiResource) {
+            final AppuserClientMapperReadService appUserClientMapperReadService, final AccountTierApiResource accountTierApiResource) {
         this.context = context;
         this.savingsAccountTransactionsBusinessApiResource = savingsAccountTransactionsBusinessApiResource;
         this.appuserSavingsMapperReadService = appuserSavingsMapperReadService;
@@ -92,8 +91,8 @@ public class SelfSavingsBusinessApiResource {
 
     @GET
     @Path("{savingsId}/transactions")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
             @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
@@ -116,8 +115,8 @@ public class SelfSavingsBusinessApiResource {
 
     @GET
     @Path("{clientId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAllAccounts(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo,
             @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
             @QueryParam("depositTypeId") @Parameter(description = "depositTypeId") final Integer depositTypeId,
@@ -146,8 +145,8 @@ public class SelfSavingsBusinessApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String submitSavingsAccountApplication(@QueryParam("command") final String commandParam, @Context final UriInfo uriInfo,
             final String apiRequestBodyAsJson) {
         HashMap<String, Object> parameterMap = this.dataValidator.validateSavingsApplication(apiRequestBodyAsJson);
@@ -158,8 +157,8 @@ public class SelfSavingsBusinessApiResource {
 
     @POST
     @Path("auto")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String submitApproveActivateApplication(@Context final UriInfo uriInfo, @QueryParam("command") final String commandParam,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         HashMap<String, Object> parameterMap = this.dataValidator.validateSavingsApplication(apiRequestBodyAsJson);
@@ -170,17 +169,15 @@ public class SelfSavingsBusinessApiResource {
 
     @GET
     @Path("cumulativetransaction/{savingsId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve cummulative transaction for a savings", description = "Retrieve cummulative transaction for a savings")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveClientTransactionLimit(@PathParam("savingsId") @Parameter(description = "savingsId") final Long savingsId,
-            @QueryParam("channelId") @Parameter(description = "channelId") final Long channelId,
-            @Context final UriInfo uriInfo) {
+            @QueryParam("channelId") @Parameter(description = "channelId") final Long channelId, @Context final UriInfo uriInfo) {
         validateAppuserSavingsAccountMapping(savingsId);
 
-        return this.accountTierApiResource.retrieveClientCumulativeTransaction(savingsId, channelId,uriInfo);
+        return this.accountTierApiResource.retrieveClientCumulativeTransaction(savingsId, channelId, uriInfo);
     }
 
     private void validateAppuserSavingsAccountMapping(final Long accountId) {

@@ -67,8 +67,7 @@ public class AccountTierApiResource {
     public AccountTierApiResource(final PlatformSecurityContext context,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
             final DefaultToApiJsonSerializer<AccountTierData> toApiJsonSerializer,
-            final ApiRequestParameterHelper apiRequestParameterHelper,
-            final AccountTierReadPlatformService accountTierReadPlatformService,
+            final ApiRequestParameterHelper apiRequestParameterHelper, final AccountTierReadPlatformService accountTierReadPlatformService,
             final DefaultToApiJsonSerializer<CumulativeTransactionsData> apiJsonSerializer) {
         this.context = context;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
@@ -79,12 +78,11 @@ public class AccountTierApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create an account tier")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().createAccountTier().withJson(apiRequestBodyAsJson).build();
@@ -95,11 +93,10 @@ public class AccountTierApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List account tiers", description = "Lists account tiers")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveAll(@Context final UriInfo uriInfo,
             @QueryParam("clientTypeId") @Parameter(description = "clientTypeId") final Long clientTypeId,
             @QueryParam("name") @Parameter(description = "name") final String name) {
@@ -115,11 +112,10 @@ public class AccountTierApiResource {
 
     @GET
     @Path("{accountTierId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve an account tier", description = "Retrieves an account tier")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveOne(@PathParam("accountTierId") @Parameter(description = "accountTierId") final Long accountTierId,
             @Context final UriInfo uriInfo) {
 
@@ -129,18 +125,16 @@ public class AccountTierApiResource {
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 
-        return this.toApiJsonSerializer.serialize(settings, accountTierData,
-                AccountTierApiResouceConstants.RESPONSE_DATA_PARAMETERS);
+        return this.toApiJsonSerializer.serialize(settings, accountTierData, AccountTierApiResouceConstants.RESPONSE_DATA_PARAMETERS);
     }
 
     @PUT
     @Path("{accountTierId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update an account tier", description = "Updates an account tier")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String update(@PathParam("accountTierId") @Parameter(description = "accountTierId") final Long accountTierId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
@@ -155,11 +149,10 @@ public class AccountTierApiResource {
 
     @DELETE
     @Path("{accountTierId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Delete an account tier", description = "Deletes an account tier")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String delete(@PathParam("accountTierId") @Parameter(description = "accountTierId") final Long accountTierId) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder().deleteAccountTier(accountTierId).build();
@@ -172,18 +165,17 @@ public class AccountTierApiResource {
 
     @GET
     @Path("cumulativetransaction/{savingsId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve cumulative transaction for a savings", description = "Retrieve cumulative transaction for a savings")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveClientCumulativeTransaction(@PathParam("savingsId") @Parameter(description = "savingsId") final Long savingsId,
-            @QueryParam("channelId") @Parameter(description = "channelId") final Long channelId,
-            @Context final UriInfo uriInfo) {
+            @QueryParam("channelId") @Parameter(description = "channelId") final Long channelId, @Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(AccountTierApiResouceConstants.RESOURCE_NAME);
 
-        CumulativeTransactionsData cumulativeTransactionsData = this.accountTierReadPlatformService.retrieveCumulativeTransactionsAmount(savingsId, channelId);
+        CumulativeTransactionsData cumulativeTransactionsData = this.accountTierReadPlatformService
+                .retrieveCumulativeTransactionsAmount(savingsId, channelId);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 
@@ -192,11 +184,10 @@ public class AccountTierApiResource {
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve accounnt tier  template")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(AccountTierApiResouceConstants.RESOURCE_NAME);
 
@@ -204,8 +195,7 @@ public class AccountTierApiResource {
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 
-        return this.toApiJsonSerializer.serialize(settings, accountTierData,
-                AccountTierApiResouceConstants.RESPONSE_DATA_PARAMETERS);
+        return this.toApiJsonSerializer.serialize(settings, accountTierData, AccountTierApiResouceConstants.RESPONSE_DATA_PARAMETERS);
     }
 
 }

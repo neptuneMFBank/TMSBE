@@ -177,8 +177,10 @@ public class FixedDepositAccount extends SavingsAccount {
             }
 
             final BigDecimal depositAmount = accountTermAndPreClosure.depositAmount();
-            final Long lockinPeriodFrequencyTypeChartSlabIncentives = (this.lockinPeriodFrequency == null || this.lockinPeriodFrequencyType == null) ? null : this.lockinPeriodFrequencyType.longValue();
-            applicableInterestRate = this.chart.getApplicableInterestRate(depositAmount, depositStartDate(), depositCloseDate, this.client, lockinPeriodFrequencyTypeChartSlabIncentives);
+            final Long lockinPeriodFrequencyTypeChartSlabIncentives = (this.lockinPeriodFrequency == null
+                    || this.lockinPeriodFrequencyType == null) ? null : this.lockinPeriodFrequencyType.longValue();
+            applicableInterestRate = this.chart.getApplicableInterestRate(depositAmount, depositStartDate(), depositCloseDate, this.client,
+                    lockinPeriodFrequencyTypeChartSlabIncentives);
 
             if (applyPreMaturePenalty) {
                 applicableInterestRate = applicableInterestRate.subtract(penalInterest);
@@ -275,18 +277,18 @@ public class FixedDepositAccount extends SavingsAccount {
         switch (this.accountTermAndPreClosure.depositPeriodFrequencyType()) {
             case DAYS:
                 maturityDate = startDate.plusDays(depositPeriod);
-                break;
+            break;
             case WEEKS:
                 maturityDate = startDate.plusWeeks(depositPeriod);
-                break;
+            break;
             case MONTHS:
                 maturityDate = startDate.plusMonths(depositPeriod);
-                break;
+            break;
             case YEARS:
                 maturityDate = startDate.plusYears(depositPeriod);
-                break;
+            break;
             case INVALID:
-                break;
+            break;
         }
 
         return maturityDate;
@@ -775,7 +777,8 @@ public class FixedDepositAccount extends SavingsAccount {
             }
 
             final BigDecimal depositAmount = accountTermAndPreClosure.depositAmount();
-            final Long lockinPeriodFrequencyTypeChartSlabIncentives = (this.lockinPeriodFrequency == null || this.lockinPeriodFrequencyType == null) ? null : this.lockinPeriodFrequencyType.longValue();
+            final Long lockinPeriodFrequencyTypeChartSlabIncentives = (this.lockinPeriodFrequency == null
+                    || this.lockinPeriodFrequencyType == null) ? null : this.lockinPeriodFrequencyType.longValue();
             BigDecimal applicableInterestRate = this.chart.getApplicableInterestRate(depositAmount, depositStartDate(),
                     calculateMaturityDate(), this.client, lockinPeriodFrequencyTypeChartSlabIncentives);
 

@@ -53,6 +53,7 @@ public final class LoanProductApprovalApiResourceConstants {
 
     public static final Set<String> REQUEST_UPDATE_DATA_PARAMETERS = REQUEST_DATA_PARAMETERS;
 
-    public static final Set<String> RESPONSE_TEMPLATE_PARAMETERS = new HashSet<>(Arrays.asList(LOANPRODUCTOPTIONS, ROLEOPTIONS, SAVINGSPRODUCTOPTIONS));
+    public static final Set<String> RESPONSE_TEMPLATE_PARAMETERS = new HashSet<>(
+            Arrays.asList(LOANPRODUCTOPTIONS, ROLEOPTIONS, SAVINGSPRODUCTOPTIONS));
 
 }

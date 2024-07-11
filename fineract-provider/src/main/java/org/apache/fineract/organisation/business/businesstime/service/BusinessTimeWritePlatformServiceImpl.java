@@ -23,16 +23,16 @@ import java.util.Collection;
 import java.util.Map;
 import javax.persistence.PersistenceException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.fineract.organisation.business.businesstime.api.BusinessTimeApiResourceConstants;
-import org.apache.fineract.organisation.business.businesstime.data.BusinessTimeDataValidator;
-import org.apache.fineract.organisation.business.businesstime.domain.BusinessTime;
-import org.apache.fineract.organisation.business.businesstime.domain.BusinessTimeRepositoryWrapper;
-import org.apache.fineract.organisation.business.businesstime.exception.BusinessTimeNotFoundException;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.organisation.business.businesstime.api.BusinessTimeApiResourceConstants;
+import org.apache.fineract.organisation.business.businesstime.data.BusinessTimeDataValidator;
+import org.apache.fineract.organisation.business.businesstime.domain.BusinessTime;
+import org.apache.fineract.organisation.business.businesstime.domain.BusinessTimeRepositoryWrapper;
+import org.apache.fineract.organisation.business.businesstime.exception.BusinessTimeNotFoundException;
 import org.apache.fineract.portfolio.business.bankTransfer.service.TransferApprovalWritePlatformServiceJpaRepositoryImpl;
 import org.apache.fineract.useradministration.domain.RoleRepository;
 import org.slf4j.Logger;
@@ -145,9 +145,9 @@ public class BusinessTimeWritePlatformServiceImpl implements BusinessTimeWritePl
         if (businessTimes.isEmpty()) {
             throw new BusinessTimeNotFoundException("No business time for role with id " + roleId);
         }
-//        for (BusinessTime businessTime : businessTimes) {
-//            this.repository.delete(businessTime);
-//        }
+        // for (BusinessTime businessTime : businessTimes) {
+        // this.repository.delete(businessTime);
+        // }
         this.repository.deleteByRoleId(roleId);
 
         return new CommandProcessingResultBuilder() //

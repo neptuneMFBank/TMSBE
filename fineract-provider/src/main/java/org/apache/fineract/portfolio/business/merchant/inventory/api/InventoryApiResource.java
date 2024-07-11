@@ -68,9 +68,7 @@ public class InventoryApiResource {
     public InventoryApiResource(final PlatformSecurityContext platformSecurityContext,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
             final DefaultToApiJsonSerializer<InventoryData> toApiJsonSerializer,
-            final InventoryReadPlatformService inventoryReadPlatformService,
-            final ApiRequestParameterHelper apiRequestParameterHelper
-    ) {
+            final InventoryReadPlatformService inventoryReadPlatformService, final ApiRequestParameterHelper apiRequestParameterHelper) {
         this.platformSecurityContext = platformSecurityContext;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
@@ -79,8 +77,8 @@ public class InventoryApiResource {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create an inventory", description = "Mandatory Fields\n"
             + "name, Skicode, price, description, discountPercentage")
     @RequestBody(required = true, content = @Content())
@@ -94,7 +92,7 @@ public class InventoryApiResource {
 
     @GET
     @Path("{inventoryId}")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve an Inventory")
     @ApiResponse(responseCode = "200", description = "OK")
     public String retrieveInventory(@PathParam("inventoryId") final Long inventoryId, @Context final UriInfo uriInfo) {
@@ -107,7 +105,7 @@ public class InventoryApiResource {
 
     @GET
     @Path("link/{link}")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve an Inventory by link")
     @ApiResponse(responseCode = "200", description = "OK")
     public String retrieveInventoryByLink(@PathParam("link") final String link, @Context final UriInfo uriInfo) {
@@ -119,17 +117,16 @@ public class InventoryApiResource {
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List inventories")
     @ApiResponse(responseCode = "200", description = "OK")
     public String retrieveAllInventories(@QueryParam("sqlSearch") final String sqlSearch, @QueryParam("offset") final Integer offset,
             @QueryParam("limit") final Integer limit, @QueryParam("orderBy") final String orderBy,
-            @QueryParam("sortOrder") final String sortOrder,
-            @QueryParam("clientId") final Long clientId,
-            @QueryParam("name") final String name,
-            @Context final UriInfo uriInfo) {
+            @QueryParam("sortOrder") final String sortOrder, @QueryParam("clientId") final Long clientId,
+            @QueryParam("name") final String name, @Context final UriInfo uriInfo) {
         this.platformSecurityContext.authenticatedUser().validateHasReadPermission(InventoryValidator.RESOURCE_NAME);
-        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forInventory(offset, name, clientId, limit, orderBy, sortOrder);
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forInventory(offset, name, clientId, limit, orderBy,
+                sortOrder);
         Page<InventoryData> inventoryDataCollection = this.inventoryReadPlatformService.retrieveAll(searchParameters);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, inventoryDataCollection);
@@ -137,8 +134,8 @@ public class InventoryApiResource {
 
     @PUT
     @Path("{inventoryId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update an inventory")
     @RequestBody(required = true, content = @Content(schema = @Schema(implementation = CommandWrapper.class)))
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CommandProcessingResult.class)))
@@ -152,8 +149,8 @@ public class InventoryApiResource {
 
     @DELETE
     @Path("{inventoryId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Delete an inventory")
     @ApiResponse(responseCode = "200", description = "OK")
     public String delete(@PathParam("inventoryId") final Long inventoryId) {

@@ -57,11 +57,10 @@ public class SavingsAccountBusinessDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        Set<String> SAVINGS_ACCOUNT_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(productIdParamName, clientIdParamName, groupIdParamName));
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
-        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
-                SAVINGS_ACCOUNT_REQUEST_DATA_PARAMETERS);
+        Set<String> SAVINGS_ACCOUNT_REQUEST_DATA_PARAMETERS = new HashSet<>(
+                Arrays.asList(productIdParamName, clientIdParamName, groupIdParamName));
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, SAVINGS_ACCOUNT_REQUEST_DATA_PARAMETERS);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)

@@ -52,8 +52,7 @@ public class LoanProductApprovalDataValidator {
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         if (isUpdate) {
             this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, UPDATE_REQUEST_DATA_PARAMETERS);
         } else {
@@ -77,7 +76,8 @@ public class LoanProductApprovalDataValidator {
             baseDataValidator.reset().parameter(LoanProductApprovalApiResourceConstants.LOANPRODUCTID).value(LOANPRODUCTID).notBlank()
                     .longGreaterThanZero();
         }
-        if (isUpdate == false || this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID, element)) {
+        if (isUpdate == false
+                || this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID, element)) {
             final long SAVINGSPRODUCTID = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID,
                     element);
             baseDataValidator.reset().parameter(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID).value(SAVINGSPRODUCTID).notBlank()

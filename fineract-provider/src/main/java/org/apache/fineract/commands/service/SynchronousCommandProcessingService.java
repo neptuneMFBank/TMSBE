@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.commands.service;
 
+import static org.apache.fineract.simplifytech.data.GeneralConstants.getAuthUserCurrentRoleId;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -47,7 +49,6 @@ import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.hooks.event.HookEvent;
 import org.apache.fineract.infrastructure.hooks.event.HookEventSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import static org.apache.fineract.simplifytech.data.GeneralConstants.getAuthUserCurrentRoleId;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -98,7 +99,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         commandSourceResult.updateForAudit(result.getOfficeId(), result.getGroupId(), result.getClientId(), result.getLoanId(),
                 result.getSavingsId(), result.getProductId(), result.getTransactionId());
 
-        //Simplify Tech Added Process
+        // Simplify Tech Added Process
         final String roleIds = getAuthUserCurrentRoleId(maker, fromApiJsonHelper);
         commandSourceResult.updateRoleId(roleIds);
 

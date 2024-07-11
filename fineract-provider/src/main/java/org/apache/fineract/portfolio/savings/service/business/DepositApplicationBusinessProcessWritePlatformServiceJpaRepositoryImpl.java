@@ -18,13 +18,14 @@
  */
 package org.apache.fineract.portfolio.savings.service.business;
 
+import static org.apache.fineract.portfolio.savings.DepositsApiConstants.isCalendarInheritedParamName;
+import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyParamName;
+import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyTypeParamName;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.math.BigDecimal;
 import java.math.MathContext;
-import static org.apache.fineract.portfolio.savings.DepositsApiConstants.isCalendarInheritedParamName;
-import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyParamName;
-import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyTypeParamName;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.util.LinkedHashMap;
@@ -77,7 +78,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryImpl implements DepositApplicationBusinessProcessWritePlatformService {
+public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryImpl
+        implements DepositApplicationBusinessProcessWritePlatformService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryImpl.class);
 
@@ -115,7 +117,8 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
             final AccountAssociationsRepository accountAssociationsRepository, final FromJsonHelper fromJsonHelper,
             final CalendarInstanceRepository calendarInstanceRepository, final ConfigurationDomainService configurationDomainService,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository,
-            final BusinessEventNotifierService businessEventNotifierService, final DepositApplicationProcessWritePlatformService depositApplicationProcessWritePlatformService) {
+            final BusinessEventNotifierService businessEventNotifierService,
+            final DepositApplicationProcessWritePlatformService depositApplicationProcessWritePlatformService) {
         this.context = context;
         this.savingAccountRepository = savingAccountRepository;
         this.depositAccountAssembler = depositAccountAssembler;
@@ -240,16 +243,17 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
                 depositPeriodFrequency = account.getAccountTermAndPreClosure().depositPeriodFrequency();
             }
 
-            return resultJsonMaturity(expectedInterestAmount, depositAmount, maturityAmount, maturityDate, depositPeriod, depositPeriodFrequency, nominalAnnualInterestRate);
+            return resultJsonMaturity(expectedInterestAmount, depositAmount, maturityAmount, maturityDate, depositPeriod,
+                    depositPeriodFrequency, nominalAnnualInterestRate);
         } catch (final Exception dve) {
             LOG.error("calculateMaturityRDApplication: {}", dve);
-            throw new GeneralPlatformDomainRuleException(
-                    "error.msg.recurring.deposit.account.calculate.maturity", dve.getMessage());
+            throw new GeneralPlatformDomainRuleException("error.msg.recurring.deposit.account.calculate.maturity", dve.getMessage());
         }
     }
 
-    protected JsonElement resultJsonMaturity(final BigDecimal expectedInterestAmount, final BigDecimal depositAmount, final BigDecimal maturityAmount,
-            final String maturityDate, Integer depositPeriod, Integer depositPeriodFrequency, final BigDecimal nominalAnnualInterestRate) {
+    protected JsonElement resultJsonMaturity(final BigDecimal expectedInterestAmount, final BigDecimal depositAmount,
+            final BigDecimal maturityAmount, final String maturityDate, Integer depositPeriod, Integer depositPeriodFrequency,
+            final BigDecimal nominalAnnualInterestRate) {
         final JsonObject jsonObjectRD = new JsonObject();
         jsonObjectRD.addProperty("expectedInterestAmount", expectedInterestAmount);
         jsonObjectRD.addProperty("depositAmount", depositAmount);
@@ -304,11 +308,11 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
                 depositPeriodFrequency = account.getAccountTermAndPreClosure().depositPeriodFrequency();
             }
 
-            return resultJsonMaturity(expectedInterestAmount, depositAmount, maturityAmount, maturityDate, depositPeriod, depositPeriodFrequency, nominalAnnualInterestRate);
+            return resultJsonMaturity(expectedInterestAmount, depositAmount, maturityAmount, maturityDate, depositPeriod,
+                    depositPeriodFrequency, nominalAnnualInterestRate);
         } catch (final Exception dve) {
             LOG.error("calculateMaturityFDApplication: {}", dve);
-            throw new GeneralPlatformDomainRuleException(
-                    "error.msg.fixed.deposit.account.calculate.maturity", dve.getMessage());
+            throw new GeneralPlatformDomainRuleException("error.msg.fixed.deposit.account.calculate.maturity", dve.getMessage());
         }
     }
 
@@ -332,8 +336,7 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
                 .withClientId(account.clientId()) //
                 .withGroupId(account.groupId()) //
                 .withSavingsId(savingsId) //
-                .with(changes)
-                .build();
+                .with(changes).build();
     }
 
     protected void saveNoteSavingsAction(JsonCommand command, final SavingsAccount account) {

@@ -32,4 +32,3 @@ CREATE TABLE `m_business_time` (
   CONSTRAINT `business_time_FK_created_by` FOREIGN KEY (`created_by`) REFERENCES `m_appuser` (`id`),
   CONSTRAINT `business_time_FK_last_modified_by` FOREIGN KEY (`last_modified_by`) REFERENCES `m_appuser` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-

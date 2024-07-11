@@ -37,7 +37,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.journalentry.api.DateParam;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
@@ -81,11 +80,9 @@ public class SavingsAccountTransactionsBusinessApiResource {
     public SavingsAccountTransactionsBusinessApiResource(final PlatformSecurityContext context,
             final DefaultToApiJsonSerializer<SavingsAccountTransactionData> toApiJsonSerializer,
             final ApiRequestParameterHelper apiRequestParameterHelper,
-            final SavingsAccountBusinessReadPlatformService savingsAccountBusinessReadPlatformService,
-            final FromJsonHelper fromJsonHelper,
-            final ClientReadPlatformService clientReadPlatformService,
-            final AddressReadPlatformServiceImpl readPlatformService, final SavingsAccountsApiResource savingsAccountsApiResource,
-            final DefaultToApiJsonSerializer toApiDocJsonSerializer) {
+            final SavingsAccountBusinessReadPlatformService savingsAccountBusinessReadPlatformService, final FromJsonHelper fromJsonHelper,
+            final ClientReadPlatformService clientReadPlatformService, final AddressReadPlatformServiceImpl readPlatformService,
+            final SavingsAccountsApiResource savingsAccountsApiResource, final DefaultToApiJsonSerializer toApiDocJsonSerializer) {
         this.context = context;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
@@ -98,8 +95,8 @@ public class SavingsAccountTransactionsBusinessApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
             @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
@@ -141,15 +138,14 @@ public class SavingsAccountTransactionsBusinessApiResource {
 
     @GET
     @Path("/doc")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a savings Doc", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))
-        )})
-    public String retrieveSavingsDoc(@PathParam("savingsId") @Parameter(description = "savingsId") final Long savingsId, @Context final UriInfo uriInfo,
-            @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))
+    ) })
+    public String retrieveSavingsDoc(@PathParam("savingsId") @Parameter(description = "savingsId") final Long savingsId,
+            @Context final UriInfo uriInfo, @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
             @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId") final Long transactionTypeId,
             @QueryParam("depositAccountTypeId") @Parameter(description = "depositAccountTypeId") Integer depositAccountTypeId,
@@ -169,7 +165,8 @@ public class SavingsAccountTransactionsBusinessApiResource {
             final JsonElement retrieveSavingsElement = this.fromJsonHelper.parse(savings);
             jsonObject.add("savings", retrieveSavingsElement);
 
-            final String retrieveSavingsTransactions = this.retrieveAllBySavingsId(savingsId, uriInfo, startPeriod, endPeriod, transactionTypeId, depositAccountTypeId, transactionId, offset, limit, orderBy, sortOrder, locale, dateFormat);
+            final String retrieveSavingsTransactions = this.retrieveAllBySavingsId(savingsId, uriInfo, startPeriod, endPeriod,
+                    transactionTypeId, depositAccountTypeId, transactionId, offset, limit, orderBy, sortOrder, locale, dateFormat);
             if (StringUtils.isNotBlank(retrieveSavingsTransactions)) {
                 final JsonElement retrieveSavingsTransactionsElement = this.fromJsonHelper.parse(retrieveSavingsTransactions);
                 jsonObject.add("savingsTransactions", retrieveSavingsTransactionsElement);

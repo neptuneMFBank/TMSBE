@@ -60,7 +60,7 @@ import org.springframework.stereotype.Component;
 @Scope("singleton")
 @Tag(name = "Merchant Client ", description = "")
 public class MerchantClientApiResource {
-    
+
     private final ClientsBusinessApiResource clientsBusinessApiResource;
     private final PlatformSecurityContext context;
     private final MerchantClientMapperReadService merchantClientMapperReadService;
@@ -70,17 +70,15 @@ public class MerchantClientApiResource {
     private final ClientBusinessReadPlatformService clientBusinessReadPlatformService;
     private final ToApiJsonSerializer<ClientBusinessData> toBusinessApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
-    
+
     @Autowired
-    public MerchantClientApiResource(final ClientsBusinessApiResource clientsBusinessApiResource,
-            final PlatformSecurityContext context, final MerchantClientMapperReadService merchantClientMapperReadService,
-            final SelfClientDataValidator dataValidator,
+    public MerchantClientApiResource(final ClientsBusinessApiResource clientsBusinessApiResource, final PlatformSecurityContext context,
+            final MerchantClientMapperReadService merchantClientMapperReadService, final SelfClientDataValidator dataValidator,
             final ClientAddressBusinessApiResources clientAddressBusinessApiResources,
             final ClientBusinessReadPlatformService clientBusinessReadPlatformService,
             final ClientIdentifiersBusinessApiResource clientIdentifiersBusinessApiResource,
             final ToApiJsonSerializer<ClientBusinessData> toBusinessApiJsonSerializer,
-            final ApiRequestParameterHelper apiRequestParameterHelper
-    ) {
+            final ApiRequestParameterHelper apiRequestParameterHelper) {
         this.clientsBusinessApiResource = clientsBusinessApiResource;
         this.context = context;
         this.merchantClientMapperReadService = merchantClientMapperReadService;
@@ -91,27 +89,25 @@ public class MerchantClientApiResource {
         this.toBusinessApiJsonSerializer = toBusinessApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
     }
-    
+
     @GET
     @Path("kyc-level")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Client Checker")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveKycLevel(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Context final UriInfo uriInfo) {
         validateMerchantClientsMapping(clientId);
         return this.clientsBusinessApiResource.retrieveKycLevel(clientId, uriInfo);
     }
-    
+
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Client Details Template", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveTemplate(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Context final UriInfo uriInfo) {
         validateMerchantClientsMapping(clientId);
@@ -119,22 +115,21 @@ public class MerchantClientApiResource {
         final Boolean staffInSelectedOfficeOnly = null;
         final Long officeId = null;
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
-        
+
         ClientBusinessData clientData;
-        
+
         clientData = this.clientBusinessReadPlatformService.retrieveTemplate(officeId, staffInSelectedOfficeOnly, legalFormId);
         clientData.setSavingProductOptions(null);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toBusinessApiJsonSerializer.serialize(settings, clientData, ClientBusinessApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
-        
+
     }
-    
+
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Client", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveOne(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Context final UriInfo uriInfo) {
         this.dataValidator.validateRetrieveOne(uriInfo);
@@ -142,101 +137,92 @@ public class MerchantClientApiResource {
         final Boolean staffInSelectedOfficeOnly = null;
         return this.clientsBusinessApiResource.retrieveOne(clientId, uriInfo, staffInSelectedOfficeOnly);
     }
-    
+
     @PUT
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String update(@Parameter(description = "clientId") @PathParam("clientId") final Long clientId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         validateMerchantClientsMapping(clientId);
         return this.clientsBusinessApiResource.update(clientId, apiRequestBodyAsJson);
     }
-    
+
     @GET
     @Path("addresses/template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String getAddressesTemplate(@Parameter(description = "clientId") @PathParam("clientId") final Long clientId,
             @Context final UriInfo uriInfo) {
         validateMerchantClientsMapping(clientId);
         return this.clientAddressBusinessApiResources.getAddressesTemplate(uriInfo);
     }
-    
+
     @GET
     @Path("addresses/{id}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get Single address for a Client", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String getAddress(@PathParam("id") @Parameter(description = "id") final long id,
             @PathParam("clientId") @Parameter(description = "clientId") final long clientId, @Context final UriInfo uriInfo) {
         validateMerchantClientsMapping(clientId);
         return this.clientAddressBusinessApiResources.getAddress(id, clientId, uriInfo);
     }
-    
+
     @GET
     @Path("addresses")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get All active address for a Client", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
-    public String getAddresses(
-            @PathParam("clientId") @Parameter(description = "clientId") final long clientId,
-            @QueryParam("type") @Parameter(description = "type") final long addressTypeId,
-            @Context final UriInfo uriInfo) {
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String getAddresses(@PathParam("clientId") @Parameter(description = "clientId") final long clientId,
+            @QueryParam("type") @Parameter(description = "type") final long addressTypeId, @Context final UriInfo uriInfo) {
         validateMerchantClientsMapping(clientId);
         final String status = "true";
         return this.clientAddressBusinessApiResources.getAddresses(status, addressTypeId, clientId, uriInfo);
     }
-    
+
     @POST
     @Path("addresses")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create an address for a Client", description = "")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String addClientAddress(@QueryParam("type") @Parameter(description = "type") final long addressTypeId,
             @PathParam("clientId") @Parameter(description = "clientId") final long clientId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         validateMerchantClientsMapping(clientId);
         return this.clientAddressBusinessApiResources.addClientAddress(addressTypeId, clientId, apiRequestBodyAsJson);
     }
-    
+
     @POST
     @Path("identifiers")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create an Identifier for a Client", description = "")
     @RequestBody(required = true)
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String createClientIdentifier(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         validateMerchantClientsMapping(clientId);
         return this.clientIdentifiersBusinessApiResource.createClientIdentifier(clientId, apiRequestBodyAsJson);
     }
-    
+
     @GET
     @Path("identifiers")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List all Identifiers for a Client", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveAllClientIdentifiers(@Context final UriInfo uriInfo,
             @PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
         validateMerchantClientsMapping(clientId);
         return this.clientIdentifiersBusinessApiResource.retrieveAllClientIdentifiers(uriInfo, clientId);
     }
-    
+
     private void validateMerchantClientsMapping(final Long clientId) {
         AppUser user = this.context.authenticatedUser();
         final boolean mappedClientId = this.merchantClientMapperReadService.isClientMappedToMerchant(clientId, user.getId());

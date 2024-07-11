@@ -171,7 +171,7 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
             mostRelevantFromOfficeId = fromClient.officeId();
             long[] loanStatus = null;
             if (mostRelevantFromAccountType == 1) {
-                loanStatus = new long[]{300, 700};
+                loanStatus = new long[] { 300, 700 };
             }
             PortfolioAccountDTO portfolioAccountDTO = new PortfolioAccountDTO(mostRelevantFromAccountType, mostRelevantFromClientId,
                     loanStatus);
@@ -226,7 +226,7 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
                 transferType(
                         AccountTransferType.LOAN_REPAYMENT)/*
                                                             * , transferType( AccountTransferType . CHARGE_PAYMENT )
-         */);
+                                                            */);
         final Collection<EnumOptionData> statusOptions = Arrays.asList(standingInstructionStatus(StandingInstructionStatus.ACTIVE),
                 standingInstructionStatus(StandingInstructionStatus.DISABLED));
         final Collection<EnumOptionData> instructionTypeOptions = Arrays.asList(standingInstructionType(StandingInstructionType.FIXED),
@@ -356,7 +356,7 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
         try {
             final String sql = "select " + this.standingInstructionMapper.schema() + " where atsi.id = ?";
 
-            return this.jdbcTemplate.queryForObject(sql, this.standingInstructionMapper, new Object[]{instructionId}); // NOSONAR
+            return this.jdbcTemplate.queryForObject(sql, this.standingInstructionMapper, new Object[] { instructionId }); // NOSONAR
         } catch (final EmptyResultDataAccessException e) {
             throw new AccountTransferNotFoundException(instructionId, e);
         }
@@ -367,7 +367,7 @@ public class StandingInstructionReadPlatformServiceImpl implements StandingInstr
         final StandingInstructionLoanDuesMapper rm = new StandingInstructionLoanDuesMapper();
         final String sql = "select " + rm.schema() + " where ml.id= ? and ls.duedate <= " + sqlGenerator.currentBusinessDate()
                 + " and ls.completed_derived <> 1";
-        return this.jdbcTemplate.queryForObject(sql, rm, new Object[]{loanId}); // NOSONAR
+        return this.jdbcTemplate.queryForObject(sql, rm, new Object[] { loanId }); // NOSONAR
     }
 
     private static final class StandingInstructionMapper implements RowMapper<StandingInstructionData> {

@@ -32,6 +32,7 @@ public class BusinessTimeNotFoundException extends AbstractPlatformResourceNotFo
     }
 
     public BusinessTimeNotFoundException(final LocalTime businessTime, final String AccessTimeType) {
-        super("error.msg.business.time.invalid", "User is not allowed access " + AccessTimeType + " time for today: " + businessTime, businessTime);
+        super("error.msg.business.time.invalid", "User is not allowed access " + AccessTimeType + " time for today: " + businessTime,
+                businessTime);
     }
 }

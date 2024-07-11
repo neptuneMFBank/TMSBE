@@ -53,8 +53,7 @@ public class PaymentTypeGridDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, PaymentTypeGridApiResourceConstants.REQUEST_DATA_PARAMETERS);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -65,42 +64,45 @@ public class PaymentTypeGridDataValidator {
         final String name = this.fromApiJsonHelper.extractStringNamed(PaymentTypeGridApiResourceConstants.NAME, element);
         baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.NAME).value(name).notBlank().notExceedingLengthOf(255);
 
-        final Boolean isGrid = this.fromApiJsonHelper
-                .extractBooleanNamed(PaymentTypeGridApiResourceConstants.ISGRID, element);
-        baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.ISGRID).value(isGrid)
-                .ignoreIfNull().validateForBooleanValue();
+        final Boolean isGrid = this.fromApiJsonHelper.extractBooleanNamed(PaymentTypeGridApiResourceConstants.ISGRID, element);
+        baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.ISGRID).value(isGrid).ignoreIfNull()
+                .validateForBooleanValue();
 
-        final Boolean isCommision = this.fromApiJsonHelper
-                .extractBooleanNamed(PaymentTypeGridApiResourceConstants.ISCOMMISION, element);
-        baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.ISCOMMISION).value(isCommision)
-                .ignoreIfNull().validateForBooleanValue();
+        final Boolean isCommision = this.fromApiJsonHelper.extractBooleanNamed(PaymentTypeGridApiResourceConstants.ISCOMMISION, element);
+        baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.ISCOMMISION).value(isCommision).ignoreIfNull()
+                .validateForBooleanValue();
 
         if (this.fromApiJsonHelper.parameterExists(PaymentTypeGridApiResourceConstants.GRID_JSON, element)) {
             final JsonArray gridJson = this.fromApiJsonHelper.extractJsonArrayNamed(PaymentTypeGridApiResourceConstants.GRID_JSON, element);
             baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.GRID_JSON).value(gridJson).notBlank();
         }
-        final Integer paymentTypeId = this.fromApiJsonHelper.extractIntegerNamed(PaymentTypeGridApiResourceConstants.PAYMENT_TYPE, element, Locale.getDefault());
-        baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.PAYMENT_TYPE).value(paymentTypeId).notNull().integerZeroOrGreater();
+        final Integer paymentTypeId = this.fromApiJsonHelper.extractIntegerNamed(PaymentTypeGridApiResourceConstants.PAYMENT_TYPE, element,
+                Locale.getDefault());
+        baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.PAYMENT_TYPE).value(paymentTypeId).notNull()
+                .integerZeroOrGreater();
 
         if (this.fromApiJsonHelper.parameterExists(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE, element)) {
-            final Integer calculationType = this.fromApiJsonHelper.extractIntegerNamed(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE, element, Locale.getDefault());
-            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE).value(calculationType).notNull().integerZeroOrGreater();
+            final Integer calculationType = this.fromApiJsonHelper
+                    .extractIntegerNamed(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE, element, Locale.getDefault());
+            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE).value(calculationType).notNull()
+                    .integerZeroOrGreater();
         }
         if (this.fromApiJsonHelper.parameterExists(PaymentTypeGridApiResourceConstants.AMOUNT, element)) {
-            final BigDecimal amount = this.fromApiJsonHelper
-                    .extractBigDecimalWithLocaleNamed(PaymentTypeGridApiResourceConstants.AMOUNT, element);
-            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.AMOUNT).value(amount).notNull()
-                    .zeroOrPositiveAmount();
+            final BigDecimal amount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(PaymentTypeGridApiResourceConstants.AMOUNT,
+                    element);
+            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.AMOUNT).value(amount).notNull().zeroOrPositiveAmount();
         }
         if (this.fromApiJsonHelper.parameterExists(PaymentTypeGridApiResourceConstants.PERCENT, element)) {
-            final BigDecimal percent = this.fromApiJsonHelper
-                    .extractBigDecimalWithLocaleNamed(PaymentTypeGridApiResourceConstants.PERCENT, element);
+            final BigDecimal percent = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(PaymentTypeGridApiResourceConstants.PERCENT,
+                    element);
             baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.PERCENT).value(percent).notNull()
                     .zeroOrPositiveAmount();
         }
         if (this.fromApiJsonHelper.parameterExists(PaymentTypeGridApiResourceConstants.CHARGE_DATA, element)) {
-            final Integer chargeId = this.fromApiJsonHelper.extractIntegerNamed(PaymentTypeGridApiResourceConstants.CHARGE_DATA, element, Locale.getDefault());
-            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.CHARGE_DATA).value(chargeId).notNull().integerZeroOrGreater();
+            final Integer chargeId = this.fromApiJsonHelper.extractIntegerNamed(PaymentTypeGridApiResourceConstants.CHARGE_DATA, element,
+                    Locale.getDefault());
+            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.CHARGE_DATA).value(chargeId).notNull()
+                    .integerZeroOrGreater();
         }
         final String locale = this.fromApiJsonHelper.extractStringNamed(PaymentTypeGridApiResourceConstants.LOCALE, element);
         baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.LOCALE).value(locale).notBlank().notExceedingLengthOf(255);
@@ -114,8 +116,7 @@ public class PaymentTypeGridDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, PaymentTypeGridApiResourceConstants.REQUEST_DATA_PARAMETERS);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -128,35 +129,37 @@ public class PaymentTypeGridDataValidator {
             baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.NAME).value(name).notBlank().notExceedingLengthOf(255);
         }
         if (this.fromApiJsonHelper.parameterExists(PaymentTypeGridApiResourceConstants.ISGRID, element)) {
-            final Boolean isGrid = this.fromApiJsonHelper
-                    .extractBooleanNamed(PaymentTypeGridApiResourceConstants.ISGRID, element);
-            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.ISGRID).value(isGrid)
-                    .ignoreIfNull().validateForBooleanValue();
+            final Boolean isGrid = this.fromApiJsonHelper.extractBooleanNamed(PaymentTypeGridApiResourceConstants.ISGRID, element);
+            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.ISGRID).value(isGrid).ignoreIfNull()
+                    .validateForBooleanValue();
         }
         if (this.fromApiJsonHelper.parameterExists(PaymentTypeGridApiResourceConstants.ISCOMMISION, element)) {
-            final Boolean isCommision = this.fromApiJsonHelper
-                    .extractBooleanNamed(PaymentTypeGridApiResourceConstants.ISCOMMISION, element);
-            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.ISCOMMISION).value(isCommision)
-                    .ignoreIfNull().validateForBooleanValue();
+            final Boolean isCommision = this.fromApiJsonHelper.extractBooleanNamed(PaymentTypeGridApiResourceConstants.ISCOMMISION,
+                    element);
+            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.ISCOMMISION).value(isCommision).ignoreIfNull()
+                    .validateForBooleanValue();
         }
 
         if (this.fromApiJsonHelper.parameterExists(PaymentTypeGridApiResourceConstants.PAYMENT_TYPE, element)) {
-            final Integer paymentTypeId = this.fromApiJsonHelper.extractIntegerNamed(PaymentTypeGridApiResourceConstants.PAYMENT_TYPE, element, Locale.getDefault());
-            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.PAYMENT_TYPE).value(paymentTypeId).notNull().integerZeroOrGreater();
+            final Integer paymentTypeId = this.fromApiJsonHelper.extractIntegerNamed(PaymentTypeGridApiResourceConstants.PAYMENT_TYPE,
+                    element, Locale.getDefault());
+            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.PAYMENT_TYPE).value(paymentTypeId).notNull()
+                    .integerZeroOrGreater();
         }
         if (this.fromApiJsonHelper.parameterExists(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE, element)) {
-            final Integer calculationType = this.fromApiJsonHelper.extractIntegerNamed(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE, element, Locale.getDefault());
-            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE).value(calculationType).notNull().integerZeroOrGreater();
+            final Integer calculationType = this.fromApiJsonHelper
+                    .extractIntegerNamed(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE, element, Locale.getDefault());
+            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.PAYMENTCALCULATIONTYPE).value(calculationType).notNull()
+                    .integerZeroOrGreater();
         }
         if (this.fromApiJsonHelper.parameterExists(PaymentTypeGridApiResourceConstants.AMOUNT, element)) {
-            final BigDecimal amount = this.fromApiJsonHelper
-                    .extractBigDecimalWithLocaleNamed(PaymentTypeGridApiResourceConstants.AMOUNT, element);
-            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.AMOUNT).value(amount).notNull()
-                    .zeroOrPositiveAmount();
+            final BigDecimal amount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(PaymentTypeGridApiResourceConstants.AMOUNT,
+                    element);
+            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.AMOUNT).value(amount).notNull().zeroOrPositiveAmount();
         }
         if (this.fromApiJsonHelper.parameterExists(PaymentTypeGridApiResourceConstants.PERCENT, element)) {
-            final BigDecimal percent = this.fromApiJsonHelper
-                    .extractBigDecimalWithLocaleNamed(PaymentTypeGridApiResourceConstants.PERCENT, element);
+            final BigDecimal percent = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(PaymentTypeGridApiResourceConstants.PERCENT,
+                    element);
             baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.PERCENT).value(percent).notNull()
                     .zeroOrPositiveAmount();
         }
@@ -165,8 +168,10 @@ public class PaymentTypeGridDataValidator {
             baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.GRID_JSON).value(gridJson).notBlank();
         }
         if (this.fromApiJsonHelper.parameterExists(PaymentTypeGridApiResourceConstants.CHARGE_DATA, element)) {
-            final Integer chargeId = this.fromApiJsonHelper.extractIntegerNamed(PaymentTypeGridApiResourceConstants.CHARGE_DATA, element, Locale.getDefault());
-            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.CHARGE_DATA).value(chargeId).notNull().integerZeroOrGreater();
+            final Integer chargeId = this.fromApiJsonHelper.extractIntegerNamed(PaymentTypeGridApiResourceConstants.CHARGE_DATA, element,
+                    Locale.getDefault());
+            baseDataValidator.reset().parameter(PaymentTypeGridApiResourceConstants.CHARGE_DATA).value(chargeId).notNull()
+                    .integerZeroOrGreater();
         }
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }

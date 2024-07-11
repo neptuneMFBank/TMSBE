@@ -59,11 +59,10 @@ public class Inventory extends AbstractAuditableCustom {
     @JoinColumn(name = "client_id", nullable = true)
     private Client client;
 
-    public Inventory() {
-    }
+    public Inventory() {}
 
-    private Inventory(final String name, final String description, final BigDecimal price,
-            final BigDecimal discountRate, final String skuCode, final String link, final Client client) {
+    private Inventory(final String name, final String description, final BigDecimal price, final BigDecimal discountRate,
+            final String skuCode, final String link, final Client client) {
         this.name = name;
         this.description = description;
         this.price = price;

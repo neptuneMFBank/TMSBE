@@ -46,6 +46,7 @@ import static org.apache.fineract.portfolio.savings.SavingsApiConstants.amountPa
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.chargeIdParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.chargesParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.clientIdParamName;
+import static org.apache.fineract.portfolio.savings.SavingsApiConstants.dateFormatParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.externalIdParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.feeIntervalParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.feeOnMonthDayParamName;
@@ -55,6 +56,7 @@ import static org.apache.fineract.portfolio.savings.SavingsApiConstants.interest
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.interestCalculationTypeParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.interestCompoundingPeriodTypeParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.interestPostingPeriodTypeParamName;
+import static org.apache.fineract.portfolio.savings.SavingsApiConstants.localeParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.lockinPeriodFrequencyParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.lockinPeriodFrequencyTypeParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.minRequiredOpeningBalanceParamName;
@@ -87,8 +89,6 @@ import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.DepositsApiConstants;
 import org.apache.fineract.portfolio.savings.PreClosurePenalInterestOnType;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
-import static org.apache.fineract.portfolio.savings.SavingsApiConstants.dateFormatParamName;
-import static org.apache.fineract.portfolio.savings.SavingsApiConstants.localeParamName;
 import org.apache.fineract.portfolio.savings.SavingsCompoundingInterestPeriodType;
 import org.apache.fineract.portfolio.savings.SavingsInterestCalculationDaysInYearType;
 import org.apache.fineract.portfolio.savings.SavingsInterestCalculationType;
@@ -115,8 +115,7 @@ public class DepositAccountDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DepositsApiConstants.FIXED_DEPOSIT_ACCOUNT_REQUEST_DATA_PARAMETERS);
 
@@ -139,8 +138,7 @@ public class DepositAccountDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DepositsApiConstants.FIXED_DEPOSIT_ACCOUNT_REQUEST_DATA_PARAMETERS);
 
@@ -163,8 +161,7 @@ public class DepositAccountDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DepositsApiConstants.RECURRING_DEPOSIT_ACCOUNT_REQUEST_DATA_PARAMETERS);
 
@@ -188,8 +185,7 @@ public class DepositAccountDataValidator {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 DepositsApiConstants.RECURRING_DEPOSIT_ACCOUNT_REQUEST_DATA_PARAMETERS);
 
@@ -771,10 +767,10 @@ public class DepositAccountDataValidator {
             throw new InvalidJsonException();
         }
 
-        Set<String> setValidator = Set.of(SavingsApiConstants.noteParamName, lockinPeriodFrequencyParamName, lockinPeriodFrequencyTypeParamName, localeParamName, dateFormatParamName);
+        Set<String> setValidator = Set.of(SavingsApiConstants.noteParamName, lockinPeriodFrequencyParamName,
+                lockinPeriodFrequencyTypeParamName, localeParamName, dateFormatParamName);
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, setValidator);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -783,7 +779,7 @@ public class DepositAccountDataValidator {
         final JsonElement element = this.fromApiJsonHelper.parse(json);
 
         if (isLock) {
-            //check Lock validators
+            // check Lock validators
 
             boolean isLockinPeriodFrequencyValidated = false;
             boolean isLockinPeriodFrequencyTypeValidated = false;
@@ -802,14 +798,16 @@ public class DepositAccountDataValidator {
                 }
             }
 
-            if (!isLockinPeriodFrequencyTypeValidated && this.fromApiJsonHelper.parameterExists(lockinPeriodFrequencyTypeParamName, element)) {
+            if (!isLockinPeriodFrequencyTypeValidated
+                    && this.fromApiJsonHelper.parameterExists(lockinPeriodFrequencyTypeParamName, element)) {
                 final Integer lockinPeriodFrequencyType = this.fromApiJsonHelper
                         .extractIntegerSansLocaleNamed(lockinPeriodFrequencyTypeParamName, element);
-                baseDataValidator.reset().parameter(lockinPeriodFrequencyTypeParamName).value(lockinPeriodFrequencyType).inMinMaxRange(0, 3);
+                baseDataValidator.reset().parameter(lockinPeriodFrequencyTypeParamName).value(lockinPeriodFrequencyType).inMinMaxRange(0,
+                        3);
 
                 if (lockinPeriodFrequencyType != null && !isLockinPeriodFrequencyValidated) {
-                    final Integer lockinPeriodFrequency = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(lockinPeriodFrequencyParamName,
-                            element);
+                    final Integer lockinPeriodFrequency = this.fromApiJsonHelper
+                            .extractIntegerWithLocaleNamed(lockinPeriodFrequencyParamName, element);
                     baseDataValidator.reset().parameter(lockinPeriodFrequencyParamName).value(lockinPeriodFrequency).notNull()
                             .integerZeroOrGreater();
                 }

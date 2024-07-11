@@ -46,8 +46,8 @@ public class InventoryData {
         this.documentDatas = null;
     }
 
-    public static InventoryData instance(final Long id, final String name, final String description, final String skuCode, final BigDecimal price,
-            final BigDecimal discountRate, final String link) {
+    public static InventoryData instance(final Long id, final String name, final String description, final String skuCode,
+            final BigDecimal price, final BigDecimal discountRate, final String link) {
         return new InventoryData(id, name, description, skuCode, price, discountRate, link);
     }
 

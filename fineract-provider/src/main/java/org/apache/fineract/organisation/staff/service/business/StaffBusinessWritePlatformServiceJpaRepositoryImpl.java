@@ -84,7 +84,8 @@ public class StaffBusinessWritePlatformServiceJpaRepositoryImpl implements Staff
 
             final JsonElement jsonElement = this.fromJsonHelper.parse(command.json());
             if (this.fromJsonHelper.parameterExists(ClientBusinessApiConstants.emailAddressParamName, jsonElement)) {
-                final String emailAddress = this.fromJsonHelper.extractStringNamed(ClientBusinessApiConstants.emailAddressParamName, jsonElement);
+                final String emailAddress = this.fromJsonHelper.extractStringNamed(ClientBusinessApiConstants.emailAddressParamName,
+                        jsonElement);
                 staff.setEmailAddress(emailAddress);
             }
             if (this.fromJsonHelper.parameterExists("organisationalRoleTypeId", jsonElement)) {

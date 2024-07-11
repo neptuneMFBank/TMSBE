@@ -154,7 +154,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         final StringBuilder sqlBuilder = new StringBuilder("select " + this.savingAccountMapper.schema());
         sqlBuilder.append(" where sa.client_id = ? and sa.status_enum = 300 ");
 
-        final Object[] queryParameters = new Object[]{clientId};
+        final Object[] queryParameters = new Object[] { clientId };
         return this.jdbcTemplate.query(sqlBuilder.toString(), this.savingAccountMapper, queryParameters);
     }
 
@@ -164,7 +164,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         final StringBuilder sqlBuilder = new StringBuilder("select " + this.savingAccountMapper.schema());
         sqlBuilder.append(" where sa.client_id = ? and sa.status_enum = 300 and sa.deposit_type_enum = ? ");
 
-        final Object[] queryParameters = new Object[]{clientId, depositAccountType.getValue()};
+        final Object[] queryParameters = new Object[] { clientId, depositAccountType.getValue() };
         return this.jdbcTemplate.query(sqlBuilder.toString(), this.savingAccountMapper, queryParameters);
     }
 
@@ -174,7 +174,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         final StringBuilder sqlBuilder = new StringBuilder("select " + this.savingAccountMapper.schema());
         sqlBuilder.append(" where sa.client_id = ? and sa.status_enum = 300 and sa.deposit_type_enum = ? and sa.currency_code = ? ");
 
-        final Object[] queryParameters = new Object[]{clientId, depositAccountType.getValue(), currencyCode};
+        final Object[] queryParameters = new Object[] { clientId, depositAccountType.getValue(), currencyCode };
         return this.jdbcTemplate.query(sqlBuilder.toString(), this.savingAccountMapper, queryParameters);
     }
 
@@ -242,7 +242,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         try {
             final String sql = "select " + this.savingAccountMapper.schema() + " where sa.id = ?";
 
-            return this.jdbcTemplate.queryForObject(sql, this.savingAccountMapper, new Object[]{accountId}); // NOSONAR
+            return this.jdbcTemplate.queryForObject(sql, this.savingAccountMapper, new Object[] { accountId }); // NOSONAR
         } catch (final EmptyResultDataAccessException e) {
             throw new SavingsAccountNotFoundException(accountId, e);
         }
@@ -276,7 +276,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         sql = sql + " order by sa.id, tr.transaction_date, tr.created_date, tr.id";
 
         List<SavingsAccountData> savingsAccountDataList = this.jdbcTemplate.query(sql, this.savingAccountMapperForInterestPosting, // NOSONAR
-                new Object[]{maxSavingsId, status, pageSize, yesterday});
+                new Object[] { maxSavingsId, status, pageSize, yesterday });
         for (SavingsAccountData savingsAccountData : savingsAccountDataList) {
             this.savingAccountAssembler.assembleSavings(savingsAccountData);
         }
@@ -712,7 +712,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
              * withdrawalFeeType = SavingsEnumerations.withdrawalFeeType(withdrawalFeeTypeValue); }
              */
 
- /*
+            /*
              * final BigDecimal annualFeeAmount = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "annualFeeAmount");
              *
              * MonthDay annualFeeOnMonthDay = null; final Integer annualFeeOnMonth = JdbcSupport.getInteger(rs,
@@ -1125,7 +1125,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
             final SavingAccountTemplateMapper mapper = new SavingAccountTemplateMapper(client, group);
 
             final String sql = "select " + mapper.schema() + " where sp.id = ?";
-            template = this.jdbcTemplate.queryForObject(sql, mapper, new Object[]{productId}); // NOSONAR
+            template = this.jdbcTemplate.queryForObject(sql, mapper, new Object[] { productId }); // NOSONAR
 
             final Collection<EnumOptionData> interestCompoundingPeriodTypeOptions = this.dropdownReadPlatformService
                     .retrieveCompoundingInterestPeriodTypeOptions();
@@ -1242,7 +1242,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
             final String sql = "select " + this.transactionTemplateMapper.schema() + " where sa.id = ? and sa.deposit_type_enum = ?";
 
             return this.jdbcTemplate.queryForObject(sql, this.transactionTemplateMapper, // NOSONAR
-                    new Object[]{savingsId, depositAccountType.getValue()});
+                    new Object[] { savingsId, depositAccountType.getValue() });
         } catch (final EmptyResultDataAccessException e) {
             throw new SavingsAccountNotFoundException(savingsId, e);
         }
@@ -1254,7 +1254,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         final String sql = "select " + this.transactionsMapper.schema()
                 + " where sa.id = ? and sa.deposit_type_enum = ? order by tr.transaction_date DESC, tr.created_date DESC, tr.id DESC";
 
-        return this.jdbcTemplate.query(sql, this.transactionsMapper, new Object[]{savingsId, depositAccountType.getValue()}); // NOSONAR
+        return this.jdbcTemplate.query(sql, this.transactionsMapper, new Object[] { savingsId, depositAccountType.getValue() }); // NOSONAR
     }
 
     @Override
@@ -1264,7 +1264,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         final String sql = "select " + this.transactionsMapper.schema() + " where sa.id = ? and sa.deposit_type_enum = ? and tr.id= ?";
 
         return this.jdbcTemplate.queryForObject(sql, this.transactionsMapper, // NOSONAR
-                new Object[]{savingsId, depositAccountType.getValue(), transactionId});
+                new Object[] { savingsId, depositAccountType.getValue(), transactionId });
     }
 
     private static final class SavingsAccountTransactionsForBatchMapper implements RowMapper<SavingsAccountTransactionData> {
@@ -1419,9 +1419,10 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
             }
             final String submittedByUsername = rs.getString("submittedByUsername");
             final String note = rs.getString("transactionNote");
-            final SavingsAccountTransactionData savingsAccountTransactionData = SavingsAccountTransactionData.create(id, transactionType, paymentDetailData, savingsId, accountNo, date, currency,
-                    amount, outstandingChargeAmount, runningBalance, reversed, transfer, submittedOnDate, postInterestAsOn,
-                    submittedByUsername, note, isReversal, originalTransactionId, lienTransaction, releaseTransactionId, reasonForBlock);
+            final SavingsAccountTransactionData savingsAccountTransactionData = SavingsAccountTransactionData.create(id, transactionType,
+                    paymentDetailData, savingsId, accountNo, date, currency, amount, outstandingChargeAmount, runningBalance, reversed,
+                    transfer, submittedOnDate, postInterestAsOn, submittedByUsername, note, isReversal, originalTransactionId,
+                    lienTransaction, releaseTransactionId, reasonForBlock);
             savingsAccountTransactionData.setSubmittedOnDateTime(submittedOnDateTime);
             return savingsAccountTransactionData;
         }
@@ -1657,10 +1658,10 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         sqlBuilder.append(" where sa.client_id = ? and sa.status_enum = 300");
         Object[] queryParameters = null;
         if (overdraft == null) {
-            queryParameters = new Object[]{clientId};
+            queryParameters = new Object[] { clientId };
         } else {
             sqlBuilder.append(" and sa.allow_overdraft = ?");
-            queryParameters = new Object[]{clientId, overdraft};
+            queryParameters = new Object[] { clientId, overdraft };
         }
         return this.jdbcTemplate.query(sqlBuilder.toString(), accountMapperForLookup, queryParameters);
 
@@ -1680,7 +1681,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         sql.append(" and ").append(sqlGenerator.dateDiff("?", compareDate)).append(" >= sp.days_to_inactive ");
 
         try {
-            ret = this.jdbcTemplate.queryForList(sql.toString(), new Object[]{tenantLocalDate}, Long.class);
+            ret = this.jdbcTemplate.queryForList(sql.toString(), new Object[] { tenantLocalDate }, Long.class);
         } catch (EmptyResultDataAccessException e) {
             // ignore empty result scenario
         } catch (DataAccessException e) {
@@ -1704,7 +1705,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         sql.append(" >= sp.days_to_dormancy ");
 
         try {
-            ret = this.jdbcTemplate.queryForList(sql.toString(), new Object[]{tenantLocalDate}, Long.class);
+            ret = this.jdbcTemplate.queryForList(sql.toString(), new Object[] { tenantLocalDate }, Long.class);
         } catch (EmptyResultDataAccessException e) {
             // ignore empty result scenario
         } catch (DataAccessException e) {
@@ -1728,7 +1729,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         sql.append(" >= sp.days_to_escheat ");
 
         try {
-            ret = this.jdbcTemplate.queryForList(sql.toString(), Long.class, new Object[]{tenantLocalDate});
+            ret = this.jdbcTemplate.queryForList(sql.toString(), Long.class, new Object[] { tenantLocalDate });
         } catch (EmptyResultDataAccessException e) {
             // ignore empty result scenario
         } catch (DataAccessException e) {
@@ -1790,7 +1791,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
                 .append(" where sa.id > ? and sa.status_enum  = ? ").append(" order by sa.id limit ?").toString();
 
         try {
-            return this.jdbcTemplate.queryForList(sql, Long.class, new Object[]{maxSavingsIdInList, status, pageSize});
+            return this.jdbcTemplate.queryForList(sql, Long.class, new Object[] { maxSavingsIdInList, status, pageSize });
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }

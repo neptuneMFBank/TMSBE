@@ -388,7 +388,7 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
         final String sql = "select " + this.centerMapper.schema()
                 + " where g.office_id = ? and g.parent_id is null and g.level_Id = ? and o.hierarchy like ? order by g.hierarchy";
 
-        return this.jdbcTemplate.query(sql, this.centerMapper, new Object[]{officeId, GroupTypes.CENTER.getId(), hierarchySearchString}); // NOSONAR
+        return this.jdbcTemplate.query(sql, this.centerMapper, new Object[] { officeId, GroupTypes.CENTER.getId(), hierarchySearchString }); // NOSONAR
     }
 
     @Override
@@ -440,7 +440,7 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
             final String hierarchySearchString = hierarchy + "%";
 
             final String sql = "select " + this.centerMapper.schema() + " where g.id = ? and o.hierarchy like ?";
-            return this.jdbcTemplate.queryForObject(sql, this.centerMapper, new Object[]{centerId, hierarchySearchString}); // NOSONAR
+            return this.jdbcTemplate.queryForObject(sql, this.centerMapper, new Object[] { centerId, hierarchySearchString }); // NOSONAR
 
         } catch (final EmptyResultDataAccessException e) {
             throw new CenterNotFoundException(centerId, e);
@@ -483,7 +483,7 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
     @Override
     public Collection<GroupGeneralData> retrieveAssociatedGroups(final Long centerId) {
         final String sql = "select " + this.groupDataMapper.schema() + " where g.parent_id = ? order by g.id";
-        return this.jdbcTemplate.query(sql, this.groupDataMapper, new Object[]{centerId}); // NOSONAR
+        return this.jdbcTemplate.query(sql, this.groupDataMapper, new Object[] { centerId }); // NOSONAR
     }
 
     @Override

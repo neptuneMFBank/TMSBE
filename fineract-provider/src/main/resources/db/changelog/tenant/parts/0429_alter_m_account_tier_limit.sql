@@ -22,6 +22,3 @@ ALTER TABLE m_account_tier_limit
     ADD UNIQUE KEY `m_account_tier_limit_name` (`name`),
     DROP INDEX tier_UNIQUE_parent_channel,
     ADD   UNIQUE KEY `tier_UNIQUE_parent_channel_clienttype` (`parent_id`,`activation_channel_id`,`client_type_cv_id`)
-
-
-

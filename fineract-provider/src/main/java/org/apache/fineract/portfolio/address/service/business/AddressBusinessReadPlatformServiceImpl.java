@@ -165,7 +165,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         this.context.authenticatedUser();
         final AddMapper rm = new AddMapper();
         final String sql = "select " + rm.schema() + " where ca.client_id=?";
-        return this.jdbcTemplate.query(sql, rm, new Object[]{clientid}); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, new Object[] { clientid }); // NOSONAR
     }
 
     @Override
@@ -175,7 +175,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         final AddMapper rm = new AddMapper();
         final String sql = "select " + rm.schema() + " where ca.client_id=? and ca.address_type_id=?";
 
-        return this.jdbcTemplate.query(sql, rm, new Object[]{clientid, typeid}); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, new Object[] { clientid, typeid }); // NOSONAR
     }
 
     @Override
@@ -186,7 +186,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         final AddMapper rm = new AddMapper();
         final String sql = "select " + rm.schema() + " where ca.client_id=? and ca.address_type_id=? and ca.is_active=?";
 
-        return this.jdbcTemplate.query(sql, rm, new Object[]{clientid, typeid, temp}); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, new Object[] { clientid, typeid, temp }); // NOSONAR
     }
 
     @Override
@@ -197,7 +197,7 @@ public class AddressBusinessReadPlatformServiceImpl implements AddressBusinessRe
         final AddMapper rm = new AddMapper();
         final String sql = "select " + rm.schema() + " where ca.client_id=? and ca.is_active=?";
 
-        return this.jdbcTemplate.query(sql, rm, new Object[]{clientid, temp}); // NOSONAR
+        return this.jdbcTemplate.query(sql, rm, new Object[] { clientid, temp }); // NOSONAR
     }
 
     @Override

@@ -53,7 +53,8 @@ public class SelfAccountTransfersBusinessApiResource {
 
     @Autowired
     public SelfAccountTransfersBusinessApiResource(final PlatformSecurityContext context,
-            final AccountTransfersBusinessApiResource accountTransfersBusinessApiResource, final AppuserClientMapperReadService appUserClientMapperReadService) {
+            final AccountTransfersBusinessApiResource accountTransfersBusinessApiResource,
+            final AppuserClientMapperReadService appUserClientMapperReadService) {
         this.context = context;
         this.accountTransfersBusinessApiResource = accountTransfersBusinessApiResource;
         this.appUserClientMapperReadService = appUserClientMapperReadService;
@@ -61,13 +62,12 @@ public class SelfAccountTransfersBusinessApiResource {
 
     @POST
     @Path("savings/template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Account Transfer Template", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        )})
-    public String templateSavings(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId, @Parameter(hidden = true) final String apiRequestBodyAsJson, @Context final UriInfo uriInfo) {
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String templateSavings(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson, @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
 
         return this.accountTransfersBusinessApiResource.templateSavings(apiRequestBodyAsJson, uriInfo);
@@ -75,14 +75,13 @@ public class SelfAccountTransfersBusinessApiResource {
 
     @POST
     @Path("savings")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create new Transfer", description = "Ability to create new transfer of monetary funds from one savings account to another.")
-    @RequestBody(required = true
-    )
-    @ApiResponse(responseCode = "200", description = "OK"
-    )
-    public String create(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId, @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+    @RequestBody(required = true)
+    @ApiResponse(responseCode = "200", description = "OK")
+    public String create(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         validateAppuserClientsMapping(clientId);
 
         return this.accountTransfersBusinessApiResource.create(apiRequestBodyAsJson);

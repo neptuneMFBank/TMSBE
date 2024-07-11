@@ -133,8 +133,8 @@ public class GeneralConstants {
     }
 
     /**
-     * TODO: Need a better implementation with guaranteed uniqueness (but not a
-     * long UUID)...maybe something tied to system clock..
+     * TODO: Need a better implementation with guaranteed uniqueness (but not a long UUID)...maybe something tied to
+     * system clock..
      *
      * @param context
      * @return
@@ -147,22 +147,22 @@ public class GeneralConstants {
     }
 
     public static void main(String[] args) {
-        String[][] inputStrings = new String[][]{
-            // Matches abc at start of term
-            {"Asiata Omodeleola Babalola", "Asiata Omodeleola Babalola"}, // {"Thompson Olakunle Rasak", "Rasak
-        // Olakunle Thompson"},
-        // // ABC in different case than term
-        // {"cecilianwebonyi", "testname2"},
-        // // Matches abc at end of term
-        // {"qwreweqwqw", "testname3"},
-        // // Matches abc in middle
-        // {"dedede", "testname4"},
-        // // Matches abc but not continuous.
-        // {"abxycz", "abc"}, {"axbycz", "abc"},
-        // // Reverse order of abc
-        // {"cbaxyz", "abc"},
-        // // Matches abc but different order.
-        // {"cabxyz", "abc"}
+        String[][] inputStrings = new String[][] {
+                // Matches abc at start of term
+                { "Asiata Omodeleola Babalola", "Asiata Omodeleola Babalola" }, // {"Thompson Olakunle Rasak", "Rasak
+                // Olakunle Thompson"},
+                // // ABC in different case than term
+                // {"cecilianwebonyi", "testname2"},
+                // // Matches abc at end of term
+                // {"qwreweqwqw", "testname3"},
+                // // Matches abc in middle
+                // {"dedede", "testname4"},
+                // // Matches abc but not continuous.
+                // {"abxycz", "abc"}, {"axbycz", "abc"},
+                // // Reverse order of abc
+                // {"cbaxyz", "abc"},
+                // // Matches abc but different order.
+                // {"cabxyz", "abc"}
         };
         for (String[] input : inputStrings) {
             String term = input[0];
@@ -276,8 +276,10 @@ public class GeneralConstants {
         return result.resourceId();
     }
 
-    public static Long intrabankTransfer(final Long transferApprovalId, final BigDecimal amount, final Long fromOfficeId, final Long fromClientId, final Long fromAccountId, final Integer fromAccountType,
-            final Long toOfficeId, final Long toClientId, final Long toAccountId, final Integer toAccountType, final String note, final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+    public static Long intrabankTransfer(final Long transferApprovalId, final BigDecimal amount, final Long fromOfficeId,
+            final Long fromClientId, final Long fromAccountId, final Integer fromAccountType, final Long toOfficeId, final Long toClientId,
+            final Long toAccountId, final Integer toAccountType, final String note,
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty(AccountDetailConstants.fromOfficeIdParamName, fromOfficeId);
@@ -311,7 +313,7 @@ public class GeneralConstants {
             if (!CollectionUtils.isEmpty(loanProductInterestConfig)) {
                 final BigDecimal interestRatePerPeriodCheck = loanProductInterestConfig.stream()
                         .filter(predicate -> GeneralConstants.isWithinRange(new BigDecimal(loanTermFrequency), predicate.getMinTenor(),
-                        predicate.getMaxTenor()))
+                                predicate.getMaxTenor()))
                         .map(LoanProductInterestConfig::getNominalInterestRatePerPeriod).findFirst().orElse(null);
                 if (interestRatePerPeriodCheck != null) {
                     interestRatePerPeriod = interestRatePerPeriodCheck;
@@ -322,18 +324,20 @@ public class GeneralConstants {
     }
 
     public static boolean feeIntervalOnInterestCharge(final Charge charge,
-            //final Integer periodInstallment, 
+            // final Integer periodInstallment,
             final String codeName, final LocalDate dueDate) {
         final Integer feeInterval = charge.getFeeInterval();
         if (feeInterval != null && feeInterval > 0) {
-            //check feeFrequency and skip
-            //final int isFeeIntervalModulo = periodInstallment % feeInterval;
+            // check feeFrequency and skip
+            // final int isFeeIntervalModulo = periodInstallment % feeInterval;
             final int getMonth = dueDate.getMonthValue();
             final int isFeeIntervalModulo = getMonth % feeInterval;
-            if (//periodInstallment != 1 && 
-                    isFeeIntervalModulo != 0) {
-                //log.warn("cumulativeFeeChargesDueWithin feeInterval checks {}: periodInstallment:{} % feeInterval:{} = {}", codeName, periodInstallment, feeInterval, isFeeIntervalModulo);
-                log.warn("cumulativeFeeChargesDueWithin feeInterval checks {}: getMonth:{} % feeInterval:{} = {}", codeName, getMonth, feeInterval, isFeeIntervalModulo);
+            if (// periodInstallment != 1 &&
+            isFeeIntervalModulo != 0) {
+                // log.warn("cumulativeFeeChargesDueWithin feeInterval checks {}: periodInstallment:{} % feeInterval:{}
+                // = {}", codeName, periodInstallment, feeInterval, isFeeIntervalModulo);
+                log.warn("cumulativeFeeChargesDueWithin feeInterval checks {}: getMonth:{} % feeInterval:{} = {}", codeName, getMonth,
+                        feeInterval, isFeeIntervalModulo);
                 return true;
             }
         }
@@ -345,27 +349,27 @@ public class GeneralConstants {
         if (originalString != null && originalString.length() > numberOfCharactersToRemove) {
             return StringUtils.substring(originalString, numberOfCharactersToRemove);
         } else {
-            // Handle the case where the original string is null or its length is less than or equal to the number of characters to remove
+            // Handle the case where the original string is null or its length is less than or equal to the number of
+            // characters to remove
             return originalString;
         }
     }
 
     public static BigDecimal paymentExtensionGridCharge(PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService,
-            //final PaymentDetail paymentDetail, 
-            final BigDecimal transactionAmount,
-            Long paymentTypeId,
-            Long chargeId
-    ) {
+            // final PaymentDetail paymentDetail,
+            final BigDecimal transactionAmount, Long paymentTypeId, Long chargeId) {
         BigDecimal amount = BigDecimal.ZERO;
         FromJsonHelper fromJsonHelper = new FromJsonHelper();
         try {
-//            if (paymentDetail != null && paymentDetail.getPaymentType() != null) {
-//                final PaymentType paymentType = paymentDetail.getPaymentType();
-//                paymentTypeId = paymentType.getId();
-//            }
-            //Extending to paymentTypeGrid
-            //final Collection<PaymentTypeGridData> paymentTypeGridData = paymentTypeGridReadPlatformService.retrievePaymentTypeGrids(paymentTypeId);
-            Collection<PaymentTypeGridData> paymentTypeGridData;//= paymentTypeGridReadPlatformService.retrievePaymentTypeGridsViaCharge(chargeId);
+            // if (paymentDetail != null && paymentDetail.getPaymentType() != null) {
+            // final PaymentType paymentType = paymentDetail.getPaymentType();
+            // paymentTypeId = paymentType.getId();
+            // }
+            // Extending to paymentTypeGrid
+            // final Collection<PaymentTypeGridData> paymentTypeGridData =
+            // paymentTypeGridReadPlatformService.retrievePaymentTypeGrids(paymentTypeId);
+            Collection<PaymentTypeGridData> paymentTypeGridData;// =
+                                                                // paymentTypeGridReadPlatformService.retrievePaymentTypeGridsViaCharge(chargeId);
             if (paymentTypeId != null && chargeId != null) {
                 paymentTypeGridData = paymentTypeGridReadPlatformService.retrievePaymentTypeGridsViaCharge(chargeId, paymentTypeId);
             } else {
@@ -373,14 +377,13 @@ public class GeneralConstants {
             }
             if (!CollectionUtils.isEmpty(paymentTypeGridData)) {
                 for (PaymentTypeGridData paymentTypeGridData1 : paymentTypeGridData) {
-                    //final PaymentTypeGridData paymentTypeGridData1 = paymentTypeGridData.stream().findFirst().orElse(null);
-                    //if (paymentTypeGridData1 != null) {
+                    // final PaymentTypeGridData paymentTypeGridData1 =
+                    // paymentTypeGridData.stream().findFirst().orElse(null);
+                    // if (paymentTypeGridData1 != null) {
                     if (BooleanUtils.isFalse(paymentTypeGridData1.getIsCommission())
-                            && BooleanUtils.isTrue(paymentTypeGridData1.getIsGrid())
-                            && paymentTypeGridData1.getGridJsonObject() != null) {
+                            && BooleanUtils.isTrue(paymentTypeGridData1.getIsGrid()) && paymentTypeGridData1.getGridJsonObject() != null) {
                         final JsonElement je = paymentTypeGridData1.getGridJsonObject();
-                        final Type listType = new TypeToken<List<PaymentTypeGridJsonData>>() {
-                        }.getType();
+                        final Type listType = new TypeToken<List<PaymentTypeGridJsonData>>() {}.getType();
                         final String json = fromJsonHelper.toJson(je);
                         log.info("paymentExtensionGridCharge raw info: {}", json);
                         final List<PaymentTypeGridJsonData> paymentTypeGridJsonData = fromJsonHelper.fromJson(json, listType);
@@ -388,15 +391,15 @@ public class GeneralConstants {
                             log.info("paymentExtensionGridCharge json info: {}", Arrays.toString(paymentTypeGridJsonData.toArray()));
                             final BigDecimal secondAmount = paymentTypeGridJsonData.stream()
                                     .filter(predicate -> isWithinRange(transactionAmount, predicate.getMinAmount(),
-                                    predicate.getMaxAmount()))
+                                            predicate.getMaxAmount()))
                                     .map(PaymentTypeGridJsonData::getAmount).findFirst().orElse(BigDecimal.ZERO);
                             amount = amount.add(secondAmount);
-                            //if (amount != null) {
-                            //   return amount;
-                            //}
+                            // if (amount != null) {
+                            // return amount;
+                            // }
                         }
                     }
-                    //}
+                    // }
                 }
             }
         } catch (Exception e) {
@@ -419,14 +422,16 @@ public class GeneralConstants {
         return roleIds;
     }
 
-    public static BigDecimal setCustomDefaultInterateRateForInvestmentViewPurpose(final Set<InterestRateChart> charts, BigDecimal interestRate) {
-        //set a default rate if InterestRateChart is not Empty
+    public static BigDecimal setCustomDefaultInterateRateForInvestmentViewPurpose(final Set<InterestRateChart> charts,
+            BigDecimal interestRate) {
+        // set a default rate if InterestRateChart is not Empty
         if (!CollectionUtils.isEmpty(charts)) {
-            final InterestRateChart interestRateChart = charts.stream().filter(predicate -> !CollectionUtils.isEmpty(predicate.setOfChartSlabs())).findFirst().orElse(null);
+            final InterestRateChart interestRateChart = charts.stream()
+                    .filter(predicate -> !CollectionUtils.isEmpty(predicate.setOfChartSlabs())).findFirst().orElse(null);
             if (interestRateChart != null) {
-                final InterestRateChartSlab interestRateChartSlab = interestRateChart.setOfChartSlabs()
-                        .stream()
-                        .filter(predicate -> predicate.slabFields() != null && predicate.slabFields().annualInterestRate() != null).findFirst().orElse(null);
+                final InterestRateChartSlab interestRateChartSlab = interestRateChart.setOfChartSlabs().stream()
+                        .filter(predicate -> predicate.slabFields() != null && predicate.slabFields().annualInterestRate() != null)
+                        .findFirst().orElse(null);
                 if (interestRateChartSlab != null) {
                     interestRate = interestRateChartSlab.slabFields().annualInterestRate();
                 }

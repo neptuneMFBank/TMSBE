@@ -18,8 +18,8 @@
 --
 
 CREATE OR REPLACE VIEW m_users_lock_view AS
-    SELECT ma.id FROM m_appuser ma 
-    LEFT JOIN m_users_details_view mudv ON mudv.user_id = ma.id 
-    WHERE 
-    ma.staff_id IS NOT NULL AND ma.nonlocked=1 AND 
+    SELECT ma.id FROM m_appuser ma
+    LEFT JOIN m_users_details_view mudv ON mudv.user_id = ma.id
+    WHERE
+    ma.staff_id IS NOT NULL AND ma.nonlocked=1 AND
     (ma.firsttime_login_remaining=1 || (DATEDIFF(CURRENT_DATE(), DATE(mudv.last_login_date)) > 20));

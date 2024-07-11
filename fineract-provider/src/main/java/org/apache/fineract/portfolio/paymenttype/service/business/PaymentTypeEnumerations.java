@@ -34,19 +34,14 @@ public final class PaymentTypeEnumerations {
     public static EnumOptionData paymentCalculationType(final PaymentCalculationType type) {
         EnumOptionData optionData;
         optionData = switch (type) {
-            case FLAT ->
-                new EnumOptionData(PaymentCalculationType.FLAT.getValue().longValue(), PaymentCalculationType.FLAT.getCode(),
-                "Flat");
-            case PERCENT ->
-                new EnumOptionData(PaymentCalculationType.PERCENT.getValue().longValue(),
-                PaymentCalculationType.PERCENT.getCode(), "% Amount");
-            case CAPPED ->
-                new EnumOptionData(PaymentCalculationType.CAPPED.getValue().longValue(),
-                PaymentCalculationType.CAPPED.getCode(),
-                "% Amount + Flat Capped");
-            default ->
-                new EnumOptionData(PaymentCalculationType.INVALID.getValue().longValue(),
-                PaymentCalculationType.INVALID.getCode(), "Invalid");
+            case FLAT -> new EnumOptionData(PaymentCalculationType.FLAT.getValue().longValue(), PaymentCalculationType.FLAT.getCode(),
+                    "Flat");
+            case PERCENT -> new EnumOptionData(PaymentCalculationType.PERCENT.getValue().longValue(),
+                    PaymentCalculationType.PERCENT.getCode(), "% Amount");
+            case CAPPED -> new EnumOptionData(PaymentCalculationType.CAPPED.getValue().longValue(), PaymentCalculationType.CAPPED.getCode(),
+                    "% Amount + Flat Capped");
+            default -> new EnumOptionData(PaymentCalculationType.INVALID.getValue().longValue(), PaymentCalculationType.INVALID.getCode(),
+                    "Invalid");
         };
         return optionData;
     }

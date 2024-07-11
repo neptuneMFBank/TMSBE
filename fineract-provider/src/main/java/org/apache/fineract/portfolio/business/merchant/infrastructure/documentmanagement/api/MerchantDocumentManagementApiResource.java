@@ -90,8 +90,8 @@ public class MerchantDocumentManagementApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAllDocuments(@Context final UriInfo uriInfo,
             @PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId) {
@@ -101,8 +101,8 @@ public class MerchantDocumentManagementApiResource {
 
     @POST
     @Path("base64")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String createBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
         validateAppuser(entityType, entityId, null);
@@ -111,8 +111,8 @@ public class MerchantDocumentManagementApiResource {
 
     @POST
     @Path("bulk-base64")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String createBulkBase64Document(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId, final String apiRequestBodyAsJson) {
         validateAppuser(entityType, entityId, null);
@@ -121,8 +121,8 @@ public class MerchantDocumentManagementApiResource {
 
     @GET
     @Path("{documentId}/attachment")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAttachment(@PathParam("documentId") @Parameter(description = "documentId") final Long documentId,
             @PathParam("entityType") @Parameter(description = "entityType") final String entityType,
             @PathParam("entityId") @Parameter(description = "entityId") final Long entityId) {
@@ -133,13 +133,17 @@ public class MerchantDocumentManagementApiResource {
     private void validateAppuser(final String entityType, final Long entityId, final Long documentId) {
         if (StringUtils.equalsIgnoreCase(entityType, DocumentWritePlatformServiceJpaRepositoryImpl.DocumentManagementEntity.LOANS.name())) {
             validateMerchantLoanMapping(entityId);
-        } else if (StringUtils.equalsIgnoreCase(entityType, DocumentWritePlatformServiceJpaRepositoryImpl.DocumentManagementEntity.CLIENTS.name())) {
+        } else if (StringUtils.equalsIgnoreCase(entityType,
+                DocumentWritePlatformServiceJpaRepositoryImpl.DocumentManagementEntity.CLIENTS.name())) {
             validateMerchantClientsMapping(entityId);
-        } else if (StringUtils.equalsIgnoreCase(entityType, DocumentWritePlatformServiceJpaRepositoryImpl.DocumentManagementEntity.CLIENT_IDENTIFIERS.name())) {
+        } else if (StringUtils.equalsIgnoreCase(entityType,
+                DocumentWritePlatformServiceJpaRepositoryImpl.DocumentManagementEntity.CLIENT_IDENTIFIERS.name())) {
             validateMerchantClientIdentfiersMapping(documentId);
-        } else if (StringUtils.equalsIgnoreCase(entityType, DocumentWritePlatformServiceJpaRepositoryImpl.DocumentManagementEntity.INVENTORY.name())) {
+        } else if (StringUtils.equalsIgnoreCase(entityType,
+                DocumentWritePlatformServiceJpaRepositoryImpl.DocumentManagementEntity.INVENTORY.name())) {
             validateMerchantInventoryMapping(entityId);
-        } else if (StringUtils.equalsIgnoreCase(entityType, DocumentWritePlatformServiceJpaRepositoryImpl.DocumentManagementEntity.SAVINGS.name())) {
+        } else if (StringUtils.equalsIgnoreCase(entityType,
+                DocumentWritePlatformServiceJpaRepositoryImpl.DocumentManagementEntity.SAVINGS.name())) {
             validateMerchantSavingsAccountMapping(entityId);
         } else {
             throw new DocumentConfigNotFoundException(entityId);
@@ -159,8 +163,7 @@ public class MerchantDocumentManagementApiResource {
         Long clientId = null;
         Set<AppUserClientMapping> appUserClientMappings = user.getAppUserClientMappings();
         if (!CollectionUtils.isEmpty(appUserClientMappings)) {
-            final AppUserClientMapping appUserClientMapping
-                    = user.getAppUserClientMappings().stream().findAny().orElse(null);
+            final AppUserClientMapping appUserClientMapping = user.getAppUserClientMappings().stream().findAny().orElse(null);
             if (appUserClientMapping != null) {
                 final Client client = appUserClientMapping.getClient();
                 if (client != null) {
@@ -169,7 +172,8 @@ public class MerchantDocumentManagementApiResource {
             }
         }
 
-        final boolean mappedClientIdentifierID = this.appuserClientIdentifierMapperReadService.isClientIdentifierMappedToUser(clientIdentifierId, clientId);
+        final boolean mappedClientIdentifierID = this.appuserClientIdentifierMapperReadService
+                .isClientIdentifierMappedToUser(clientIdentifierId, clientId);
         if (!mappedClientIdentifierID) {
             throw new ClientIdentifierNotFoundException(clientIdentifierId);
         }

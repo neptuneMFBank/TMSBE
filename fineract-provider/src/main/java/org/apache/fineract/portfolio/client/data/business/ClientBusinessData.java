@@ -109,7 +109,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
     private final Collection<OfficeData> officeOptions;
     private final Collection<StaffData> staffOptions;
     private final Collection<CodeValueData> narrations;
-    private  Collection<SavingsProductData> savingProductOptions;
+    private Collection<SavingsProductData> savingProductOptions;
     private final Collection<SavingsAccountData> savingAccountOptions;
     private final Collection<CodeValueData> genderOptions;
     private final Collection<CodeValueData> clientTypeOptions;

@@ -21,8 +21,8 @@
 CREATE OR REPLACE VIEW m_self_activate_client_view AS
 SELECT
     mckc.client_id
-FROM m_client_kyc_checkers mckc  
-JOIN m_client mc on mc.id = mckc.client_id 
+FROM m_client_kyc_checkers mckc
+JOIN m_client mc on mc.id = mckc.client_id
 JOIN m_selfservice_user_client_mapping msucm on msucm.client_id = mckc.client_id
 WHERE mc.status_enum=100 AND mckc.has_agreement=1 AND mckc.has_personal=1 AND mckc.has_residential=1
 AND mckc.has_employment=1 AND mckc.has_next_of_kin=1 AND mckc.has_identification=1

@@ -55,11 +55,9 @@ public class InventoryReadPlatformServiceImpl implements InventoryReadPlatformSe
     private final PlatformSecurityContext context;
 
     @Autowired
-    public InventoryReadPlatformServiceImpl(final JdbcTemplate jdbcTemplate,
-            final RoutingDataSource dataSource, final PaginationHelper paginationHelper,
-            final DatabaseSpecificSQLGenerator sqlGenerator, final ColumnValidator columnValidator,
-            final DocumentReadPlatformService documentReadPlatformService,
-            final PlatformSecurityContext context) {
+    public InventoryReadPlatformServiceImpl(final JdbcTemplate jdbcTemplate, final RoutingDataSource dataSource,
+            final PaginationHelper paginationHelper, final DatabaseSpecificSQLGenerator sqlGenerator, final ColumnValidator columnValidator,
+            final DocumentReadPlatformService documentReadPlatformService, final PlatformSecurityContext context) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.inventoryMapper = new InventoryMapper();
         this.sqlGenerator = sqlGenerator;
@@ -73,7 +71,7 @@ public class InventoryReadPlatformServiceImpl implements InventoryReadPlatformSe
     public InventoryData retrieveOne(Long inventoryId) {
         try {
             final String sql = "select " + this.inventoryMapper.schema + " where mi.id = ? ";
-            return this.jdbcTemplate.queryForObject(sql, this.inventoryMapper, new Object[]{inventoryId});
+            return this.jdbcTemplate.queryForObject(sql, this.inventoryMapper, new Object[] { inventoryId });
         } catch (final EmptyResultDataAccessException e) {
             throw new InventoryNotFound(inventoryId, e);
         }
@@ -83,10 +81,11 @@ public class InventoryReadPlatformServiceImpl implements InventoryReadPlatformSe
     public InventoryData retrieveOneByLink(String link) {
         try {
             final String sql = "select " + this.inventoryMapper.schema + " where mi.link = ? ";
-            InventoryData inventoryData = this.jdbcTemplate.queryForObject(sql, this.inventoryMapper, new Object[]{link});
+            InventoryData inventoryData = this.jdbcTemplate.queryForObject(sql, this.inventoryMapper, new Object[] { link });
             if (inventoryData != null) {
                 this.context.authenticatedUser().validateHasReadPermission("DOCUMENT");
-                final Collection<DocumentData> documentDatas = this.documentReadPlatformService.retrieveAllDocuments("inventory", inventoryData.getId());
+                final Collection<DocumentData> documentDatas = this.documentReadPlatformService.retrieveAllDocuments("inventory",
+                        inventoryData.getId());
                 inventoryData.setDocumentDatas(documentDatas);
             }
 

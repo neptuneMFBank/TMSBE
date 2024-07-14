@@ -36,7 +36,8 @@ SELECT
     MAX(msat.transaction_date) last_transaction_date,
     COALESCE(msa.account_balance_derived, 0) AS ledger_balance,
     COALESCE(account_balance_derived,0)
-    - COALESCE(msa.total_savings_amount_on_hold,0) AS available_balance
+    - COALESCE(msa.total_savings_amount_on_hold,0) AS available_balance,
+    msa.min_required_balance
     FROM m_savings_account msa
 JOIN m_client mc ON mc.id=msa.client_id
 JOIN m_savings_product msp ON msp .id =msa.product_id

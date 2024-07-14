@@ -45,6 +45,7 @@ public final class DepositsBusinessApiConstants {
     private static final String depositProductIdPARAM = "depositProductId";
     private static final String depositProductNamePARAM = "depositProductName";
     private static final String availableBalancePARAM = "availableBalance";
+    private static final String minRequiredBalancePARAM = "minRequiredBalance";
     private static final String ledgerBalancePARAM = "ledgerBalance";
 
     private static final String createdOnPARAM = "createdOn";
@@ -58,5 +59,5 @@ public final class DepositsBusinessApiConstants {
     public static final Set<String> DEPOSIT_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(IDPARAM, accountNoPARAM, depositTypePARAM, statusPARAM, clientIdPARAM, clientNamePARAM, officeIdPARAM,
                     officeNamePARAM, depositProductIdPARAM, depositProductNamePARAM, availableBalancePARAM, ledgerBalancePARAM,
-                    createdOnPARAM, activatedOnPARAM, lastTransactionOnPARAM, externalIdPARAM));
+                    createdOnPARAM, activatedOnPARAM, lastTransactionOnPARAM, externalIdPARAM, minRequiredBalancePARAM));
 }

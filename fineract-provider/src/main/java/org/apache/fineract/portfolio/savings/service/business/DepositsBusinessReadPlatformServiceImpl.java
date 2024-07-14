@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,6 +20,7 @@ package org.apache.fineract.portfolio.savings.service.business;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -433,7 +435,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
         this.context.authenticatedUser();
         try {
             final String sql = "select " + savingsAmountOnHoldDataMapper.schema() + " where sav.id = ?";
-            return this.jdbcTemplate.queryForObject(sql, savingsAmountOnHoldDataMapper, new Object[] { savingsAmountOnHoldId });
+            return this.jdbcTemplate.queryForObject(sql, savingsAmountOnHoldDataMapper, new Object[]{savingsAmountOnHoldId});
         } catch (DataAccessException e) {
             log.error("SavingsAmountOnHold not found: {}", e);
             throw new SavingsAccountTransactionNotFoundException(savingsAmountOnHoldId, savingsAmountOnHoldId);
@@ -522,7 +524,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
             sqlBuilder.append(
                     " ms.office_id officeId, ms.office_name officeName, ms.id, ms.external_id externalId, ms.account_no accountNo, ms.product_id productId, ms.product_name productName, ms.deposit_type_enum depositType, ");
             sqlBuilder.append(
-                    " ms.client_id clientId, ms.display_name displayName, ms.ledger_balance ledgerBalance, ms.available_balance availableBalance, ");
+                    " ms.client_id clientId, ms.display_name displayName, ms.ledger_balance ledgerBalance, ms.available_balance availableBalance, ms.min_required_balance minRequiredBalance, ");
             sqlBuilder.append(
                     " ms.submittedon_date createdOn, ms.activatedon_date activatedOn, ms.last_transaction_date lastTransactionOn, ms.status_enum as statusEnum ");
             sqlBuilder.append(" from m_saving_view ms ");
@@ -557,13 +559,14 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
             final EnumOptionData depositType = SavingsEnumerations.depositType(depositTypeId);
 
             final BigDecimal availableBalance = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "availableBalance");
+            final BigDecimal minRequiredBalance = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "minRequiredBalance");
             final BigDecimal ledgerBalance = JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "ledgerBalance");
             final LocalDate createdOn = JdbcSupport.getLocalDate(rs, "createdOn");
             final LocalDate activatedOn = JdbcSupport.getLocalDate(rs, "activatedOn");
             final LocalDate lastTransactionOn = JdbcSupport.getLocalDate(rs, "lastTransactionOn");
 
             return DepositAccountBusinessData.lookUp(id, accountNo, depositType, status, clientId, clientName, productId, productName,
-                    availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId, officeName);
+                    availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId, officeName, minRequiredBalance);
 
         }
 

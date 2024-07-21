@@ -1262,6 +1262,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.loanTransactionsMapper);
     }
 
+    @Override
     public Page<LoanTransactionData> retrieveAllTransactionsByLoanId(Long loanId, final SearchParametersBusiness searchParameters) {
         List<Object> paramList = new ArrayList<>(Arrays.asList(loanId));
         final StringBuilder sqlBuilder = new StringBuilder(200);

@@ -20,7 +20,6 @@ package org.apache.fineract.portfolio.savings.service.business;
 
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
-import org.apache.fineract.portfolio.loanaccount.data.LoanTransactionData;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionData;
 

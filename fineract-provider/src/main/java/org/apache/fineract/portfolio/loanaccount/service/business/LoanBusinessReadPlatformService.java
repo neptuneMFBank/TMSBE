@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,6 +21,7 @@ package org.apache.fineract.portfolio.loanaccount.service.business;
 import java.util.Collection;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.floatingrates.data.InterestRatePeriodData;
@@ -39,5 +40,7 @@ public interface LoanBusinessReadPlatformService {
 
     Collection<InterestRatePeriodData> retrieveLoanInterestRatePeriodData(LoanBusinessAccountData loanData);
 
-    public Page<LoanTransactionData> retrieveAllTransactionsByLoanId(Long loanId, final SearchParametersBusiness searchParameters);
+    Page<LoanTransactionData> retrieveAllTransactionsByLoanId(Long loanId, final SearchParametersBusiness searchParameters);
+
+    Page<LoanTransactionData> retrieveAllTransactionsByClientId(Long clientId, final SearchParametersBusiness searchParameters);
 }

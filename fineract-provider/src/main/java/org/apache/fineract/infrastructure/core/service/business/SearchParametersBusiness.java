@@ -921,7 +921,7 @@ public final class SearchParametersBusiness {
     }
 
     public static SearchParametersBusiness forTransactions(final Long transactionTypeId, final Long transactionId, final Integer offset,
-            final Integer limit, final String orderBy, final String sortOrder, final LocalDate fromDate, final LocalDate toDate) {
+            final Integer limit, final String orderBy, final String sortOrder, final LocalDate fromDate, final LocalDate toDate,final Integer depositTypeId) {
         final Long organisationalRoleEnumId = null;
         final String displayName = null;
         final Long supervisorId = null;
@@ -951,7 +951,6 @@ public final class SearchParametersBusiness {
         final Integer type = null;
         final Long documentConfigId = null;
         final Long clientId = null;
-        final Integer depositTypeId = null;
         final Long staffSupervisorId = null;
         final Boolean isSupervisor = null;
         final Boolean isLoanOfficer = null;

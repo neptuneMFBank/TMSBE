@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -138,21 +139,21 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
 
     @Autowired
     public LoanBusinessReadPlatformServiceImpl(final PlatformSecurityContext context,
-            final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository,
-            final LoanProductReadPlatformService loanProductReadPlatformService, final ClientReadPlatformService clientReadPlatformService,
-            final GroupReadPlatformService groupReadPlatformService, final LoanDropdownReadPlatformService loanDropdownReadPlatformService,
-            final FundReadPlatformService fundReadPlatformService, final ChargeReadPlatformService chargeReadPlatformService,
-            final CodeValueReadPlatformService codeValueReadPlatformService, final JdbcTemplate jdbcTemplate,
-            final NamedParameterJdbcTemplate namedParameterJdbcTemplate, final CalendarReadPlatformService calendarReadPlatformService,
-            final StaffReadPlatformService staffReadPlatformService, final PaymentTypeReadPlatformService paymentTypeReadPlatformService,
-            final LoanRepaymentScheduleTransactionProcessorFactory loanRepaymentScheduleTransactionProcessorFactory,
-            final FloatingRatesReadPlatformService floatingRatesReadPlatformService, final LoanUtilService loanUtilService,
-            final ConfigurationDomainService configurationDomainService,
-            final AccountDetailsReadPlatformService accountDetailsReadPlatformService, final LoanRepositoryWrapper loanRepositoryWrapper,
-            final ColumnValidator columnValidator, DatabaseSpecificSQLGenerator sqlGenerator, PaginationHelper paginationHelper,
-            final ApplicationContext applicationContext, final LoansApiResource loansApiResource, final FromJsonHelper fromJsonHelper,
-            final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper,
-            final ClientRepositoryWrapper clientRepositoryWrapper) {
+                                               final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository,
+                                               final LoanProductReadPlatformService loanProductReadPlatformService, final ClientReadPlatformService clientReadPlatformService,
+                                               final GroupReadPlatformService groupReadPlatformService, final LoanDropdownReadPlatformService loanDropdownReadPlatformService,
+                                               final FundReadPlatformService fundReadPlatformService, final ChargeReadPlatformService chargeReadPlatformService,
+                                               final CodeValueReadPlatformService codeValueReadPlatformService, final JdbcTemplate jdbcTemplate,
+                                               final NamedParameterJdbcTemplate namedParameterJdbcTemplate, final CalendarReadPlatformService calendarReadPlatformService,
+                                               final StaffReadPlatformService staffReadPlatformService, final PaymentTypeReadPlatformService paymentTypeReadPlatformService,
+                                               final LoanRepaymentScheduleTransactionProcessorFactory loanRepaymentScheduleTransactionProcessorFactory,
+                                               final FloatingRatesReadPlatformService floatingRatesReadPlatformService, final LoanUtilService loanUtilService,
+                                               final ConfigurationDomainService configurationDomainService,
+                                               final AccountDetailsReadPlatformService accountDetailsReadPlatformService, final LoanRepositoryWrapper loanRepositoryWrapper,
+                                               final ColumnValidator columnValidator, DatabaseSpecificSQLGenerator sqlGenerator, PaginationHelper paginationHelper,
+                                               final ApplicationContext applicationContext, final LoansApiResource loansApiResource, final FromJsonHelper fromJsonHelper,
+                                               final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper,
+                                               final ClientRepositoryWrapper clientRepositoryWrapper) {
         this.context = context;
         this.loanRepositoryWrapper = loanRepositoryWrapper;
         this.applicationCurrencyRepository = applicationCurrencyRepository;
@@ -1220,14 +1221,17 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
     }
 
     @Override
-    public Page<LoanTransactionData> retrieveAllTransactionsByLoanId(Long loanId, final SearchParametersBusiness searchParameters) {
-
-        List<Object> paramList = new ArrayList<>(Arrays.asList(loanId));
+    public Page<LoanTransactionData> retrieveAllTransactionsByClientId(Long clientId, final SearchParametersBusiness searchParameters) {
+        List<Object> paramList = new ArrayList<>(Arrays.asList(clientId));
         final StringBuilder sqlBuilder = new StringBuilder(200);
-        sqlBuilder.append("select " + sqlGenerator.calcFoundRows() + " ");
+        sqlBuilder.append("select ").append(sqlGenerator.calcFoundRows()).append(" ");
         sqlBuilder.append(this.loanTransactionsMapper.loanPaymentsSchema());
-        sqlBuilder.append(" where tr.loan_id = ?  ");
+        sqlBuilder.append(" left join m_client c on c.id = l.client_id where c.id = ?  ");
 
+        return getLoanTransactionDataPage(searchParameters, paramList, sqlBuilder);
+    }
+
+    private Page<LoanTransactionData> getLoanTransactionDataPage(SearchParametersBusiness searchParameters, List<Object> paramList, StringBuilder sqlBuilder) {
         if (searchParameters != null) {
 
             final String extraCriteria = buildSqlStringFromTransactionCriteria(this.loanTransactionsMapper.loanPaymentsSchema(),
@@ -1258,8 +1262,18 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.loanTransactionsMapper);
     }
 
+    public Page<LoanTransactionData> retrieveAllTransactionsByLoanId(Long loanId, final SearchParametersBusiness searchParameters) {
+        List<Object> paramList = new ArrayList<>(Arrays.asList(loanId));
+        final StringBuilder sqlBuilder = new StringBuilder(200);
+        sqlBuilder.append("select ").append(sqlGenerator.calcFoundRows()).append(" ");
+        sqlBuilder.append(this.loanTransactionsMapper.loanPaymentsSchema());
+        sqlBuilder.append(" where tr.loan_id = ?  ");
+
+        return getLoanTransactionDataPage(searchParameters, paramList, sqlBuilder);
+    }
+
     private String buildSqlStringFromTransactionCriteria(String schemaSql, final SearchParametersBusiness searchParameters,
-            List<Object> paramList) {
+                                                         List<Object> paramList) {
         String extraCriteria = "";
 
         final Long transactionTypeId = searchParameters.getTransactionTypeId();
@@ -1285,12 +1299,12 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
 
         if (transactionTypeId != null) {
             paramList.add(transactionTypeId);
-            extraCriteria += " and c.transactionTypeId like ? ";
+            extraCriteria += " and tr.transaction_type_enum = ? ";
         }
 
         if (transactionId != null) {
             paramList.add(transactionId);
-            extraCriteria += " and c.transactionId like ? ";
+            extraCriteria += " and tr.id = ? ";
         }
 
         if (StringUtils.isNotBlank(extraCriteria)) {

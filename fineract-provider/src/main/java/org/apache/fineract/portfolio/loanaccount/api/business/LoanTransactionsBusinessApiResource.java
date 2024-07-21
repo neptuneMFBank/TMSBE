@@ -104,7 +104,7 @@ public class LoanTransactionsBusinessApiResource {
         }
 
         final SearchParametersBusiness searchParameters = SearchParametersBusiness.forTransactions(transactionTypeId, transactionId, offset,
-                limit, orderBy, sortOrder, fromDate, toDate);
+                limit, orderBy, sortOrder, fromDate, toDate,null);
 
         final Page<LoanTransactionData> transactionData = this.loanBusinessReadPlatformService.retrieveAllTransactionsByLoanId(loanId,
                 searchParameters);

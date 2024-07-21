@@ -26,20 +26,18 @@ import static org.apache.fineract.portfolio.client.data.business.ClientBusinessA
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityType;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.codes.data.business.CodeValueBusinessData;
 import org.apache.fineract.infrastructure.codes.service.CodeValueReadPlatformService;
@@ -92,11 +90,15 @@ import org.apache.fineract.portfolio.client.service.ClientFamilyMembersReadPlatf
 import org.apache.fineract.portfolio.collateralmanagement.domain.ClientCollateralManagement;
 import org.apache.fineract.portfolio.collateralmanagement.domain.ClientCollateralManagementRepositoryWrapper;
 import org.apache.fineract.portfolio.group.data.GroupGeneralData;
+import org.apache.fineract.portfolio.loanaccount.data.LoanTransactionData;
+import org.apache.fineract.portfolio.loanaccount.service.business.LoanBusinessReadPlatformService;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountData;
+import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionData;
 import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountReadPlatformService;
 import org.apache.fineract.portfolio.savings.service.SavingsProductReadPlatformService;
+import org.apache.fineract.portfolio.savings.service.business.SavingsAccountBusinessReadPlatformService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -113,6 +115,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
     private final OfficeReadPlatformService officeReadPlatformService;
+    private final LoanBusinessReadPlatformService loanBusinessReadPlatformService;
+    private final SavingsAccountBusinessReadPlatformService savingsAccountBusinessReadPlatformService;
     private final StaffReadPlatformService staffReadPlatformService;
     private final CodeValueReadPlatformService codeValueReadPlatformService;
     private final CodeValueBusinessReadPlatformService codeValueBusinessReadPlatformService;
@@ -175,7 +179,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             // final String hierarchySearchString = hierarchy + "%";
 
             final String sql = "select " + this.clientBusinessMapper.schema()
-            // + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
+                    // + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
                     + " where c.id = ?";
             ClientBusinessData clientData = this.jdbcTemplate.queryForObject(sql, this.clientBusinessMapper, // NOSONAR
                     // hierarchySearchString, hierarchySearchString,
@@ -313,7 +317,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 // , lgaValuesOptions
                 , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions
-        // , industryOptions
+                // , industryOptions
         );
     }
 
@@ -1043,7 +1047,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     }
 
     private String buildSqlStringFromClientPendingActivationCriteria(final SearchParametersBusiness searchParameters,
-            List<Object> paramList) {
+                                                                     List<Object> paramList) {
 
         final Integer legalFormId = searchParameters.getLegalFormId();
         final Long officeId = searchParameters.getOfficeId();
@@ -1292,5 +1296,35 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     public Collection<Long> retrieveMerchantClients(Long aUserID) {
         String sql = "SELECT  m.client_id FROM m_appuser_merchant_mapping m INNER JOIN m_client c ON c.id = m.client_id WHERE m.appuser_id = ?";
         return jdbcTemplate.queryForList(sql, Long.class, aUserID);
+    }
+
+    @Override
+    public JsonObject retrieveClientTransactions(final Long clientId, SearchParametersBusiness searchParameters) {
+        boolean showLoanTransactions = true;
+        boolean showSavingTransactions = true;
+        final JsonObject jsonObjectBalance = new JsonObject();
+        if (searchParameters != null) {
+            if (searchParameters.getTransactionTypeId() != null) {
+                if (searchParameters.getTransactionTypeId().intValue() == GlobalEntityType.LOANS.getValue()) {
+                    showSavingTransactions = false;
+                } else if (searchParameters.getTransactionTypeId().intValue() == GlobalEntityType.SAVINGS_ACCOUNT.getValue()) {
+                    showLoanTransactions = false;
+                }
+            }
+        }
+
+        if (showLoanTransactions) {
+            final Page<LoanTransactionData> loanTransactionData = this.loanBusinessReadPlatformService.retrieveAllTransactionsByClientId(clientId, searchParameters);
+            final String stringLoanTransactions = this.fromJsonHelper.toJson(loanTransactionData);
+            final JsonElement jsonObjectLoanTransactions = this.fromJsonHelper.parse(stringLoanTransactions);
+            jsonObjectBalance.add("loanTransactions", jsonObjectLoanTransactions);
+        }
+        if (showSavingTransactions) {
+            final Page<SavingsAccountTransactionData> savingTransactionData = this.savingsAccountBusinessReadPlatformService.retrieveAllTransactionsByClientId(clientId, searchParameters);
+            final String stringSavingTransactions = this.fromJsonHelper.toJson(savingTransactionData);
+            final JsonElement jsonObjectSavingTransactions = this.fromJsonHelper.parse(stringSavingTransactions);
+            jsonObjectBalance.add("savingTransactions", jsonObjectSavingTransactions);
+        }
+        return jsonObjectBalance;
     }
 }

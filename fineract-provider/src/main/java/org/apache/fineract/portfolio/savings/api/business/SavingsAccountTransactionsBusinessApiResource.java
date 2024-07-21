@@ -122,7 +122,7 @@ public class SavingsAccountTransactionsBusinessApiResource {
         }
 
         final SearchParametersBusiness searchParameters = SearchParametersBusiness.forTransactions(transactionTypeId, transactionId, offset,
-                limit, orderBy, sortOrder, fromDate, toDate);
+                limit, orderBy, sortOrder, fromDate, toDate,null);
         if (depositAccountTypeId == null) {
             depositAccountTypeId = DepositAccountType.SAVINGS_DEPOSIT.getValue();
         }

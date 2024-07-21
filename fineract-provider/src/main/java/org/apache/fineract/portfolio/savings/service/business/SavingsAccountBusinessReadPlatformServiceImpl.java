@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,6 +20,7 @@ package org.apache.fineract.portfolio.savings.service.business;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +29,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.glaccount.data.GLAccountDataForLookup;
@@ -91,12 +94,12 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
 
     @Autowired
     public SavingsAccountBusinessReadPlatformServiceImpl(final ColumnValidator columnValidator,
-            final SavingsAccountAssembler savingAccountAssembler, PaginationHelper paginationHelper,
-            final DatabaseSpecificSQLGenerator sqlGenerator, final JdbcTemplate jdbcTemplate,
-            final CommissionVendRepository commissionVendRepository,
-            final ConfigurationReadPlatformService configurationReadPlatformService,
-            final AccountingRuleReadPlatformService accountingRuleReadPlatformService,
-            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+                                                         final SavingsAccountAssembler savingAccountAssembler, PaginationHelper paginationHelper,
+                                                         final DatabaseSpecificSQLGenerator sqlGenerator, final JdbcTemplate jdbcTemplate,
+                                                         final CommissionVendRepository commissionVendRepository,
+                                                         final ConfigurationReadPlatformService configurationReadPlatformService,
+                                                         final AccountingRuleReadPlatformService accountingRuleReadPlatformService,
+                                                         final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.transactionsMapper = new SavingsAccountTransactionsMapper();
 
         this.columnValidator = columnValidator;
@@ -240,15 +243,34 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
     }
 
     @Override
-    public Page<SavingsAccountTransactionData> retrieveAllTransactionsBySavingsId(Long savingsId, DepositAccountType depositAccountType,
-            final SearchParametersBusiness searchParameters) {
-
-        List<Object> paramList = new ArrayList<>(Arrays.asList(savingsId, depositAccountType));
+    public Page<SavingsAccountTransactionData> retrieveAllTransactionsByClientId(Long clientId, SearchParametersBusiness searchParameters) {
+        List<Object> paramList = new ArrayList<>(Collections.singletonList(clientId));
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append("select ").append(sqlGenerator.calcFoundRows()).append(" ");
         sqlBuilder.append(this.transactionsMapper.schema());
-        sqlBuilder.append(" where (tr.savings_account_id = ? or tr.transaction_type_enum = ?) ");
+        sqlBuilder.append(" left join m_client c on c.id = sa.client_id where c.id = ?  ");
 
+        return getSavingsAccountTransactionDataPage(searchParameters, paramList, sqlBuilder);
+    }
+
+    @Override
+    public Page<SavingsAccountTransactionData> retrieveAllTransactionsBySavingsId(Long savingsId, DepositAccountType depositAccountType,
+                                                                                  final SearchParametersBusiness searchParameters) {
+
+        List<Object> paramList = new ArrayList<>(Collections.singletonList(savingsId));
+        //List<Object> paramList = new ArrayList<>(Arrays.asList(savingsId, depositAccountType.getValue()));
+        final StringBuilder sqlBuilder = new StringBuilder(200);
+        sqlBuilder.append("select ").append(sqlGenerator.calcFoundRows()).append(" ");
+        sqlBuilder.append(this.transactionsMapper.schema());
+        sqlBuilder.append(" where tr.savings_account_id = ? ");
+        if (depositAccountType != null) {
+            paramList.add(depositAccountType.getValue());
+            sqlBuilder.append(" or sa.deposit_type_enum = ? ");
+        }
+        return getSavingsAccountTransactionDataPage(searchParameters, paramList, sqlBuilder);
+    }
+
+    private Page<SavingsAccountTransactionData> getSavingsAccountTransactionDataPage(SearchParametersBusiness searchParameters, List<Object> paramList, StringBuilder sqlBuilder) {
         if (searchParameters != null) {
 
             final String extraCriteria = buildSqlStringFromTransactionCriteria(this.transactionsMapper.schema(), searchParameters,
@@ -279,12 +301,14 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.transactionsMapper);
     }
 
+
     private String buildSqlStringFromTransactionCriteria(String schemaSql, final SearchParametersBusiness searchParameters,
-            List<Object> paramList) {
+                                                         List<Object> paramList) {
         String extraCriteria = "";
 
         final Long transactionTypeId = searchParameters.getTransactionTypeId();
         final Long transactionId = searchParameters.getTransactionId();
+        final Integer depositTypeId = searchParameters.getDepositTypeId();
 
         if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
             final LocalDate startPeriod = searchParameters.getFromDate();
@@ -312,6 +336,11 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
         if (transactionId != null) {
             paramList.add(transactionId);
             extraCriteria += " and tr.id = ? ";
+        }
+
+        if (searchParameters.isDepositTypeIdPassed()) {
+            paramList.add(depositTypeId);
+            extraCriteria += " and sa.deposit_type_enum = ? ";
         }
 
         if (StringUtils.isNotBlank(extraCriteria)) {

@@ -474,9 +474,7 @@ public class ClientsBusinessApiResource {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "List Clients transactions", description = "The list capability of clients transactions can support pagination and sorting.")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK"
-            // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-    )})
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
     public String retrieveClientTransactions(@Context final UriInfo uriInfo,
                                              @PathParam("clientId") final Long clientId,
                                              @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId e.g 12- Loans, 23- Wallets/Savings") final Long transactionTypeId,

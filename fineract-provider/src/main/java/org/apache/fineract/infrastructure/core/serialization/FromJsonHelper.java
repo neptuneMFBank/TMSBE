@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,11 +18,8 @@
  */
 package org.apache.fineract.infrastructure.core.serialization;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
+
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.security.InvalidParameterException;
@@ -37,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.exception.UnsupportedParameterException;
@@ -51,7 +49,10 @@ public class FromJsonHelper {
     private final JsonParserHelper helperDelegator;
 
     public FromJsonHelper() {
-        this.gsonConverter = new Gson();
+        final GsonBuilder builder = new GsonBuilder();
+        GoogleGsonSerializerHelper.registerTypeAdapters(builder);
+        this.gsonConverter = builder.create();
+        //this.gsonConverter = new Gson();
         this.helperDelegator = new JsonParserHelper();
     }
 
@@ -122,16 +123,15 @@ public class FromJsonHelper {
     }
 
     /**
-     * @param parentPropertyName
-     *            The full json path to this property,the value is appended to the parameter name while generating an
-     *            error message <br>
-     *            Ex: property "name" in Object "person" would be named as "person.name"
+     * @param parentPropertyName The full json path to this property,the value is appended to the parameter name while generating an
+     *                           error message <br>
+     *                           Ex: property "name" in Object "person" would be named as "person.name"
      * @param object
      * @param supportedParams
      */
     @SuppressWarnings("AvoidHidingCauseException")
     public void checkForUnsupportedNestedParameters(final String parentPropertyName, final JsonObject object,
-            final Set<String> supportedParams) {
+                                                    final Set<String> supportedParams) {
         try {
             checkForUnsupportedParameters(object, supportedParams);
         } catch (UnsupportedParameterException exception) {
@@ -200,7 +200,7 @@ public class FromJsonHelper {
     }
 
     public MonthDay extractMonthDayNamed(final String parameterName, final JsonObject object, final String dateFormat,
-            final Locale clientApplicationLocale) {
+                                         final Locale clientApplicationLocale) {
         return this.helperDelegator.extractMonthDayNamed(parameterName, object, dateFormat, clientApplicationLocale);
     }
 
@@ -217,7 +217,7 @@ public class FromJsonHelper {
     }
 
     public LocalTime extractLocalTimeNamed(final String parameterName, final JsonElement element, final String dateFormat,
-            final Locale locale) {
+                                           final Locale locale) {
         return this.helperDelegator.extractLocalTimeNamed(parameterName, element, dateFormat, locale, new HashSet<>());
     }
 
@@ -226,7 +226,7 @@ public class FromJsonHelper {
     }
 
     public LocalDateTime extractLocalDateTimeNamed(final String parameterName, final JsonElement element, final String dateFormat,
-            final Locale locale) {
+                                                   final Locale locale) {
         return this.helperDelegator.extractLocalDateTimeNamed(parameterName, element, dateFormat, locale, new HashSet<>());
     }
 
@@ -235,17 +235,17 @@ public class FromJsonHelper {
     }
 
     public LocalDate extractLocalDateNamed(final String parameterName, final JsonElement element, final String dateFormat,
-            final Locale locale) {
+                                           final Locale locale) {
         return this.helperDelegator.extractLocalDateNamed(parameterName, element.getAsJsonObject(), dateFormat, locale, new HashSet<>());
     }
 
     public LocalDate extractLocalDateNamed(final String parameterName, final JsonElement element,
-            final Set<String> parametersPassedInRequest) {
+                                           final Set<String> parametersPassedInRequest) {
         return this.helperDelegator.extractLocalDateNamed(parameterName, element, parametersPassedInRequest);
     }
 
     public LocalDate extractLocalDateAsArrayNamed(final String parameterName, final JsonElement element,
-            final Set<String> parametersPassedInRequest) {
+                                                  final Set<String> parametersPassedInRequest) {
         return this.helperDelegator.extractLocalDateAsArrayNamed(parameterName, element, parametersPassedInRequest);
     }
 
@@ -254,7 +254,7 @@ public class FromJsonHelper {
     }
 
     public BigDecimal extractBigDecimalWithLocaleNamed(final String parameterName, final JsonElement element,
-            final Set<String> parametersPassedInRequest) {
+                                                       final Set<String> parametersPassedInRequest) {
         return this.helperDelegator.extractBigDecimalWithLocaleNamed(parameterName, element, parametersPassedInRequest);
     }
 
@@ -263,7 +263,7 @@ public class FromJsonHelper {
     }
 
     public BigDecimal extractBigDecimalNamed(final String parameterName, final JsonElement element,
-            final Set<String> parametersPassedInRequest) {
+                                             final Set<String> parametersPassedInRequest) {
         return this.helperDelegator.extractBigDecimalNamed(parameterName, element.getAsJsonObject(), Locale.US, parametersPassedInRequest);
     }
 
@@ -276,7 +276,7 @@ public class FromJsonHelper {
     }
 
     public Integer extractIntegerWithLocaleNamed(final String parameterName, final JsonElement element,
-            final Set<String> parametersPassedInRequest) {
+                                                 final Set<String> parametersPassedInRequest) {
         return this.helperDelegator.extractIntegerWithLocaleNamed(parameterName, element.getAsJsonObject(), parametersPassedInRequest);
     }
 

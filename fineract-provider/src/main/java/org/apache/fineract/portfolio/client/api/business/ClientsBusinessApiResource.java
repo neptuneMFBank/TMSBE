@@ -483,7 +483,7 @@ public class ClientsBusinessApiResource {
                                              @QueryParam("depositAccountTypeId") @Parameter(description = "depositAccountTypeId e.g 100- Savings Account, 200- Fixed Account, 300- Recurring Account") Integer depositAccountTypeId,
                                              @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
                                              @DefaultValue("20") @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
-                                             @DefaultValue(" id ") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+                                             @DefaultValue(" tr.id ") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
                                              @DefaultValue(" desc ") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
                                              @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
                                              @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,

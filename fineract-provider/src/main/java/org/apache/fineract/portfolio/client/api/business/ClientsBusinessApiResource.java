@@ -116,40 +116,41 @@ public class ClientsBusinessApiResource {
             clients\business?offset=10&limit=50
 
             clients\business?orderBy=displayName&sortOrder=DESC""")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK"
-            // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-    )})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+        )})
     public String retrieveAll(@Context final UriInfo uriInfo, @QueryParam("bvn") @Parameter(description = "bvn") final String bvn,
-                              @QueryParam("nin") @Parameter(description = "nin") final String nin,
-                              @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
-                              @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
-                              @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
-                              @QueryParam("email") @Parameter(description = "email") final String email,
-                              @QueryParam("mobile") @Parameter(description = "mobile") final String mobile,
-                              @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
-                              @QueryParam("legalFormId") @Parameter(description = "legalFormId") final Integer legalFormId,
-                              @QueryParam("staffId") @Parameter(description = "staffId") final Long staffId,
-                              @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
-                              @QueryParam("underHierarchy") @Parameter(description = "underHierarchy") final String hierarchy,
-                              @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
-                              @DefaultValue("20") @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
-                              @DefaultValue(" c.id ") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
-                              @DefaultValue(" desc ") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
-                              @QueryParam("orphansOnly") @Parameter(description = "orphansOnly") final Boolean orphansOnly,
-                              @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
-                              @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
-                              @DefaultValue("en") @QueryParam("locale") final String locale,
-                              @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
+            @QueryParam("nin") @Parameter(description = "nin") final String nin,
+            @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
+            @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
+            @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
+            @QueryParam("email") @Parameter(description = "email") final String email,
+            @QueryParam("mobile") @Parameter(description = "mobile") final String mobile,
+            @QueryParam("statusId") @Parameter(description = "statusId") final Integer statusId,
+            @QueryParam("legalFormId") @Parameter(description = "legalFormId") final Integer legalFormId,
+            @QueryParam("staffId") @Parameter(description = "staffId") final Long staffId,
+            @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
+            @QueryParam("underHierarchy") @Parameter(description = "underHierarchy") final String hierarchy,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @DefaultValue("20") @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @DefaultValue(" c.id ") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @DefaultValue(" desc ") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            @QueryParam("orphansOnly") @Parameter(description = "orphansOnly") final Boolean orphansOnly,
+            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @DefaultValue("en") @QueryParam("locale") final String locale,
+            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
 
         return this.retrieveAll(uriInfo, officeId, externalId, displayName, statusId, hierarchy, offset, limit, orderBy, sortOrder,
                 orphansOnly, false, startPeriod, endPeriod, locale, dateFormat, staffId, accountNo, email, mobile, legalFormId, bvn, nin);
     }
 
     public String retrieveAll(final UriInfo uriInfo, final Long officeId, final String externalId, final String displayName,
-                              final Integer statusId, final String hierarchy, final Integer offset, final Integer limit, final String orderBy,
-                              final String sortOrder, final Boolean orphansOnly, final boolean isSelfUser, final DateParam startPeriod,
-                              final DateParam endPeriod, final String locale, final String dateFormat, final Long staffId, final String accountNo,
-                              final String email, final String mobile, final Integer legalFormId, final String bvn, final String nin) {
+            final Integer statusId, final String hierarchy, final Integer offset, final Integer limit, final String orderBy,
+            final String sortOrder, final Boolean orphansOnly, final boolean isSelfUser, final DateParam startPeriod,
+            final DateParam endPeriod, final String locale, final String dateFormat, final Long staffId, final String accountNo,
+            final String email, final String mobile, final Integer legalFormId, final String bvn, final String nin) {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
@@ -186,13 +187,14 @@ public class ClientsBusinessApiResource {
 
 
             clients/1?fields=id,displayName,officeName""")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK"
-            // , content = @Content(schema = @Schema(implementation =
-            // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
-    )})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+        )})
     public String retrieveOne(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
-                              @Context final UriInfo uriInfo,
-                              @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final Boolean staffInSelectedOfficeOnly) {
+            @Context final UriInfo uriInfo,
+            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final Boolean staffInSelectedOfficeOnly) {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
@@ -217,15 +219,16 @@ public class ClientsBusinessApiResource {
             Example Request:
 
             clients/template""")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK"
-            // , content = @Content(schema = @Schema(implementation =
-            // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
-    )})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.GetClientsTemplateResponse.class))
+        )})
     public String retrieveTemplate(@Context final UriInfo uriInfo,
-                                   @Parameter(description = "officeId") @QueryParam("officeId") final Long officeId,
-                                   // @QueryParam("commandParam") @Parameter(description = "commandParam") final String commandParam,
-                                   @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final Boolean staffInSelectedOfficeOnly,
-                                   @QueryParam("legalFormId") final Integer legalFormId) {
+            @Parameter(description = "officeId") @QueryParam("officeId") final Long officeId,
+            // @QueryParam("commandParam") @Parameter(description = "commandParam") final String commandParam,
+            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final Boolean staffInSelectedOfficeOnly,
+            @QueryParam("legalFormId") final Integer legalFormId) {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
@@ -263,11 +266,12 @@ public class ClientsBusinessApiResource {
 
             Optional Fields: groupId, externalId, accountNo, staffId, mobileNo, savingsProductId, genderId, clientTypeId, clientClassificationId""")
     @RequestBody(required = true
-            // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsRequest.class))
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsRequest.class))
     )
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK"
-            // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
-    )})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
+        )})
     public String create(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
@@ -291,15 +295,16 @@ public class ClientsBusinessApiResource {
 
             The relationship between a client and a group must be removed through the Groups API.""")
     @RequestBody(required = true
-            // , content = @Content(schema = @Schema(implementation =
-            // ClientsApiResourceSwagger.PutClientsClientIdRequest.class))
+    // , content = @Content(schema = @Schema(implementation =
+    // ClientsApiResourceSwagger.PutClientsClientIdRequest.class))
     )
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK"
-            // , content = @Content(schema = @Schema(implementation =
-            // ClientsApiResourceSwagger.PutClientsClientIdResponse.class))
-    )})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.PutClientsClientIdResponse.class))
+        )})
     public String update(@Parameter(description = "clientId") @PathParam("clientId") final Long clientId,
-                         @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .updateClientBusiness(clientId) //
@@ -320,11 +325,12 @@ public class ClientsBusinessApiResource {
                                                                 {"key":"email_address","value":"kunlethompson2@gmail.com"}
                                                           """)
     @RequestBody(required = true
-            // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsRequest.class))
+    // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsRequest.class))
     )
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK"
-            // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
-    )})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.PostClientsResponse.class))
+        )})
     public String findClient(@Context final UriInfo uriInfo, @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
@@ -343,12 +349,13 @@ public class ClientsBusinessApiResource {
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve a Client", description = """
             Example Requests:""")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK"
-            // , content = @Content(schema = @Schema(implementation =
-            // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
-    )})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.GetClientsClientIdResponse.class))
+        )})
     public String retrieveKycLevel(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
-                                   @Context final UriInfo uriInfo) {
+            @Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
@@ -364,24 +371,25 @@ public class ClientsBusinessApiResource {
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "List Pend Clients", description = """
             Example Requests:""")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK"
-            // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
-    )})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class))
+        )})
     public String retrievePendingActivation(@Context final UriInfo uriInfo,
-                                            @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
-                                            @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
-                                            @QueryParam("bvn") @Parameter(description = "bvn") final String bvn,
-                                            @QueryParam("legalFormId") @Parameter(description = "legalFormId") final Integer legalFormId,
-                                            @QueryParam("supervisorStaffId") @Parameter(description = "supervisorStaffId") final Long supervisorStaffId,
-                                            @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
-                                            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
-                                            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
-                                            @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
-                                            @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
-                                            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
-                                            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
-                                            @DefaultValue("en") @QueryParam("locale") final String locale,
-                                            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
+            @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
+            @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
+            @QueryParam("bvn") @Parameter(description = "bvn") final String bvn,
+            @QueryParam("legalFormId") @Parameter(description = "legalFormId") final Integer legalFormId,
+            @QueryParam("supervisorStaffId") @Parameter(description = "supervisorStaffId") final Long supervisorStaffId,
+            @QueryParam("accountNo") @Parameter(description = "accountNo") final String accountNo,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @DefaultValue("en") @QueryParam("locale") final String locale,
+            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
@@ -408,17 +416,19 @@ public class ClientsBusinessApiResource {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve client accounts balance", description = "")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK"
-            // , content = @Content(schema = @Schema(implementation =
-            // ClientsApiResourceSwagger.GetClientsClientIdAccountsResponse.class))
-    ), @ApiResponse(responseCode = "400", description = "Bad Request")})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation =
+        // ClientsApiResourceSwagger.GetClientsClientIdAccountsResponse.class))
+        ),
+        @ApiResponse(responseCode = "400", description = "Bad Request")})
     public String retrieveAssociatedAccounts(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
-                                             @Context final UriInfo uriInfo) {
+            @Context final UriInfo uriInfo) {
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
         final JsonObject retrieveBalance = this.clientBusinessReadPlatformService.retrieveBalance(clientId);
         final Set<String> CLIENT_BALANCE_DATA_PARAMETERS = new HashSet<>(
                 Arrays.asList("loanAccount", "savingDeposit", "fixedDeposit", "recurringDeposit"
-                        // , "currentDeposit"
+                // , "currentDeposit"
                 ));
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.clientAccountBalanceSummary.serialize(settings, retrieveBalance, CLIENT_BALANCE_DATA_PARAMETERS);
@@ -429,11 +439,12 @@ public class ClientsBusinessApiResource {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "is Client Existing", description = "")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "Bad Request")})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "400", description = "Bad Request")})
     public String isClientExisting(@QueryParam("email") final String email, @QueryParam("mobileNo") final String mobileNo,
-                                   @QueryParam("altMobileNo") final String altMobileNo, @QueryParam("bvn") final String bvn, @QueryParam("nin") final String nin,
-                                   @QueryParam("tin") final String tin) {
+            @QueryParam("altMobileNo") final String altMobileNo, @QueryParam("bvn") final String bvn, @QueryParam("nin") final String nin,
+            @QueryParam("tin") final String tin) {
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
         final KycBusinessData businessData = this.clientBusinessReadPlatformService.isClientExisting(email, mobileNo, altMobileNo, bvn, nin,
                 tin);
@@ -469,24 +480,25 @@ public class ClientsBusinessApiResource {
         return this.toApiJsonSerializer.serialize(LoanProducts);
     }
 
-
+    @GET
     @Path("{clientId}/transactions")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "List Clients transactions", description = "The list capability of clients transactions can support pagination and sorting.")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK")})
     public String retrieveClientTransactions(@Context final UriInfo uriInfo,
-                                             @PathParam("clientId") final Long clientId,
-                                             @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId e.g 12- Loans, 23- Wallets/Savings") final Long transactionTypeId,
-                                             @QueryParam("depositAccountTypeId") @Parameter(description = "depositAccountTypeId e.g 100- Savings Account, 200- Fixed Account, 300- Recurring Account") Integer depositAccountTypeId,
-                                             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
-                                             @DefaultValue("20") @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
-                                             @DefaultValue(" tr.id ") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
-                                             @DefaultValue(" desc ") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
-                                             @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
-                                             @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
-                                             @DefaultValue("en") @QueryParam("locale") final String locale,
-                                             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
+            @PathParam("clientId") final Long clientId,
+            @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId e.g 12- Loans, 23- Wallets/Savings") final Long transactionTypeId,
+            @QueryParam("depositAccountTypeId") @Parameter(description = "depositAccountTypeId e.g 100- Savings Account, 200- Fixed Account, 300- Recurring Account") Integer depositAccountTypeId,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @DefaultValue("20") @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @DefaultValue(" tr.id ") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @DefaultValue(" desc ") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @DefaultValue("en") @QueryParam("locale") final String locale,
+            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 

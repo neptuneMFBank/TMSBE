@@ -4038,4 +4038,15 @@ public class CommandWrapperBuilder {
         this.href = "/deposits/" + accountId + "?command=unLock";
         return this;
     }
+
+    public CommandWrapperBuilder undoBulkSavingsAccountTransaction(final Long accountId, final Long transactionId) {
+        this.actionName = "UNDOTRANSACTIONBULK";
+        this.entityName = "SAVINGSACCOUNT";
+        this.savingsId = accountId;
+        this.entityId = accountId;
+        this.subentityId = transactionId;
+        this.transactionId = transactionId.toString();
+        this.href = "/savingsaccounts/" + accountId + "/transactions/business/" + transactionId + "?command=undoBulk";
+        return this;
+    }
 }

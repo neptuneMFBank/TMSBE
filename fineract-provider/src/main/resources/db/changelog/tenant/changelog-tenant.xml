@@ -245,6 +245,7 @@
     <include file="parts/0193_m_permission_lock_unlock_deposit.xml" relativeToChangelogFile="true" />
     <include file="parts/0194_alter_m_loan_other_employer.sql" relativeToChangelogFile="true" />
     <include file="parts/0195_m_permission_makercheckerbypass.xml" relativeToChangelogFile="true" />
+    <include file="parts/0196_m_permission_savings_bulk_undo_trans.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
 <!--
     files to exempt when running migration for the first time

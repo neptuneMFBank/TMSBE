@@ -22,6 +22,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +31,7 @@ import java.util.Collection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -39,7 +41,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.journalentry.api.DateParam;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
+import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.infrastructure.core.exception.UnrecognizedQueryParamException;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
@@ -75,6 +82,7 @@ public class SavingsAccountTransactionsBusinessApiResource {
     private final AddressReadPlatformServiceImpl readPlatformService;
     private final DefaultToApiJsonSerializer toApiDocJsonSerializer;
     private final SavingsAccountsApiResource savingsAccountsApiResource;
+    private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
 
     @Autowired
     public SavingsAccountTransactionsBusinessApiResource(final PlatformSecurityContext context,
@@ -82,7 +90,7 @@ public class SavingsAccountTransactionsBusinessApiResource {
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final SavingsAccountBusinessReadPlatformService savingsAccountBusinessReadPlatformService, final FromJsonHelper fromJsonHelper,
             final ClientReadPlatformService clientReadPlatformService, final AddressReadPlatformServiceImpl readPlatformService,
-            final SavingsAccountsApiResource savingsAccountsApiResource, final DefaultToApiJsonSerializer toApiDocJsonSerializer) {
+            final SavingsAccountsApiResource savingsAccountsApiResource, final DefaultToApiJsonSerializer toApiDocJsonSerializer, final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
@@ -92,11 +100,12 @@ public class SavingsAccountTransactionsBusinessApiResource {
         this.readPlatformService = readPlatformService;
         this.toApiDocJsonSerializer = toApiDocJsonSerializer;
         this.savingsAccountsApiResource = savingsAccountsApiResource;
+        this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
     }
 
     @GET
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
             @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
@@ -122,7 +131,7 @@ public class SavingsAccountTransactionsBusinessApiResource {
         }
 
         final SearchParametersBusiness searchParameters = SearchParametersBusiness.forTransactions(transactionTypeId, transactionId, offset,
-                limit, orderBy, sortOrder, fromDate, toDate,null);
+                limit, orderBy, sortOrder, fromDate, toDate, null);
         if (depositAccountTypeId == null) {
             depositAccountTypeId = DepositAccountType.SAVINGS_DEPOSIT.getValue();
         }
@@ -138,12 +147,13 @@ public class SavingsAccountTransactionsBusinessApiResource {
 
     @GET
     @Path("/doc")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve a savings Doc", description = "")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
-    // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))
-    ) })
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))
+        )})
     public String retrieveSavingsDoc(@PathParam("savingsId") @Parameter(description = "savingsId") final Long savingsId,
             @Context final UriInfo uriInfo, @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
@@ -195,5 +205,46 @@ public class SavingsAccountTransactionsBusinessApiResource {
             jsonObject.add("clientOfficeAddressInfo", clientOfficeAddressInfo);
         }
         return this.toApiDocJsonSerializer.serialize(jsonObject);
+    }
+
+    @POST
+    @Path("{transactionId}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Undo Bulk transaction API", description = "Undo Bulk transaction API\n\n Accepted command = undo, reverse, modify, releaseAmount")
+    @RequestBody(required = true
+    //, content = @Content(schema = @Schema(implementation = SavingsAccountTransactionsApiResourceSwagger.PostSavingsAccountBulkReversalTransactionsRequest.class))
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "OK"
+        //, content = @Content(array = @ArraySchema(schema = @Schema(implementation = SavingsAccountTransactionsApiResourceSwagger.PostSavingsAccountBulkReversalTransactionsRequest.class)))
+        )})
+    public String adjustTransaction(@PathParam("savingsId") final Long savingsId, @PathParam("transactionId") final Long transactionId,
+            @QueryParam("command") final String commandParam, final String apiRequestBodyAsJson) {
+
+        String jsonApiRequest = apiRequestBodyAsJson;
+        if (StringUtils.isBlank(jsonApiRequest)) {
+            jsonApiRequest = "{}";
+        }
+
+        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(jsonApiRequest);
+
+        CommandProcessingResult result = null;
+        if (is(commandParam, SavingsBusinessApiSetConstants.COMMAND_UNDO_BULK_TRANSACTION)) {
+            final CommandWrapper commandRequest = builder.undoBulkSavingsAccountTransaction(savingsId, transactionId).build();
+            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        }
+
+        if (result == null) {
+            //
+            throw new UnrecognizedQueryParamException("command", commandParam,
+                    new Object[]{SavingsBusinessApiSetConstants.COMMAND_UNDO_BULK_TRANSACTION});
+        }
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+
+    private boolean is(final String commandParam, final String commandValue) {
+        return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
     }
 }

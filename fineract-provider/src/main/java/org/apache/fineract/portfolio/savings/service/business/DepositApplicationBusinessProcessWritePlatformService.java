@@ -34,4 +34,6 @@ public interface DepositApplicationBusinessProcessWritePlatformService {
 
     CommandProcessingResult unLockDepositAccount(Long entityId, JsonCommand command);
 
+    CommandProcessingResult undoBulkSavingsTransaction(Long savingsId, Long transactionId);
+
 }

@@ -32,6 +32,8 @@ import java.util.Set;
 
 public class SavingsBusinessApiSetConstants {
 
+    public static final String COMMAND_UNDO_BULK_TRANSACTION = "undoBulk";
+
     public static final String startPeriodParameterName = "startPeriod";
     public static final String endPeriodParameterName = "endPeriod";
     public static final String refNoParamName = "refNo";

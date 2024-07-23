@@ -29,6 +29,7 @@ import java.math.MathContext;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
@@ -67,9 +68,13 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountChargeAssembler;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountStatusType;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransactionRepository;
 import org.apache.fineract.portfolio.savings.domain.SavingsProductRepository;
+import org.apache.fineract.portfolio.savings.exception.SavingsAccountTransactionNotFoundException;
 import org.apache.fineract.portfolio.savings.service.DepositApplicationProcessWritePlatformService;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountApplicationTransitionApiJsonValidator;
+import org.apache.fineract.portfolio.savings.service.SavingsAccountWritePlatformService;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +108,8 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
     private final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository;
     private final BusinessEventNotifierService businessEventNotifierService;
     private final DepositApplicationProcessWritePlatformService depositApplicationProcessWritePlatformService;
+    private final SavingsAccountWritePlatformService savingsAccountWritePlatformService;
+    private final SavingsAccountTransactionRepository savingsAccountTransactionRepository;
 
     @Autowired
     public DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -118,7 +125,9 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
             final CalendarInstanceRepository calendarInstanceRepository, final ConfigurationDomainService configurationDomainService,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository,
             final BusinessEventNotifierService businessEventNotifierService,
-            final DepositApplicationProcessWritePlatformService depositApplicationProcessWritePlatformService) {
+            final DepositApplicationProcessWritePlatformService depositApplicationProcessWritePlatformService,
+            final SavingsAccountWritePlatformService savingsAccountWritePlatformService,
+            final SavingsAccountTransactionRepository savingsAccountTransactionRepository) {
         this.context = context;
         this.savingAccountRepository = savingAccountRepository;
         this.depositAccountAssembler = depositAccountAssembler;
@@ -139,6 +148,8 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
         this.accountNumberFormatRepository = accountNumberFormatRepository;
         this.businessEventNotifierService = businessEventNotifierService;
         this.depositApplicationProcessWritePlatformService = depositApplicationProcessWritePlatformService;
+        this.savingsAccountWritePlatformService = savingsAccountWritePlatformService;
+        this.savingsAccountTransactionRepository = savingsAccountTransactionRepository;
     }
 
     private CalendarInstance getCalendarInstance(final JsonCommand command, RecurringDepositAccount account) {
@@ -357,6 +368,36 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
         this.savingAccountRepository.save(account);
 
         saveNoteSavingsAction(command, account);
+
+        return new CommandProcessingResultBuilder() //
+                .withEntityId(savingsId) //
+                .withOfficeId(account.officeId()) //
+                .withClientId(account.clientId()) //
+                .withGroupId(account.groupId()) //
+                .withSavingsId(savingsId) //
+                .build();
+    }
+
+    @Override
+    public CommandProcessingResult undoBulkSavingsTransaction(Long savingsId, Long transactionId) {
+        this.context.authenticatedUser();
+
+        final SavingsAccountTransaction savingsAccountTransaction = this.savingsAccountTransactionRepository
+                .findOneByIdAndSavingsAccountId(transactionId, savingsId);
+        if (savingsAccountTransaction == null) {
+            throw new SavingsAccountTransactionNotFoundException(savingsId, transactionId);
+        }
+        final SavingsAccount account = savingsAccountTransaction.getSavingsAccount();
+
+        final String transactionRefNo = savingsAccountTransaction.getRefNo();
+        if (StringUtils.isEmpty(transactionRefNo)) {
+            throw new GeneralPlatformDomainRuleException("error.msg.saving.account.trasaction.id.invalid", "No transaction reference to undo.");
+        }
+        final List<SavingsAccountTransaction> savingsAccountTransactions = this.savingsAccountTransactionRepository.findAllTransactionByRefNo(transactionRefNo);
+        for (SavingsAccountTransaction sat : savingsAccountTransactions) {
+            final Long savingsTransactionId = sat.getId();
+            this.savingsAccountWritePlatformService.undoTransaction(savingsId, savingsTransactionId, false);
+        }
 
         return new CommandProcessingResultBuilder() //
                 .withEntityId(savingsId) //

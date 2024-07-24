@@ -264,7 +264,7 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
         sqlBuilder.append(" where tr.savings_account_id = ? ");
         if (depositAccountType != null) {
             paramList.add(depositAccountType.getValue());
-            sqlBuilder.append(" or sa.deposit_type_enum = ? ");
+            sqlBuilder.append(" and sa.deposit_type_enum = ? ");
         }
         return getSavingsAccountTransactionDataPage(searchParameters, paramList, sqlBuilder);
     }

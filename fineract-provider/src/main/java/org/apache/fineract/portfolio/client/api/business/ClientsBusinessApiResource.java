@@ -489,7 +489,7 @@ public class ClientsBusinessApiResource {
         @ApiResponse(responseCode = "200", description = "OK")})
     public String retrieveClientTransactions(@Context final UriInfo uriInfo,
             @PathParam("clientId") final Long clientId,
-            @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId e.g 12- Loans, 23- Wallets/Savings") final Long transactionTypeId,
+            @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId e.g 15- Loans, 23- Wallets/Savings") final Long transactionTypeId,
             @QueryParam("depositAccountTypeId") @Parameter(description = "depositAccountTypeId e.g 100- Savings Account, 200- Fixed Account, 300- Recurring Account") Integer depositAccountTypeId,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
             @DefaultValue("20") @QueryParam("limit") @Parameter(description = "limit") final Integer limit,

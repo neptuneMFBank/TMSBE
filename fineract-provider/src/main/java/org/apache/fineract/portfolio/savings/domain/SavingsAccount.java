@@ -3978,8 +3978,15 @@ public class SavingsAccount extends AbstractPersistableCustom {
             final boolean backdatedTxnsAllowedTill, final String refNo) {
         for (SavingsAccountCharge charge : this.charges()) {
 
-            if (charge.isDepositFee() && charge.isActive() && charge.isEnablePaymentType()) {
-                if (paymentDetail != null && paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
+            if (charge.isDepositFee() && charge.isActive()) {
+                boolean isDepositFee = false;
+                if (paymentDetail == null) {
+                    isDepositFee = true;
+                } else if (charge.isEnablePaymentType() && (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName()))) {
+                    isDepositFee = true;
+                }
+
+                if (isDepositFee) {
                     final Charge chargeConf = charge.getCharge();
                     if (chargeConf != null) {
                         final BigDecimal minCap = chargeConf.getMinCap();

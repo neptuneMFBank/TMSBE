@@ -3982,7 +3982,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
                 boolean isDepositFee = false;
                 if (paymentDetail == null) {
                     isDepositFee = true;
-                } else if (charge.isEnablePaymentType() && (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName()))) {
+                } else if (charge.isEnablePaymentType() && paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
                     isDepositFee = true;
                 }
 

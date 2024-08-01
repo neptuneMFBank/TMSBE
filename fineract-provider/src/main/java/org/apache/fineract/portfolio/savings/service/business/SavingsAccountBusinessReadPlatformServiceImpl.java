@@ -172,7 +172,7 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
                         //handles the posting for the Taxable VAT GL account
                         runFrequentAccountPosying(accountingRuleData, commissionAmountLessVat, officeId, refNo, note, accountingRuleId, currencyCode, paymentTypeId, receiptNumber, bankNumber);
                         //handles the posting for the VAT GL account
-                        runFrequentAccountPosying(accountingRuleVatData, commissionAmountVat, officeId, refNo, note, accountingRuleId, currencyCode, paymentTypeId, receiptNumber, bankNumber);
+                        runFrequentAccountPosying(accountingRuleVatData, commissionAmountVat, officeId, refNo, note, accountingRulesVatId, currencyCode, paymentTypeId, receiptNumber, bankNumber);
                     }
 
                     String updateCommissionVatCalculated = "INSERT INTO m_commision_vat_calculated (savings_account_transaction_id, type, status) VALUES (?, ?, ?)";

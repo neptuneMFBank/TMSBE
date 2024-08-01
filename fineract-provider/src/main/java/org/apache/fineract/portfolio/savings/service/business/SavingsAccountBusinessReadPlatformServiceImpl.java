@@ -22,6 +22,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -154,81 +155,24 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
                         final String receiptNumber = commissionVend.getReceiptNumber();
                         final String refNo = commissionVend.getRefNo();
                         final Long accountingRuleId = commissionVend.getAccountingRules();
+                        final Long accountingRulesVatId = commissionVend.getAccountingRulesVat();
+                        final BigDecimal accountingRulesVatPercentId = commissionVend.getAccountingRulesVatPercent();
                         final String currencyCode = commissionVend.getCurrencyCode();
                         final Long paymentTypeId = commissionVend.getPaymentTypeId();
                         final AccountingRuleData accountingRuleData = this.accountingRuleReadPlatformService
                                 .retrieveAccountingRuleById(accountingRuleId);
+                        final AccountingRuleData accountingRuleVatData = this.accountingRuleReadPlatformService
+                                .retrieveAccountingRuleById(accountingRulesVatId);
                         final Long officeId = accountingRuleData.getOfficeId();
 
-                        JsonArray credits = new JsonArray();
-                        final List<GLAccountDataForLookup> accountDataForLookupsCredits = accountingRuleData.getCreditAccounts();
-                        if (accountDataForLookupsCredits != null) {
-                            for (GLAccountDataForLookup accountDataForLookupsCredit : accountDataForLookupsCredits) {
-                                final JsonObject jsonObject = new JsonObject();
-                                jsonObject.addProperty("glAccountId", accountDataForLookupsCredit.getId());
-                                jsonObject.addProperty(SavingsApiConstants.amountParamName, commissionAmount);
-                                credits.add(jsonObject);
-                            }
-                        }
-                        JsonArray debits = new JsonArray();
-                        final List<GLAccountDataForLookup> accountDataForLookupsDebits = accountingRuleData.getDebitAccounts();
-                        if (accountDataForLookupsDebits != null) {
-                            for (GLAccountDataForLookup accountDataForLookupsDebit : accountDataForLookupsDebits) {
-                                final JsonObject jsonObject = new JsonObject();
-                                jsonObject.addProperty("glAccountId", accountDataForLookupsDebit.getId());
-                                jsonObject.addProperty(SavingsApiConstants.amountParamName, commissionAmount);
-                                debits.add(jsonObject);
-                            }
-                        }
-                        // {
-                        // "locale": "en",
-                        // "dateFormat": "dd MMMM yyyy",
-                        // "officeId": 1,
-                        // "transactionDate": "14 May 2024",
-                        // "referenceNumber": "6678",
-                        // "comments": "Checks",
-                        // "accountingRule": 1,
-                        // "currencyCode": "EUR",
-                        // "paymentTypeId": 1,
-                        // "accountNumber": "1234456778",
-                        // "checkNumber": "11",
-                        // "routingCode": "11",
-                        // "receiptNumber": "11",
-                        // "bankNumber": "Sterling Bank",
-                        // "credits": [
-                        // {
-                        // "glAccountId": 27,
-                        // "amount": "10"
-                        // }
-                        // ],
-                        // "debits": [
-                        // {
-                        // "glAccountId": 17,
-                        // "amount": "10"
-                        // }
-                        // ]
-                        // }
+                        final BigDecimal commissionAmountVat =
+                                commissionAmount.multiply(accountingRulesVatPercentId, MathContext.DECIMAL64);
+                        final BigDecimal commissionAmountLessVat = commissionAmount.subtract(commissionAmountVat);
 
-                        final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
-                        final JsonObject accountEntryJson = new JsonObject();
-                        accountEntryJson.addProperty(SavingsApiConstants.transactionDateParamName, today.toString());
-                        accountEntryJson.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
-                        accountEntryJson.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
-                        accountEntryJson.addProperty(ClientApiConstants.officeIdParamName, officeId);
-                        accountEntryJson.addProperty("referenceNumber", refNo);
-                        accountEntryJson.addProperty("comments", note);
-                        accountEntryJson.addProperty("accountingRule", accountingRuleId);
-                        accountEntryJson.addProperty("currencyCode", currencyCode);
-                        accountEntryJson.addProperty(SavingsApiConstants.paymentTypeIdParamName, paymentTypeId);
-                        accountEntryJson.addProperty(SavingsApiConstants.receiptNumberParamName, receiptNumber);
-                        accountEntryJson.addProperty(SavingsApiConstants.bankNumberParamName, bankNumber);
-                        accountEntryJson.add("credits", credits);
-                        accountEntryJson.add("debits", debits);
-                        final String apiRequestBodyAsJson = accountEntryJson.toString();
-                        log.info("commissionVendEod Posting- {}", apiRequestBodyAsJson);
-                        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
-                        final CommandWrapper commandRequest = builder.createJournalEntry().build();
-                        commandsSourceWritePlatformService.logCommandSource(commandRequest);
+                        //handles the posting for the Taxable VAT GL account
+                        runFrequentAccountPosying(accountingRuleData, commissionAmountLessVat, officeId, refNo, note, accountingRuleId, currencyCode, paymentTypeId, receiptNumber, bankNumber);
+                        //handles the posting for the VAT GL account
+                        runFrequentAccountPosying(accountingRuleVatData, commissionAmountVat, officeId, refNo, note, accountingRuleId, currencyCode, paymentTypeId, receiptNumber, bankNumber);
                     }
 
                     String updateCommissionVatCalculated = "INSERT INTO m_commision_vat_calculated (savings_account_transaction_id, type, status) VALUES (?, ?, ?)";
@@ -239,6 +183,78 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
         } else {
             log.info("Commission calc disAbled");
         }
+    }
+
+    private void runFrequentAccountPosying(AccountingRuleData accountingRuleData, BigDecimal commissionAmount, Long officeId, String refNo, String note, Long accountingRuleId, String currencyCode, Long paymentTypeId, String receiptNumber, String bankNumber) {
+        JsonArray credits = new JsonArray();
+        final List<GLAccountDataForLookup> accountDataForLookupsCredits = accountingRuleData.getCreditAccounts();
+        if (accountDataForLookupsCredits != null) {
+            for (GLAccountDataForLookup accountDataForLookupsCredit : accountDataForLookupsCredits) {
+                final JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("glAccountId", accountDataForLookupsCredit.getId());
+                jsonObject.addProperty(SavingsApiConstants.amountParamName, commissionAmount);
+                credits.add(jsonObject);
+            }
+        }
+        JsonArray debits = new JsonArray();
+        final List<GLAccountDataForLookup> accountDataForLookupsDebits = accountingRuleData.getDebitAccounts();
+        if (accountDataForLookupsDebits != null) {
+            for (GLAccountDataForLookup accountDataForLookupsDebit : accountDataForLookupsDebits) {
+                final JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("glAccountId", accountDataForLookupsDebit.getId());
+                jsonObject.addProperty(SavingsApiConstants.amountParamName, commissionAmount);
+                debits.add(jsonObject);
+            }
+        }
+        // {
+        // "locale": "en",
+        // "dateFormat": "dd MMMM yyyy",
+        // "officeId": 1,
+        // "transactionDate": "14 May 2024",
+        // "referenceNumber": "6678",
+        // "comments": "Checks",
+        // "accountingRule": 1,
+        // "currencyCode": "EUR",
+        // "paymentTypeId": 1,
+        // "accountNumber": "1234456778",
+        // "checkNumber": "11",
+        // "routingCode": "11",
+        // "receiptNumber": "11",
+        // "bankNumber": "Sterling Bank",
+        // "credits": [
+        // {
+        // "glAccountId": 27,
+        // "amount": "10"
+        // }
+        // ],
+        // "debits": [
+        // {
+        // "glAccountId": 17,
+        // "amount": "10"
+        // }
+        // ]
+        // }
+
+        final LocalDate today = LocalDate.now(DateUtils.getDateTimeZoneOfTenant());
+        final JsonObject accountEntryJson = new JsonObject();
+        accountEntryJson.addProperty(SavingsApiConstants.transactionDateParamName, today.toString());
+        accountEntryJson.addProperty(SavingsApiConstants.localeParamName, GeneralConstants.LOCALE_EN_DEFAULT);
+        accountEntryJson.addProperty(SavingsApiConstants.dateFormatParamName, GeneralConstants.DATEFORMET_DEFAULT);
+        accountEntryJson.addProperty(ClientApiConstants.officeIdParamName, officeId);
+        accountEntryJson.addProperty("referenceNumber", refNo);
+        accountEntryJson.addProperty("comments", note);
+        accountEntryJson.addProperty("accountingRule", accountingRuleId);
+        accountEntryJson.addProperty("currencyCode", currencyCode);
+        accountEntryJson.addProperty(SavingsApiConstants.paymentTypeIdParamName, paymentTypeId);
+        accountEntryJson.addProperty(SavingsApiConstants.receiptNumberParamName, receiptNumber);
+        accountEntryJson.addProperty(SavingsApiConstants.bankNumberParamName, bankNumber);
+        accountEntryJson.add("credits", credits);
+        accountEntryJson.add("debits", debits);
+        final String apiRequestBodyAsJson = accountEntryJson.toString();
+        log.info("commissionVendEod Posting- {}", apiRequestBodyAsJson);
+        final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
+        final CommandWrapper commandRequest = builder.createJournalEntry().build();
+        commandsSourceWritePlatformService.logCommandSource(commandRequest);
     }
 
     @Override

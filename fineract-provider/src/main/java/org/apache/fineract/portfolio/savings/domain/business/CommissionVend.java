@@ -31,6 +31,12 @@ public class CommissionVend extends AbstractPersistableCustom {
     @Column(name = "accounting_rules")
     private Long accountingRules;
 
+    @Column(name = "accounting_rules_vat")
+    private Long accountingRulesVat;
+
+    @Column(name = "accounting_rules_vat_percent")
+    private BigDecimal accountingRulesVatPercent;
+
     @Column(name = "amount")
     private BigDecimal amount;
 
@@ -107,4 +113,11 @@ public class CommissionVend extends AbstractPersistableCustom {
         return currencyCode;
     }
 
+    public Long getAccountingRulesVat() {
+        return accountingRulesVat;
+    }
+
+    public BigDecimal getAccountingRulesVatPercent() {
+        return accountingRulesVatPercent;
+    }
 }

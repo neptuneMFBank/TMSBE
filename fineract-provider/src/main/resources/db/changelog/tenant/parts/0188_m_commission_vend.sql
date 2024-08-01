@@ -20,7 +20,7 @@
 -- make sure to replace accounting_rules NULL to the right accounting_rulesID e.g 1 else commision will not run
 
 CREATE OR REPLACE VIEW m_commission_vend AS
-    SELECT NULL accounting_rules, msat.id, msat.amount, msat.ref_no, mpd.receipt_number, mpd.bank_number,
+    SELECT NULL accounting_rules, NULL accounting_rules_vat, 0.075 accounting_rules_vat_percent, msat.id, msat.amount, msat.ref_no, mpd.receipt_number, mpd.bank_number,
     mptg.calculation_type, mptg.amount grid_amount, mptg.percent grid_percent, mn.note, mpd.payment_type_id, msa.currency_code
     FROM m_savings_account_transaction msat
     JOIN m_savings_account msa ON msa.id=msat.savings_account_id

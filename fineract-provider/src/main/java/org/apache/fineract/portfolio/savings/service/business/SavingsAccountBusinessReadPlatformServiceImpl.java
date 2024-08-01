@@ -166,8 +166,8 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
                         final Long officeId = accountingRuleData.getOfficeId();
 
                         final BigDecimal commissionAmountVat =
-                                commissionAmount.multiply(accountingRulesVatPercentId, MathContext.DECIMAL64);
-                        final BigDecimal commissionAmountLessVat = commissionAmount.subtract(commissionAmountVat);
+                                commissionAmount.multiply(accountingRulesVatPercentId, MathContext.DECIMAL64).setScale(2, MoneyHelper.getRoundingMode());
+                        final BigDecimal commissionAmountLessVat = commissionAmount.subtract(commissionAmountVat).setScale(2, MoneyHelper.getRoundingMode());
 
                         //handles the posting for the Taxable VAT GL account
                         runFrequentAccountPosying(accountingRuleData, commissionAmountLessVat, officeId, refNo, note, accountingRuleId, currencyCode, paymentTypeId, receiptNumber, bankNumber);

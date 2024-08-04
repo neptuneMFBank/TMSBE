@@ -203,11 +203,15 @@ public class ReadReportingServiceImpl implements ReadReportingService {
     private String getSql(final String name, final String type) {
         final String encodedName = sqlInjectionPreventerService.encodeSql(name);
         final String encodedType = sqlInjectionPreventerService.encodeSql(type);
+        log.info("encodedName: {}",encodedName);
+        log.info("encodedType: {}",encodedType);
 
         final String inputSql = "select " + encodedType + "_sql as the_sql from stretchy_" + encodedType + " where " + encodedType
                 + "_name = ?";
+        log.info("getSql: {}",inputSql);
 
         final String inputSqlWrapped = this.genericDataService.wrapSQL(inputSql);
+        log.info("inputSqlWrapped: {}",inputSqlWrapped);
 
         // the return statement contains the exact sql required
         final SqlRowSet rs = this.jdbcTemplate.queryForRowSet(inputSqlWrapped, encodedName);

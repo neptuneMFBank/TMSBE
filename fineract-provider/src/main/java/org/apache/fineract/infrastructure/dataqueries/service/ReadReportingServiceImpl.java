@@ -216,9 +216,13 @@ public class ReadReportingServiceImpl implements ReadReportingService {
         // the return statement contains the exact sql required
         final SqlRowSet rs = this.jdbcTemplate.queryForRowSet(inputSqlWrapped, encodedName);
 
+        log.info("SqlRowSet: {}",rs.next());
+        log.info("SqlRowSet: {}",rs.first());
         if (rs.next() && rs.getString("the_sql") != null) {
+            log.info("the_sql: {}",rs.getString("the_sql"));
             return rs.getString("the_sql");
         }
+        log.info("ReportNotFoundException: Error");
         throw new ReportNotFoundException(encodedName);
     }
 

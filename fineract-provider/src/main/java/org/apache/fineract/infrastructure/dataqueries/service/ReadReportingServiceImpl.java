@@ -158,7 +158,7 @@ public class ReadReportingServiceImpl implements ReadReportingService {
             log.debug("STARTING REPORT: {}   Type: {}", LogParameterEscapeUtil.escapeLogParameter(name),
                     LogParameterEscapeUtil.escapeLogParameter(type));
         }
-
+log.info("retrieveGenericResultset Name: {}",name);
         final String sql = getSQLtoRun(name, type, queryParams, isSelfServiceUserReport);
 
         final GenericResultsetData result = this.genericDataService.fillGenericResultSet(sql);
@@ -201,6 +201,7 @@ public class ReadReportingServiceImpl implements ReadReportingService {
     }
 
     private String getSql(final String name, final String type) {
+        log.info("getSqlName: {}",name);
         final String encodedName = sqlInjectionPreventerService.encodeSql(name);
         final String encodedType = sqlInjectionPreventerService.encodeSql(type);
         log.info("encodedName: {}",encodedName);
@@ -216,10 +217,10 @@ public class ReadReportingServiceImpl implements ReadReportingService {
         // the return statement contains the exact sql required
         final SqlRowSet rs = this.jdbcTemplate.queryForRowSet(inputSqlWrapped, encodedName);
 
-        log.info("SqlRowSet: {}",rs.next());
         if (rs.next() && rs.getString("the_sql") != null) {
-            log.info("the_sql: {}",rs.getString("the_sql"));
-            return rs.getString("the_sql");
+            String val=rs.getString("the_sql");
+            log.info("the_sql: {}",val);
+            return val;
         }
         log.info("ReportNotFoundException: Error");
         throw new ReportNotFoundException(encodedName);

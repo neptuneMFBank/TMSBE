@@ -26,8 +26,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
-
-import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.api.ApiParameterHelper;
 import org.apache.fineract.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.apache.fineract.infrastructure.dataqueries.api.RunreportsApiResource;
@@ -38,7 +36,6 @@ import org.apache.fineract.infrastructure.report.service.ReportingProcessService
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @ReportService(type = { "Table", "Chart", "SMS" })
 public class DatatableReportingProcessService implements ReportingProcessService {
@@ -57,7 +54,6 @@ public class DatatableReportingProcessService implements ReportingProcessService
 
     @Override
     public Response processRequest(String reportName, MultivaluedMap<String, String> queryParams) {
-        log.info("processRequest Name: {}",reportName);
         boolean isSelfServiceUserReport = Boolean.parseBoolean(
                 queryParams.getOrDefault(RunreportsApiResource.IS_SELF_SERVICE_USER_REPORT_PARAMETER, List.of("false")).get(0));
         final boolean prettyPrint = ApiParameterHelper.prettyPrint(queryParams);

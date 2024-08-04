@@ -37,8 +37,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
-import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.api.ApiParameterHelper;
 import org.apache.fineract.infrastructure.core.exception.PlatformServiceUnavailableException;
 import org.apache.fineract.infrastructure.dataqueries.service.ReadReportingService;
@@ -52,7 +50,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Path("/runreports")
 @Component
 @Scope("singleton")
@@ -100,7 +97,6 @@ public class RunreportsApiResource {
     public Response runReport(@PathParam("reportName") @Parameter(description = "reportName") final String reportName,
             @Context final UriInfo uriInfo,
             @DefaultValue("false") @QueryParam(IS_SELF_SERVICE_USER_REPORT_PARAMETER) @Parameter(description = IS_SELF_SERVICE_USER_REPORT_PARAMETER) final boolean isSelfServiceUserReport) {
-        log.info("runReport first processRequest Name: {}",reportName);
 
         MultivaluedMap<String, String> queryParams = new MultivaluedStringMap();
         queryParams.putAll(uriInfo.getQueryParameters());
@@ -118,7 +114,6 @@ public class RunreportsApiResource {
             throw new PlatformServiceUnavailableException("err.msg.report.service.implementation.missing",
                     ReportingProcessServiceProvider.SERVICE_MISSING + reportType, reportType);
         }
-        log.info("runReport second processRequest Name: {}",reportName);
         return reportingProcessService.processRequest(reportName, queryParams);
     }
 

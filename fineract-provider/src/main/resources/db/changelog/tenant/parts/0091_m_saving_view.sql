@@ -27,6 +27,8 @@ SELECT
     mc.id AS client_id,
     mc.display_name,
     mc.office_id,
+    mc.bvn,
+    mc.client_type_cv_id,
     o.name office_name,
     msa.account_no,
     msa.activatedon_date,
@@ -39,7 +41,7 @@ SELECT
     - COALESCE(msa.total_savings_amount_on_hold,0) AS available_balance,
     msa.min_required_balance
     FROM m_savings_account msa
-JOIN m_client mc ON mc.id=msa.client_id
+JOIN m_client_view mc ON mc.id=msa.client_id
 JOIN m_savings_product msp ON msp .id =msa.product_id
 LEFT JOIN m_office o on o.id = mc.office_id
 LEFT JOIN m_savings_account_transaction msat ON msat.savings_account_id =msa.id

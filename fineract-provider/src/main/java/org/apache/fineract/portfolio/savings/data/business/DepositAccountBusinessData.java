@@ -21,6 +21,7 @@ package org.apache.fineract.portfolio.savings.data.business;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountStatusEnumData;
 
@@ -36,6 +37,8 @@ public class DepositAccountBusinessData {
 
     protected final Long clientId;
     protected final String clientName;
+    protected final String bvn;
+    protected final CodeValueData clientType;
 
     protected final Long officeId;
     protected final String officeName;
@@ -70,9 +73,11 @@ public class DepositAccountBusinessData {
         Long officeId = null;
         String officeName = null;
         BigDecimal minRequiredBalance = null;
+        String bvn = null;
+        CodeValueData clientType = null;
         return new DepositAccountBusinessData(id, accountNo, depositType, status, clientId, clientName, depositProductId,
                 depositProductName, availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId,
-                officeName, minRequiredBalance);
+                officeName, minRequiredBalance, bvn, clientType);
     }
 
     public static DepositAccountBusinessData retrieveBalance(final DepositAccountBusinessData depositAccountBusinessData) {
@@ -93,24 +98,26 @@ public class DepositAccountBusinessData {
         Long officeId = null;
         String officeName = null;
         BigDecimal minRequiredBalance = null;
+        String bvn = null;
+        CodeValueData clientType = null;
         return new DepositAccountBusinessData(id, accountNo, depositType, status, clientId, clientName, depositProductId,
                 depositProductName, availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId,
-                officeName, minRequiredBalance);
+                officeName, minRequiredBalance, bvn,clientType);
     }
 
     public static DepositAccountBusinessData lookUp(Long id, String accountNo, EnumOptionData depositType,
                                                     SavingsAccountStatusEnumData status, Long clientId, String clientName, Long depositProductId, String depositProductName,
                                                     BigDecimal availableBalance, BigDecimal ledgerBalance, LocalDate createdOn, LocalDate activatedOn, LocalDate lastTransactionOn,
-                                                    String externalId, Long officeId, String officeName, BigDecimal minRequiredBalance) {
+                                                    String externalId, Long officeId, String officeName, BigDecimal minRequiredBalance, String bvn, CodeValueData clientType) {
         return new DepositAccountBusinessData(id, accountNo, depositType, status, clientId, clientName, depositProductId,
                 depositProductName, availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId,
-                officeName, minRequiredBalance);
+                officeName, minRequiredBalance, bvn,clientType);
     }
 
     private DepositAccountBusinessData(Long id, String accountNo, EnumOptionData depositType, SavingsAccountStatusEnumData status,
                                        Long clientId, String clientName, Long depositProductId, String depositProductName, BigDecimal availableBalance,
                                        BigDecimal ledgerBalance, LocalDate createdOn, LocalDate activatedOn, LocalDate lastTransactionOn, String externalId,
-                                       Long officeId, String officeName, BigDecimal minRequiredBalance) {
+                                       Long officeId, String officeName, BigDecimal minRequiredBalance, String bvn, CodeValueData clientType) {
         this.id = id;
         this.officeId = officeId;
         this.officeName = officeName;
@@ -128,6 +135,8 @@ public class DepositAccountBusinessData {
         this.lastTransactionOn = lastTransactionOn;
         this.externalId = externalId;
         this.minRequiredBalance = minRequiredBalance;
+        this.bvn = bvn;
+        this.clientType = clientType;
     }
 
     public Long getId() {

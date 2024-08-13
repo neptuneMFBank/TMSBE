@@ -31,6 +31,8 @@ SELECT
     mc.mobile_no,
     mc.email_address,
     mc.legal_form_enum,
+    slk.bvn,
+    mc.client_type_cv_id,
     mc.client_classification_cv_id,
     mc.submittedon_date,
     mc.created_by,
@@ -38,4 +40,5 @@ SELECT
     mc.office_id,
     mc.transfer_to_office_id
 FROM m_client mc
+LEFT JOIN secondLevelKYC slk on slk.client_id = mc.id
 ORDER BY mc.id DESC

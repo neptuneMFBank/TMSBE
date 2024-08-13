@@ -39,6 +39,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
@@ -524,10 +525,11 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
             sqlBuilder.append(
                     " ms.office_id officeId, ms.office_name officeName, ms.id, ms.external_id externalId, ms.account_no accountNo, ms.product_id productId, ms.product_name productName, ms.deposit_type_enum depositType, ");
             sqlBuilder.append(
-                    " ms.client_id clientId, ms.display_name displayName, ms.ledger_balance ledgerBalance, ms.available_balance availableBalance, ms.min_required_balance minRequiredBalance, ");
+                    " ms.client_id clientId, ms.display_name displayName, ms.bvn, ms.client_type_cv_id clienttypeId, cvclienttype.code_value as clienttypeValue, ms.ledger_balance ledgerBalance, ms.available_balance availableBalance, ms.min_required_balance minRequiredBalance, ");
             sqlBuilder.append(
                     " ms.submittedon_date createdOn, ms.activatedon_date activatedOn, ms.last_transaction_date lastTransactionOn, ms.status_enum as statusEnum ");
             sqlBuilder.append(" from m_saving_view ms ");
+            sqlBuilder.append(" left join m_code_value cvclienttype on cvclienttype.id = ms.client_type_cv_id ");
 
             this.schema = sqlBuilder.toString();
         }
@@ -551,6 +553,15 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
 
             final Long clientId = JdbcSupport.getLong(rs, "clientId");
             final String clientName = rs.getString("displayName");
+            final String bvn = rs.getString("bvn");
+
+             CodeValueData clienttype=null;
+            final Long clienttypeId = JdbcSupport.getLong(rs, "clienttypeId");
+            if  (clienttypeId !=null && clienttypeId>0 ){
+                final String clienttypeValue = rs.getString("clienttypeValue");
+                  clienttype = CodeValueData.instance(clienttypeId, clienttypeValue);
+            }
+
 
             final Long productId = rs.getLong("productId");
             final String productName = rs.getString("productName");
@@ -566,7 +577,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
             final LocalDate lastTransactionOn = JdbcSupport.getLocalDate(rs, "lastTransactionOn");
 
             return DepositAccountBusinessData.lookUp(id, accountNo, depositType, status, clientId, clientName, productId, productName,
-                    availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId, officeName, minRequiredBalance);
+                    availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId, officeName, minRequiredBalance, bvn, clienttype);
 
         }
 

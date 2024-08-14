@@ -73,8 +73,8 @@ public class DepositAccountBusinessData {
         Long officeId = null;
         String officeName = null;
         BigDecimal minRequiredBalance = null;
-        String bvn = null;
-        CodeValueData clientType = null;
+        String bvn = depositAccountBusinessData.getBvn();
+        CodeValueData clientType = depositAccountBusinessData.getClientType();
         return new DepositAccountBusinessData(id, accountNo, depositType, status, clientId, clientName, depositProductId,
                 depositProductName, availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId,
                 officeName, minRequiredBalance, bvn, clientType);
@@ -203,4 +203,11 @@ public class DepositAccountBusinessData {
         return externalId;
     }
 
+    public String getBvn() {
+        return bvn;
+    }
+
+    public CodeValueData getClientType() {
+        return clientType;
+    }
 }

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.fineract.portfolio.savings.SavingsApiConstants;
+import org.apache.fineract.portfolio.savings.api.business.SavingsBusinessApiSetConstants;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountData;
 import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 
@@ -61,7 +62,7 @@ public class SavingsApiSetConstants extends SavingsApiConstants {
 
     protected static final Set<String> SAVINGS_TRANSACTION_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(idParamName, "accountId", accountNoParamName, "currency", "amount", dateParamName, paymentDetailDataParamName,
-                    runningBalanceParamName, reversedParamName, noteParamName, "chargeData", "submittedOnDateTime"));
+                    runningBalanceParamName, reversedParamName, noteParamName, "chargeData", "submittedOnDateTime", SavingsBusinessApiSetConstants.refNoParamName));
 
     protected static final Set<String> SAVINGS_ACCOUNT_CHARGES_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(chargeIdParamName, savingsAccountChargeIdParamName, chargeNameParamName, penaltyParamName,

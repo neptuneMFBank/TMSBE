@@ -1311,7 +1311,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
             sqlBuilder.append("tr.id as transactionId, tr.transaction_type_enum as transactionType, ");
             sqlBuilder.append("tr.transaction_date as transactionDate, tr.amount as transactionAmount,");
             sqlBuilder.append(" tr.release_id_of_hold_amount as releaseTransactionId,");
-            sqlBuilder.append(" tr.reason_for_block as reasonForBlock,");
+            sqlBuilder.append(" tr.reason_for_block as reasonForBlock, tr.ref_no as refNo, ");
             sqlBuilder.append("tr.created_date as submittedOnDate,");
             sqlBuilder.append(" au.username as submittedByUsername, ");
             sqlBuilder.append(" nt.note as transactionNote, ");
@@ -1419,11 +1419,13 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
             }
             final String submittedByUsername = rs.getString("submittedByUsername");
             final String note = rs.getString("transactionNote");
+            final String refNo = rs.getString("refNo");
             final SavingsAccountTransactionData savingsAccountTransactionData = SavingsAccountTransactionData.create(id, transactionType,
                     paymentDetailData, savingsId, accountNo, date, currency, amount, outstandingChargeAmount, runningBalance, reversed,
                     transfer, submittedOnDate, postInterestAsOn, submittedByUsername, note, isReversal, originalTransactionId,
                     lienTransaction, releaseTransactionId, reasonForBlock);
             savingsAccountTransactionData.setSubmittedOnDateTime(submittedOnDateTime);
+            savingsAccountTransactionData.setRefNo(refNo);
             return savingsAccountTransactionData;
         }
     }

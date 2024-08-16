@@ -1078,7 +1078,9 @@ public class RecurringDepositAccount extends SavingsAccount {
             BigDecimal applicableInterestRate = this.chart.getApplicableInterestRate(maturityAmount, depositStartDate(), maturityDate,
                     this.client, lockinPeriodFrequencyTypeChartSlabIncentives);
 
-            if (applicableInterestRate.compareTo(BigDecimal.ZERO) == 0 ? Boolean.TRUE : Boolean.FALSE) {
+            //if (applicableInterestRate.compareTo(BigDecimal.ZERO) == 0 ? Boolean.TRUE : Boolean.FALSE) {
+            //Allow Recurring Investment to be opened with zero interest and above (Agreed by Raska et Seye 18 August 2024 00:13 via whatsApp)
+            if (applicableInterestRate.compareTo(new BigDecimal(-1)) == 0 ? Boolean.TRUE : Boolean.FALSE) {
                 baseDataValidator.reset()
                         .failWithCodeNoParameterAddedToErrorCode("no.applicable.interest.rate.is.found.based.on.amount.and.deposit.period");
             }

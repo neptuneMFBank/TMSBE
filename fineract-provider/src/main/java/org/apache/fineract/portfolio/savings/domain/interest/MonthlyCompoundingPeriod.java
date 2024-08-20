@@ -140,8 +140,8 @@ public final class MonthlyCompoundingPeriod implements CompoundingPeriod {
                 // break;
                 // case ANNUAL:
                 // break;
-                // case NO_COMPOUNDING_SIMPLE_INTEREST:
-                // break;
+                 case NO_COMPOUNDING_SIMPLE_INTEREST:
+                 break;
                 case INVALID:
                 break;
                 default:

@@ -437,8 +437,8 @@ public final class PostingPeriod {
                     periodStartDate = periodEndDate.plusDays(1);
                 }
             break;
-            // case NO_COMPOUNDING_SIMPLE_INTEREST:
-            // break;
+             case NO_COMPOUNDING_SIMPLE_INTEREST:
+             break;
         }
 
         return compoundingPeriods;
@@ -489,10 +489,10 @@ public final class PostingPeriod {
                 }
             break;
 
-            // case NO_COMPOUNDING_SIMPLE_INTEREST:
-            // periodEndDate = periodStartDate.monthOfYear().withMaximumValue();
-            // periodEndDate = periodEndDate.with(TemporalAdjusters.lastDayOfMonth());
-            // break;
+             case NO_COMPOUNDING_SIMPLE_INTEREST:
+             //periodEndDate = periodStartDate.monthOfYear().withMaximumValue();
+             periodEndDate = periodEndDate.with(TemporalAdjusters.lastDayOfMonth());
+             break;
         }
 
         return periodEndDate;

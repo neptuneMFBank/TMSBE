@@ -191,6 +191,11 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             errorCodeBuilder.append(".duplicate.externalId");
             throw new PlatformDataIntegrityException(errorCodeBuilder.toString(),
                     "Savings account with externalId " + externalId + " already exists", "externalId", externalId);
+        }else if (realCause.getMessage().contains("name")) {
+            final String name = command.stringValueOfParameterNamed("name");
+            errorCodeBuilder.append(".duplicate.name");
+            throw new PlatformDataIntegrityException(errorCodeBuilder.toString(),
+                    "Savings account with name " + name + " already exists", "name", name);
         }
 
         errorCodeBuilder.append(".unknown.data.integrity.issue");

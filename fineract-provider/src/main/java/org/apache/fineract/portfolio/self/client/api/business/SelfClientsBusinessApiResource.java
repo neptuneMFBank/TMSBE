@@ -24,8 +24,8 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -33,11 +33,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-
 import org.apache.fineract.accounting.journalentry.api.DateParam;
 import org.apache.fineract.infrastructure.documentmanagement.api.business.ImagesBusinessApiResource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
@@ -72,11 +70,11 @@ public class SelfClientsBusinessApiResource {
 
     @Autowired
     public SelfClientsBusinessApiResource(final PlatformSecurityContext context,
-                                          final ClientAddressBusinessApiResources clientAddressBusinessApiResources,
-                                          final ClientIdentifiersBusinessApiResource clientIdentifiersBusinessApiResource,
-                                          final ImagesBusinessApiResource imagesApiResource, final ClientsBusinessApiResource clientsBusinessApiResource,
-                                          final ClientFamilyMembersApiResources clientFamilyMembersApiResources,
-                                          final AppuserClientMapperReadService appUserClientMapperReadService, final SelfClientDataValidator dataValidator) {
+            final ClientAddressBusinessApiResources clientAddressBusinessApiResources,
+            final ClientIdentifiersBusinessApiResource clientIdentifiersBusinessApiResource,
+            final ImagesBusinessApiResource imagesApiResource, final ClientsBusinessApiResource clientsBusinessApiResource,
+            final ClientFamilyMembersApiResources clientFamilyMembersApiResources,
+            final AppuserClientMapperReadService appUserClientMapperReadService, final SelfClientDataValidator dataValidator) {
         this.context = context;
         this.imagesApiResource = imagesApiResource;
         this.appUserClientMapperReadService = appUserClientMapperReadService;
@@ -89,12 +87,12 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Client Details Template", description = "")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveTemplate(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
-                                   @Context final UriInfo uriInfo) {
+            @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
         final Integer legalFormId = LegalForm.PERSON.getValue();
         final Boolean staffInSelectedOfficeOnly = null;
@@ -105,25 +103,25 @@ public class SelfClientsBusinessApiResource {
     @GET
     @Path("kyc-level")
 
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Client Checker", description = """
 
             Example Requests:""")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveKycLevel(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
-                                   @Context final UriInfo uriInfo) {
+            @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
         return this.clientsBusinessApiResource.retrieveKycLevel(clientId, uriInfo);
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Client", description = "")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveOne(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
-                              @Context final UriInfo uriInfo) {
+            @Context final UriInfo uriInfo) {
         this.dataValidator.validateRetrieveOne(uriInfo);
         validateAppuserClientsMapping(clientId);
         final Boolean staffInSelectedOfficeOnly = null;
@@ -132,22 +130,22 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("balance")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve client accounts overview", description = "")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveAssociatedAccounts(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
-                                             @Context final UriInfo uriInfo) {
+            @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
         return this.clientsBusinessApiResource.retrieveAssociatedAccounts(clientId, uriInfo);
     }
 
     @GET
     @Path("avatar")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve Avatar", description = "")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveAvatar(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
         validateAppuserClientsMapping(clientId);
         final String entityName = "clients";
@@ -156,8 +154,8 @@ public class SelfClientsBusinessApiResource {
 
     @POST
     @Path("avatar")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String addNewClientImage(@PathParam("clientId") final Long clientId, final String jsonRequestBody) {
         validateAppuserClientsMapping(clientId);
         final String entityName = "clients";
@@ -173,46 +171,46 @@ public class SelfClientsBusinessApiResource {
     }
 
     @PUT
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @RequestBody(required = true)
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String update(@Parameter(description = "clientId") @PathParam("clientId") final Long clientId,
-                         @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         validateAppuserClientsMapping(clientId);
         return this.clientsBusinessApiResource.update(clientId, apiRequestBodyAsJson);
     }
 
     @GET
     @Path("addresses/template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String getAddressesTemplate(@Parameter(description = "clientId") @PathParam("clientId") final Long clientId,
-                                       @Context final UriInfo uriInfo) {
+            @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
         return this.clientAddressBusinessApiResources.getAddressesTemplate(uriInfo);
     }
 
     @GET
     @Path("addresses/{id}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get Single address for a Client", description = "")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String getAddress(@PathParam("id") @Parameter(description = "id") final long id,
-                             @PathParam("clientId") @Parameter(description = "clientId") final long clientId, @Context final UriInfo uriInfo) {
+            @PathParam("clientId") @Parameter(description = "clientId") final long clientId, @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
         return this.clientAddressBusinessApiResources.getAddress(id, clientId, uriInfo);
     }
 
     @GET
     @Path("addresses")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get All active address for a Client", description = "")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String getAddresses(@PathParam("clientId") @Parameter(description = "clientId") final long clientId,
-                               @QueryParam("type") @Parameter(description = "type") final long addressTypeId, @Context final UriInfo uriInfo) {
+            @QueryParam("type") @Parameter(description = "type") final long addressTypeId, @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
         final String status = "true";
         return this.clientAddressBusinessApiResources.getAddresses(status, addressTypeId, clientId, uriInfo);
@@ -220,22 +218,22 @@ public class SelfClientsBusinessApiResource {
 
     @POST
     @Path("addresses")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create an address for a Client", description = "")
     @RequestBody(required = true)
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String addClientAddress(@QueryParam("type") @Parameter(description = "type") final long addressTypeId,
-                                   @PathParam("clientId") @Parameter(description = "clientId") final long clientId,
-                                   @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+            @PathParam("clientId") @Parameter(description = "clientId") final long clientId,
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         validateAppuserClientsMapping(clientId);
         return this.clientAddressBusinessApiResources.addClientAddress(addressTypeId, clientId, apiRequestBodyAsJson);
     }
 
     @GET
     @Path("familymembers/template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String getTemplate(@Context final UriInfo uriInfo, @PathParam("clientId") final long clientId) {
         validateAppuserClientsMapping(clientId);
         return this.clientFamilyMembersApiResources.getTemplate(uriInfo, clientId);
@@ -243,10 +241,10 @@ public class SelfClientsBusinessApiResource {
 
     @POST
     @Path("familymembers")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String addClientFamilyMembers(@PathParam("clientId") final long clientId,
-                                         @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         validateAppuserClientsMapping(clientId);
         return this.clientFamilyMembersApiResources.addClientFamilyMembers(clientId, apiRequestBodyAsJson);
 
@@ -254,18 +252,18 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("familymembers/{familyMemberId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String getFamilyMember(@Context final UriInfo uriInfo, @PathParam("familyMemberId") final Long familyMemberId,
-                                  @PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
+            @PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
         validateAppuserClientsMapping(clientId);
         return this.clientFamilyMembersApiResources.getFamilyMember(uriInfo, familyMemberId, clientId);
     }
 
     @GET
     @Path("familymembers")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String getFamilyMembers(@Context final UriInfo uriInfo, @PathParam("clientId") final long clientId) {
         validateAppuserClientsMapping(clientId);
         return this.clientFamilyMembersApiResources.getFamilyMembers(uriInfo, clientId);
@@ -273,33 +271,33 @@ public class SelfClientsBusinessApiResource {
 
     @POST
     @Path("identifiers")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Create an Identifier for a Client", description = "")
     @RequestBody(required = true)
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String createClientIdentifier(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
-                                         @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
         validateAppuserClientsMapping(clientId);
         return this.clientIdentifiersBusinessApiResource.createClientIdentifier(clientId, apiRequestBodyAsJson);
     }
 
     @GET
     @Path("identifiers")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List all Identifiers for a Client", description = "")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveAllClientIdentifiers(@Context final UriInfo uriInfo,
-                                               @PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
+            @PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
         validateAppuserClientsMapping(clientId);
         return this.clientIdentifiersBusinessApiResource.retrieveAllClientIdentifiers(uriInfo, clientId);
     }
 
     @GET
     @Path("loanproducts/visibility")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveVisibileLoanProduct(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
         return this.clientsBusinessApiResource.retrieveVisibileLoanProduct(clientId);
@@ -307,8 +305,8 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("savingsproducts/visibility")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveVisibileSavingsProduct(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo) {
         validateAppuserClientsMapping(clientId);
         return this.clientsBusinessApiResource.retrieveVisibileSavingsProduct(clientId);
@@ -316,33 +314,32 @@ public class SelfClientsBusinessApiResource {
 
     @GET
     @Path("exist")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String isClientExisting(@PathParam("clientId") final Long clientId, @QueryParam("email") final String email,
-                                   @QueryParam("mobileNo") final String mobileNo, @QueryParam("altMobileNo") final String altMobileNo,
-                                   @QueryParam("bvn") final String bvn, @QueryParam("nin") final String nin, @QueryParam("tin") final String tin) {
+            @QueryParam("mobileNo") final String mobileNo, @QueryParam("altMobileNo") final String altMobileNo,
+            @QueryParam("bvn") final String bvn, @QueryParam("nin") final String nin, @QueryParam("tin") final String tin) {
         validateAppuserClientsMapping(clientId);
         return this.clientsBusinessApiResource.isClientExisting(email, mobileNo, altMobileNo, bvn, nin, tin);
     }
 
-
     @GET
     @Path("transactions")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveClientTransactions(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo,
-                                                 @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId e.g 12- Loans, 23- Wallets/Savings") final Long transactionTypeId,
-                                                 @QueryParam("depositAccountTypeId") @Parameter(description = "depositAccountTypeId e.g 100- Savings Account, 200- Fixed Account, 300- Recurring Account") Integer depositAccountTypeId,
-                                                 @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
-                                                 @DefaultValue("20") @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
-                                                 @DefaultValue(" tr.id ") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
-                                                 @DefaultValue(" desc ") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
-                                                 @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
-                                                 @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
-                                                 @DefaultValue("en") @QueryParam("locale") final String locale,
-                                                 @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
+            @QueryParam("transactionTypeId") @Parameter(description = "transactionTypeId e.g 12- Loans, 23- Wallets/Savings") final Long transactionTypeId,
+            @QueryParam("depositAccountTypeId") @Parameter(description = "depositAccountTypeId e.g 100- Savings Account, 200- Fixed Account, 300- Recurring Account") Integer depositAccountTypeId,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @DefaultValue("20") @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @DefaultValue(" tr.id ") @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @DefaultValue(" desc ") @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @DefaultValue("en") @QueryParam("locale") final String locale,
+            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
         validateAppuserClientsMapping(clientId);
-        return this.clientsBusinessApiResource.retrieveClientTransactions(uriInfo, clientId, transactionTypeId, depositAccountTypeId, offset,
-                limit, orderBy, sortOrder, startPeriod, endPeriod, locale, dateFormat);
+        return this.clientsBusinessApiResource.retrieveClientTransactions(uriInfo, clientId, transactionTypeId, depositAccountTypeId,
+                offset, limit, orderBy, sortOrder, startPeriod, endPeriod, locale, dateFormat);
     }
 }

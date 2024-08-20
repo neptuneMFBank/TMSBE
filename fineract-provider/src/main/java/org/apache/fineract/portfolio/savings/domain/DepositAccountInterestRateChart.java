@@ -129,8 +129,8 @@ public class DepositAccountInterestRateChart extends AbstractPersistableCustom {
 
     public BigDecimal getApplicableInterestRate(final BigDecimal depositAmount, final LocalDate periodStartDate,
             final LocalDate periodEndDate, final Client client, final Long periodFrequency) {
-        //BigDecimal effectiveInterestRate = BigDecimal.ZERO;
-        //Allow Recurring Investment to be opened with zero interest and above (why maintaining validation)
+        // BigDecimal effectiveInterestRate = BigDecimal.ZERO;
+        // Allow Recurring Investment to be opened with zero interest and above (why maintaining validation)
         BigDecimal effectiveInterestRate = new BigDecimal(-1);
         for (DepositAccountInterestRateChartSlabs slab : setOfChartSlabs()) {
             if (slab.slabFields().isBetweenPeriod(periodStartDate, periodEndDate) && slab.slabFields().isAmountBetween(depositAmount)) {

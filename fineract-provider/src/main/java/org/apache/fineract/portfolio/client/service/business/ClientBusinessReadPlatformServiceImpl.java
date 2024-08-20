@@ -26,7 +26,6 @@ import static org.apache.fineract.portfolio.client.data.business.ClientBusinessA
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +37,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -184,7 +182,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             // final String hierarchySearchString = hierarchy + "%";
 
             final String sql = "select " + this.clientBusinessMapper.schema()
-                    // + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
+            // + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
                     + " where c.id = ?";
             ClientBusinessData clientData = this.jdbcTemplate.queryForObject(sql, this.clientBusinessMapper, // NOSONAR
                     // hierarchySearchString, hierarchySearchString,
@@ -322,7 +320,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 // , lgaValuesOptions
                 , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions
-                // , industryOptions
+        // , industryOptions
         );
     }
 
@@ -568,6 +566,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
             sqlBuilder.append(this.savingActiveSummaryMapper.schema());
+             sqlBuilder.append(" AND ms.product_id <> 2 "); //to remove reconciliation wallet summation
             // sqlBuilder.append(this.savingActiveSummaryMapper.savingsSchema());
 
             String sql = sqlBuilder.toString();
@@ -1052,7 +1051,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     }
 
     private String buildSqlStringFromClientPendingActivationCriteria(final SearchParametersBusiness searchParameters,
-                                                                     List<Object> paramList) {
+            List<Object> paramList) {
 
         final Integer legalFormId = searchParameters.getLegalFormId();
         final Long officeId = searchParameters.getOfficeId();
@@ -1315,18 +1314,22 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 } else if (searchParameters.getTransactionTypeId().intValue() == GlobalEntityType.SAVINGS_ACCOUNT.getValue()) {
                     showLoanTransactions = false;
                 }
-                searchParameters = SearchParametersBusiness.forTransactions(null, null, searchParameters.getOffset(), searchParameters.getLimit(), searchParameters.getOrderBy(), searchParameters.getSortOrder(), searchParameters.getFromDate(), searchParameters.getToDate(), searchParameters.getDepositTypeId());
+                searchParameters = SearchParametersBusiness.forTransactions(null, null, searchParameters.getOffset(),
+                        searchParameters.getLimit(), searchParameters.getOrderBy(), searchParameters.getSortOrder(),
+                        searchParameters.getFromDate(), searchParameters.getToDate(), searchParameters.getDepositTypeId());
             }
         }
 
         if (showLoanTransactions) {
-            final Page<LoanTransactionData> loanTransactionData = this.loanBusinessReadPlatformService.retrieveAllTransactionsByClientId(clientId, searchParameters);
+            final Page<LoanTransactionData> loanTransactionData = this.loanBusinessReadPlatformService
+                    .retrieveAllTransactionsByClientId(clientId, searchParameters);
             final String stringLoanTransactions = this.fromJsonHelper.toJson(loanTransactionData);
             final JsonElement jsonObjectLoanTransactions = this.fromJsonHelper.parse(stringLoanTransactions);
             jsonObjectBalance.add("loanTransactions", jsonObjectLoanTransactions);
         }
         if (showSavingTransactions) {
-            final Page<SavingsAccountTransactionData> savingTransactionData = this.savingsAccountBusinessReadPlatformService.retrieveAllTransactionsByClientId(clientId, searchParameters);
+            final Page<SavingsAccountTransactionData> savingTransactionData = this.savingsAccountBusinessReadPlatformService
+                    .retrieveAllTransactionsByClientId(clientId, searchParameters);
             final String stringSavingTransactions = this.fromJsonHelper.toJson(savingTransactionData);
             final JsonElement jsonObjectSavingTransactions = this.fromJsonHelper.parse(stringSavingTransactions);
             jsonObjectBalance.add("savingTransactions", jsonObjectSavingTransactions);

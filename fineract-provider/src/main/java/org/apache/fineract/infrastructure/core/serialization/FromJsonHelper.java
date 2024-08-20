@@ -19,11 +19,11 @@
 package org.apache.fineract.infrastructure.core.serialization;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.GsonBuilder;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.security.InvalidParameterException;
@@ -55,7 +55,7 @@ public class FromJsonHelper {
         final GsonBuilder builder = new GsonBuilder();
         GoogleGsonSerializerHelper.registerTypeAdapters(builder);
         this.gsonConverter = builder.create();
-        //this.gsonConverter = new Gson();
+        // this.gsonConverter = new Gson();
         this.helperDelegator = new JsonParserHelper();
     }
 
@@ -126,15 +126,16 @@ public class FromJsonHelper {
     }
 
     /**
-     * @param parentPropertyName The full json path to this property,the value is appended to the parameter name while generating an
-     *                           error message <br>
-     *                           Ex: property "name" in Object "person" would be named as "person.name"
+     * @param parentPropertyName
+     *            The full json path to this property,the value is appended to the parameter name while generating an
+     *            error message <br>
+     *            Ex: property "name" in Object "person" would be named as "person.name"
      * @param object
      * @param supportedParams
      */
     @SuppressWarnings("AvoidHidingCauseException")
     public void checkForUnsupportedNestedParameters(final String parentPropertyName, final JsonObject object,
-                                                    final Set<String> supportedParams) {
+            final Set<String> supportedParams) {
         try {
             checkForUnsupportedParameters(object, supportedParams);
         } catch (UnsupportedParameterException exception) {
@@ -203,7 +204,7 @@ public class FromJsonHelper {
     }
 
     public MonthDay extractMonthDayNamed(final String parameterName, final JsonObject object, final String dateFormat,
-                                         final Locale clientApplicationLocale) {
+            final Locale clientApplicationLocale) {
         return this.helperDelegator.extractMonthDayNamed(parameterName, object, dateFormat, clientApplicationLocale);
     }
 
@@ -220,7 +221,7 @@ public class FromJsonHelper {
     }
 
     public LocalTime extractLocalTimeNamed(final String parameterName, final JsonElement element, final String dateFormat,
-                                           final Locale locale) {
+            final Locale locale) {
         return this.helperDelegator.extractLocalTimeNamed(parameterName, element, dateFormat, locale, new HashSet<>());
     }
 
@@ -229,7 +230,7 @@ public class FromJsonHelper {
     }
 
     public LocalDateTime extractLocalDateTimeNamed(final String parameterName, final JsonElement element, final String dateFormat,
-                                                   final Locale locale) {
+            final Locale locale) {
         return this.helperDelegator.extractLocalDateTimeNamed(parameterName, element, dateFormat, locale, new HashSet<>());
     }
 
@@ -238,17 +239,17 @@ public class FromJsonHelper {
     }
 
     public LocalDate extractLocalDateNamed(final String parameterName, final JsonElement element, final String dateFormat,
-                                           final Locale locale) {
+            final Locale locale) {
         return this.helperDelegator.extractLocalDateNamed(parameterName, element.getAsJsonObject(), dateFormat, locale, new HashSet<>());
     }
 
     public LocalDate extractLocalDateNamed(final String parameterName, final JsonElement element,
-                                           final Set<String> parametersPassedInRequest) {
+            final Set<String> parametersPassedInRequest) {
         return this.helperDelegator.extractLocalDateNamed(parameterName, element, parametersPassedInRequest);
     }
 
     public LocalDate extractLocalDateAsArrayNamed(final String parameterName, final JsonElement element,
-                                                  final Set<String> parametersPassedInRequest) {
+            final Set<String> parametersPassedInRequest) {
         return this.helperDelegator.extractLocalDateAsArrayNamed(parameterName, element, parametersPassedInRequest);
     }
 
@@ -257,7 +258,7 @@ public class FromJsonHelper {
     }
 
     public BigDecimal extractBigDecimalWithLocaleNamed(final String parameterName, final JsonElement element,
-                                                       final Set<String> parametersPassedInRequest) {
+            final Set<String> parametersPassedInRequest) {
         return this.helperDelegator.extractBigDecimalWithLocaleNamed(parameterName, element, parametersPassedInRequest);
     }
 
@@ -266,7 +267,7 @@ public class FromJsonHelper {
     }
 
     public BigDecimal extractBigDecimalNamed(final String parameterName, final JsonElement element,
-                                             final Set<String> parametersPassedInRequest) {
+            final Set<String> parametersPassedInRequest) {
         return this.helperDelegator.extractBigDecimalNamed(parameterName, element.getAsJsonObject(), Locale.US, parametersPassedInRequest);
     }
 
@@ -279,7 +280,7 @@ public class FromJsonHelper {
     }
 
     public Integer extractIntegerWithLocaleNamed(final String parameterName, final JsonElement element,
-                                                 final Set<String> parametersPassedInRequest) {
+            final Set<String> parametersPassedInRequest) {
         return this.helperDelegator.extractIntegerWithLocaleNamed(parameterName, element.getAsJsonObject(), parametersPassedInRequest);
     }
 

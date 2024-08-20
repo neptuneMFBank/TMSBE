@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.List;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -139,21 +138,21 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
 
     @Autowired
     public LoanBusinessReadPlatformServiceImpl(final PlatformSecurityContext context,
-                                               final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository,
-                                               final LoanProductReadPlatformService loanProductReadPlatformService, final ClientReadPlatformService clientReadPlatformService,
-                                               final GroupReadPlatformService groupReadPlatformService, final LoanDropdownReadPlatformService loanDropdownReadPlatformService,
-                                               final FundReadPlatformService fundReadPlatformService, final ChargeReadPlatformService chargeReadPlatformService,
-                                               final CodeValueReadPlatformService codeValueReadPlatformService, final JdbcTemplate jdbcTemplate,
-                                               final NamedParameterJdbcTemplate namedParameterJdbcTemplate, final CalendarReadPlatformService calendarReadPlatformService,
-                                               final StaffReadPlatformService staffReadPlatformService, final PaymentTypeReadPlatformService paymentTypeReadPlatformService,
-                                               final LoanRepaymentScheduleTransactionProcessorFactory loanRepaymentScheduleTransactionProcessorFactory,
-                                               final FloatingRatesReadPlatformService floatingRatesReadPlatformService, final LoanUtilService loanUtilService,
-                                               final ConfigurationDomainService configurationDomainService,
-                                               final AccountDetailsReadPlatformService accountDetailsReadPlatformService, final LoanRepositoryWrapper loanRepositoryWrapper,
-                                               final ColumnValidator columnValidator, DatabaseSpecificSQLGenerator sqlGenerator, PaginationHelper paginationHelper,
-                                               final ApplicationContext applicationContext, final LoansApiResource loansApiResource, final FromJsonHelper fromJsonHelper,
-                                               final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper,
-                                               final ClientRepositoryWrapper clientRepositoryWrapper) {
+            final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository,
+            final LoanProductReadPlatformService loanProductReadPlatformService, final ClientReadPlatformService clientReadPlatformService,
+            final GroupReadPlatformService groupReadPlatformService, final LoanDropdownReadPlatformService loanDropdownReadPlatformService,
+            final FundReadPlatformService fundReadPlatformService, final ChargeReadPlatformService chargeReadPlatformService,
+            final CodeValueReadPlatformService codeValueReadPlatformService, final JdbcTemplate jdbcTemplate,
+            final NamedParameterJdbcTemplate namedParameterJdbcTemplate, final CalendarReadPlatformService calendarReadPlatformService,
+            final StaffReadPlatformService staffReadPlatformService, final PaymentTypeReadPlatformService paymentTypeReadPlatformService,
+            final LoanRepaymentScheduleTransactionProcessorFactory loanRepaymentScheduleTransactionProcessorFactory,
+            final FloatingRatesReadPlatformService floatingRatesReadPlatformService, final LoanUtilService loanUtilService,
+            final ConfigurationDomainService configurationDomainService,
+            final AccountDetailsReadPlatformService accountDetailsReadPlatformService, final LoanRepositoryWrapper loanRepositoryWrapper,
+            final ColumnValidator columnValidator, DatabaseSpecificSQLGenerator sqlGenerator, PaginationHelper paginationHelper,
+            final ApplicationContext applicationContext, final LoansApiResource loansApiResource, final FromJsonHelper fromJsonHelper,
+            final LoanProductInterestRepositoryWrapper loanProductInterestRepositoryWrapper,
+            final ClientRepositoryWrapper clientRepositoryWrapper) {
         this.context = context;
         this.loanRepositoryWrapper = loanRepositoryWrapper;
         this.applicationCurrencyRepository = applicationCurrencyRepository;
@@ -1231,7 +1230,8 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
         return getLoanTransactionDataPage(searchParameters, paramList, sqlBuilder);
     }
 
-    private Page<LoanTransactionData> getLoanTransactionDataPage(SearchParametersBusiness searchParameters, List<Object> paramList, StringBuilder sqlBuilder) {
+    private Page<LoanTransactionData> getLoanTransactionDataPage(SearchParametersBusiness searchParameters, List<Object> paramList,
+            StringBuilder sqlBuilder) {
         if (searchParameters != null) {
 
             final String extraCriteria = buildSqlStringFromTransactionCriteria(this.loanTransactionsMapper.loanPaymentsSchema(),
@@ -1274,7 +1274,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
     }
 
     private String buildSqlStringFromTransactionCriteria(String schemaSql, final SearchParametersBusiness searchParameters,
-                                                         List<Object> paramList) {
+            List<Object> paramList) {
         String extraCriteria = "";
 
         final Long transactionTypeId = searchParameters.getTransactionTypeId();

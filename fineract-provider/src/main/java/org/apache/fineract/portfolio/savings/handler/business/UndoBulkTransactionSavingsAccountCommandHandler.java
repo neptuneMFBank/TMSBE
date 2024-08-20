@@ -34,7 +34,8 @@ public class UndoBulkTransactionSavingsAccountCommandHandler implements NewComma
     private final DepositApplicationBusinessProcessWritePlatformService writePlatformService;
 
     @Autowired
-    public UndoBulkTransactionSavingsAccountCommandHandler(final DepositApplicationBusinessProcessWritePlatformService writePlatformService) {
+    public UndoBulkTransactionSavingsAccountCommandHandler(
+            final DepositApplicationBusinessProcessWritePlatformService writePlatformService) {
         this.writePlatformService = writePlatformService;
     }
 

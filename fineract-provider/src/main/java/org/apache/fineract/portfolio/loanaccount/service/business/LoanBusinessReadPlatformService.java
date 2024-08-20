@@ -21,7 +21,6 @@ package org.apache.fineract.portfolio.loanaccount.service.business;
 import java.util.Collection;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.floatingrates.data.InterestRatePeriodData;

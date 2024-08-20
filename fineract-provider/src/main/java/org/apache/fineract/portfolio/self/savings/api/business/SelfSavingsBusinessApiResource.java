@@ -101,8 +101,8 @@ public class SelfSavingsBusinessApiResource {
             @QueryParam("transactionId") @Parameter(description = "transactionId") final Long transactionId,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
             @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
-            //@QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
-            //@QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            // @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            // @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
             @DefaultValue("en") @QueryParam("locale") final String locale,
             @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat) {
 

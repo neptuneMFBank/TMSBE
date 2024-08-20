@@ -18,12 +18,11 @@
  */
 package org.apache.fineract.portfolio.savings.business;
 
-import org.apache.fineract.portfolio.client.api.ClientApiConstants;
-import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConstants;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.fineract.portfolio.client.api.ClientApiConstants;
+import org.apache.fineract.portfolio.client.api.business.ClientBusinessApiConstants;
 
 public final class DepositsBusinessApiConstants {
 
@@ -59,8 +58,8 @@ public final class DepositsBusinessApiConstants {
 
     public static final String savingsProductExtensionParam = "savingsProductExtension";
 
-    public static final Set<String> DEPOSIT_RESPONSE_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(IDPARAM, accountNoPARAM, depositTypePARAM, statusPARAM, clientIdPARAM, clientNamePARAM, officeIdPARAM,
-                    officeNamePARAM, depositProductIdPARAM, depositProductNamePARAM, availableBalancePARAM, ledgerBalancePARAM,
-                    createdOnPARAM, activatedOnPARAM, lastTransactionOnPARAM, externalIdPARAM, minRequiredBalancePARAM, ClientBusinessApiConstants.bvnParamName, ClientApiConstants.clientTypeParamName));
+    public static final Set<String> DEPOSIT_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(IDPARAM, accountNoPARAM,
+            depositTypePARAM, statusPARAM, clientIdPARAM, clientNamePARAM, officeIdPARAM, officeNamePARAM, depositProductIdPARAM,
+            depositProductNamePARAM, availableBalancePARAM, ledgerBalancePARAM, createdOnPARAM, activatedOnPARAM, lastTransactionOnPARAM,
+            externalIdPARAM, minRequiredBalancePARAM, ClientBusinessApiConstants.bvnParamName, ClientApiConstants.clientTypeParamName));
 }

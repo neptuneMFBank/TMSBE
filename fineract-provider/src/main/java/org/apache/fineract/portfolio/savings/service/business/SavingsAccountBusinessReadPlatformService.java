@@ -27,7 +27,8 @@ public interface SavingsAccountBusinessReadPlatformService {
 
     void commissionVendEod();
 
-    Page<SavingsAccountTransactionData> retrieveAllTransactionsBySavingsId(Long savingsId, DepositAccountType depositAccountType, final SearchParametersBusiness searchParameters);
+    Page<SavingsAccountTransactionData> retrieveAllTransactionsBySavingsId(Long savingsId, DepositAccountType depositAccountType,
+            final SearchParametersBusiness searchParameters);
 
     Page<SavingsAccountTransactionData> retrieveAllTransactionsByClientId(Long clientId, final SearchParametersBusiness searchParameters);
 

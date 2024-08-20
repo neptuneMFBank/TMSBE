@@ -391,9 +391,11 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
 
         final String transactionRefNo = savingsAccountTransaction.getRefNo();
         if (StringUtils.isEmpty(transactionRefNo)) {
-            throw new GeneralPlatformDomainRuleException("error.msg.saving.account.trasaction.id.invalid", "No transaction reference to undo.");
+            throw new GeneralPlatformDomainRuleException("error.msg.saving.account.trasaction.id.invalid",
+                    "No transaction reference to undo.");
         }
-        final List<SavingsAccountTransaction> savingsAccountTransactions = this.savingsAccountTransactionRepository.findAllTransactionByRefNo(transactionRefNo);
+        final List<SavingsAccountTransaction> savingsAccountTransactions = this.savingsAccountTransactionRepository
+                .findAllTransactionByRefNo(transactionRefNo);
         for (SavingsAccountTransaction sat : savingsAccountTransactions) {
             final Long savingsTransactionId = sat.getId();
             this.savingsAccountWritePlatformService.undoTransaction(savingsId, savingsTransactionId, false);

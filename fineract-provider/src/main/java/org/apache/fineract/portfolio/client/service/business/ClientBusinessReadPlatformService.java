@@ -19,9 +19,7 @@
 package org.apache.fineract.portfolio.client.service.business;
 
 import com.google.gson.JsonObject;
-
 import java.util.Collection;
-
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.client.data.ClientData;
@@ -45,7 +43,7 @@ public interface ClientBusinessReadPlatformService {
     JsonObject retrieveBalance(Long clientId);
 
     KycBusinessData isClientExisting(final String email, final String mobileNo, final String altMobileNo, final String bvn,
-                                     final String nin, final String tin);
+            final String nin, final String tin);
 
     void queueSelfClientActivate();
 

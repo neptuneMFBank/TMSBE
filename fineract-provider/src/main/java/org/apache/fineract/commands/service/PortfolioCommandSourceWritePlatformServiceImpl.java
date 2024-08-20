@@ -20,10 +20,8 @@ package org.apache.fineract.commands.service;
 
 import com.google.gson.JsonElement;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import java.security.SecureRandom;
 import java.time.ZonedDateTime;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.commands.domain.CommandSource;
@@ -61,7 +59,7 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
     @Override
     @SuppressWarnings("AvoidHidingCauseException")
     @SuppressFBWarnings(value = {
-            "DMI_RANDOM_USED_ONLY_ONCE"}, justification = "False positive for random object created and used only once")
+            "DMI_RANDOM_USED_ONLY_ONCE" }, justification = "False positive for random object created and used only once")
     public CommandProcessingResult logCommandSource(final CommandWrapper wrapper) {
 
         boolean isApprovedByChecker = false;

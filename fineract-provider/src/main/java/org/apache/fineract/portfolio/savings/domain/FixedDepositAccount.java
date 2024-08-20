@@ -782,10 +782,10 @@ public class FixedDepositAccount extends SavingsAccount {
             BigDecimal applicableInterestRate = this.chart.getApplicableInterestRate(depositAmount, depositStartDate(),
                     calculateMaturityDate(), this.client, lockinPeriodFrequencyTypeChartSlabIncentives);
 
-            //if (applicableInterestRate.compareTo(BigDecimal.ZERO) == 0 ? Boolean.TRUE : Boolean.FALSE) {
+            // if (applicableInterestRate.compareTo(BigDecimal.ZERO) == 0 ? Boolean.TRUE : Boolean.FALSE) {
             // Fixed Investment has to be modified to meet Recurring Investment process on the same method
             if (applicableInterestRate.compareTo(BigDecimal.ZERO) <= 0 ? Boolean.TRUE : Boolean.FALSE) {
-                    baseDataValidator.reset()
+                baseDataValidator.reset()
                         .failWithCodeNoParameterAddedToErrorCode("no.applicable.interest.rate.is.found.based.on.amount.and.deposit.period");
             }
 

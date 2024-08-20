@@ -20,7 +20,6 @@ package org.apache.fineract.portfolio.savings.service.business;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.sql.ResultSet;
@@ -31,7 +30,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.glaccount.data.GLAccountDataForLookup;
@@ -94,12 +92,12 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
 
     @Autowired
     public SavingsAccountBusinessReadPlatformServiceImpl(final ColumnValidator columnValidator,
-                                                         final SavingsAccountAssembler savingAccountAssembler, PaginationHelper paginationHelper,
-                                                         final DatabaseSpecificSQLGenerator sqlGenerator, final JdbcTemplate jdbcTemplate,
-                                                         final CommissionVendRepository commissionVendRepository,
-                                                         final ConfigurationReadPlatformService configurationReadPlatformService,
-                                                         final AccountingRuleReadPlatformService accountingRuleReadPlatformService,
-                                                         final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+            final SavingsAccountAssembler savingAccountAssembler, PaginationHelper paginationHelper,
+            final DatabaseSpecificSQLGenerator sqlGenerator, final JdbcTemplate jdbcTemplate,
+            final CommissionVendRepository commissionVendRepository,
+            final ConfigurationReadPlatformService configurationReadPlatformService,
+            final AccountingRuleReadPlatformService accountingRuleReadPlatformService,
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.transactionsMapper = new SavingsAccountTransactionsMapper();
 
         this.columnValidator = columnValidator;
@@ -165,14 +163,17 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
                                 .retrieveAccountingRuleById(accountingRulesVatId);
                         final Long officeId = accountingRuleData.getOfficeId();
 
-                        final BigDecimal commissionAmountVat =
-                                commissionAmount.multiply(accountingRulesVatPercentId, MathContext.DECIMAL64).setScale(2, MoneyHelper.getRoundingMode());
-                        final BigDecimal commissionAmountLessVat = commissionAmount.subtract(commissionAmountVat).setScale(2, MoneyHelper.getRoundingMode());
+                        final BigDecimal commissionAmountVat = commissionAmount.multiply(accountingRulesVatPercentId, MathContext.DECIMAL64)
+                                .setScale(2, MoneyHelper.getRoundingMode());
+                        final BigDecimal commissionAmountLessVat = commissionAmount.subtract(commissionAmountVat).setScale(2,
+                                MoneyHelper.getRoundingMode());
 
-                        //handles the posting for the Taxable VAT GL account
-                        runFrequentAccountPosying(accountingRuleData, commissionAmountLessVat, officeId, refNo, note, accountingRuleId, currencyCode, paymentTypeId, receiptNumber, bankNumber);
-                        //handles the posting for the VAT GL account
-                        runFrequentAccountPosying(accountingRuleVatData, commissionAmountVat, officeId, refNo, note, accountingRulesVatId, currencyCode, paymentTypeId, receiptNumber, bankNumber);
+                        // handles the posting for the Taxable VAT GL account
+                        runFrequentAccountPosying(accountingRuleData, commissionAmountLessVat, officeId, refNo, note, accountingRuleId,
+                                currencyCode, paymentTypeId, receiptNumber, bankNumber);
+                        // handles the posting for the VAT GL account
+                        runFrequentAccountPosying(accountingRuleVatData, commissionAmountVat, officeId, refNo, note, accountingRulesVatId,
+                                currencyCode, paymentTypeId, receiptNumber, bankNumber);
                     }
 
                     String updateCommissionVatCalculated = "INSERT INTO m_commision_vat_calculated (savings_account_transaction_id, type, status) VALUES (?, ?, ?)";
@@ -185,7 +186,8 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
         }
     }
 
-    private void runFrequentAccountPosying(AccountingRuleData accountingRuleData, BigDecimal commissionAmount, Long officeId, String refNo, String note, Long accountingRuleId, String currencyCode, Long paymentTypeId, String receiptNumber, String bankNumber) {
+    private void runFrequentAccountPosying(AccountingRuleData accountingRuleData, BigDecimal commissionAmount, Long officeId, String refNo,
+            String note, Long accountingRuleId, String currencyCode, Long paymentTypeId, String receiptNumber, String bankNumber) {
         JsonArray credits = new JsonArray();
         final List<GLAccountDataForLookup> accountDataForLookupsCredits = accountingRuleData.getCreditAccounts();
         if (accountDataForLookupsCredits != null) {
@@ -270,10 +272,10 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
 
     @Override
     public Page<SavingsAccountTransactionData> retrieveAllTransactionsBySavingsId(Long savingsId, DepositAccountType depositAccountType,
-                                                                                  final SearchParametersBusiness searchParameters) {
+            final SearchParametersBusiness searchParameters) {
 
         List<Object> paramList = new ArrayList<>(Collections.singletonList(savingsId));
-        //List<Object> paramList = new ArrayList<>(Arrays.asList(savingsId, depositAccountType.getValue()));
+        // List<Object> paramList = new ArrayList<>(Arrays.asList(savingsId, depositAccountType.getValue()));
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append("select ").append(sqlGenerator.calcFoundRows()).append(" ");
         sqlBuilder.append(this.transactionsMapper.schema());
@@ -285,7 +287,8 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
         return getSavingsAccountTransactionDataPage(searchParameters, paramList, sqlBuilder);
     }
 
-    private Page<SavingsAccountTransactionData> getSavingsAccountTransactionDataPage(SearchParametersBusiness searchParameters, List<Object> paramList, StringBuilder sqlBuilder) {
+    private Page<SavingsAccountTransactionData> getSavingsAccountTransactionDataPage(SearchParametersBusiness searchParameters,
+            List<Object> paramList, StringBuilder sqlBuilder) {
         if (searchParameters != null) {
 
             final String extraCriteria = buildSqlStringFromTransactionCriteria(this.transactionsMapper.schema(), searchParameters,
@@ -316,9 +319,8 @@ public class SavingsAccountBusinessReadPlatformServiceImpl implements SavingsAcc
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), this.transactionsMapper);
     }
 
-
     private String buildSqlStringFromTransactionCriteria(String schemaSql, final SearchParametersBusiness searchParameters,
-                                                         List<Object> paramList) {
+            List<Object> paramList) {
         String extraCriteria = "";
 
         final Long transactionTypeId = searchParameters.getTransactionTypeId();

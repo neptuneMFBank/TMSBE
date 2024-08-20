@@ -20,7 +20,6 @@ package org.apache.fineract.portfolio.savings.service.business;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -436,7 +434,7 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
         this.context.authenticatedUser();
         try {
             final String sql = "select " + savingsAmountOnHoldDataMapper.schema() + " where sav.id = ?";
-            return this.jdbcTemplate.queryForObject(sql, savingsAmountOnHoldDataMapper, new Object[]{savingsAmountOnHoldId});
+            return this.jdbcTemplate.queryForObject(sql, savingsAmountOnHoldDataMapper, new Object[] { savingsAmountOnHoldId });
         } catch (DataAccessException e) {
             log.error("SavingsAmountOnHold not found: {}", e);
             throw new SavingsAccountTransactionNotFoundException(savingsAmountOnHoldId, savingsAmountOnHoldId);
@@ -555,13 +553,12 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
             final String clientName = rs.getString("displayName");
             final String bvn = rs.getString("bvn");
 
-             CodeValueData clienttype=null;
+            CodeValueData clienttype = null;
             final Long clienttypeId = JdbcSupport.getLong(rs, "clienttypeId");
-            if  (clienttypeId !=null && clienttypeId>0 ){
+            if (clienttypeId != null && clienttypeId > 0) {
                 final String clienttypeValue = rs.getString("clienttypeValue");
-                  clienttype = CodeValueData.instance(clienttypeId, clienttypeValue);
+                clienttype = CodeValueData.instance(clienttypeId, clienttypeValue);
             }
-
 
             final Long productId = rs.getLong("productId");
             final String productName = rs.getString("productName");
@@ -577,7 +574,8 @@ public class DepositsBusinessReadPlatformServiceImpl implements DepositsBusiness
             final LocalDate lastTransactionOn = JdbcSupport.getLocalDate(rs, "lastTransactionOn");
 
             return DepositAccountBusinessData.lookUp(id, accountNo, depositType, status, clientId, clientName, productId, productName,
-                    availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId, officeName, minRequiredBalance, bvn, clienttype);
+                    availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId, officeName,
+                    minRequiredBalance, bvn, clienttype);
 
         }
 

@@ -90,7 +90,8 @@ public class SavingsAccountTransactionsBusinessApiResource {
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final SavingsAccountBusinessReadPlatformService savingsAccountBusinessReadPlatformService, final FromJsonHelper fromJsonHelper,
             final ClientReadPlatformService clientReadPlatformService, final AddressReadPlatformServiceImpl readPlatformService,
-            final SavingsAccountsApiResource savingsAccountsApiResource, final DefaultToApiJsonSerializer toApiDocJsonSerializer, final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+            final SavingsAccountsApiResource savingsAccountsApiResource, final DefaultToApiJsonSerializer toApiDocJsonSerializer,
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
         this.context = context;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
@@ -104,8 +105,8 @@ public class SavingsAccountTransactionsBusinessApiResource {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAllBySavingsId(@PathParam("savingsId") final Long savingsId, @Context final UriInfo uriInfo,
             @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
@@ -147,13 +148,12 @@ public class SavingsAccountTransactionsBusinessApiResource {
 
     @GET
     @Path("/doc")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a savings Doc", description = "")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(schema = @Schema(implementation = LoansApiResourceSwagger.GetLoansLoanIdResponse.class))
+    ) })
     public String retrieveSavingsDoc(@PathParam("savingsId") @Parameter(description = "savingsId") final Long savingsId,
             @Context final UriInfo uriInfo, @QueryParam("startPeriod") @Parameter(description = "fromDate") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "toDate") final DateParam endPeriod,
@@ -209,16 +209,17 @@ public class SavingsAccountTransactionsBusinessApiResource {
 
     @POST
     @Path("{transactionId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Undo Bulk transaction API", description = "Undo Bulk transaction API\n\n Accepted command = undo, reverse, modify, releaseAmount")
     @RequestBody(required = true
-    //, content = @Content(schema = @Schema(implementation = SavingsAccountTransactionsApiResourceSwagger.PostSavingsAccountBulkReversalTransactionsRequest.class))
+    // , content = @Content(schema = @Schema(implementation =
+    // SavingsAccountTransactionsApiResourceSwagger.PostSavingsAccountBulkReversalTransactionsRequest.class))
     )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK"
-        //, content = @Content(array = @ArraySchema(schema = @Schema(implementation = SavingsAccountTransactionsApiResourceSwagger.PostSavingsAccountBulkReversalTransactionsRequest.class)))
-        )})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK"
+    // , content = @Content(array = @ArraySchema(schema = @Schema(implementation =
+    // SavingsAccountTransactionsApiResourceSwagger.PostSavingsAccountBulkReversalTransactionsRequest.class)))
+    ) })
     public String adjustTransaction(@PathParam("savingsId") final Long savingsId, @PathParam("transactionId") final Long transactionId,
             @QueryParam("command") final String commandParam, final String apiRequestBodyAsJson) {
 
@@ -238,7 +239,7 @@ public class SavingsAccountTransactionsBusinessApiResource {
         if (result == null) {
             //
             throw new UnrecognizedQueryParamException("command", commandParam,
-                    new Object[]{SavingsBusinessApiSetConstants.COMMAND_UNDO_BULK_TRANSACTION});
+                    new Object[] { SavingsBusinessApiSetConstants.COMMAND_UNDO_BULK_TRANSACTION });
         }
 
         return this.toApiJsonSerializer.serialize(result);

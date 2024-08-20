@@ -20,7 +20,6 @@ package org.apache.fineract.portfolio.savings.data.business;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountStatusEnumData;
@@ -102,22 +101,22 @@ public class DepositAccountBusinessData {
         CodeValueData clientType = null;
         return new DepositAccountBusinessData(id, accountNo, depositType, status, clientId, clientName, depositProductId,
                 depositProductName, availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId,
-                officeName, minRequiredBalance, bvn,clientType);
+                officeName, minRequiredBalance, bvn, clientType);
     }
 
     public static DepositAccountBusinessData lookUp(Long id, String accountNo, EnumOptionData depositType,
-                                                    SavingsAccountStatusEnumData status, Long clientId, String clientName, Long depositProductId, String depositProductName,
-                                                    BigDecimal availableBalance, BigDecimal ledgerBalance, LocalDate createdOn, LocalDate activatedOn, LocalDate lastTransactionOn,
-                                                    String externalId, Long officeId, String officeName, BigDecimal minRequiredBalance, String bvn, CodeValueData clientType) {
+            SavingsAccountStatusEnumData status, Long clientId, String clientName, Long depositProductId, String depositProductName,
+            BigDecimal availableBalance, BigDecimal ledgerBalance, LocalDate createdOn, LocalDate activatedOn, LocalDate lastTransactionOn,
+            String externalId, Long officeId, String officeName, BigDecimal minRequiredBalance, String bvn, CodeValueData clientType) {
         return new DepositAccountBusinessData(id, accountNo, depositType, status, clientId, clientName, depositProductId,
                 depositProductName, availableBalance, ledgerBalance, createdOn, activatedOn, lastTransactionOn, externalId, officeId,
-                officeName, minRequiredBalance, bvn,clientType);
+                officeName, minRequiredBalance, bvn, clientType);
     }
 
     private DepositAccountBusinessData(Long id, String accountNo, EnumOptionData depositType, SavingsAccountStatusEnumData status,
-                                       Long clientId, String clientName, Long depositProductId, String depositProductName, BigDecimal availableBalance,
-                                       BigDecimal ledgerBalance, LocalDate createdOn, LocalDate activatedOn, LocalDate lastTransactionOn, String externalId,
-                                       Long officeId, String officeName, BigDecimal minRequiredBalance, String bvn, CodeValueData clientType) {
+            Long clientId, String clientName, Long depositProductId, String depositProductName, BigDecimal availableBalance,
+            BigDecimal ledgerBalance, LocalDate createdOn, LocalDate activatedOn, LocalDate lastTransactionOn, String externalId,
+            Long officeId, String officeName, BigDecimal minRequiredBalance, String bvn, CodeValueData clientType) {
         this.id = id;
         this.officeId = officeId;
         this.officeName = officeName;

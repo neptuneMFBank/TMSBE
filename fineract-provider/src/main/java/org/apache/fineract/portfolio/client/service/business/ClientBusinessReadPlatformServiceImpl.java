@@ -23,6 +23,7 @@ import static org.apache.fineract.portfolio.client.data.business.ClientBusinessA
 import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.ledgerAmountParameterName;
 import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.statusParameterName;
 import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.totalOverdueDerivedParameterName;
+import static org.apache.fineract.simplifytech.data.ApplicationPropertiesConstant.SAVINGS_PRODUCT_RECONCILE_ID_API;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -102,6 +103,9 @@ import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountReadPlatformService;
 import org.apache.fineract.portfolio.savings.service.SavingsProductReadPlatformService;
 import org.apache.fineract.portfolio.savings.service.business.SavingsAccountBusinessReadPlatformService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -150,6 +154,9 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
     private final LoanActiveSummaryMapper loanActiveSummaryMapper = new LoanActiveSummaryMapper();
     private final SavingsActiveSummaryMapper savingActiveSummaryMapper = new SavingsActiveSummaryMapper();
+
+    @Value("${savings.product.reconcile.id}")
+    private final Long savingsProductId;
 
     private Long defaultToUsersOfficeIfNull(final Long officeId) {
         Long defaultOfficeId = officeId;
@@ -556,7 +563,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             }
             jsonObjectBalance.add("loanAccount", jsonObjectLoan);
         } catch (DataAccessException e) {
-            log.warn("retrieveBalance Loan: {}", e);
+            log.warn("retrieveBalance Loan: ", e);
             jsonObjectLoan.addProperty(statusParameterName, Boolean.FALSE);
             jsonObjectBalance.add("loanAccount", jsonObjectLoan);
         }
@@ -566,7 +573,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
             sqlBuilder.append(this.savingActiveSummaryMapper.schema());
-             sqlBuilder.append(" AND ms.product_id <> 2 "); //to remove reconciliation wallet summation
+            sqlBuilder.append(" AND ms.product_id <> ").append(savingsProductId); //to remove reconciliation wallet summation
             // sqlBuilder.append(this.savingActiveSummaryMapper.savingsSchema());
 
             String sql = sqlBuilder.toString();

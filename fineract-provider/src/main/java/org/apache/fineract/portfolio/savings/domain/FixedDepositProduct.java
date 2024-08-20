@@ -286,21 +286,21 @@ public class FixedDepositProduct extends SavingsProduct {
     public void validateInterestPostingAndCompoundingPeriodTypes(final DataValidatorBuilder baseDataValidator) {
         Map<SavingsPostingInterestPeriodType, List<SavingsCompoundingInterestPeriodType>> postingtoCompoundMap = new HashMap<>();
         postingtoCompoundMap.put(SavingsPostingInterestPeriodType.MONTHLY, Arrays.asList(new SavingsCompoundingInterestPeriodType[] {
-                SavingsCompoundingInterestPeriodType.DAILY, SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.NO_COMPOUNDING_SIMPLE_INTEREST }));
+                SavingsCompoundingInterestPeriodType.DAILY, SavingsCompoundingInterestPeriodType.MONTHLY }));
 
         postingtoCompoundMap.put(SavingsPostingInterestPeriodType.QUATERLY,
                 Arrays.asList(new SavingsCompoundingInterestPeriodType[] { SavingsCompoundingInterestPeriodType.DAILY,
-                        SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY, SavingsCompoundingInterestPeriodType.NO_COMPOUNDING_SIMPLE_INTEREST }));
+                        SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY }));
 
         postingtoCompoundMap.put(SavingsPostingInterestPeriodType.BIANNUAL,
                 Arrays.asList(new SavingsCompoundingInterestPeriodType[] { SavingsCompoundingInterestPeriodType.DAILY,
                         SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY,
-                        SavingsCompoundingInterestPeriodType.BI_ANNUAL, SavingsCompoundingInterestPeriodType.NO_COMPOUNDING_SIMPLE_INTEREST }));
+                        SavingsCompoundingInterestPeriodType.BI_ANNUAL }));
 
         postingtoCompoundMap.put(SavingsPostingInterestPeriodType.ANNUAL,
                 Arrays.asList(new SavingsCompoundingInterestPeriodType[] { SavingsCompoundingInterestPeriodType.DAILY,
                         SavingsCompoundingInterestPeriodType.MONTHLY, SavingsCompoundingInterestPeriodType.QUATERLY,
-                        SavingsCompoundingInterestPeriodType.BI_ANNUAL, SavingsCompoundingInterestPeriodType.ANNUAL, SavingsCompoundingInterestPeriodType.NO_COMPOUNDING_SIMPLE_INTEREST }));
+                        SavingsCompoundingInterestPeriodType.BI_ANNUAL, SavingsCompoundingInterestPeriodType.ANNUAL }));
 
         SavingsPostingInterestPeriodType savingsPostingInterestPeriodType = SavingsPostingInterestPeriodType
                 .fromInt(interestPostingPeriodType);
@@ -308,7 +308,8 @@ public class FixedDepositProduct extends SavingsProduct {
                 .fromInt(interestCompoundingPeriodType);
 
         if (postingtoCompoundMap.get(savingsPostingInterestPeriodType) == null
-                || !postingtoCompoundMap.get(savingsPostingInterestPeriodType).contains(savingsCompoundingInterestPeriodType)) {
+                //|| !postingtoCompoundMap.get(savingsPostingInterestPeriodType).contains(savingsCompoundingInterestPeriodType)
+        ) {
             baseDataValidator.failWithCodeNoParameterAddedToErrorCode("posting.period.type.is.less.than.compound.period.type",
                     savingsPostingInterestPeriodType.name(), savingsCompoundingInterestPeriodType.name());
 

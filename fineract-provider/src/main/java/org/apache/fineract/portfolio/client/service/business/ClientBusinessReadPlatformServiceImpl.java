@@ -153,7 +153,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     private final SavingsActiveSummaryMapper savingActiveSummaryMapper = new SavingsActiveSummaryMapper();
 
     @Value("${savings.product.reconcile.id}")
-    private Long savingsProductId;
+    private int savingsProductId;
 
     private Long defaultToUsersOfficeIfNull(final Long officeId) {
         Long defaultOfficeId = officeId;

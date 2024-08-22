@@ -439,4 +439,12 @@ public class GeneralConstants {
         }
         return interestRate;
     }
+
+    public static String convertCamelCaseToUnderscore(String camelCaseString) {
+        if(StringUtils.isBlank(camelCaseString)){return camelCaseString;}
+        // Replace the camel case pattern with an underscore
+        return camelCaseString
+                .replaceAll("([a-z])([A-Z])", "$1_$2")
+                .toLowerCase();
+    }
 }

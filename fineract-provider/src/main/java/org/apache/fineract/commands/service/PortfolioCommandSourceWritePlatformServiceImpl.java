@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,10 +20,15 @@ package org.apache.fineract.commands.service;
 
 import com.google.gson.JsonElement;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.security.SecureRandom;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.commands.domain.CommandSource;
 import org.apache.fineract.commands.domain.CommandSourceRepository;
 import org.apache.fineract.commands.domain.CommandWrapper;
@@ -37,11 +42,15 @@ import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.jobs.service.SchedulerJobRunnerReadService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.client.domain.Client;
+import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.apache.fineract.simplifytech.data.GeneralConstants.convertCamelCaseToUnderscore;
 
 @Service
 @RequiredArgsConstructor
@@ -55,11 +64,12 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
     private final FromJsonHelper fromApiJsonHelper;
     private final CommandProcessingService processAndLogCommandService;
     private final SchedulerJobRunnerReadService schedulerJobRunnerReadService;
+    private final ClientRepositoryWrapper clientRepositoryWrapper;
 
     @Override
     @SuppressWarnings("AvoidHidingCauseException")
     @SuppressFBWarnings(value = {
-            "DMI_RANDOM_USED_ONLY_ONCE" }, justification = "False positive for random object created and used only once")
+            "DMI_RANDOM_USED_ONLY_ONCE"}, justification = "False positive for random object created and used only once")
     public CommandProcessingResult logCommandSource(final CommandWrapper wrapper) {
 
         boolean isApprovedByChecker = false;
@@ -119,7 +129,55 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
             }
         }
 
+        addModuleExistingJsonToAudit(wrapper, json, result, command);
+
         return result;
+    }
+
+    private void addModuleExistingJsonToAudit(CommandWrapper wrapper, String json, CommandProcessingResult result, JsonCommand command) {
+        try {
+            //for an update, let keep the existing record on the table
+            //Thompson 22/08/2024
+            if (StringUtils.isNotBlank(json) && result != null && result.commandId() != null && result.commandId() > 0 && wrapper.isUpdateOperation()) {
+                Long resId;
+                String existingJson;
+                String newJson;
+                String finalJson;
+                Map<String, Object> mapCurrent;
+                Map<String, Object> mapExisting;
+                Map<String, Object> matchedMap = new HashMap<>();
+                if (StringUtils.isNotBlank(wrapper.entityName())) {
+                    if (wrapper.entityName().equals("CLIENT")) {
+                        resId = result.getClientId();
+                        final Client clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
+                        existingJson = this.fromApiJsonHelper.toJson(clientExisting);
+                        mapExisting = command.mapObjectValueOfParameterNamed(existingJson);
+
+                        final Client newClient = Client.createNew(null, null, null, null, null, null,
+                                null, null, null, command);
+                        newJson = this.fromApiJsonHelper.toJson(newClient);
+                        mapCurrent = command.mapObjectValueOfParameterNamed(newJson);
+
+                        // Compare the two maps
+                        for (Map.Entry<String, Object> entry : mapExisting.entrySet()) {
+                            final String key = convertCamelCaseToUnderscore(entry.getKey());
+                            final Object value = entry.getValue();
+
+                            if (mapCurrent.containsKey(key)) {
+                                matchedMap.put(key, value);
+                            }
+                        }
+                    }
+
+                    if (!matchedMap.isEmpty()) {
+                        finalJson = this.fromApiJsonHelper.toJson(matchedMap);
+                        this.processAndLogCommandService.logCommandExisting(result.commandId(), finalJson);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("newJsonUpdateParameterCheck-{}", wrapper.entityName(), e);
+        }
     }
 
     @Override

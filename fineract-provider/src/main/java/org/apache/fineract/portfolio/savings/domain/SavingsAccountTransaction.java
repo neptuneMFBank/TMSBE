@@ -927,4 +927,9 @@ public final class SavingsAccountTransaction extends AbstractPersistableCustom {
     public boolean isReversalTransaction() {
         return reversalTransaction;
     }
+
+    public void updatePaymentDetail(final  PaymentDetail paymentDetail) {
+        this.paymentDetail = paymentDetail;
+    }
+
 }

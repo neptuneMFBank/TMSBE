@@ -100,6 +100,9 @@ public class CommandSource extends AbstractPersistableCustom {
     @Column(name = "role_id")
     private String roleId;
 
+    @Column(name = "existing_json", length = 1000)
+    private String existingJson;
+
     public static CommandSource fullEntryFrom(final CommandWrapper wrapper, final JsonCommand command, final AppUser maker) {
         return new CommandSource(wrapper.actionName(), wrapper.entityName(), wrapper.getHref(), command.entityId(), command.subentityId(),
                 command.json(), maker, ZonedDateTime.now(DateUtils.getDateTimeZoneOfTenant()), null);
@@ -289,5 +292,9 @@ public class CommandSource extends AbstractPersistableCustom {
 
     public void updateRoleId(final String roleId) {
         this.roleId = roleId;
+    }
+
+    public void updateExistingJson(final String existingJson) {
+        this.existingJson = existingJson;
     }
 }

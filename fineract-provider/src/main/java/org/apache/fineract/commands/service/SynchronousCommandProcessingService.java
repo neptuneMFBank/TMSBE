@@ -137,6 +137,9 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
 
         publishEvent(wrapper.entityName(), wrapper.actionName(), command, result);
 
+        if (commandSourceResult  !=null && commandSourceResult.getId() > 0){
+            result.updateCommandId(commandSourceResult.getId());
+        }
         return result;
     }
 

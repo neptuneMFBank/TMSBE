@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -35,6 +35,7 @@ import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.exception.CommandNotAwaitingApprovalException;
 import org.apache.fineract.commands.exception.CommandNotFoundException;
 import org.apache.fineract.commands.exception.RollbackTransactionAsCommandIsNotApprovedByCheckerException;
+import org.apache.fineract.commands.service.business.CommandBusinessProcessingService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
@@ -63,6 +64,7 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
     private final CommandSourceRepository commandSourceRepository;
     private final FromJsonHelper fromApiJsonHelper;
     private final CommandProcessingService processAndLogCommandService;
+    private final CommandBusinessProcessingService commandBusinessProcessingService;
     private final SchedulerJobRunnerReadService schedulerJobRunnerReadService;
     private final ClientRepositoryWrapper clientRepositoryWrapper;
 
@@ -171,7 +173,7 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
 
                     if (!matchedMap.isEmpty()) {
                         finalJson = this.fromApiJsonHelper.toJson(matchedMap);
-                        this.processAndLogCommandService.logCommandExisting(result.commandId(), finalJson);
+                        this.commandBusinessProcessingService.logCommandExisting(result.commandId(), finalJson);
                     }
                 }
             }

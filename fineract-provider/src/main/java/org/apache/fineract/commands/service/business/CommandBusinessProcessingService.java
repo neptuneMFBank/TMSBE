@@ -16,20 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.commands.service;
+package org.apache.fineract.commands.service.business;
 
-import org.apache.fineract.commands.domain.CommandSource;
-import org.apache.fineract.commands.domain.CommandWrapper;
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.useradministration.domain.AppUser;
+public interface CommandBusinessProcessingService {
 
-public interface CommandProcessingService {
 
-    CommandProcessingResult processAndLogCommand(CommandWrapper wrapper, JsonCommand command, boolean isApprovedByChecker);
+    void logCommandExisting(final Long commandId, final String existingJson);
 
-    CommandProcessingResult logCommand(CommandSource commandSourceResult);
-
-    boolean validateCommand(CommandWrapper commandWrapper, AppUser user);
 
 }

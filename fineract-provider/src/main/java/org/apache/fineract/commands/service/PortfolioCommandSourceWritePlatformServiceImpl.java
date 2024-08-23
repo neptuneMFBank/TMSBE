@@ -140,6 +140,9 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
         try {
             //for an update, let keep the existing record on the table
             //Thompson 22/08/2024
+            log.info("addModuleExistingJsonToAudit-json: {}",json);
+            log.info("addModuleExistingJsonToAudit-commandId: {}",result.commandId());
+            log.info("addModuleExistingJsonToAudit-isUpdateOperation: {}",wrapper.isUpdateOperation());
             if (StringUtils.isNotBlank(json) && result != null && result.commandId() != null && result.commandId() > 0 && wrapper.isUpdateOperation()) {
                 Long resId;
                 String existingJson;
@@ -151,6 +154,7 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
                 if (StringUtils.isNotBlank(wrapper.entityName())) {
                     if (wrapper.entityName().equals("CLIENT")) {
                         resId = result.getClientId();
+                        log.info("addModuleExistingJsonToAudit-CLIENT: {}",resId);
                         final Client clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
                         existingJson = this.fromApiJsonHelper.toJson(clientExisting);
                         mapExisting = command.mapObjectValueOfParameterNamed(existingJson);
@@ -164,8 +168,10 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
                         for (Map.Entry<String, Object> entry : mapExisting.entrySet()) {
                             final String key = convertCamelCaseToUnderscore(entry.getKey());
                             final Object value = entry.getValue();
+                            log.info("addModuleExistingJsonToAudit-key: {}",key);
 
                             if (mapCurrent.containsKey(key)) {
+                                log.info("addModuleExistingJsonToAudit-value: {}",value);
                                 matchedMap.put(key, value);
                             }
                         }
@@ -173,6 +179,7 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
 
                     if (!matchedMap.isEmpty()) {
                         finalJson = this.fromApiJsonHelper.toJson(matchedMap);
+                        log.info("addModuleExistingJsonToAudit-finalJson: {}",finalJson);
                         this.commandBusinessProcessingService.logCommandExisting(result.commandId(), finalJson);
                     }
                 }

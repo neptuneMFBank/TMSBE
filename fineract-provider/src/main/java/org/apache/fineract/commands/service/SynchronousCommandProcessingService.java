@@ -118,6 +118,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
 
         if (commandSourceResult.hasJson()) {
             this.commandSourceRepository.save(commandSourceResult);
+            result.updateCommandId(commandSourceResult.getId());
         }
 
         if ((rollbackTransaction || result.isRollbackTransaction()) && !isApprovedByChecker) {
@@ -137,9 +138,6 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
 
         publishEvent(wrapper.entityName(), wrapper.actionName(), command, result);
 
-        if (commandSourceResult  !=null && commandSourceResult.getId() > 0){
-            result.updateCommandId(commandSourceResult.getId());
-        }
         return result;
     }
 

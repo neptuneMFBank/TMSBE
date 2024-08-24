@@ -118,7 +118,6 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
 
         if (commandSourceResult.hasJson()) {
             this.commandSourceRepository.save(commandSourceResult);
-            result.updateCommandId(commandSourceResult.getId());
         }
 
         if ((rollbackTransaction || result.isRollbackTransaction()) && !isApprovedByChecker) {

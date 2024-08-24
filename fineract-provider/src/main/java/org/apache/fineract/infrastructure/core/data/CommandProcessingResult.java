@@ -252,7 +252,4 @@ public class CommandProcessingResult implements Serializable {
         return resourceIdentifier;
     }
 
-    public void updateCommandId(Long commandId) {
-        this.commandId = commandId;
-    }
 }

@@ -121,7 +121,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         }
 
         if (commandSourceResult.hasJson()) {
-            extractedMatchJsonForChange(wrapper, command, commandSourceResult, result);
+            //extractedMatchJsonForChange(wrapper, command, commandSourceResult, result);
             this.commandSourceRepository.save(commandSourceResult);
         }
 
@@ -165,7 +165,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
     @Transactional
     @Override
     public CommandProcessingResult logCommand(CommandSource commandSourceResult, CommandWrapper wrapper, JsonCommand command, CommandProcessingResult result) {
-        extractedMatchJsonForChange(wrapper, command, commandSourceResult, result);
+        //extractedMatchJsonForChange(wrapper, command, commandSourceResult, result);
 
         commandSourceResult.markAsAwaitingApproval();
         commandSourceResult = this.commandSourceRepository.saveAndFlush(commandSourceResult);

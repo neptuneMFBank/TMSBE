@@ -32,11 +32,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
@@ -46,12 +42,15 @@ import org.apache.commons.text.similarity.FuzzyScore;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.portfolio.account.AccountDetailConstants;
 import org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants;
 import org.apache.fineract.portfolio.charge.domain.Charge;
+import org.apache.fineract.portfolio.client.domain.Client;
+import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.portfolio.interestratechart.domain.InterestRateChart;
 import org.apache.fineract.portfolio.interestratechart.domain.InterestRateChartSlab;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterest;
@@ -446,5 +445,61 @@ public class GeneralConstants {
         return camelCaseString
                 .replaceAll("([a-z])([A-Z])", "$1_$2")
                 .toLowerCase();
+    }
+
+
+    public static String addModuleExistingJsonToAudit(final CommandWrapper wrapper, final String json,
+                                                      final   CommandProcessingResult result,final JsonCommand command,
+                                                     final ClientRepositoryWrapper clientRepositoryWrapper, final FromJsonHelper fromApiJsonHelper) {
+        String finalJson=null;
+        try {
+            //for an update, let keep the existing record on the table
+            //Thompson 22/08/2024
+            log.info("addModuleExistingJsonToAudit-json: {}",json);
+            log.info("addModuleExistingJsonToAudit-isUpdateOperation: {}",wrapper.isUpdateOperation());
+            if (StringUtils.isNotBlank(json) && result != null && wrapper.isUpdateOperation()) {
+                Long resId;
+                String existingJson;
+                String newJson;
+                Map<String, Object> mapCurrent;
+                Map<String, Object> mapExisting;
+                Map<String, Object> matchedMap = new HashMap<>();
+                if (StringUtils.isNotBlank(wrapper.entityName())) {
+                    if (wrapper.entityName().equals("CLIENT")) {
+                        resId = result.getClientId();
+                        log.info("addModuleExistingJsonToAudit-CLIENT: {}",resId);
+                        final Client clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
+                        existingJson = fromApiJsonHelper.toJson(clientExisting);
+                        mapExisting = command.mapObjectValueOfParameterNamed(existingJson);
+
+                        final Client newClient = Client.createNew(null, null, null, null, null, null,
+                                null, null, null, command);
+                        newJson = fromApiJsonHelper.toJson(newClient);
+                        mapCurrent = command.mapObjectValueOfParameterNamed(newJson);
+
+                        // Compare the two maps
+                        for (Map.Entry<String, Object> entry : mapExisting.entrySet()) {
+                            final String key = convertCamelCaseToUnderscore(entry.getKey());
+                            final Object value = entry.getValue();
+                            log.info("addModuleExistingJsonToAudit-key: {}",key);
+
+                            if (mapCurrent.containsKey(key)) {
+                                log.info("addModuleExistingJsonToAudit-value: {}",value);
+                                matchedMap.put(key, value);
+                            }
+                        }
+                    }
+
+                    if (!matchedMap.isEmpty()) {
+                        finalJson = fromApiJsonHelper.toJson(matchedMap);
+                        log.info("addModuleExistingJsonToAudit-finalJson: {}",finalJson);
+                        return finalJson;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("newJsonUpdateParameterCheck-{}", wrapper.entityName(), e);
+        }
+        return finalJson;
     }
 }

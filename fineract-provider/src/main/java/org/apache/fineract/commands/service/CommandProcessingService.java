@@ -23,12 +23,15 @@ import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.useradministration.domain.AppUser;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface CommandProcessingService {
 
     CommandProcessingResult processAndLogCommand(CommandWrapper wrapper, JsonCommand command, boolean isApprovedByChecker);
 
     CommandProcessingResult logCommand(CommandSource commandSourceResult);
+
+    CommandProcessingResult logCommand(CommandSource commandSourceResult, CommandWrapper wrapper, JsonCommand command, CommandProcessingResult result);
 
     boolean validateCommand(CommandWrapper commandWrapper, AppUser user);
 

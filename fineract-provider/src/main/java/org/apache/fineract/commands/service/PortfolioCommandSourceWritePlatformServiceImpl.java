@@ -23,19 +23,15 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.security.SecureRandom;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.commands.domain.CommandSource;
 import org.apache.fineract.commands.domain.CommandSourceRepository;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.exception.CommandNotAwaitingApprovalException;
 import org.apache.fineract.commands.exception.CommandNotFoundException;
 import org.apache.fineract.commands.exception.RollbackTransactionAsCommandIsNotApprovedByCheckerException;
-import org.apache.fineract.commands.service.business.CommandBusinessProcessingService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
@@ -43,15 +39,11 @@ import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.jobs.service.SchedulerJobRunnerReadService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.portfolio.client.domain.Client;
-import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.apache.fineract.simplifytech.data.GeneralConstants.convertCamelCaseToUnderscore;
 
 @Service
 @RequiredArgsConstructor
@@ -64,9 +56,7 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
     private final CommandSourceRepository commandSourceRepository;
     private final FromJsonHelper fromApiJsonHelper;
     private final CommandProcessingService processAndLogCommandService;
-    private final CommandBusinessProcessingService commandBusinessProcessingService;
     private final SchedulerJobRunnerReadService schedulerJobRunnerReadService;
-    private final ClientRepositoryWrapper clientRepositoryWrapper;
 
     @Override
     @SuppressWarnings("AvoidHidingCauseException")
@@ -127,66 +117,12 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
                 }
             } catch (final RollbackTransactionAsCommandIsNotApprovedByCheckerException e) {
                 numberOfRetries = maxNumberOfRetries + 1;
-                result = this.processAndLogCommandService.logCommand(e.getCommandSourceResult());
+//                result = this.processAndLogCommandService.logCommand(e.getCommandSourceResult());
+                result = this.processAndLogCommandService.logCommand(e.getCommandSourceResult(),  wrapper,  command,  result);
             }
         }
-
-        addModuleExistingJsonToAudit(wrapper, json, result, command);
 
         return result;
-    }
-
-    private void addModuleExistingJsonToAudit(CommandWrapper wrapper, String json, CommandProcessingResult result, JsonCommand command) {
-        try {
-            //for an update, let keep the existing record on the table
-            //Thompson 22/08/2024
-            log.info("addModuleExistingJsonToAudit-json: {}",json);
-            log.info("addModuleExistingJsonToAudit-commandId: {}",result.commandId());
-            log.info("addModuleExistingJsonToAudit-isUpdateOperation: {}",wrapper.isUpdateOperation());
-            if (StringUtils.isNotBlank(json) && result != null && result.commandId() != null && result.commandId() > 0 && wrapper.isUpdateOperation()) {
-                Long resId;
-                String existingJson;
-                String newJson;
-                String finalJson;
-                Map<String, Object> mapCurrent;
-                Map<String, Object> mapExisting;
-                Map<String, Object> matchedMap = new HashMap<>();
-                if (StringUtils.isNotBlank(wrapper.entityName())) {
-                    if (wrapper.entityName().equals("CLIENT")) {
-                        resId = result.getClientId();
-                        log.info("addModuleExistingJsonToAudit-CLIENT: {}",resId);
-                        final Client clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
-                        existingJson = this.fromApiJsonHelper.toJson(clientExisting);
-                        mapExisting = command.mapObjectValueOfParameterNamed(existingJson);
-
-                        final Client newClient = Client.createNew(null, null, null, null, null, null,
-                                null, null, null, command);
-                        newJson = this.fromApiJsonHelper.toJson(newClient);
-                        mapCurrent = command.mapObjectValueOfParameterNamed(newJson);
-
-                        // Compare the two maps
-                        for (Map.Entry<String, Object> entry : mapExisting.entrySet()) {
-                            final String key = convertCamelCaseToUnderscore(entry.getKey());
-                            final Object value = entry.getValue();
-                            log.info("addModuleExistingJsonToAudit-key: {}",key);
-
-                            if (mapCurrent.containsKey(key)) {
-                                log.info("addModuleExistingJsonToAudit-value: {}",value);
-                                matchedMap.put(key, value);
-                            }
-                        }
-                    }
-
-                    if (!matchedMap.isEmpty()) {
-                        finalJson = this.fromApiJsonHelper.toJson(matchedMap);
-                        log.info("addModuleExistingJsonToAudit-finalJson: {}",finalJson);
-                        this.commandBusinessProcessingService.logCommandExisting(result.commandId(), finalJson);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.warn("newJsonUpdateParameterCheck-{}", wrapper.entityName(), e);
-        }
     }
 
     @Override

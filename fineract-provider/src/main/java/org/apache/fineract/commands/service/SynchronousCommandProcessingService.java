@@ -52,10 +52,9 @@ import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.hooks.event.HookEvent;
 import org.apache.fineract.infrastructure.hooks.event.HookEventSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformServiceImpl;
+//import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformServiceImpl;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,8 +71,8 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
     private final ConfigurationDomainService configurationDomainService;
     private final CommandHandlerProvider commandHandlerProvider;
     private final FromJsonHelper fromApiJsonHelper;
-    @Lazy
-    private final ClientBusinessReadPlatformServiceImpl clientBusinessReadPlatformService;
+    //@Lazy
+    //private final ClientBusinessReadPlatformServiceImpl clientBusinessReadPlatformService;
 
 
     @Transactional
@@ -123,7 +122,10 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         }
 
         if (commandSourceResult.hasJson()) {
-            extractedMatchJsonForChange(wrapper, command, commandSourceResult, result, clientBusinessReadPlatformService, fromApiJsonHelper);
+            extractedMatchJsonForChange(wrapper, command, commandSourceResult, result,
+null,
+//                    clientBusinessReadPlatformService,
+                    fromApiJsonHelper);
             this.commandSourceRepository.save(commandSourceResult);
         }
 
@@ -148,7 +150,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
     }
 
     private void extractedMatchJsonForChange(CommandWrapper wrapper, JsonCommand command, CommandSource commandSourceResult, CommandProcessingResult result,
-                                             ClientBusinessReadPlatformServiceImpl clientBusinessReadPlatformService,FromJsonHelper fromApiJsonHelper) {
+                                             Object clientBusinessReadPlatformService,FromJsonHelper fromApiJsonHelper) {
         final String existingJson=addModuleExistingJsonToAudit(wrapper,  commandSourceResult.json(),
                 result, command, clientBusinessReadPlatformService,  fromApiJsonHelper);
         commandSourceResult.updateExistingJson(existingJson);
@@ -168,7 +170,10 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
     @Transactional
     @Override
     public CommandProcessingResult logCommand(CommandSource commandSourceResult, CommandWrapper wrapper, JsonCommand command, CommandProcessingResult result) {
-        extractedMatchJsonForChange(wrapper, command, commandSourceResult, result, clientBusinessReadPlatformService, fromApiJsonHelper);
+        extractedMatchJsonForChange(wrapper, command, commandSourceResult, result,
+                null,
+//                clientBusinessReadPlatformService,
+                fromApiJsonHelper);
 
         commandSourceResult.markAsAwaitingApproval();
         commandSourceResult = this.commandSourceRepository.saveAndFlush(commandSourceResult);

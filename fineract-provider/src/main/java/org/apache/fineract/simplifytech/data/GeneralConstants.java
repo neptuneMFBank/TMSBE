@@ -57,7 +57,6 @@ import org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants;
 import org.apache.fineract.portfolio.charge.domain.Charge;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
 import org.apache.fineract.portfolio.client.domain.Client;
-import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformServiceImpl;
 import org.apache.fineract.portfolio.interestratechart.domain.InterestRateChart;
 import org.apache.fineract.portfolio.interestratechart.domain.InterestRateChartSlab;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterest;
@@ -457,7 +456,7 @@ public class GeneralConstants {
 
     public static String addModuleExistingJsonToAudit(final CommandWrapper wrapper, final String json,
                                                       final   CommandProcessingResult result, final JsonCommand command,
-                                                      final ClientBusinessReadPlatformServiceImpl clientBusinessReadPlatformService, final FromJsonHelper fromApiJsonHelper) {
+                                                      final Object clientBusinessReadPlatformService, final FromJsonHelper fromApiJsonHelper) {
         String finalJson=null;
         try {
             //for an update, let keep the existing record on the table
@@ -475,7 +474,7 @@ public class GeneralConstants {
                     if (wrapper.entityName().equals("CLIENT")) {
                         resId = result.getClientId();
                         log.info("addModuleExistingJsonToAudit-CLIENT: {}",resId);
-                        final ClientBusinessData clientExisting = clientBusinessReadPlatformService.retrieveOne(resId,false,null);
+                        final ClientBusinessData clientExisting = null;//clientBusinessReadPlatformService.retrieveOne(resId,false,null);
                         existingJson = fromApiJsonHelper.toJson(clientExisting);
                         mapExisting = command.mapObjectValueOfParameterNamed(existingJson);
 

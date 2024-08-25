@@ -454,63 +454,63 @@ public class GeneralConstants {
     }
 
 
-    public static String addModuleExistingJsonToAudit(final CommandWrapper wrapper, final String json,
-                                                      final   CommandProcessingResult result,final JsonCommand command,
-                                                     final ClientRepositoryWrapper clientRepositoryWrapper, final FromJsonHelper fromApiJsonHelper) {
-        String finalJson=null;
-        try {
-            //for an update, let keep the existing record on the table
-            //Thompson 22/08/2024
-            log.info("addModuleExistingJsonToAudit-json: {}",json);
-            log.info("addModuleExistingJsonToAudit-isUpdateOperation: {}",wrapper.isUpdateOperation());
-            if (StringUtils.isNotBlank(json) && result != null && wrapper.isUpdateOperation()) {
-                Long resId;
-                String existingJson;
-                String newJson;
-                Map<String, Object> mapCurrent;
-                Map<String, Object> mapExisting;
-                Map<String, Object> matchedMap = new HashMap<>();
-                if (StringUtils.isNotBlank(wrapper.entityName())) {
-                    if (wrapper.entityName().equals("CLIENT")) {
-                        resId = result.getClientId();
-                        log.info("addModuleExistingJsonToAudit-CLIENT: {}",resId);
-                        final Client clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
-                        clientExisting.setLegalForm(null);
-                        clientExisting.updateOffice(null);
-                        clientExisting.updateClientType(null);
-                        clientExisting.updateClientClassification(null);
-                        clientExisting.updateStaff(null);
-                        existingJson = fromApiJsonHelper.toJson(clientExisting);
-                        mapExisting = command.mapObjectValueOfParameterNamed(existingJson);
-
-                        final Client newClient = Client.createNew(null, null, null, null, null, null,
-                                null, null, null, command);
-                        newJson = fromApiJsonHelper.toJson(newClient);
-                        mapCurrent = command.mapObjectValueOfParameterNamed(newJson);
-
-                        // Compare the two maps
-                        for (Map.Entry<String, Object> entry : mapExisting.entrySet()) {
-                            final String key = convertCamelCaseToUnderscore(entry.getKey());
-                            final Object value = entry.getValue();
-                            log.info("addModuleExistingJsonToAudit-key: {}",key);
-
-                            if (mapCurrent.containsKey(key)) {
-                                log.info("addModuleExistingJsonToAudit-value: {}",value);
-                                matchedMap.put(key, value);
-                            }
-                        }
-                    }
-
-                    if (!matchedMap.isEmpty()) {
-                        finalJson = fromApiJsonHelper.toJson(matchedMap);
-                        log.info("addModuleExistingJsonToAudit-finalJson: {}",finalJson);
-                        return finalJson;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.warn("newJsonUpdateParameterCheck-{}", wrapper.entityName(), e);
-        }
-        return finalJson;
-    }
+//    public static String addModuleExistingJsonToAudit(final CommandWrapper wrapper, final String json,
+//                                                      final   CommandProcessingResult result,final JsonCommand command,
+//                                                     final ClientRepositoryWrapper clientRepositoryWrapper, final FromJsonHelper fromApiJsonHelper) {
+//        String finalJson=null;
+//        try {
+//            //for an update, let keep the existing record on the table
+//            //Thompson 22/08/2024
+//            log.info("addModuleExistingJsonToAudit-json: {}",json);
+//            log.info("addModuleExistingJsonToAudit-isUpdateOperation: {}",wrapper.isUpdateOperation());
+//            if (StringUtils.isNotBlank(json) && result != null && wrapper.isUpdateOperation()) {
+//                Long resId;
+//                String existingJson;
+//                String newJson;
+//                Map<String, Object> mapCurrent;
+//                Map<String, Object> mapExisting;
+//                Map<String, Object> matchedMap = new HashMap<>();
+//                if (StringUtils.isNotBlank(wrapper.entityName())) {
+//                    if (wrapper.entityName().equals("CLIENT")) {
+//                        resId = result.getClientId();
+//                        log.info("addModuleExistingJsonToAudit-CLIENT: {}",resId);
+//                        final Client clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
+//                        clientExisting.setLegalForm(null);
+//                        clientExisting.updateOffice(null);
+//                        clientExisting.updateClientType(null);
+//                        clientExisting.updateClientClassification(null);
+//                        clientExisting.updateStaff(null);
+//                        existingJson = fromApiJsonHelper.toJson(clientExisting);
+//                        mapExisting = command.mapObjectValueOfParameterNamed(existingJson);
+//
+//                        final Client newClient = Client.createNew(null, null, null, null, null, null,
+//                                null, null, null, command);
+//                        newJson = fromApiJsonHelper.toJson(newClient);
+//                        mapCurrent = command.mapObjectValueOfParameterNamed(newJson);
+//
+//                        // Compare the two maps
+//                        for (Map.Entry<String, Object> entry : mapExisting.entrySet()) {
+//                            final String key = convertCamelCaseToUnderscore(entry.getKey());
+//                            final Object value = entry.getValue();
+//                            log.info("addModuleExistingJsonToAudit-key: {}",key);
+//
+//                            if (mapCurrent.containsKey(key)) {
+//                                log.info("addModuleExistingJsonToAudit-value: {}",value);
+//                                matchedMap.put(key, value);
+//                            }
+//                        }
+//                    }
+//
+//                    if (!matchedMap.isEmpty()) {
+//                        finalJson = fromApiJsonHelper.toJson(matchedMap);
+//                        log.info("addModuleExistingJsonToAudit-finalJson: {}",finalJson);
+//                        return finalJson;
+//                    }
+//                }
+//            }
+//        } catch (Exception e) {
+//            log.warn("newJsonUpdateParameterCheck-{}", wrapper.entityName(), e);
+//        }
+//        return finalJson;
+//    }
 }

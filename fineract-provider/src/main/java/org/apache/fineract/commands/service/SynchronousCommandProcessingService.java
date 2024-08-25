@@ -18,7 +18,6 @@
  */
 package org.apache.fineract.commands.service;
 
-import static org.apache.fineract.simplifytech.data.GeneralConstants.addModuleExistingJsonToAudit;
 import static org.apache.fineract.simplifytech.data.GeneralConstants.getAuthUserCurrentRoleId;
 
 import com.google.gson.Gson;
@@ -145,11 +144,11 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         return result;
     }
 
-    private void extractedMatchJsonForChange(CommandWrapper wrapper, JsonCommand command, CommandSource commandSourceResult, CommandProcessingResult result) {
-        final String existingJson=addModuleExistingJsonToAudit(wrapper,  commandSourceResult.json(),
-                result, command, clientRepositoryWrapper,  fromApiJsonHelper);
-        commandSourceResult.updateExistingJson(existingJson);
-    }
+//    private void extractedMatchJsonForChange(CommandWrapper wrapper, JsonCommand command, CommandSource commandSourceResult, CommandProcessingResult result) {
+//        final String existingJson=addModuleExistingJsonToAudit(wrapper,  commandSourceResult.json(),
+//                result, command, clientRepositoryWrapper,  fromApiJsonHelper);
+//        commandSourceResult.updateExistingJson(existingJson);
+//    }
 
     @Transactional
     @Override

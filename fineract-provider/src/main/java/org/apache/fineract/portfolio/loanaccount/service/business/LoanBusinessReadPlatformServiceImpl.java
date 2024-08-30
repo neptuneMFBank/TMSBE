@@ -1324,7 +1324,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
 
         public String loanPaymentsSchema() {
 
-            return " tr.id as id, tr.transaction_type_enum as transactionType, tr.transaction_date as " + sqlGenerator.escape("date")
+            return " tr.id as id, tr.loan_id as loanId, tr.transaction_type_enum as transactionType, tr.transaction_date as " + sqlGenerator.escape("date")
                     + ", tr.amount as total, " + " tr.principal_portion_derived as principal, tr.interest_portion_derived as interest, "
                     + " tr.fee_charges_portion_derived as fees, tr.penalty_charges_portion_derived as penalties, "
                     + " tr.overpayment_portion_derived as overpayment, tr.outstanding_loan_balance_derived as outstandingLoanBalance, "
@@ -1362,6 +1362,7 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
                     currencyDisplaySymbol, currencyNameCode);
 
             final Long id = rs.getLong("id");
+            final Long loanId = rs.getLong("loanId");
             final Long officeId = rs.getLong("officeId");
             final String officeName = rs.getString("officeName");
             final int transactionTypeInt = JdbcSupport.getInteger(rs, "transactionType");
@@ -1418,10 +1419,11 @@ public class LoanBusinessReadPlatformServiceImpl implements LoanBusinessReadPlat
                 transfer = AccountTransferData.transferBasicDetails(toTransferId, currencyData, toTransferAmount, toTransferDate,
                         toTransferDescription, toTransferReversed);
             }
-            return new LoanTransactionData(id, officeId, officeName, transactionType, paymentDetailData, currencyData, date, totalAmount,
+          final LoanTransactionData loanTransactionData=   new LoanTransactionData(id, officeId, officeName, transactionType, paymentDetailData, currencyData, date, totalAmount,
                     netDisbursalAmount, principalPortion, interestPortion, feeChargesPortion, penaltyChargesPortion, overPaymentPortion,
                     unrecognizedIncomePortion, externalId, transfer, null, outstandingLoanBalance, submittedOnDate, manuallyReversed);
-        }
+            loanTransactionData.setLoanId(loanId);
+            return loanTransactionData;   }
     }
 
 }

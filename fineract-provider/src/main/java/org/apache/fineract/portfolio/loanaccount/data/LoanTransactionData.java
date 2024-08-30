@@ -36,6 +36,7 @@ import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
 public class LoanTransactionData {
 
     private final Long id;
+    private Long loanId;
     private final Long officeId;
     private final String officeName;
 
@@ -376,5 +377,9 @@ public class LoanTransactionData {
 
     public void setSubmittedOnDateTime(LocalDateTime submittedOnDateTime) {
         this.submittedOnDateTime = submittedOnDateTime;
+    }
+
+    public void setLoanId(Long loanId) {
+        this.loanId = loanId;
     }
 }

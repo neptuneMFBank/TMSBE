@@ -114,8 +114,8 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
             // appUser = this.appUserRepositoryWrapper.findAppUserByName(value);
             appUser = this.appUserRepositoryWrapper.findAppUserByEmail(value);
         } // else if (isMobileAuthenticationMode) {
-          // check mobile
-          // }
+        // check mobile
+        // }
         else {
             throw new PlatformDataIntegrityException("error.msg.reset.mode", "Password reset mode not supported");
         }
@@ -193,11 +193,11 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
         final String href = "/authentication";
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("username", username);
-        fullBusinessEntryFrom(actionName, entityName, href, appUserId, jsonObject.toString(), appUser, roleIds);
+        fullBusinessEntryFrom(actionName, entityName, href, appUserId, jsonObject.toString(), appUser, roleIds, null);
     }
 
     @Override
-    public void loggedUserLogIn(final String json, final Long userId) {
+    public void loggedUserLogIn(final String json, final Long userId, final String ipAddress) {
         final AppUser appUser = this.appUserRepositoryWrapper.findOneWithNotFoundDetection(userId);
         final Long appUserId = appUser.getId();
         final String roleIds = getAuthUserCurrentRoleId(appUser, this.fromApiJsonHelper);
@@ -205,13 +205,13 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
         final String actionName = "LOGIN";
         final String entityName = "USER";
         final String href = "/authentication";
-        fullBusinessEntryFrom(actionName, entityName, href, appUserId, json, appUser, roleIds);
+        fullBusinessEntryFrom(actionName, entityName, href, appUserId, json, appUser, roleIds, ipAddress);
     }
 
     protected void fullBusinessEntryFrom(final String actionName, final String entityName, final String href, final Long appUserId,
-            final String json, final AppUser appUser, final String roleIds) {
+            final String json, final AppUser appUser, final String roleIds, final String ipAddress) {
         CommandSource commandSourceResult = CommandSource.fullBusinessEntryFrom(actionName, entityName, href, appUserId, json, appUser,
-                roleIds);
+                roleIds, ipAddress);
         this.commandSourceRepository.saveAndFlush(commandSourceResult);
     }
 

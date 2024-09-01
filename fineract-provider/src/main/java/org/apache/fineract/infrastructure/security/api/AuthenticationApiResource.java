@@ -90,6 +90,7 @@ public class AuthenticationApiResource {
 
     public static class AuthenticateRequest {
 
+        public String ipAddress;
         public String username;
         public String password;
     }
@@ -130,13 +131,13 @@ public class AuthenticationApiResource {
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Verify authentication", description = "Authenticates the credentials provided and returns the set roles and permissions allowed.")
     @RequestBody(required = true, content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationRequest.class)))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Unauthenticated. Please login") })
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AuthenticationApiResourceSwagger.PostAuthenticationResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Unauthenticated. Please login")})
     public String authenticate(@Parameter(hidden = true) final String apiRequestBodyAsJson,
             @QueryParam("returnClientList") @DefaultValue("false") boolean returnClientList) {
         // TODO FINERACT-819: sort out Jersey so JSON conversion does not have
@@ -194,7 +195,7 @@ public class AuthenticationApiResource {
                     && !principal.hasSpecificPermissionTo(TwoFactorConstants.BYPASS_TWO_FACTOR_PERMISSION);
             userId = principal.getId();
             AppUserExtension appUserExtension = this.appUserExtensionRepositoryWrapper.findByAppuserId(principal);
-            Boolean isMerchant = ObjectUtils.isNotEmpty(appUserExtension) ? appUserExtension.isMerchant() : false;
+            Boolean isMerchant = ObjectUtils.isNotEmpty(appUserExtension) ? BooleanUtils.toBoolean(appUserExtension.isMerchant()) : false;
 
             if (this.springSecurityPlatformSecurityContext.doesPasswordHasToBeRenewed(principal)) {
                 authenticatedUserData = new AuthenticatedUserData(request.username, userId,
@@ -217,7 +218,7 @@ public class AuthenticationApiResource {
             final JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("username", request.username);
             // log the current user
-            this.authenticationBusinessWritePlatformService.loggedUserLogIn(jsonObject.toString(), userId);
+            this.authenticationBusinessWritePlatformService.loggedUserLogIn(jsonObject.toString(), userId, request.ipAddress);
             final LocalDateTime lastLoginDate = this.authenticationBusinessReadPlatformService.lastLoginDate(userId);
             authenticatedUserData.setLastLoggedIn(lastLoginDate);
         }

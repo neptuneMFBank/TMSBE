@@ -103,15 +103,18 @@ public class CommandSource extends AbstractPersistableCustom {
     @Column(name = "existing_json", length = 1000)
     private String existingJson;
 
+    @Column(name = "ip_address", length = 1000)
+    private String ipAddress;
+
     public static CommandSource fullEntryFrom(final CommandWrapper wrapper, final JsonCommand command, final AppUser maker) {
         return new CommandSource(wrapper.actionName(), wrapper.entityName(), wrapper.getHref(), command.entityId(), command.subentityId(),
-                command.json(), maker, ZonedDateTime.now(DateUtils.getDateTimeZoneOfTenant()), null);
+                command.json(), maker, ZonedDateTime.now(DateUtils.getDateTimeZoneOfTenant()), null, null);
     }
 
     public static CommandSource fullBusinessEntryFrom(final String actionName, final String entityName, final String href,
-            final Long entityId, final String json, final AppUser maker, final String roleId) {
+            final Long entityId, final String json, final AppUser maker, final String roleId, final String ipAddress) {
         return new CommandSource(actionName, entityName, href, entityId, null, json, maker,
-                ZonedDateTime.now(DateUtils.getDateTimeZoneOfTenant()), roleId);
+                ZonedDateTime.now(DateUtils.getDateTimeZoneOfTenant()), roleId, ipAddress);
     }
 
     protected CommandSource() {
@@ -120,7 +123,7 @@ public class CommandSource extends AbstractPersistableCustom {
 
     private CommandSource(final String actionName, final String entityName, final String href, final Long resourceId,
             final Long subresourceId, final String commandSerializedAsJson, final AppUser maker, final ZonedDateTime madeOnDateTime,
-            final String roleId) {
+            final String roleId, final String ipAddress) {
         this.actionName = actionName;
         this.entityName = entityName;
         this.resourceGetUrl = href;
@@ -131,6 +134,7 @@ public class CommandSource extends AbstractPersistableCustom {
         this.madeOnDate = madeOnDateTime != null ? madeOnDateTime.toLocalDateTime() : null;
         this.processingResult = CommandProcessingResultType.PROCESSED.getValue();
         this.roleId = roleId;
+        this.ipAddress = ipAddress;
     }
 
     public Long getCreditBureauId() {

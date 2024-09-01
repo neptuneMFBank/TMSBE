@@ -1373,7 +1373,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
             final boolean postInterestAsOn = rs.getBoolean("postInterestAsOn");
 
             PaymentDetailData paymentDetailData = null;
-            if (transactionType.isDepositOrWithdrawal()) {
+            //if (transactionType.isDepositOrWithdrawal()) {
                 final Long paymentTypeId = JdbcSupport.getLong(rs, "paymentType");
                 if (paymentTypeId != null) {
                     final String typeName = rs.getString("paymentTypeName");
@@ -1386,7 +1386,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
                     paymentDetailData = new PaymentDetailData(id, paymentType, accountNumber, checkNumber, routingCode, receiptNumber,
                             bankNumber);
                 }
-            }
+            //}
 
             final String currencyCode = rs.getString("currencyCode");
             final String currencyName = rs.getString("currencyName");

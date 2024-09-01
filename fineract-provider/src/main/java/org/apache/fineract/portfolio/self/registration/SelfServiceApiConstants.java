@@ -33,6 +33,7 @@ public final class SelfServiceApiConstants {
 
     public static final String valueParamName = "value";
     public static final String accountNumberParamName = "accountNumber";
+    public static final String ipAddressParamName = "ipAddress";
     public static final String passwordParamName = "password";
     public static final String firstNameParamName = "firstName";
     public static final String mobileNumberParamName = "mobileNumber";

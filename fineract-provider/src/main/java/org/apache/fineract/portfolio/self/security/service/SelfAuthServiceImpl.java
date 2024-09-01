@@ -76,6 +76,7 @@ public class SelfAuthServiceImpl implements SelfAuthService {
         JsonElement element = this.fromJsonHelper.fromJson(apiRequestBodyAsJson, JsonElement.class);
         final String username = this.fromJsonHelper.extractStringNamed(SelfServiceApiConstants.usernameParamName, element);
         final String password = this.fromJsonHelper.extractStringNamed(SelfServiceApiConstants.passwordParamName, element);
+        final String ipAddress = this.fromJsonHelper.extractStringNamed(SelfServiceApiConstants.ipAddressParamName, element);
         Client client = null;
         try {
             client = clientRepositoryWrapper.findByMobileNoOrEmailAddress(username);
@@ -117,6 +118,9 @@ public class SelfAuthServiceImpl implements SelfAuthService {
         JsonObject requestObject = new JsonObject();
         requestObject.addProperty(SelfServiceApiConstants.usernameParamName, appUser.getUsername());
         requestObject.addProperty(SelfServiceApiConstants.passwordParamName, password);
+        if (StringUtils.isNotBlank(ipAddress)) {
+            requestObject.addProperty(SelfServiceApiConstants.ipAddressParamName, ipAddress);
+        }
 
         return this.authenticationApiResource.authenticate(requestObject.toString(), true);
     }

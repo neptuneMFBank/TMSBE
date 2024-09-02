@@ -30,7 +30,6 @@ public class ObjIDAdapter extends TypeAdapter<ObjID> {
     @Override
     public void write(JsonWriter out, ObjID value) throws IOException {
         if (value == null) {
-            out.nullValue();
             return;
         }
         // Serialize ObjID as a JSON object with a single field "objNum"

@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.FuzzyScore;
 import org.apache.fineract.commands.domain.CommandWrapper;
@@ -494,8 +495,11 @@ public class GeneralConstants {
                             log.info("addModuleExistingJsonToAudit-key: {}",key);
 
                             if (mapCurrent.containsKey(key)) {
-                                log.info("addModuleExistingJsonToAudit-value: {}",value);
-                                matchedMap.put(key, value);
+                               final Object checkValue = mapCurrent.get(key);
+                               if (ObjectUtils.notEqual(value,checkValue)) {
+                                   log.info("addModuleExistingJsonToAudit-value: {}",value);
+                                   matchedMap.put(key, value);
+                               }
                             }
                         }
                     }

@@ -21,6 +21,8 @@ package org.apache.fineract.infrastructure.core.serialization;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.rmi.server.ObjID;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -43,6 +45,7 @@ import org.apache.fineract.infrastructure.core.api.ParameterListExclusionStrateg
 import org.apache.fineract.infrastructure.core.api.ParameterListInclusionStrategy;
 import org.apache.fineract.infrastructure.core.exception.UnsupportedParameterException;
 import org.apache.fineract.simplifytech.data.AtomicReferenceArrayAdapter;
+import org.apache.fineract.simplifytech.data.ObjIDAdapter;
 import org.springframework.stereotype.Service;
 
 /**
@@ -122,6 +125,7 @@ public final class GoogleGsonSerializerHelper {
         builder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
         builder.registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeAdapter());
         builder.registerTypeAdapter(AtomicReferenceArray.class, new AtomicReferenceArrayAdapter());
+        builder.registerTypeAdapter(ObjID.class, new ObjIDAdapter());
 
     }
 }

@@ -147,8 +147,7 @@ public class GeneralConstants {
     public static String generateUniqueId() {
         final Long time = System.currentTimeMillis();
         final String uniqueVal = String.valueOf(time);
-        final String transactionId = Long.toHexString(Long.parseLong(uniqueVal));
-        return transactionId;
+        return Long.toHexString(Long.parseLong(uniqueVal));
     }
 
     public static void main(String[] args) {
@@ -474,13 +473,13 @@ public class GeneralConstants {
                     if (wrapper.entityName().equals("CLIENT")) {
                         resId = result.getClientId();
                         log.info("addModuleExistingJsonToAudit-CLIENT: {}",resId);
+
                         final Client clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
-//                        clientExisting.setLegalForm(null);
-//                        clientExisting.updateOffice(null);
-//                        clientExisting.updateClientType(null);
-//                        clientExisting.updateClientClassification(null);
-//                        clientExisting.updateStaff(null);
-                        existingJson = fromApiJsonHelper.toJson(clientExisting);
+                        final Client currentClientExisting = Client.createInstance(clientExisting.savingsProductId(), clientExisting.getLegalForm(), clientExisting.mobileNo(),
+                                clientExisting.emailAddress(), clientExisting.getFirstname(), clientExisting.getLastname(), clientExisting.getAccountNumber(), clientExisting.getExternalId(),
+                                clientExisting.getMiddlename(), clientExisting.dateOfBirth(),clientExisting.getActivationLocalDate(),clientExisting.getOfficeJoiningLocalDate(),
+                                clientExisting.getSubmittedOnDate(), clientExisting.savingsAccountId());
+                        existingJson = fromApiJsonHelper.toJson(currentClientExisting);
                         mapExisting = command.mapObjectValueOfParameterNamed(existingJson);
 
                         final Client newClient = Client.createNew(null, null, null, null, null, null,

@@ -478,8 +478,7 @@ public class GeneralConstants {
                         final Client clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
                         final Client currentClientExisting = Client.createInstance(clientExisting.savingsProductId(), clientExisting.getLegalForm(), clientExisting.mobileNo(),
                                 clientExisting.emailAddress(), clientExisting.getFirstname(), clientExisting.getLastname(), clientExisting.getAccountNumber(), clientExisting.getExternalId(),
-                                clientExisting.getMiddlename(), clientExisting.dateOfBirth(),clientExisting.getActivationLocalDate(),clientExisting.getOfficeJoiningLocalDate(),
-                                clientExisting.getSubmittedOnDate(), clientExisting.savingsAccountId(), ClientStatus.fromInt(clientExisting.getStatus()));
+                                clientExisting.getMiddlename(), clientExisting.dateOfBirth(), clientExisting.savingsAccountId(), ClientStatus.fromInt(clientExisting.getStatus()));
                         existingJson = fromApiJsonHelper.toJson(currentClientExisting);
                         mapExisting = command.mapObjectValueOfParameterNamed(existingJson);
 

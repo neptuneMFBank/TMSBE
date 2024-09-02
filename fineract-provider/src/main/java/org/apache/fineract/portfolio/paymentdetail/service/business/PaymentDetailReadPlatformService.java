@@ -22,6 +22,6 @@ import com.google.gson.JsonObject;
 
 public interface PaymentDetailReadPlatformService {
 
-    public JsonObject isReceiptNumberExisting(final String receiptNumber);
+    JsonObject isReceiptNumberExisting(final String receiptNumber);
 
 }

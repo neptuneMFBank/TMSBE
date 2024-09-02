@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.commands.service;
 
+import static org.apache.fineract.simplifytech.data.GeneralConstants.addModuleExistingJsonToAudit;
 import static org.apache.fineract.simplifytech.data.GeneralConstants.getAuthUserCurrentRoleId;
 
 import com.google.gson.Gson;
@@ -51,6 +52,7 @@ import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.hooks.event.HookEvent;
 import org.apache.fineract.infrastructure.hooks.event.HookEventSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -69,6 +71,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
     private final ConfigurationDomainService configurationDomainService;
     private final CommandHandlerProvider commandHandlerProvider;
     private final FromJsonHelper fromApiJsonHelper;
+    private final ClientRepositoryWrapper clientRepositoryWrapper;
 
 
     @Transactional
@@ -118,7 +121,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         }
 
         if (commandSourceResult.hasJson()) {
-            //extractedMatchJsonForChange(wrapper, command, commandSourceResult, result);
+            extractedMatchJsonForChange(wrapper, command, commandSourceResult, result);
             this.commandSourceRepository.save(commandSourceResult);
         }
 
@@ -142,11 +145,11 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         return result;
     }
 
-//    private void extractedMatchJsonForChange(CommandWrapper wrapper, JsonCommand command, CommandSource commandSourceResult, CommandProcessingResult result) {
-//        final String existingJson=addModuleExistingJsonToAudit(wrapper,  commandSourceResult.json(),
-//                result, command, clientRepositoryWrapper,  fromApiJsonHelper);
-//        commandSourceResult.updateExistingJson(existingJson);
-//    }
+    private void extractedMatchJsonForChange(CommandWrapper wrapper, JsonCommand command, CommandSource commandSourceResult, CommandProcessingResult result) {
+        final String existingJson=addModuleExistingJsonToAudit(wrapper,  commandSourceResult.json(),
+                result, command, clientRepositoryWrapper,  fromApiJsonHelper);
+        commandSourceResult.updateExistingJson(existingJson);
+    }
 
     @Transactional
     @Override
@@ -162,7 +165,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
     @Transactional
     @Override
     public CommandProcessingResult logCommand(CommandSource commandSourceResult, CommandWrapper wrapper, JsonCommand command, CommandProcessingResult result) {
-        //extractedMatchJsonForChange(wrapper, command, commandSourceResult, result);
+        extractedMatchJsonForChange(wrapper, command, commandSourceResult, result);
 
         commandSourceResult.markAsAwaitingApproval();
         commandSourceResult = this.commandSourceRepository.saveAndFlush(commandSourceResult);

@@ -57,6 +57,7 @@ import org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants;
 import org.apache.fineract.portfolio.charge.domain.Charge;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
+import org.apache.fineract.portfolio.client.domain.ClientStatus;
 import org.apache.fineract.portfolio.interestratechart.domain.InterestRateChart;
 import org.apache.fineract.portfolio.interestratechart.domain.InterestRateChartSlab;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductInterest;
@@ -478,7 +479,7 @@ public class GeneralConstants {
                         final Client currentClientExisting = Client.createInstance(clientExisting.savingsProductId(), clientExisting.getLegalForm(), clientExisting.mobileNo(),
                                 clientExisting.emailAddress(), clientExisting.getFirstname(), clientExisting.getLastname(), clientExisting.getAccountNumber(), clientExisting.getExternalId(),
                                 clientExisting.getMiddlename(), clientExisting.dateOfBirth(),clientExisting.getActivationLocalDate(),clientExisting.getOfficeJoiningLocalDate(),
-                                clientExisting.getSubmittedOnDate(), clientExisting.savingsAccountId());
+                                clientExisting.getSubmittedOnDate(), clientExisting.savingsAccountId(), ClientStatus.fromInt(clientExisting.getStatus()));
                         existingJson = fromApiJsonHelper.toJson(currentClientExisting);
                         mapExisting = command.mapObjectValueOfParameterNamed(existingJson);
 

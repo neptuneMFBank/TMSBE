@@ -272,7 +272,7 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom {
     public static Client createInstance(final Long savingsProductId, final Integer legalForm, final String mobileNo,
             final String emailAddress, final String firstname, final String lastname, final String accountNo, final String externalId,
                                         final String middlename, final LocalDate dataOfBirth, LocalDate activationDate,
-                                        LocalDate officeJoiningDate, LocalDate submittedOnDate, final Long savingsAccountId) {
+                                        LocalDate officeJoiningDate, LocalDate submittedOnDate, final Long savingsAccountId, final  ClientStatus status) {
         final AppUser currentUser = null;
         final Office clientOffice = null;
         final Group clientParentGroup = null;
@@ -281,7 +281,6 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom {
         final CodeValue clientType = null;
         final CodeValue clientClassification = null;
         final boolean isStaff = false;
-        final  ClientStatus status = null;
         final String fullname = null;
         return new Client(currentUser, status, clientOffice, clientParentGroup, accountNo, firstname, middlename, lastname, fullname,
                 activationDate, officeJoiningDate, externalId, mobileNo, emailAddress, staff, submittedOnDate, savingsProductId,

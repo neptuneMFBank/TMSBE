@@ -57,7 +57,6 @@ import org.apache.fineract.portfolio.account.AccountDetailConstants;
 import org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants;
 import org.apache.fineract.portfolio.charge.domain.Charge;
 import org.apache.fineract.portfolio.client.domain.Client;
-import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.portfolio.client.domain.ClientStatus;
 import org.apache.fineract.portfolio.interestratechart.domain.InterestRateChart;
 import org.apache.fineract.portfolio.interestratechart.domain.InterestRateChartSlab;
@@ -455,10 +454,11 @@ public class GeneralConstants {
     }
 
 
-    public static String addModuleExistingJsonToAudit(final CommandWrapper wrapper, final String json,
+    public static String addModuleExistingJsonToAudit(final CommandWrapper wrapper,
                                                       final   CommandProcessingResult result,  Client clientExisting,
                                                       final FromJsonHelper fromApiJsonHelper, final JsonCommand command) {
         String finalJson=null;
+        final String json = wrapper.getJson();
         try {
             //for an update, let keep the existing record on the table
             //Thompson 22/08/2024

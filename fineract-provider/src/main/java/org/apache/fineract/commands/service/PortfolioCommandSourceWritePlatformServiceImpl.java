@@ -231,7 +231,7 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
 if (commandSourceResult == null){
     return;
 }
-        final String existingJson=addModuleExistingJsonToAudit(wrapper,  wrapper.getJson(),
+        final String existingJson=addModuleExistingJsonToAudit(wrapper,
                 result, clientExisting,  fromApiJsonHelper, command);
         if (StringUtils.isNotBlank(existingJson)){
         commandSourceResult.updateExistingJson(existingJson);

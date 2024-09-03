@@ -216,6 +216,7 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
        if(result == null) {
             return;
         }
+        log.info("extractedMatchJsonForChange-resourceId-{}",result.resourceId());
         log.info("extractedMatchJsonForChange-commandId-{}",result.commandId());
         log.info("extractedMatchJsonForChange-commandIdCheck-{}",result.getCommandIdCheck());
 

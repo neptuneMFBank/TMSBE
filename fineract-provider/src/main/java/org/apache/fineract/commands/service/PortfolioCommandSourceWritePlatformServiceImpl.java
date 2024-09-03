@@ -212,10 +212,14 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
 
     private void extractedMatchJsonForChange(CommandWrapper wrapper, CommandProcessingResult result,
                                              final Client clientExisting, final JsonCommand command) {
-        if(result == null) {
+        log.info("extractedMatchJsonForChange-here");
+       if(result == null) {
             return;
         }
-         Long commandId = null;
+        log.info("extractedMatchJsonForChange-commandId-{}",result.commandId());
+        log.info("extractedMatchJsonForChange-commandIdCheck-{}",result.getCommandIdCheck());
+
+        Long commandId = null;
          Long resourceId = result.resourceId();
         CommandSource commandSourceResult;
         if (result.commandId() != null){

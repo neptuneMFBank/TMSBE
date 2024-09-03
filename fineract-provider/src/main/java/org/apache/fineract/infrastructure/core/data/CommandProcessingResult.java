@@ -30,7 +30,6 @@ import lombok.ToString;
 public class CommandProcessingResult implements Serializable {
 
     private Long commandId;
-//    private Long commandIdCheck;
     private Long officeId;
     private final Long groupId;
     private final Long clientId;
@@ -252,12 +251,4 @@ public class CommandProcessingResult implements Serializable {
     public String getResourceIdentifier() {
         return resourceIdentifier;
     }
-
-//    public Long getCommandIdCheck() {
-//        return commandIdCheck;
-//    }
-//
-//    public void setCommandIdCheck(Long commandIdCheck) {
-//        this.commandIdCheck = commandIdCheck;
-//    }
 }

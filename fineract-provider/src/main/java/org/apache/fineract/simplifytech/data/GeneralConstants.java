@@ -466,9 +466,7 @@ public class GeneralConstants {
             //Thompson 22/08/2024
             log.info("addModuleExistingJsonToAudit-json: {}",json);
             log.info("addModuleExistingJsonToAudit-isUpdateOperation: {}",wrapper.isUpdateOperation());
-            //if (StringUtils.isNotBlank(json) && result != null && wrapper.isUpdateOperation()) {
             if (StringUtils.isNotBlank(json) && wrapper.isUpdateOperation()) {
-                //Long resId;
                 String existingJson;
                 String newJson;
                 Map<String, Object> mapCurrent;
@@ -476,7 +474,6 @@ public class GeneralConstants {
                 Map<String, Object> matchedMap = new HashMap<>();
                 if (StringUtils.isNotBlank(wrapper.entityName())) {
                     if (wrapper.entityName().equals("CLIENT")) {
-                        //resId = result.getClientId();
                         log.info("addModuleExistingJsonToAudit-CLIENT: {}",resId);
                         if (clientExisting == null) {
                             return finalJson;

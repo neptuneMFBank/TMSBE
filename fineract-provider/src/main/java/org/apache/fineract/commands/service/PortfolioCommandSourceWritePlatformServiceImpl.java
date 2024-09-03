@@ -102,7 +102,7 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
         if (StringUtils.isNotBlank(json) && wrapper.isUpdateOperation()) {
             if (StringUtils.isNotBlank(wrapper.entityName())) {
                 Long resId = wrapper.resourceId();
-                log.info("logCommandSource-Id: {}",resId);
+                log.info("logCommandSource-resourceId: {}",resId);
                 if (wrapper.entityName().equals("CLIENT")) {
                     log.info("startAudit-Client: {}",resId);
                   final Client  clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);

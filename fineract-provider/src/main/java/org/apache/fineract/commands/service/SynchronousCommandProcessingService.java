@@ -123,7 +123,6 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
 
         if (commandSourceResult.hasJson()) {
             this.commandSourceRepository.save(commandSourceResult);
-            //result.setCommandIdCheck(commandSourceResult.getId());
         }
 
         if ((rollbackTransaction || result.isRollbackTransaction()) && !isApprovedByChecker) {
@@ -156,18 +155,6 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         return new CommandProcessingResultBuilder().withCommandId(commandSourceResult.getId())
                 .withEntityId(commandSourceResult.getResourceId()).build();
     }
-
-//    @Transactional
-//    @Override
-//    public CommandProcessingResult logCommand(CommandSource commandSourceResult, CommandWrapper wrapper, JsonCommand command, CommandProcessingResult result) {
-//        extractedMatchJsonForChange(wrapper, command, commandSourceResult, result, null);
-//
-//        commandSourceResult.markAsAwaitingApproval();
-//        commandSourceResult = this.commandSourceRepository.saveAndFlush(commandSourceResult);
-//
-//        return new CommandProcessingResultBuilder().withCommandId(commandSourceResult.getId())
-//                .withEntityId(commandSourceResult.getResourceId()).build();
-//    }
 
     private NewCommandSourceHandler findCommandHandler(final CommandWrapper wrapper) {
         NewCommandSourceHandler handler = null;

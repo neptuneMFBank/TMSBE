@@ -496,7 +496,8 @@ public class GeneralConstants {
 
                         // Compare the two maps
                         for (Map.Entry<String, Object> entry : mapExisting.entrySet()) {
-                            final String key = convertCamelCaseToUnderscore(entry.getKey());
+                            //final String key = convertCamelCaseToUnderscore(entry.getKey());
+                            final String key = entry.getKey();
                             log.info("addModuleExistingJsonToAudit-key: {}",key);
                             //final String value = StringUtils.defaultString(String.valueOf(entry.getValue()),"");
                             final Object value = entry.getValue();

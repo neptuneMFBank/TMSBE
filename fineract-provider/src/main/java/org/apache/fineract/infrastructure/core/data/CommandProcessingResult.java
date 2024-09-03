@@ -251,5 +251,4 @@ public class CommandProcessingResult implements Serializable {
     public String getResourceIdentifier() {
         return resourceIdentifier;
     }
-
 }

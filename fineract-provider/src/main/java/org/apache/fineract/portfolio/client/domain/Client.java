@@ -270,7 +270,9 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom {
     }
 
     public static Client createInstance(final Long savingsProductId, final Integer legalForm, final String mobileNo,
-            final String emailAddress, final String firstname, final String lastname) {
+            final String emailAddress, final String firstname, final String lastname, final String accountNo, final String externalId,
+                                        final String middlename, final LocalDate dataOfBirth,
+                                        final Long savingsAccountId, final  ClientStatus status) {
         final AppUser currentUser = null;
         final Office clientOffice = null;
         final Group clientParentGroup = null;
@@ -278,24 +280,11 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom {
         final CodeValue gender = null;
         final CodeValue clientType = null;
         final CodeValue clientClassification = null;
-
-        final String accountNo = null;
-        final String externalId = null;
-        final String middlename = null;
-        final String fullname = null;
-
         final boolean isStaff = false;
-
-        final LocalDate dataOfBirth = null;
-
-        ClientStatus status = ClientStatus.PENDING;
-
-        LocalDate activationDate = null;
-        LocalDate officeJoiningDate = null;
-
-        LocalDate submittedOnDate = DateUtils.getBusinessLocalDate();
-        final Long savingsAccountId = null;
-
+        final String fullname = null;
+        final LocalDate activationDate = null;
+        final LocalDate officeJoiningDate = null;
+        final LocalDate submittedOnDate = null;
         return new Client(currentUser, status, clientOffice, clientParentGroup, accountNo, firstname, middlename, lastname, fullname,
                 activationDate, officeJoiningDate, externalId, mobileNo, emailAddress, staff, submittedOnDate, savingsProductId,
                 savingsAccountId, dataOfBirth, gender, clientType, clientClassification, legalForm, isStaff);

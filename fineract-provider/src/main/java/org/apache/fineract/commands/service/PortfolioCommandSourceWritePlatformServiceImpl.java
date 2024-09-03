@@ -26,6 +26,7 @@ import java.time.ZonedDateTime;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.commands.domain.CommandSource;
 import org.apache.fineract.commands.domain.CommandSourceRepository;
 import org.apache.fineract.commands.domain.CommandWrapper;
@@ -39,11 +40,15 @@ import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.jobs.service.SchedulerJobRunnerReadService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.client.domain.Client;
+import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.apache.fineract.simplifytech.data.GeneralConstants.addModuleExistingJsonToAudit;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +62,7 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
     private final FromJsonHelper fromApiJsonHelper;
     private final CommandProcessingService processAndLogCommandService;
     private final SchedulerJobRunnerReadService schedulerJobRunnerReadService;
+    private final ClientRepositoryWrapper clientRepositoryWrapper;
 
     @Override
     @SuppressWarnings("AvoidHidingCauseException")
@@ -91,6 +97,24 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
                 wrapper.getSubentityId(), wrapper.getGroupId(), wrapper.getClientId(), wrapper.getLoanId(), wrapper.getSavingsId(),
                 wrapper.getTransactionId(), wrapper.getHref(), wrapper.getProductId(), wrapper.getCreditBureauId(),
                 wrapper.getOrganisationCreditBureauId());
+
+
+        if (StringUtils.isNotBlank(json) && wrapper.isUpdateOperation()) {
+            if (StringUtils.isNotBlank(wrapper.entityName())) {
+                Long resId = wrapper.resourceId();
+                log.info("logCommandSource-resourceId: {}",resId);
+                if (wrapper.entityName().equals("CLIENT")) {
+                    log.info("startAudit-Client: {}",resId);
+                  final Client  clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
+
+                    final String existingJson=addModuleExistingJsonToAudit(wrapper,
+                            resId, clientExisting,  fromApiJsonHelper, command);
+                    if (StringUtils.isNotBlank(existingJson)){
+                        command.setExistingJson(existingJson);
+                    }
+                }
+            }
+        }
         while (numberOfRetries <= maxNumberOfRetries) {
             try {
                 result = this.processAndLogCommandService.processAndLogCommand(wrapper, command, isApprovedByChecker);
@@ -117,10 +141,12 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
                 }
             } catch (final RollbackTransactionAsCommandIsNotApprovedByCheckerException e) {
                 numberOfRetries = maxNumberOfRetries + 1;
-//                result = this.processAndLogCommandService.logCommand(e.getCommandSourceResult());
-                result = this.processAndLogCommandService.logCommand(e.getCommandSourceResult(),  wrapper,  command,  result);
+                result = this.processAndLogCommandService.logCommand(e.getCommandSourceResult());
+//                result = this.processAndLogCommandService.logCommand(e.getCommandSourceResult(),  wrapper,  command,  result);
             }
         }
+
+        //extractedMatchJsonForChange(wrapper,result,clientExisting,command);
 
         return result;
     }
@@ -188,4 +214,39 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
         this.commandSourceRepository.save(commandSourceInput);
         return makerCheckerId;
     }
+
+//    private void extractedMatchJsonForChange(CommandWrapper wrapper, CommandProcessingResult result,
+//                                             final Client clientExisting, final JsonCommand command) {
+//        log.info("extractedMatchJsonForChange-here");
+//       if(result == null) {
+//            return;
+//        }
+//        log.info("extractedMatchJsonForChange-resourceId-{}",result.resourceId());
+//        log.info("extractedMatchJsonForChange-commandId-{}",result.commandId());
+////        log.info("extractedMatchJsonForChange-commandIdCheck-{}",result.getCommandIdCheck());
+//
+//        Long commandId = null;
+//         Long resourceId = result.resourceId();
+//        CommandSource commandSourceResult;
+//        if (result.commandId() != null){
+//            commandId = result.commandId();
+//        }else if(result.getCommandIdCheck() != null){
+//            commandId = result.getCommandIdCheck();
+//        }
+//
+//        if (commandId == null) {
+//            return;
+//        }
+//        commandSourceResult = this.commandSourceRepository.findById(commandId).orElse(null);
+//if (commandSourceResult == null){
+//    return;
+//}
+//        final String existingJson=addModuleExistingJsonToAudit(wrapper,
+//                result, clientExisting,  fromApiJsonHelper, command);
+//        if (StringUtils.isNotBlank(existingJson)){
+//        commandSourceResult.updateExistingJson(existingJson);
+//            this.commandSourceRepository.save(commandSourceResult);
+//        }
+//    }
+
 }

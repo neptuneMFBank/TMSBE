@@ -100,7 +100,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
 
             String commandAsJsonString = "";
             if (includeJson) {
-                commandAsJsonString = ", aud.command_as_json as commandAsJson ";
+                commandAsJsonString = ", aud.command_as_json as commandAsJson, aud.existing_json as existingJson ";
             }
 
             String partSql = " aud.id as id, aud.action_name as actionName, aud.entity_name as entityName,"
@@ -141,12 +141,14 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
             final ZonedDateTime checkedOnDate = JdbcSupport.getDateTime(rs, "checkedOnDate");
             final String processingResult = rs.getString("processingResult");
             final String resourceGetUrl = rs.getString("resourceGetUrl");
-            String commandAsJson;
+            String commandAsJson,existingJson;
             // commandAsJson might not be on the select list of columns
             try {
                 commandAsJson = rs.getString("commandAsJson");
+                existingJson = rs.getString("existingJson");
             } catch (final SQLException e) {
                 commandAsJson = null;
+                existingJson = null;
             }
 
             final String officeName = rs.getString("officeName");
@@ -158,7 +160,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
 
             return new AuditData(id, actionName, entityName, resourceId, subresourceId, maker, madeOnDate, checker, checkedOnDate,
                     processingResult, commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo,
-                    clientId, loanId, resourceGetUrl);
+                    clientId, loanId, resourceGetUrl,existingJson);
         }
     }
 

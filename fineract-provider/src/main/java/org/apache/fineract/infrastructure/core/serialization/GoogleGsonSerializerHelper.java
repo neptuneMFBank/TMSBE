@@ -30,6 +30,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.apache.fineract.infrastructure.core.api.DateAdapter;
 import org.apache.fineract.infrastructure.core.api.JodaDateTimeAdapter;
 import org.apache.fineract.infrastructure.core.api.JodaMonthDayAdapter;
@@ -118,5 +119,6 @@ public final class GoogleGsonSerializerHelper {
         builder.registerTypeAdapter(MonthDay.class, new JodaMonthDayAdapter());
         builder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
         builder.registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeAdapter());
+
     }
 }

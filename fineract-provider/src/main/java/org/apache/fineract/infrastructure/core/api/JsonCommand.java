@@ -49,6 +49,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformPasswordEncod
 public final class JsonCommand {
 
     private final String jsonCommand;
+    private  String existingJson;
     private final JsonElement parsedCommand;
     private final FromJsonHelper fromApiJsonHelper;
     private final Long commandId;
@@ -652,4 +653,11 @@ public final class JsonCommand {
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, requestDataParameters);
     }
 
+    public String getExistingJson() {
+        return existingJson;
+    }
+
+    public void setExistingJson(String existingJson) {
+        this.existingJson = existingJson;
+    }
 }

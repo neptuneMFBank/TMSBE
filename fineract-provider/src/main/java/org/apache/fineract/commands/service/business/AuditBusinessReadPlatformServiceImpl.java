@@ -166,7 +166,7 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
                     + " aud.resource_id as resourceId,aud.client_id as clientId, aud.loan_id as loanId,"
                     + " aud.maker, aud.made_on_date as madeOnDate, " + " aud.api_get_url as resourceGetUrl, "
                     + "aud.checker, aud.checked_on_date as checkedOnDate, aud.processingResult, "
-                    + " aud.officeName, aud.groupLevelName, aud.groupName, aud.clientName, aud.loanAccountNo, aud.savingsAccountNo, aud.role_id as roleId "
+                    + " aud.officeName, aud.groupLevelName, aud.groupName, aud.clientName, aud.loanAccountNo, aud.savingsAccountNo, aud.role_id as roleId, aud.ip_address as ipAddress "
                     + " from m_audit_view aud " + " LEFT JOIN m_office o ON o.id=aud.office_id ";
             return partSql;
         }
@@ -177,6 +177,7 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
             final Long id = rs.getLong("id");
             final String roleId = rs.getString("roleId");
             final String actionName = rs.getString("actionName");
+            final String ipAddress = rs.getString("ipAddress");
             final String entityName = rs.getString("entityName");
             final Long resourceId = JdbcSupport.getLong(rs, "resourceId");
             final Long clientId = JdbcSupport.getLong(rs, "clientId");
@@ -198,7 +199,7 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
 
             return new AuditBusinessData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate,
                     processingResult, commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo,
-                    clientId, loanId, resourceGetUrl, null, roleId);
+                    clientId, loanId, resourceGetUrl, null, roleId,ipAddress);
         }
     }
 
@@ -233,6 +234,7 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
             final String resourceGetUrl = rs.getString("resourceGetUrl");
             String commandAsJson = null;
             String roleId = null;
+            String ipAddress = null;
 
             final String officeName = rs.getString("officeName");
             final String groupLevelName = rs.getString("groupLevelName");
@@ -250,7 +252,7 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
 
             return new AuditBusinessData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate,
                     processingResult, commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo,
-                    clientId, loanId, resourceGetUrl, supervisorStaffData, roleId);
+                    clientId, loanId, resourceGetUrl, supervisorStaffData, roleId,ipAddress);
         }
     }
 

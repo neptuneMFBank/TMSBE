@@ -31,6 +31,7 @@ import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.batch.exception.ErrorHandler;
 import org.apache.fineract.batch.exception.ErrorInfo;
 import org.apache.fineract.commands.domain.CommandSource;
@@ -82,7 +83,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
 
         final CommandProcessingResult result;
         try {
-            result = handler.processCommand(command);
+                result = handler.processCommand(command);
         } catch (Throwable t) {
             // publish error event
             publishErrorEvent(wrapper, command, t);
@@ -97,6 +98,9 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
             commandSourceResult.markAsChecked(maker, ZonedDateTime.now(DateUtils.getDateTimeZoneOfTenant()));
         } else {
             commandSourceResult = CommandSource.fullEntryFrom(wrapper, command, maker);
+        }
+        if (StringUtils.isNotBlank(command.getExistingJson())) {
+            commandSourceResult.updateExistingJson(command.getExistingJson());
         }
         commandSourceResult.updateResourceId(result.resourceId());
         commandSourceResult.updateForAudit(result.getOfficeId(), result.getGroupId(), result.getClientId(), result.getLoanId(),
@@ -118,7 +122,6 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         }
 
         if (commandSourceResult.hasJson()) {
-            //extractedMatchJsonForChange(wrapper, command, commandSourceResult, result);
             this.commandSourceRepository.save(commandSourceResult);
         }
 
@@ -142,27 +145,9 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         return result;
     }
 
-//    private void extractedMatchJsonForChange(CommandWrapper wrapper, JsonCommand command, CommandSource commandSourceResult, CommandProcessingResult result) {
-//        final String existingJson=addModuleExistingJsonToAudit(wrapper,  commandSourceResult.json(),
-//                result, command, clientRepositoryWrapper,  fromApiJsonHelper);
-//        commandSourceResult.updateExistingJson(existingJson);
-//    }
-
     @Transactional
     @Override
     public CommandProcessingResult logCommand(CommandSource commandSourceResult) {
-
-        commandSourceResult.markAsAwaitingApproval();
-        commandSourceResult = this.commandSourceRepository.saveAndFlush(commandSourceResult);
-
-        return new CommandProcessingResultBuilder().withCommandId(commandSourceResult.getId())
-                .withEntityId(commandSourceResult.getResourceId()).build();
-    }
-
-    @Transactional
-    @Override
-    public CommandProcessingResult logCommand(CommandSource commandSourceResult, CommandWrapper wrapper, JsonCommand command, CommandProcessingResult result) {
-        //extractedMatchJsonForChange(wrapper, command, commandSourceResult, result);
 
         commandSourceResult.markAsAwaitingApproval();
         commandSourceResult = this.commandSourceRepository.saveAndFlush(commandSourceResult);

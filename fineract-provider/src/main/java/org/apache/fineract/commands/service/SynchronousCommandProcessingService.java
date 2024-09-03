@@ -32,6 +32,7 @@ import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.batch.exception.ErrorHandler;
 import org.apache.fineract.batch.exception.ErrorInfo;
 import org.apache.fineract.commands.domain.CommandSource;
@@ -52,6 +53,7 @@ import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.hooks.event.HookEvent;
 import org.apache.fineract.infrastructure.hooks.event.HookEventSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.context.ApplicationContext;
@@ -84,8 +86,18 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         final NewCommandSourceHandler handler = findCommandHandler(wrapper);
 
         final CommandProcessingResult result;
+        Client clientExisting = null;
         try {
-            result = handler.processCommand(command);
+            if (StringUtils.isNotBlank(wrapper.getJson()) && wrapper.isUpdateOperation()) {
+                if (StringUtils.isNotBlank(wrapper.entityName())) {
+                    Long resId;
+                    if (wrapper.entityName().equals("CLIENT")) {
+                        resId = wrapper.getClientId();
+                        clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
+            }
+            }
+            }
+                result = handler.processCommand(command);
         } catch (Throwable t) {
             // publish error event
             publishErrorEvent(wrapper, command, t);
@@ -121,7 +133,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         }
 
         if (commandSourceResult.hasJson()) {
-            extractedMatchJsonForChange(wrapper, command, commandSourceResult, result);
+            extractedMatchJsonForChange(wrapper, command, commandSourceResult, result, clientExisting);
             this.commandSourceRepository.save(commandSourceResult);
         }
 
@@ -145,9 +157,10 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         return result;
     }
 
-    private void extractedMatchJsonForChange(CommandWrapper wrapper, JsonCommand command, CommandSource commandSourceResult, CommandProcessingResult result) {
+    private void extractedMatchJsonForChange(CommandWrapper wrapper, JsonCommand command, CommandSource commandSourceResult, CommandProcessingResult result,
+                                             final Client clientExisting) {
         final String existingJson=addModuleExistingJsonToAudit(wrapper,  commandSourceResult.json(),
-                result, command, clientRepositoryWrapper,  fromApiJsonHelper);
+                result, command, clientExisting, clientRepositoryWrapper,  fromApiJsonHelper);
         commandSourceResult.updateExistingJson(existingJson);
     }
 
@@ -165,7 +178,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
     @Transactional
     @Override
     public CommandProcessingResult logCommand(CommandSource commandSourceResult, CommandWrapper wrapper, JsonCommand command, CommandProcessingResult result) {
-        extractedMatchJsonForChange(wrapper, command, commandSourceResult, result);
+        extractedMatchJsonForChange(wrapper, command, commandSourceResult, result, null);
 
         commandSourceResult.markAsAwaitingApproval();
         commandSourceResult = this.commandSourceRepository.saveAndFlush(commandSourceResult);

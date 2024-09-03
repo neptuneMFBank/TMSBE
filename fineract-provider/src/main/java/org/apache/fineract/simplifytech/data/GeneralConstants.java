@@ -456,7 +456,7 @@ public class GeneralConstants {
 
 
     public static String addModuleExistingJsonToAudit(final CommandWrapper wrapper, final String json,
-                                                      final   CommandProcessingResult result, final JsonCommand command,
+                                                      final   CommandProcessingResult result, final JsonCommand command,  Client clientExisting,
                                                       final ClientRepositoryWrapper clientRepositoryWrapper, final FromJsonHelper fromApiJsonHelper) {
         String finalJson=null;
         try {
@@ -475,8 +475,9 @@ public class GeneralConstants {
                     if (wrapper.entityName().equals("CLIENT")) {
                         resId = result.getClientId();
                         log.info("addModuleExistingJsonToAudit-CLIENT: {}",resId);
-
-                        final Client clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
+                        if (clientExisting == null) {
+                            clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
+                        }
                         final Client currentClientExisting = Client.createInstance(clientExisting.savingsProductId(), clientExisting.getLegalForm(), clientExisting.mobileNo(),
                                 clientExisting.emailAddress(), clientExisting.getFirstname(), clientExisting.getLastname(), clientExisting.getAccountNumber(), clientExisting.getExternalId(),
                                 clientExisting.getMiddlename(), clientExisting.dateOfBirth(), clientExisting.savingsAccountId(), ClientStatus.fromInt(clientExisting.getStatus()));

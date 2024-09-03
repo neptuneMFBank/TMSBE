@@ -54,5 +54,6 @@ public final class AuditBusinessData {
     private final String url;
     private final StaffData supervisorStaffData;
     private final String roleId;
+    private final String ipAddress;
 
 }

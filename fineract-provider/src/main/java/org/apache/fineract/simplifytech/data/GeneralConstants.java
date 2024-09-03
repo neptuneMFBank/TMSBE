@@ -491,13 +491,14 @@ public class GeneralConstants {
                         // Compare the two maps
                         for (Map.Entry<String, Object> entry : mapExisting.entrySet()) {
                             final String key = convertCamelCaseToUnderscore(entry.getKey());
-                            final Object value = entry.getValue();
                             log.info("addModuleExistingJsonToAudit-key: {}",key);
+                            final String value = StringUtils.defaultString(String.valueOf(entry.getValue()),"");
+                            log.info("addModuleExistingJsonToAudit-value: {}",value);
 
                             if (mapCurrent.containsKey(key)) {
-                               final Object checkValue = mapCurrent.get(key);
+                               final String checkValue = StringUtils.defaultString(String.valueOf(mapCurrent.get(key)),"");
+                                log.info("addModuleExistingJsonToAudit-valueToCheck: {}",checkValue);
                                if (ObjectUtils.notEqual(value,checkValue)) {
-                                   log.info("addModuleExistingJsonToAudit-value: {}",value);
                                    matchedMap.put(key, value);
                                }
                             }

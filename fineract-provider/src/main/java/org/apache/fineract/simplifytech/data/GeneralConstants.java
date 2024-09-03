@@ -456,8 +456,8 @@ public class GeneralConstants {
 
 
     public static String addModuleExistingJsonToAudit(final CommandWrapper wrapper, final String json,
-                                                      final   CommandProcessingResult result, final JsonCommand command,  Client clientExisting,
-                                                      final ClientRepositoryWrapper clientRepositoryWrapper, final FromJsonHelper fromApiJsonHelper) {
+                                                      final   CommandProcessingResult result,  Client clientExisting,
+                                                      final FromJsonHelper fromApiJsonHelper, final JsonCommand command) {
         String finalJson=null;
         try {
             //for an update, let keep the existing record on the table
@@ -476,13 +476,15 @@ public class GeneralConstants {
                         resId = result.getClientId();
                         log.info("addModuleExistingJsonToAudit-CLIENT: {}",resId);
                         if (clientExisting == null) {
-                            clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
+                            return finalJson;
                         }
                         final Client currentClientExisting = Client.createInstance(clientExisting.savingsProductId(), clientExisting.getLegalForm(), clientExisting.mobileNo(),
                                 clientExisting.emailAddress(), clientExisting.getFirstname(), clientExisting.getLastname(), clientExisting.getAccountNumber(), clientExisting.getExternalId(),
                                 clientExisting.getMiddlename(), clientExisting.dateOfBirth(), clientExisting.savingsAccountId(), ClientStatus.fromInt(clientExisting.getStatus()));
                         existingJson = fromApiJsonHelper.toJson(currentClientExisting);
-                        mapExisting = command.mapObjectValueOfParameterNamed(existingJson);
+                        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+                        mapExisting = fromApiJsonHelper.extractObjectMap(typeOfMap, json);
+
 
                         final Client newClient = Client.createNew(null, null, null, null, null, null,
                                 null, null, null, command);
@@ -493,11 +495,13 @@ public class GeneralConstants {
                         for (Map.Entry<String, Object> entry : mapExisting.entrySet()) {
                             final String key = convertCamelCaseToUnderscore(entry.getKey());
                             log.info("addModuleExistingJsonToAudit-key: {}",key);
-                            final String value = StringUtils.defaultString(String.valueOf(entry.getValue()),"");
+                            //final String value = StringUtils.defaultString(String.valueOf(entry.getValue()),"");
+                            final Object value = entry.getValue();
                             log.info("addModuleExistingJsonToAudit-value: {}",value);
 
                             if (mapCurrent.containsKey(key)) {
-                               final String checkValue = StringUtils.defaultString(String.valueOf(mapCurrent.get(key)),"");
+                               //final String checkValue = StringUtils.defaultString(String.valueOf(mapCurrent.get(key)),"");
+                               final Object checkValue = mapCurrent.get(key);
                                 log.info("addModuleExistingJsonToAudit-valueToCheck: {}",checkValue);
                                if (ObjectUtils.notEqual(value,checkValue)) {
                                    matchedMap.put(key, value);

@@ -54,7 +54,6 @@ import org.apache.fineract.infrastructure.hooks.event.HookEvent;
 import org.apache.fineract.infrastructure.hooks.event.HookEventSource;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.client.domain.Client;
-import org.apache.fineract.portfolio.client.domain.ClientRepositoryWrapper;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -73,7 +72,6 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
     private final ConfigurationDomainService configurationDomainService;
     private final CommandHandlerProvider commandHandlerProvider;
     private final FromJsonHelper fromApiJsonHelper;
-    private final ClientRepositoryWrapper clientRepositoryWrapper;
 
 
     @Transactional
@@ -86,18 +84,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         final NewCommandSourceHandler handler = findCommandHandler(wrapper);
 
         final CommandProcessingResult result;
-        Client clientExisting = null;
         try {
-            if (StringUtils.isNotBlank(wrapper.getJson()) && wrapper.isUpdateOperation()) {
-                if (StringUtils.isNotBlank(wrapper.entityName())) {
-                    Long resId = wrapper.resourceId();
-                    log.info("startAudit-Id: {}",resId);
-                    if (wrapper.entityName().equals("CLIENT")) {
-                        log.info("startAudit-Client: {}",wrapper.getClientId());
-                        clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
-            }
-            }
-            }
                 result = handler.processCommand(command);
         } catch (Throwable t) {
             // publish error event
@@ -134,8 +121,8 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         }
 
         if (commandSourceResult.hasJson()) {
-            extractedMatchJsonForChange(wrapper, command, commandSourceResult, result, clientExisting);
             this.commandSourceRepository.save(commandSourceResult);
+            result.setCommandIdCheck(commandSourceResult.getId());
         }
 
         if ((rollbackTransaction || result.isRollbackTransaction()) && !isApprovedByChecker) {
@@ -158,13 +145,6 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         return result;
     }
 
-    private void extractedMatchJsonForChange(CommandWrapper wrapper, JsonCommand command, CommandSource commandSourceResult, CommandProcessingResult result,
-                                             final Client clientExisting) {
-        final String existingJson=addModuleExistingJsonToAudit(wrapper,  commandSourceResult.json(),
-                result, command, clientExisting, clientRepositoryWrapper,  fromApiJsonHelper);
-        commandSourceResult.updateExistingJson(existingJson);
-    }
-
     @Transactional
     @Override
     public CommandProcessingResult logCommand(CommandSource commandSourceResult) {
@@ -176,17 +156,17 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
                 .withEntityId(commandSourceResult.getResourceId()).build();
     }
 
-    @Transactional
-    @Override
-    public CommandProcessingResult logCommand(CommandSource commandSourceResult, CommandWrapper wrapper, JsonCommand command, CommandProcessingResult result) {
-        extractedMatchJsonForChange(wrapper, command, commandSourceResult, result, null);
-
-        commandSourceResult.markAsAwaitingApproval();
-        commandSourceResult = this.commandSourceRepository.saveAndFlush(commandSourceResult);
-
-        return new CommandProcessingResultBuilder().withCommandId(commandSourceResult.getId())
-                .withEntityId(commandSourceResult.getResourceId()).build();
-    }
+//    @Transactional
+//    @Override
+//    public CommandProcessingResult logCommand(CommandSource commandSourceResult, CommandWrapper wrapper, JsonCommand command, CommandProcessingResult result) {
+//        extractedMatchJsonForChange(wrapper, command, commandSourceResult, result, null);
+//
+//        commandSourceResult.markAsAwaitingApproval();
+//        commandSourceResult = this.commandSourceRepository.saveAndFlush(commandSourceResult);
+//
+//        return new CommandProcessingResultBuilder().withCommandId(commandSourceResult.getId())
+//                .withEntityId(commandSourceResult.getResourceId()).build();
+//    }
 
     private NewCommandSourceHandler findCommandHandler(final CommandWrapper wrapper) {
         NewCommandSourceHandler handler = null;

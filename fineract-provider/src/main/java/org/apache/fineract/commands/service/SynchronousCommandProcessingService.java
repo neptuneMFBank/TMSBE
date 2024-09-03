@@ -31,6 +31,7 @@ import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.batch.exception.ErrorHandler;
 import org.apache.fineract.batch.exception.ErrorInfo;
 import org.apache.fineract.commands.domain.CommandSource;
@@ -98,6 +99,9 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         } else {
             commandSourceResult = CommandSource.fullEntryFrom(wrapper, command, maker);
         }
+        if (StringUtils.isNotBlank(command.getExistingJson())) {
+            commandSourceResult.updateExistingJson(command.getExistingJson());
+        }
         commandSourceResult.updateResourceId(result.resourceId());
         commandSourceResult.updateForAudit(result.getOfficeId(), result.getGroupId(), result.getClientId(), result.getLoanId(),
                 result.getSavingsId(), result.getProductId(), result.getTransactionId());
@@ -119,7 +123,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
 
         if (commandSourceResult.hasJson()) {
             this.commandSourceRepository.save(commandSourceResult);
-            result.setCommandIdCheck(commandSourceResult.getId());
+            //result.setCommandIdCheck(commandSourceResult.getId());
         }
 
         if ((rollbackTransaction || result.isRollbackTransaction()) && !isApprovedByChecker) {

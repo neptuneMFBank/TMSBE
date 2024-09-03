@@ -99,14 +99,19 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
                 wrapper.getOrganisationCreditBureauId());
 
 
-        Client clientExisting = null;
         if (StringUtils.isNotBlank(json) && wrapper.isUpdateOperation()) {
             if (StringUtils.isNotBlank(wrapper.entityName())) {
                 Long resId = wrapper.resourceId();
                 log.info("logCommandSource-Id: {}",resId);
                 if (wrapper.entityName().equals("CLIENT")) {
-                    log.info("startAudit-Client: {}",wrapper.getClientId());
-                    clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
+                    log.info("startAudit-Client: {}",resId);
+                  final Client  clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
+
+                    final String existingJson=addModuleExistingJsonToAudit(wrapper,
+                            resId, clientExisting,  fromApiJsonHelper, command);
+                    if (StringUtils.isNotBlank(existingJson)){
+                        command.setExistingJson(existingJson);
+                    }
                 }
             }
         }
@@ -141,7 +146,7 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
             }
         }
 
-        extractedMatchJsonForChange(wrapper,result,clientExisting,command);
+        //extractedMatchJsonForChange(wrapper,result,clientExisting,command);
 
         return result;
     }
@@ -210,38 +215,38 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
         return makerCheckerId;
     }
 
-    private void extractedMatchJsonForChange(CommandWrapper wrapper, CommandProcessingResult result,
-                                             final Client clientExisting, final JsonCommand command) {
-        log.info("extractedMatchJsonForChange-here");
-       if(result == null) {
-            return;
-        }
-        log.info("extractedMatchJsonForChange-resourceId-{}",result.resourceId());
-        log.info("extractedMatchJsonForChange-commandId-{}",result.commandId());
-        log.info("extractedMatchJsonForChange-commandIdCheck-{}",result.getCommandIdCheck());
-
-        Long commandId = null;
-         Long resourceId = result.resourceId();
-        CommandSource commandSourceResult;
-        if (result.commandId() != null){
-            commandId = result.commandId();
-        }else if(result.getCommandIdCheck() != null){
-            commandId = result.getCommandIdCheck();
-        }
-
-        if (commandId == null) {
-            return;
-        }
-        commandSourceResult = this.commandSourceRepository.findById(commandId).orElse(null);
-if (commandSourceResult == null){
-    return;
-}
-        final String existingJson=addModuleExistingJsonToAudit(wrapper,
-                result, clientExisting,  fromApiJsonHelper, command);
-        if (StringUtils.isNotBlank(existingJson)){
-        commandSourceResult.updateExistingJson(existingJson);
-            this.commandSourceRepository.save(commandSourceResult);
-        }
-    }
+//    private void extractedMatchJsonForChange(CommandWrapper wrapper, CommandProcessingResult result,
+//                                             final Client clientExisting, final JsonCommand command) {
+//        log.info("extractedMatchJsonForChange-here");
+//       if(result == null) {
+//            return;
+//        }
+//        log.info("extractedMatchJsonForChange-resourceId-{}",result.resourceId());
+//        log.info("extractedMatchJsonForChange-commandId-{}",result.commandId());
+////        log.info("extractedMatchJsonForChange-commandIdCheck-{}",result.getCommandIdCheck());
+//
+//        Long commandId = null;
+//         Long resourceId = result.resourceId();
+//        CommandSource commandSourceResult;
+//        if (result.commandId() != null){
+//            commandId = result.commandId();
+//        }else if(result.getCommandIdCheck() != null){
+//            commandId = result.getCommandIdCheck();
+//        }
+//
+//        if (commandId == null) {
+//            return;
+//        }
+//        commandSourceResult = this.commandSourceRepository.findById(commandId).orElse(null);
+//if (commandSourceResult == null){
+//    return;
+//}
+//        final String existingJson=addModuleExistingJsonToAudit(wrapper,
+//                result, clientExisting,  fromApiJsonHelper, command);
+//        if (StringUtils.isNotBlank(existingJson)){
+//        commandSourceResult.updateExistingJson(existingJson);
+//            this.commandSourceRepository.save(commandSourceResult);
+//        }
+//    }
 
 }

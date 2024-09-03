@@ -455,7 +455,9 @@ public class GeneralConstants {
 
 
     public static String addModuleExistingJsonToAudit(final CommandWrapper wrapper,
-                                                      final   CommandProcessingResult result,  Client clientExisting,
+                                                      //final   CommandProcessingResult result,
+                                                      final Long resId,
+                                                      Client clientExisting,
                                                       final FromJsonHelper fromApiJsonHelper, final JsonCommand command) {
         String finalJson=null;
         final String json = wrapper.getJson();
@@ -464,8 +466,9 @@ public class GeneralConstants {
             //Thompson 22/08/2024
             log.info("addModuleExistingJsonToAudit-json: {}",json);
             log.info("addModuleExistingJsonToAudit-isUpdateOperation: {}",wrapper.isUpdateOperation());
-            if (StringUtils.isNotBlank(json) && result != null && wrapper.isUpdateOperation()) {
-                Long resId;
+            //if (StringUtils.isNotBlank(json) && result != null && wrapper.isUpdateOperation()) {
+            if (StringUtils.isNotBlank(json) && wrapper.isUpdateOperation()) {
+                //Long resId;
                 String existingJson;
                 String newJson;
                 Map<String, Object> mapCurrent;
@@ -473,7 +476,7 @@ public class GeneralConstants {
                 Map<String, Object> matchedMap = new HashMap<>();
                 if (StringUtils.isNotBlank(wrapper.entityName())) {
                     if (wrapper.entityName().equals("CLIENT")) {
-                        resId = result.getClientId();
+                        //resId = result.getClientId();
                         log.info("addModuleExistingJsonToAudit-CLIENT: {}",resId);
                         if (clientExisting == null) {
                             return finalJson;
@@ -483,7 +486,7 @@ public class GeneralConstants {
                                 clientExisting.getMiddlename(), clientExisting.dateOfBirth(), clientExisting.savingsAccountId(), ClientStatus.fromInt(clientExisting.getStatus()));
                         existingJson = fromApiJsonHelper.toJson(currentClientExisting);
                         final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
-                        mapExisting = fromApiJsonHelper.extractObjectMap(typeOfMap, json);
+                        mapExisting = fromApiJsonHelper.extractObjectMap(typeOfMap, existingJson);
 
 
                         final Client newClient = Client.createNew(null, null, null, null, null, null,

@@ -90,9 +90,10 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
         try {
             if (StringUtils.isNotBlank(wrapper.getJson()) && wrapper.isUpdateOperation()) {
                 if (StringUtils.isNotBlank(wrapper.entityName())) {
-                    Long resId;
+                    Long resId = wrapper.resourceId();
+                    log.info("startAudit-Id: {}",resId);
                     if (wrapper.entityName().equals("CLIENT")) {
-                        resId = wrapper.getClientId();
+                        log.info("startAudit-Client: {}",wrapper.getClientId());
                         clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
             }
             }

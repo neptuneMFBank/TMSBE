@@ -1138,13 +1138,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
 
         validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_DEPOSIT, transactionDTO.getTransactionDate());
 
-        LOG.info("deposit isAccountTransfer && isSelfTransfer- {}:{}", isAccountTransfer, isSelfTransfer);
-        // if (isAccountTransfer && !isSelfTransfer) {
-        if (!isSelfTransfer) {
-            // auto pay deposit fee (Stamp Duty) only when isAccountTransfer and is not self tranfer
-            payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
-                    transactionDTO.getPaymentDetail(), backdatedTxnsAllowedTill, refNo);
-        }
         final Money amount = Money.of(this.currency, transactionDTO.getTransactionAmount());
 
         final SavingsAccountTransaction transaction = SavingsAccountTransaction.deposit(this, office(), transactionDTO.getPaymentDetail(),
@@ -1165,6 +1158,14 @@ public class SavingsAccount extends AbstractPersistableCustom {
         if (backdatedTxnsAllowedTill) {
             this.summary.updateSummaryWithPivotConfig(this.currency, this.savingsAccountTransactionSummaryWrapper, transaction,
                     this.savingsAccountTransactions);
+        }
+
+        LOG.info("deposit isAccountTransfer && isSelfTransfer- {}:{}", isAccountTransfer, isSelfTransfer);
+        // if (isAccountTransfer && !isSelfTransfer) {
+        if (!isSelfTransfer) {
+            // auto pay deposit fee (Stamp Duty) only when isAccountTransfer and is not self tranfer
+            payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
+                    transactionDTO.getPaymentDetail(), backdatedTxnsAllowedTill, refNo);
         }
 
         return transaction;

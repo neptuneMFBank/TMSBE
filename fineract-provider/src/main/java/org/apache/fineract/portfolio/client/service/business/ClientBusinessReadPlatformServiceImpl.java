@@ -656,7 +656,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         Boolean agreement = cnt != null && cnt > 0;
         if (cnt != null && cnt > 1) {
             throw new ClientNotFoundException("error.msg.client.duplicate",
-                    "Customer account is not profiled correcrtly, please contact support");
+                    "Customer account is not profiled correctly or duplicates, please contact support");
         }
         Long clientId = null;
         if (agreement) {

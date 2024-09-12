@@ -65,19 +65,18 @@ public class LoanProductApprovalDataValidator {
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
                 .resource(LoanProductApprovalApiResourceConstants.RESOURCENAME);
 
-        if (isUpdate == false || this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.NAME, element)) {
+        if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.NAME, element)) {
             final String name = this.fromApiJsonHelper.extractStringNamed(LoanProductApprovalApiResourceConstants.NAME, element);
             baseDataValidator.reset().parameter(LoanProductApprovalApiResourceConstants.NAME).value(name).notBlank();
         }
 
-        if (isUpdate == false || this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, element)) {
+        if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, element)) {
             final long LOANPRODUCTID = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID,
                     element);
             baseDataValidator.reset().parameter(LoanProductApprovalApiResourceConstants.LOANPRODUCTID).value(LOANPRODUCTID).notBlank()
                     .longGreaterThanZero();
         }
-        if (isUpdate == false
-                || this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID, element)) {
+        if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID, element)) {
             final long SAVINGSPRODUCTID = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID,
                     element);
             baseDataValidator.reset().parameter(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID).value(SAVINGSPRODUCTID).notBlank()

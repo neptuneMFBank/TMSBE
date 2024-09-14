@@ -49,7 +49,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformPasswordEncod
 public final class JsonCommand {
 
     private final String jsonCommand;
-    private  String existingJson;
+    private String existingJson;
     private final JsonElement parsedCommand;
     private final FromJsonHelper fromApiJsonHelper;
     private final Long commandId;

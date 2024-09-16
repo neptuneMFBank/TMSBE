@@ -240,7 +240,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
                     financialYearBeginningMonth, postInterestOnDate, backdatedTxnsAllowedTill, postReversals);
         }
 
-        saveTransactionToGenerateTransactionId(deposit);
+        //saveTransactionToGenerateTransactionId(deposit);
 
         if (backdatedTxnsAllowedTill) {
             // Update transactions separately

@@ -216,6 +216,15 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         UUID refNo = UUID.randomUUID();
         final SavingsAccountTransaction deposit = account.deposit(transactionDTO, savingsAccountTransactionType, backdatedTxnsAllowedTill,
                 relaxingDaysConfigForPivotDate, refNo.toString(), isAccountTransfer, isSelfTransfer);
+
+        log.info("deposit isAccountTransfer && isSelfTransfer- {}:{}", isAccountTransfer, isSelfTransfer);
+        // if (isAccountTransfer && !isSelfTransfer) {
+        if (!isSelfTransfer) {
+            // auto-pay deposit fee (Stamp Duty) only when isAccountTransfer and is not self transfer
+            account.payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
+                    transactionDTO.getPaymentDetail(), backdatedTxnsAllowedTill, refNo.toString());
+        }
+
         final LocalDate postInterestOnDate = null;
         final MathContext mc = MathContext.DECIMAL64;
 
@@ -230,15 +239,6 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         }
 
         saveTransactionToGenerateTransactionId(deposit);
-
-
-        log.info("deposit isAccountTransfer && isSelfTransfer- {}:{}", isAccountTransfer, isSelfTransfer);
-        // if (isAccountTransfer && !isSelfTransfer) {
-        if (!isSelfTransfer) {
-            // auto-pay deposit fee (Stamp Duty) only when isAccountTransfer and is not self transfer
-            account.payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
-                    transactionDTO.getPaymentDetail(), backdatedTxnsAllowedTill, refNo.toString());
-        }
 
         if (backdatedTxnsAllowedTill) {
             // Update transactions separately

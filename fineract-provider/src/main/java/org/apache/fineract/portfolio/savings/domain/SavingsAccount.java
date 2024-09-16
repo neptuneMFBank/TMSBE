@@ -1160,14 +1160,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
                     this.savingsAccountTransactions);
         }
 
-        LOG.info("deposit isAccountTransfer && isSelfTransfer- {}:{}", isAccountTransfer, isSelfTransfer);
-        // if (isAccountTransfer && !isSelfTransfer) {
-        if (!isSelfTransfer) {
-            // auto pay deposit fee (Stamp Duty) only when isAccountTransfer and is not self tranfer
-            payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
-                    transactionDTO.getPaymentDetail(), backdatedTxnsAllowedTill, refNo);
-        }
-
         return transaction;
     }
 
@@ -3973,7 +3965,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
         return this.withHoldTax;
     }
 
-    private void payDepositFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user,
+    public void payDepositFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user,
             final PaymentDetail paymentDetail, final boolean backdatedTxnsAllowedTill, final String refNo) {
         for (SavingsAccountCharge charge : this.charges()) {
 

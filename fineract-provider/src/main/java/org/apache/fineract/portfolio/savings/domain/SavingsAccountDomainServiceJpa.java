@@ -238,6 +238,14 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
 
         this.savingsAccountRepository.saveAndFlush(account);
 
+        log.info("deposit isAccountTransfer && isSelfTransfer- {}:{}", isAccountTransfer, isSelfTransfer);
+        // if (isAccountTransfer && !isSelfTransfer) {
+        if (!isSelfTransfer) {
+            // auto-pay deposit fee (Stamp Duty) only when isAccountTransfer and is not self transfer
+            account.payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
+                    transactionDTO.getPaymentDetail(), backdatedTxnsAllowedTill, refNo.toString());
+        }
+
         postJournalEntries(account, existingTransactionIds, existingReversedTransactionIds, isAccountTransfer, backdatedTxnsAllowedTill);
         businessEventNotifierService.notifyPostBusinessEvent(new SavingsDepositBusinessEvent(deposit));
         return deposit;

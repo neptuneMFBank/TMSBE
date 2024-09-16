@@ -231,12 +231,6 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
 
         saveTransactionToGenerateTransactionId(deposit);
 
-        if (backdatedTxnsAllowedTill) {
-            // Update transactions separately
-            saveUpdatedTransactionsOfSavingsAccount(account.getSavingsAccountTransactionsWithPivotConfig());
-        }
-
-        this.savingsAccountRepository.saveAndFlush(account);
 
         log.info("deposit isAccountTransfer && isSelfTransfer- {}:{}", isAccountTransfer, isSelfTransfer);
         // if (isAccountTransfer && !isSelfTransfer) {
@@ -245,6 +239,13 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
             account.payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
                     transactionDTO.getPaymentDetail(), backdatedTxnsAllowedTill, refNo.toString());
         }
+
+        if (backdatedTxnsAllowedTill) {
+            // Update transactions separately
+            saveUpdatedTransactionsOfSavingsAccount(account.getSavingsAccountTransactionsWithPivotConfig());
+        }
+
+        this.savingsAccountRepository.saveAndFlush(account);
 
         postJournalEntries(account, existingTransactionIds, existingReversedTransactionIds, isAccountTransfer, backdatedTxnsAllowedTill);
         businessEventNotifierService.notifyPostBusinessEvent(new SavingsDepositBusinessEvent(deposit));

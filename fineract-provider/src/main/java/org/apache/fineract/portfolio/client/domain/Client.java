@@ -358,7 +358,7 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom {
         }
 
         this.dateOfBirth = dateOfBirth;
-
+        this.isStaff = isStaff;
         this.clientType = clientType;
         this.clientClassification = clientClassification;
         this.setLegalForm(legalForm);
@@ -545,7 +545,11 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom {
             final Long newValue = command.longValueOfParameterNamed(ClientApiConstants.staffIdParamName);
             actualChanges.put(ClientApiConstants.staffIdParamName, newValue);
         }
-
+        if (command.isChangeInBooleanParameterNamed(ClientApiConstants.isStaffParamName, this.isStaff)) {
+            final Boolean newValue = command.booleanObjectValueOfParameterNamed(ClientApiConstants.isStaffParamName);
+            actualChanges.put(ClientApiConstants.isStaffParamName, newValue);
+            this.isStaff = newValue;
+        }
         if (command.isChangeInLongParameterNamed(ClientApiConstants.genderIdParamName, genderId())) {
             final Long newValue = command.longValueOfParameterNamed(ClientApiConstants.genderIdParamName);
             actualChanges.put(ClientApiConstants.genderIdParamName, newValue);

@@ -18,12 +18,12 @@
  */
 package org.apache.fineract.commands.service;
 
+import static org.apache.fineract.simplifytech.data.GeneralConstants.addModuleExistingJsonToAudit;
+
 import com.google.gson.JsonElement;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import java.security.SecureRandom;
 import java.time.ZonedDateTime;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -48,8 +48,6 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.apache.fineract.simplifytech.data.GeneralConstants.addModuleExistingJsonToAudit;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -67,7 +65,7 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
     @Override
     @SuppressWarnings("AvoidHidingCauseException")
     @SuppressFBWarnings(value = {
-            "DMI_RANDOM_USED_ONLY_ONCE"}, justification = "False positive for random object created and used only once")
+            "DMI_RANDOM_USED_ONLY_ONCE" }, justification = "False positive for random object created and used only once")
     public CommandProcessingResult logCommandSource(final CommandWrapper wrapper) {
 
         boolean isApprovedByChecker = false;
@@ -98,18 +96,16 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
                 wrapper.getTransactionId(), wrapper.getHref(), wrapper.getProductId(), wrapper.getCreditBureauId(),
                 wrapper.getOrganisationCreditBureauId());
 
-
         if (StringUtils.isNotBlank(json) && wrapper.isUpdateOperation()) {
             if (StringUtils.isNotBlank(wrapper.entityName())) {
                 Long resId = wrapper.resourceId();
-                log.info("logCommandSource-resourceId: {}",resId);
+                log.info("logCommandSource-resourceId: {}", resId);
                 if (wrapper.entityName().equals("CLIENT")) {
-                    log.info("startAudit-Client: {}",resId);
-                  final Client  clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
+                    log.info("startAudit-Client: {}", resId);
+                    final Client clientExisting = clientRepositoryWrapper.findOneWithNotFoundDetection(resId);
 
-                    final String existingJson=addModuleExistingJsonToAudit(wrapper,
-                            resId, clientExisting,  fromApiJsonHelper, command);
-                    if (StringUtils.isNotBlank(existingJson)){
+                    final String existingJson = addModuleExistingJsonToAudit(wrapper, resId, clientExisting, fromApiJsonHelper, command);
+                    if (StringUtils.isNotBlank(existingJson)) {
                         command.setExistingJson(existingJson);
                     }
                 }
@@ -142,11 +138,12 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
             } catch (final RollbackTransactionAsCommandIsNotApprovedByCheckerException e) {
                 numberOfRetries = maxNumberOfRetries + 1;
                 result = this.processAndLogCommandService.logCommand(e.getCommandSourceResult());
-//                result = this.processAndLogCommandService.logCommand(e.getCommandSourceResult(),  wrapper,  command,  result);
+                // result = this.processAndLogCommandService.logCommand(e.getCommandSourceResult(), wrapper, command,
+                // result);
             }
         }
 
-        //extractedMatchJsonForChange(wrapper,result,clientExisting,command);
+        // extractedMatchJsonForChange(wrapper,result,clientExisting,command);
 
         return result;
     }
@@ -215,38 +212,38 @@ public class PortfolioCommandSourceWritePlatformServiceImpl implements Portfolio
         return makerCheckerId;
     }
 
-//    private void extractedMatchJsonForChange(CommandWrapper wrapper, CommandProcessingResult result,
-//                                             final Client clientExisting, final JsonCommand command) {
-//        log.info("extractedMatchJsonForChange-here");
-//       if(result == null) {
-//            return;
-//        }
-//        log.info("extractedMatchJsonForChange-resourceId-{}",result.resourceId());
-//        log.info("extractedMatchJsonForChange-commandId-{}",result.commandId());
-////        log.info("extractedMatchJsonForChange-commandIdCheck-{}",result.getCommandIdCheck());
-//
-//        Long commandId = null;
-//         Long resourceId = result.resourceId();
-//        CommandSource commandSourceResult;
-//        if (result.commandId() != null){
-//            commandId = result.commandId();
-//        }else if(result.getCommandIdCheck() != null){
-//            commandId = result.getCommandIdCheck();
-//        }
-//
-//        if (commandId == null) {
-//            return;
-//        }
-//        commandSourceResult = this.commandSourceRepository.findById(commandId).orElse(null);
-//if (commandSourceResult == null){
-//    return;
-//}
-//        final String existingJson=addModuleExistingJsonToAudit(wrapper,
-//                result, clientExisting,  fromApiJsonHelper, command);
-//        if (StringUtils.isNotBlank(existingJson)){
-//        commandSourceResult.updateExistingJson(existingJson);
-//            this.commandSourceRepository.save(commandSourceResult);
-//        }
-//    }
+    // private void extractedMatchJsonForChange(CommandWrapper wrapper, CommandProcessingResult result,
+    // final Client clientExisting, final JsonCommand command) {
+    // log.info("extractedMatchJsonForChange-here");
+    // if(result == null) {
+    // return;
+    // }
+    // log.info("extractedMatchJsonForChange-resourceId-{}",result.resourceId());
+    // log.info("extractedMatchJsonForChange-commandId-{}",result.commandId());
+    //// log.info("extractedMatchJsonForChange-commandIdCheck-{}",result.getCommandIdCheck());
+    //
+    // Long commandId = null;
+    // Long resourceId = result.resourceId();
+    // CommandSource commandSourceResult;
+    // if (result.commandId() != null){
+    // commandId = result.commandId();
+    // }else if(result.getCommandIdCheck() != null){
+    // commandId = result.getCommandIdCheck();
+    // }
+    //
+    // if (commandId == null) {
+    // return;
+    // }
+    // commandSourceResult = this.commandSourceRepository.findById(commandId).orElse(null);
+    // if (commandSourceResult == null){
+    // return;
+    // }
+    // final String existingJson=addModuleExistingJsonToAudit(wrapper,
+    // result, clientExisting, fromApiJsonHelper, command);
+    // if (StringUtils.isNotBlank(existingJson)){
+    // commandSourceResult.updateExistingJson(existingJson);
+    // this.commandSourceRepository.save(commandSourceResult);
+    // }
+    // }
 
 }

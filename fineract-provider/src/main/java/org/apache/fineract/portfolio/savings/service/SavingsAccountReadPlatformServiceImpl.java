@@ -1373,20 +1373,20 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
             final boolean postInterestAsOn = rs.getBoolean("postInterestAsOn");
 
             PaymentDetailData paymentDetailData = null;
-            //if (transactionType.isDepositOrWithdrawal()) {
-                final Long paymentTypeId = JdbcSupport.getLong(rs, "paymentType");
-                if (paymentTypeId != null) {
-                    final String typeName = rs.getString("paymentTypeName");
-                    final PaymentTypeData paymentType = PaymentTypeData.instance(paymentTypeId, typeName);
-                    final String accountNumber = rs.getString("accountNumber");
-                    final String checkNumber = rs.getString("checkNumber");
-                    final String routingCode = rs.getString("routingCode");
-                    final String receiptNumber = rs.getString("receiptNumber");
-                    final String bankNumber = rs.getString("bankNumber");
-                    paymentDetailData = new PaymentDetailData(id, paymentType, accountNumber, checkNumber, routingCode, receiptNumber,
-                            bankNumber);
-                }
-            //}
+            // if (transactionType.isDepositOrWithdrawal()) {
+            final Long paymentTypeId = JdbcSupport.getLong(rs, "paymentType");
+            if (paymentTypeId != null) {
+                final String typeName = rs.getString("paymentTypeName");
+                final PaymentTypeData paymentType = PaymentTypeData.instance(paymentTypeId, typeName);
+                final String accountNumber = rs.getString("accountNumber");
+                final String checkNumber = rs.getString("checkNumber");
+                final String routingCode = rs.getString("routingCode");
+                final String receiptNumber = rs.getString("receiptNumber");
+                final String bankNumber = rs.getString("bankNumber");
+                paymentDetailData = new PaymentDetailData(id, paymentType, accountNumber, checkNumber, routingCode, receiptNumber,
+                        bankNumber);
+            }
+            // }
 
             final String currencyCode = rs.getString("currencyCode");
             final String currencyName = rs.getString("currencyName");

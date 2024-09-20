@@ -141,7 +141,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
             final ZonedDateTime checkedOnDate = JdbcSupport.getDateTime(rs, "checkedOnDate");
             final String processingResult = rs.getString("processingResult");
             final String resourceGetUrl = rs.getString("resourceGetUrl");
-            String commandAsJson,existingJson;
+            String commandAsJson, existingJson;
             // commandAsJson might not be on the select list of columns
             try {
                 commandAsJson = rs.getString("commandAsJson");
@@ -160,7 +160,7 @@ public class AuditReadPlatformServiceImpl implements AuditReadPlatformService {
 
             return new AuditData(id, actionName, entityName, resourceId, subresourceId, maker, madeOnDate, checker, checkedOnDate,
                     processingResult, commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo,
-                    clientId, loanId, resourceGetUrl,existingJson);
+                    clientId, loanId, resourceGetUrl, existingJson);
         }
     }
 

@@ -293,7 +293,7 @@ public class DepositAccountWritePlatformServiceJpaRepositoryImpl implements Depo
         for (SavingsAccountCharge savingsAccountCharge : account.charges()) {
             if (savingsAccountCharge.isSavingsActivation()) {
                 account.payCharge(savingsAccountCharge, savingsAccountCharge.getAmount(account.getCurrency()),
-                        account.getActivationLocalDate(), user, false, null,null);
+                        account.getActivationLocalDate(), user, false, null, null);
             }
         }
     }

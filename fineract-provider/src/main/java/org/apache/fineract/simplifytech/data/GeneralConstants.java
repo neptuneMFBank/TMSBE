@@ -446,26 +446,23 @@ public class GeneralConstants {
     }
 
     public static String convertCamelCaseToUnderscore(String camelCaseString) {
-        if(StringUtils.isBlank(camelCaseString)){return camelCaseString;}
+        if (StringUtils.isBlank(camelCaseString)) {
+            return camelCaseString;
+        }
         // Replace the camel case pattern with an underscore
-        return camelCaseString
-                .replaceAll("([a-z])([A-Z])", "$1_$2")
-                .toLowerCase();
+        return camelCaseString.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
     }
 
-
     public static String addModuleExistingJsonToAudit(final CommandWrapper wrapper,
-                                                      //final   CommandProcessingResult result,
-                                                      final Long resId,
-                                                      Client clientExisting,
-                                                      final FromJsonHelper fromApiJsonHelper, final JsonCommand command) {
-        String finalJson=null;
+            // final CommandProcessingResult result,
+            final Long resId, Client clientExisting, final FromJsonHelper fromApiJsonHelper, final JsonCommand command) {
+        String finalJson = null;
         final String json = wrapper.getJson();
         try {
-            //for an update, let keep the existing record on the table
-            //Thompson 22/08/2024
-            log.info("addModuleExistingJsonToAudit-json: {}",json);
-            log.info("addModuleExistingJsonToAudit-isUpdateOperation: {}",wrapper.isUpdateOperation());
+            // for an update, let keep the existing record on the table
+            // Thompson 22/08/2024
+            log.info("addModuleExistingJsonToAudit-json: {}", json);
+            log.info("addModuleExistingJsonToAudit-isUpdateOperation: {}", wrapper.isUpdateOperation());
             if (StringUtils.isNotBlank(json) && wrapper.isUpdateOperation()) {
                 String existingJson;
                 String newJson;
@@ -474,46 +471,47 @@ public class GeneralConstants {
                 Map<String, Object> matchedMap = new HashMap<>();
                 if (StringUtils.isNotBlank(wrapper.entityName())) {
                     if (wrapper.entityName().equals("CLIENT")) {
-                        log.info("addModuleExistingJsonToAudit-CLIENT: {}",resId);
+                        log.info("addModuleExistingJsonToAudit-CLIENT: {}", resId);
                         if (clientExisting == null) {
                             return finalJson;
                         }
-                        final Client currentClientExisting = Client.createInstance(clientExisting.savingsProductId(), clientExisting.getLegalForm(), clientExisting.mobileNo(),
-                                clientExisting.emailAddress(), clientExisting.getFirstname(), clientExisting.getLastname(), clientExisting.getAccountNumber(), clientExisting.getExternalId(),
-                                clientExisting.getMiddlename(), clientExisting.dateOfBirth(), clientExisting.savingsAccountId(), ClientStatus.fromInt(clientExisting.getStatus()));
+                        final Client currentClientExisting = Client.createInstance(clientExisting.savingsProductId(),
+                                clientExisting.getLegalForm(), clientExisting.mobileNo(), clientExisting.emailAddress(),
+                                clientExisting.getFirstname(), clientExisting.getLastname(), clientExisting.getAccountNumber(),
+                                clientExisting.getExternalId(), clientExisting.getMiddlename(), clientExisting.dateOfBirth(),
+                                clientExisting.savingsAccountId(), ClientStatus.fromInt(clientExisting.getStatus()));
                         existingJson = fromApiJsonHelper.toJson(currentClientExisting);
                         final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
                         mapExisting = fromApiJsonHelper.extractObjectMap(typeOfMap, existingJson);
 
-
-                        final Client newClient = Client.createNew(null, null, null, null, null, null,
-                                null, null, null, command);
+                        final Client newClient = Client.createNew(null, null, null, null, null, null, null, null, null, command);
                         newJson = fromApiJsonHelper.toJson(newClient);
                         mapCurrent = command.mapObjectValueOfParameterNamed(newJson);
 
                         // Compare the two maps
                         for (Map.Entry<String, Object> entry : mapExisting.entrySet()) {
-                            //final String key = convertCamelCaseToUnderscore(entry.getKey());
+                            // final String key = convertCamelCaseToUnderscore(entry.getKey());
                             final String key = entry.getKey();
-                            log.info("addModuleExistingJsonToAudit-key: {}",key);
-                            //final String value = StringUtils.defaultString(String.valueOf(entry.getValue()),"");
+                            log.info("addModuleExistingJsonToAudit-key: {}", key);
+                            // final String value = StringUtils.defaultString(String.valueOf(entry.getValue()),"");
                             final Object value = entry.getValue();
-                            log.info("addModuleExistingJsonToAudit-value: {}",value);
+                            log.info("addModuleExistingJsonToAudit-value: {}", value);
 
                             if (mapCurrent.containsKey(key)) {
-                               //final String checkValue = StringUtils.defaultString(String.valueOf(mapCurrent.get(key)),"");
-                               final Object checkValue = mapCurrent.get(key);
-                                log.info("addModuleExistingJsonToAudit-valueToCheck: {}",checkValue);
-                               if (ObjectUtils.notEqual(value,checkValue)) {
-                                   matchedMap.put(key, value);
-                               }
+                                // final String checkValue =
+                                // StringUtils.defaultString(String.valueOf(mapCurrent.get(key)),"");
+                                final Object checkValue = mapCurrent.get(key);
+                                log.info("addModuleExistingJsonToAudit-valueToCheck: {}", checkValue);
+                                if (ObjectUtils.notEqual(value, checkValue)) {
+                                    matchedMap.put(key, value);
+                                }
                             }
                         }
                     }
 
                     if (!matchedMap.isEmpty()) {
                         finalJson = fromApiJsonHelper.toJson(matchedMap);
-                        log.info("addModuleExistingJsonToAudit-finalJson: {}",finalJson);
+                        log.info("addModuleExistingJsonToAudit-finalJson: {}", finalJson);
                         return finalJson;
                     }
                 }

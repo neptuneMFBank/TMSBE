@@ -229,6 +229,10 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                 builder.withLoanId(fromLoanAccountId);
             }
 
+            if(transferDetailId != null){
+                builder.withSubEntityId(transferDetailId);
+            }
+
             return builder.build();
         } catch (Exception e) {
             log.warn(" createAccountTransfer Error:  {}", e);

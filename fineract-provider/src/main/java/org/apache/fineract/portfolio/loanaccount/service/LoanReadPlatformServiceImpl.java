@@ -1295,8 +1295,8 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                     + ", tr.amount as total, " + " tr.principal_portion_derived as principal, tr.interest_portion_derived as interest, "
                     + " tr.fee_charges_portion_derived as fees, tr.penalty_charges_portion_derived as penalties, "
                     + " tr.overpayment_portion_derived as overpayment, tr.outstanding_loan_balance_derived as outstandingLoanBalance, "
-                    + " tr.unrecognized_income_portion as unrecognizedIncome," + " tr.submitted_on_date as submittedOnDate, "+ " tr.created_on_utc as submittedOnDateTime, "
-                    + " tr.manually_adjusted_or_reversed as manuallyReversed, "
+                    + " tr.unrecognized_income_portion as unrecognizedIncome," + " tr.submitted_on_date as submittedOnDate, "
+                    + " tr.created_on_utc as submittedOnDateTime, " + " tr.manually_adjusted_or_reversed as manuallyReversed, "
                     + " pd.payment_type_id as paymentType,pd.account_number as accountNumber,pd.check_number as checkNumber, "
                     + " pd.receipt_number as receiptNumber, pd.bank_number as bankNumber,pd.routing_code as routingCode, l.net_disbursal_amount as netDisbursalAmount,"
                     + " l.currency_code as currencyCode, l.currency_digits as currencyDigits, l.currency_multiplesof as inMultiplesOf, rc."
@@ -1386,9 +1386,10 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                 transfer = AccountTransferData.transferBasicDetails(toTransferId, currencyData, toTransferAmount, toTransferDate,
                         toTransferDescription, toTransferReversed);
             }
-            final LoanTransactionData loanTransactionData = new LoanTransactionData(id, officeId, officeName, transactionType, paymentDetailData, currencyData, date, totalAmount,
-                    netDisbursalAmount, principalPortion, interestPortion, feeChargesPortion, penaltyChargesPortion, overPaymentPortion,
-                    unrecognizedIncomePortion, externalId, transfer, null, outstandingLoanBalance, submittedOnDate, manuallyReversed);
+            final LoanTransactionData loanTransactionData = new LoanTransactionData(id, officeId, officeName, transactionType,
+                    paymentDetailData, currencyData, date, totalAmount, netDisbursalAmount, principalPortion, interestPortion,
+                    feeChargesPortion, penaltyChargesPortion, overPaymentPortion, unrecognizedIncomePortion, externalId, transfer, null,
+                    outstandingLoanBalance, submittedOnDate, manuallyReversed);
             loanTransactionData.setSubmittedOnDateTime(submittedOnDateTime);
             return loanTransactionData;
         }

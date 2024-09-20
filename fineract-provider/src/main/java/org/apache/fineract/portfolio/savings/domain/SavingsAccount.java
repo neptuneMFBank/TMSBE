@@ -1160,14 +1160,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
                     this.savingsAccountTransactions);
         }
 
-        LOG.info("deposit isAccountTransfer && isSelfTransfer- {}:{}", isAccountTransfer, isSelfTransfer);
-        // if (isAccountTransfer && !isSelfTransfer) {
-        if (!isSelfTransfer) {
-            // auto pay deposit fee (Stamp Duty) only when isAccountTransfer and is not self tranfer
-            payDepositFee(transactionDTO.getTransactionAmount(), transactionDTO.getTransactionDate(), transactionDTO.getAppUser(),
-                    transactionDTO.getPaymentDetail(), backdatedTxnsAllowedTill, refNo);
-        }
-
         return transaction;
     }
 
@@ -1355,11 +1347,11 @@ public class SavingsAccount extends AbstractPersistableCustom {
                     if (paymentDetail.getPaymentType().getPaymentName().equals(charge.getCharge().getPaymentType().getPaymentName())) {
                         calculateExternalCharges(charge, transactionAmount, "real-", paymentTypeGridReadPlatformService);
                         this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
-                                backdatedTxnsAllowedTill, refNo,paymentDetail);
+                                backdatedTxnsAllowedTill, refNo, paymentDetail);
                     } else {
                         final Long chargeId = charge.getCharge() == null ? null : charge.getCharge().getId();
-                        //final Long paymentTypeId = paymentDetail.getPaymentType().getId();
-                        //LOG.info("check- chargeId & paymentTypeId: {}-{}", chargeId, paymentTypeId);
+                        // final Long paymentTypeId = paymentDetail.getPaymentType().getId();
+                        // LOG.info("check- chargeId & paymentTypeId: {}-{}", chargeId, paymentTypeId);
                         LOG.info("check- chargeId & paymentTypeId: {}", chargeId);
 
                         // final Long paymentTypeId = charge.getCharge() == null ? null :
@@ -1384,7 +1376,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
                 } else { // normal-withdraw
                     charge.updateWithdralFeeAmount(transactionAmount);
                     this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user, backdatedTxnsAllowedTill,
-                            refNo,paymentDetail);
+                            refNo, paymentDetail);
                 }
 
             }
@@ -1445,7 +1437,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
             charge.updateNoWithdrawalFee();
         } else {
             charge.updateWithdralFeeAmount(transactionAmount);
-            this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user, backdatedTxnsAllowedTill, refNo,null);
+            this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user, backdatedTxnsAllowedTill, refNo,
+                    null);
         }
     }
 
@@ -2821,7 +2814,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
             if (savingsAccountCharge.isSavingsActivation()) {
                 isSavingsChargeApplied = true;
                 payCharge(savingsAccountCharge, savingsAccountCharge.getAmountOutstanding(getCurrency()), getActivationLocalDate(), user,
-                        backdatedTxnsAllowedTill, refNo.toString(),null);
+                        backdatedTxnsAllowedTill, refNo.toString(), null);
             }
         }
 
@@ -3264,17 +3257,20 @@ public class SavingsAccount extends AbstractPersistableCustom {
             }
         }
 
-        return this.payCharge(savingsAccountCharge, chargePaid, transactionDate, user, backdatedTxnsAllowedTill, refNo,null);
+        return this.payCharge(savingsAccountCharge, chargePaid, transactionDate, user, backdatedTxnsAllowedTill, refNo, null);
     }
 
     public SavingsAccountTransaction payCharge(final SavingsAccountCharge savingsAccountCharge, final Money amountPaid,
-            final LocalDate transactionDate, final AppUser user, final boolean backdatedTxnsAllowedTill, String refNo, final PaymentDetail paymentDetail) {
+            final LocalDate transactionDate, final AppUser user, final boolean backdatedTxnsAllowedTill, String refNo,
+            final PaymentDetail paymentDetail) {
         savingsAccountCharge.pay(getCurrency(), amountPaid);
-        return handlePayChargeTransactions(savingsAccountCharge, amountPaid, transactionDate, user, backdatedTxnsAllowedTill, refNo,paymentDetail);
+        return handlePayChargeTransactions(savingsAccountCharge, amountPaid, transactionDate, user, backdatedTxnsAllowedTill, refNo,
+                paymentDetail);
     }
 
     private SavingsAccountTransaction handlePayChargeTransactions(SavingsAccountCharge savingsAccountCharge, Money transactionAmount,
-            final LocalDate transactionDate, final AppUser user, final boolean backdatedTxnsAllowedTill, final String refNo, final PaymentDetail paymentDetail) {
+            final LocalDate transactionDate, final AppUser user, final boolean backdatedTxnsAllowedTill, final String refNo,
+            final PaymentDetail paymentDetail) {
         SavingsAccountTransaction chargeTransaction = null;
 
         if (savingsAccountCharge.isWithdrawalFee() || savingsAccountCharge.isDepositFee()) {
@@ -3285,7 +3281,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
             chargeTransaction = SavingsAccountTransaction.charge(this, office(), transactionDate, transactionAmount, user);
         }
 
-        if(paymentDetail != null){
+        if (paymentDetail != null) {
             chargeTransaction.updatePaymentDetail(paymentDetail);
         }
 
@@ -3582,7 +3578,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
                 charge.updateWithdralFeeAmount(this.getAccountBalance());
                 UUID refNo = UUID.randomUUID();
                 this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, appUser, backdatedTxnsAllowedTill,
-                        refNo.toString(),null);
+                        refNo.toString(), null);
             }
         }
         boolean postReversals = false;
@@ -3969,7 +3965,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
         return this.withHoldTax;
     }
 
-    private void payDepositFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user,
+    public void payDepositFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user,
             final PaymentDetail paymentDetail, final boolean backdatedTxnsAllowedTill, final String refNo) {
         for (SavingsAccountCharge charge : this.charges()) {
 
@@ -3989,7 +3985,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
                         if (minCap == null || transactionAmount.compareTo(minCap) >= 0) {
                             charge.updateWithdralFeeAmount(transactionAmount);
                             this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user,
-                                    backdatedTxnsAllowedTill, refNo,paymentDetail);
+                                    backdatedTxnsAllowedTill, refNo, paymentDetail);
                         }
                         // else if (transactionAmount.compareTo(minCap) < 0) {
                         // LOG.info("No deposit fee (Stamp Duty) to collect for charge: {}-{}-{}", chargeConf.getId(),
@@ -4049,7 +4045,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
             PaymentTypeGridReadPlatformService paymentTypeGridReadPlatformService, final LocalDate transactionDate, final AppUser user,
             final boolean backdatedTxnsAllowedTill, final String refNo, final PaymentDetail paymentDetail) {
         final Long chargeId = charge.getCharge() == null ? null : charge.getCharge().getId();
-         final Long paymentTypeId = paymentDetail == null ? null : paymentDetail.getPaymentType().getId();
+        final Long paymentTypeId = paymentDetail == null ? null : paymentDetail.getPaymentType().getId();
 
         LOG.info("{}- charge- paymentTypeId: {}-{}", real, chargeId, paymentTypeId);
         if (chargeId != null && paymentTypeId != null) {
@@ -4062,7 +4058,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
             if (chargeAmount != null && chargeAmount.compareTo(BigDecimal.ZERO) > 0) {
                 charge.updateFlatWithdrawalFee(chargeAmount);
                 this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user, backdatedTxnsAllowedTill,
-                        refNo,paymentDetail);
+                        refNo, paymentDetail);
             }
         }
     }

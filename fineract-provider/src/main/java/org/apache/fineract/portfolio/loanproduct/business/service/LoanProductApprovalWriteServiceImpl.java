@@ -41,6 +41,7 @@ import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductAppr
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductApprovalConfig;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductApprovalConfigRepositoryWrapper;
 import org.apache.fineract.portfolio.loanproduct.business.domain.LoanProductApprovalRepositoryWrapper;
+import org.apache.fineract.portfolio.loanproduct.business.exception.LoanProductApprovalNotFoundException;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.apache.fineract.portfolio.loanproduct.domain.business.LoanProductRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.domain.SavingsProduct;
@@ -138,12 +139,23 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
         this.fromApiJsonDeserializer.validateForCreate(command.json(), false);
         final JsonElement element = this.fromApiJsonHelper.parse(command.json());
         final String name = this.fromApiJsonHelper.extractStringNamed(LoanProductApprovalApiResourceConstants.NAME, element);
-        final Long loanProductId = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, element);
-        final LoanProduct loanProduct = this.loanProductRepositoryWrapper.findOneWithNotFoundDetection(loanProductId);
-        final Long savingsProductId = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID,
-                element);
-        final SavingsProduct savingsProduct = this.savingsProductRepositoryWrapper.findOneWithNotFoundDetection(savingsProductId);
-
+        boolean noLoansSavingsSelected = true;
+        LoanProduct loanProduct =null;
+        if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, element)) {
+            final Long loanProductId = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, element);
+             loanProduct = this.loanProductRepositoryWrapper.findOneWithNotFoundDetection(loanProductId);
+            noLoansSavingsSelected = false;
+        }
+        SavingsProduct savingsProduct=null;
+        if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID, element)) {
+            final Long savingsProductId = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID,
+                    element);
+            savingsProduct = this.savingsProductRepositoryWrapper.findOneWithNotFoundDetection(savingsProductId);
+            noLoansSavingsSelected = false;
+        }
+        if (noLoansSavingsSelected) {
+            throw new LoanProductApprovalNotFoundException("No product selected");
+        }
         try {
             LoanProductApproval newLoanProductApproval = LoanProductApproval.create(name, loanProduct, savingsProduct);
             setLoanProductApprovalConfig(element, newLoanProductApproval);

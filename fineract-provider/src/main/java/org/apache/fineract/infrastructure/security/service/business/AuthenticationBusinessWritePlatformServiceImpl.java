@@ -114,8 +114,8 @@ public class AuthenticationBusinessWritePlatformServiceImpl implements Authentic
             // appUser = this.appUserRepositoryWrapper.findAppUserByName(value);
             appUser = this.appUserRepositoryWrapper.findAppUserByEmail(value);
         } // else if (isMobileAuthenticationMode) {
-        // check mobile
-        // }
+          // check mobile
+          // }
         else {
             throw new PlatformDataIntegrityException("error.msg.reset.mode", "Password reset mode not supported");
         }

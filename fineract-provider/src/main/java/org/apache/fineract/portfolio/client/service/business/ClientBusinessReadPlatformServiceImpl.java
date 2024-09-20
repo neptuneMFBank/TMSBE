@@ -570,7 +570,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             final StringBuilder sqlBuilder = new StringBuilder(200);
             sqlBuilder.append("select ");
             sqlBuilder.append(this.savingActiveSummaryMapper.schema());
-            sqlBuilder.append(" AND ms.product_id <> ").append(savingsProductId); //to remove reconciliation wallet summation
+            sqlBuilder.append(" AND ms.product_id <> ").append(savingsProductId); // to remove reconciliation wallet
+                                                                                  // summation
             // sqlBuilder.append(this.savingActiveSummaryMapper.savingsSchema());
 
             String sql = sqlBuilder.toString();
@@ -656,7 +657,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         Boolean agreement = cnt != null && cnt > 0;
         if (cnt != null && cnt > 1) {
             throw new ClientNotFoundException("error.msg.client.duplicate",
-                    "Customer account is not profiled correcrtly, please contact support");
+                    "Customer account is not profiled correctly or duplicates, please contact support");
         }
         Long clientId = null;
         if (agreement) {

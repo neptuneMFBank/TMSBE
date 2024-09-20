@@ -22,13 +22,11 @@ import static org.apache.fineract.simplifytech.data.GeneralConstants.getAuthUser
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -71,11 +69,10 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
     private final CommandHandlerProvider commandHandlerProvider;
     private final FromJsonHelper fromApiJsonHelper;
 
-
     @Transactional
     @Override
     public CommandProcessingResult processAndLogCommand(final CommandWrapper wrapper, final JsonCommand command,
-                                                        final boolean isApprovedByChecker) {
+            final boolean isApprovedByChecker) {
 
         final boolean rollbackTransaction = this.configurationDomainService.isMakerCheckerEnabledForTask(wrapper.taskPermissionName());
 
@@ -83,7 +80,7 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
 
         final CommandProcessingResult result;
         try {
-                result = handler.processCommand(command);
+            result = handler.processCommand(command);
         } catch (Throwable t) {
             // publish error event
             publishErrorEvent(wrapper, command, t);

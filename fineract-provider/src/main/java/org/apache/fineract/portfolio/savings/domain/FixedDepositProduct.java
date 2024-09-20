@@ -308,7 +308,7 @@ public class FixedDepositProduct extends SavingsProduct {
                 .fromInt(interestCompoundingPeriodType);
 
         if (postingtoCompoundMap.get(savingsPostingInterestPeriodType) == null
-                //|| !postingtoCompoundMap.get(savingsPostingInterestPeriodType).contains(savingsCompoundingInterestPeriodType)
+        // || !postingtoCompoundMap.get(savingsPostingInterestPeriodType).contains(savingsCompoundingInterestPeriodType)
         ) {
             baseDataValidator.failWithCodeNoParameterAddedToErrorCode("posting.period.type.is.less.than.compound.period.type",
                     savingsPostingInterestPeriodType.name(), savingsCompoundingInterestPeriodType.name());

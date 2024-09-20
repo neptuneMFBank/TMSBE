@@ -199,7 +199,7 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
 
             return new AuditBusinessData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate,
                     processingResult, commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo,
-                    clientId, loanId, resourceGetUrl, null, roleId,ipAddress);
+                    clientId, loanId, resourceGetUrl, null, roleId, ipAddress);
         }
     }
 
@@ -252,7 +252,7 @@ public class AuditBusinessReadPlatformServiceImpl implements AuditBusinessReadPl
 
             return new AuditBusinessData(id, actionName, entityName, resourceId, null, maker, madeOnDate, checker, checkedOnDate,
                     processingResult, commandAsJson, officeName, groupLevelName, groupName, clientName, loanAccountNo, savingsAccountNo,
-                    clientId, loanId, resourceGetUrl, supervisorStaffData, roleId,ipAddress);
+                    clientId, loanId, resourceGetUrl, supervisorStaffData, roleId, ipAddress);
         }
     }
 

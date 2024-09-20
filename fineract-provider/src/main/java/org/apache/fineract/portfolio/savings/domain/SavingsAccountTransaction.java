@@ -928,7 +928,7 @@ public final class SavingsAccountTransaction extends AbstractPersistableCustom {
         return reversalTransaction;
     }
 
-    public void updatePaymentDetail(final  PaymentDetail paymentDetail) {
+    public void updatePaymentDetail(final PaymentDetail paymentDetail) {
         this.paymentDetail = paymentDetail;
     }
 

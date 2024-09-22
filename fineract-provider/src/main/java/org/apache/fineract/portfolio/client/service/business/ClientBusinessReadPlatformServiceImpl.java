@@ -291,6 +291,10 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.employmentTypePARAM));
         final List<CodeValueBusinessData> titleOptions = new ArrayList<>(
                 this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.TitlePARAM));
+
+        final List<CodeValueBusinessData> politicallyExposedOptions = new ArrayList<>(
+                this.codeValueBusinessReadPlatformService.retrieveCodeValuesByCode(ClientBusinessApiConstants.POLITICALLY_EXPOSED_OPTIONS));
+
         // List<CodeValueBusinessData> industryOptions = null;
 
         DocumentConfigData documentConfigData = null;
@@ -323,7 +327,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
                 // stateValuesOptions
                 // , lgaValuesOptions
                 , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
-                documentConfigData, titleOptions
+                documentConfigData, titleOptions, politicallyExposedOptions
         // , industryOptions
         );
     }

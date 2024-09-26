@@ -16,17 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.service.business;
+package org.apache.fineract.portfolio.business.kyc.data;
 
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import java.util.Collection;
+import lombok.Builder;
+import lombok.Data;
+import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 
-public interface ClientBusinessWritePlatformService {
+@Data
+@Builder
+public class KycConfigData {
 
-    CommandProcessingResult createClient(JsonCommand command);
+    private final Long id;
+    private final CodeValueData kycTier;
+    private final String description;
+    private Collection<CodeValueData> kycParams;
 
-    CommandProcessingResult updateClient(Long clientId, JsonCommand command);
-
-    CommandProcessingResult updateClientKycLevel(final Long clientId);
-
+    private final Collection<CodeValueData> kycLevelOptions;
+    private final Collection<CodeValueData> kycParamOptions;
 }

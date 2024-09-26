@@ -20,6 +20,7 @@ package org.apache.fineract.portfolio.client.service.business;
 
 import com.google.gson.JsonObject;
 import java.util.Collection;
+import java.util.List;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.client.data.ClientData;
@@ -50,4 +51,7 @@ public interface ClientBusinessReadPlatformService {
     Collection<Long> retrieveMerchantClients(Long aUserID);
 
     JsonObject retrieveClientTransactions(final Long clientId, SearchParametersBusiness searchParameters);
+
+    ClientData retrieveOneBasedOnKYCConfig(final Long clientId, final List<String> paramNameList);
+
 }

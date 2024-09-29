@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.client.service.business;
 
+import com.google.common.base.Splitter;
 import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.amountParameterName;
 import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.countParameterName;
 import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.ledgerAmountParameterName;
@@ -761,6 +762,14 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             sqlBuilder.append("c.staff_id as staffId, s.display_name as staffName,");
             sqlBuilder.append("c.default_savings_account as savingsAccountId, ");
 
+            sqlBuilder.append("c.firstname as firstname, ");
+            sqlBuilder.append("c.lastname as lastname, ");
+            sqlBuilder.append("c.date_of_birth as dateOfBirth, ");
+            sqlBuilder.append("c.bvn as bvn, ");
+            sqlBuilder.append("c.nin as nin, ");
+            sqlBuilder.append("c.has_identification as has_identification, ");
+         
+
             sqlBuilder.append("c.submittedon_date as submittedOnDate, ");
             sqlBuilder.append("sbu.username as submittedByUsername ");
 
@@ -771,6 +780,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             sqlBuilder.append("left join m_appuser sbu on sbu.id = c.created_by ");
             sqlBuilder.append("left join m_code_value cvclassification on cvclassification.id = c.client_classification_cv_id ");
             sqlBuilder.append("left join secondLevelKYC slk on slk.client_id = c.id ");
+            sqlBuilder.append("left join m_client_kyc_checkers mckc on mckc.client_id = c.id ");
 
             this.schema = sqlBuilder.toString();
         }
@@ -1345,4 +1355,44 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
         return jsonObjectBalance;
     }
+
+  @Override
+    public ClientData retrieveOneBasedOnKYCConfig(final Long clientId, final List<String> paramNameList) {
+        String whereClause = "where c.id = ? ";
+
+      try {
+          if (!paramNameList.isEmpty()) {
+              whereClause += "and ";
+              for (String paramName : paramNameList) {
+                  if (paramName.startsWith("is")) {
+                      whereClause += " c." + paramName + " is true and";
+                  }
+                  else if (paramName.startsWith("has")) {
+                      whereClause += " c." + paramName + " = \'1\' and";
+                  }
+                  else if (paramName.contains("/")) {
+                      List<String> parts = Splitter.on('/').splitToList(paramName);
+                      whereClause += !parts.isEmpty() ? "( " : "";
+                      for (String part : parts) {
+                          whereClause += " c." + part + " is not null or";
+                      }
+                      whereClause = !parts.isEmpty() ? whereClause.substring(0, whereClause.length() - 2) : whereClause;
+                      whereClause += !parts.isEmpty() ? " ) and" : " and";
+
+                  } else {
+                      whereClause += " c." + paramName + " is not null and";
+                  }
+              }
+              whereClause = whereClause.substring(0, whereClause.length() - 3);
+          }
+          this.context.authenticatedUser();
+            final String sql = "select " + this.clientMapper.schema() + whereClause;
+
+            return this.jdbcTemplate.queryForObject(sql, this.clientMapper, clientId);
+
+        } catch (final EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
 }

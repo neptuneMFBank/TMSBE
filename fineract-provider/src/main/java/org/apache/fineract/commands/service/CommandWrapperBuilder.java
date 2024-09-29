@@ -4013,6 +4013,37 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createKycConfig() {
+        this.actionName = "CREATE";
+        this.entityName = "KYCCONFIG";
+        this.entityId = null;
+        this.href = "/kycconfig";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateKycConfig(final Long kycConfigId) {
+        this.actionName = "UPDATE";
+        this.entityName = "KYCCONFIG";
+        this.entityId = kycConfigId;
+        this.href = "/kycconfig/" + kycConfigId;
+        return this;
+    }
+    public CommandWrapperBuilder deleteKycConfig(final Long kycConfigId) {
+        this.actionName = "DELETE";
+        this.entityName = "KYCCONFIG";
+        this.entityId = kycConfigId;
+        this.href = "/kycconfig/" + kycConfigId;
+        return this;
+    }
+
+    public CommandWrapperBuilder updateClientKyc(final Long clientId) {
+        this.actionName = "UPDATEKYC";
+        this.entityName = "CLIENT";
+        this.entityId = clientId;
+        this.href = "/cdl/client/" + clientId+"/kyc";
+        return this;
+    }
+
     public CommandWrapperBuilder extendRecurringDepositAccount(final Long accountId) {
         this.actionName = "EXTEND";
         this.entityName = "RECURRINGDEPOSITACCOUNT";

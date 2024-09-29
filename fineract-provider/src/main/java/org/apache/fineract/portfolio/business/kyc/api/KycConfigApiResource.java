@@ -53,7 +53,6 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.portfolio.business.kyc.data.KycConfigApiConstants;
 import org.apache.fineract.portfolio.business.kyc.data.KycConfigData;
 import org.apache.fineract.portfolio.business.kyc.service.KycConfigReadService;
-import org.apache.fineract.portfolio.savings.SavingsApiConstants;
 import org.springframework.stereotype.Component;
 
 @Path("/kycconfig")
@@ -170,7 +169,7 @@ public class KycConfigApiResource {
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema())) })
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
-        this.context.authenticatedUser().validateHasReadPermission(SavingsApiConstants.SAVINGS_PRODUCT_RESOURCE_NAME);
+        this.context.authenticatedUser().validateHasReadPermission(KycConfigApiConstants.KYC_CONFIG_RESOURCE_NAME);
 
         final KycConfigData kycConfigData = this.kycConfigReadService.retrieveTemplate();
 

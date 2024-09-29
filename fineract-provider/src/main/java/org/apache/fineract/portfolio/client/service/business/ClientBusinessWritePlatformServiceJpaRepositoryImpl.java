@@ -636,10 +636,8 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
                 changes.put("clientKyc", kycLevelCodeValue.label());
                 changes.put("clientKycCodeValueId", kycLevelCodeValue.getId());
             }
-            return new CommandProcessingResultBuilder().with(changes).withClientId(clientId).build();
-        } else {
-            return new CommandProcessingResultBuilder().with(changes).withClientId(clientId).build();
         }
+        return new CommandProcessingResultBuilder().with(changes).withClientId(clientId).build();
     }
 
 }

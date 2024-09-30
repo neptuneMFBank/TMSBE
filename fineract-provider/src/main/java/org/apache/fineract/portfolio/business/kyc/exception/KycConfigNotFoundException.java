@@ -16,17 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.service.business;
+package org.apache.fineract.portfolio.business.kyc.exception;
 
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.infrastructure.core.exception.AbstractPlatformResourceNotFoundException;
 
-public interface ClientBusinessWritePlatformService {
+public class KycConfigNotFoundException extends AbstractPlatformResourceNotFoundException {
 
-    CommandProcessingResult createClient(JsonCommand command);
+    public KycConfigNotFoundException(final Long id) {
+        super("error.msg.kyc.config.invalid", " KYC Config with id " + id + " does not exist", id);
+    }
 
-    CommandProcessingResult updateClient(Long clientId, JsonCommand command);
-
-    CommandProcessingResult updateClientKycLevel(final Long clientId);
+    public KycConfigNotFoundException(final String msg) {
+        super("error.msg.kyc.config.invalid", msg);
+    }
 
 }

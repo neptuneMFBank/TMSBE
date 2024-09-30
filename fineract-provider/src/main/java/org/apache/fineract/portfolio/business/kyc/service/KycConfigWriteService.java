@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.service.business;
+package org.apache.fineract.portfolio.business.kyc.service;
 
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
-public interface ClientBusinessWritePlatformService {
+public interface KycConfigWriteService {
 
-    CommandProcessingResult createClient(JsonCommand command);
+    CommandProcessingResult create(JsonCommand command);
 
-    CommandProcessingResult updateClient(Long clientId, JsonCommand command);
+    CommandProcessingResult updateKycConfig(Long kycConfigId, JsonCommand command);
 
-    CommandProcessingResult updateClientKycLevel(final Long clientId);
+    CommandProcessingResult delete(final Long kycConfigId);
 
 }

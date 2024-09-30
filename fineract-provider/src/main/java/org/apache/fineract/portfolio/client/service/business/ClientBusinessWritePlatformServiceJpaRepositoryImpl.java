@@ -21,10 +21,15 @@ package org.apache.fineract.portfolio.client.service.business;
 import com.google.gson.JsonElement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.persistence.PersistenceException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandProcessingService;
@@ -32,6 +37,7 @@ import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormat;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.EntityAccountType;
+import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
@@ -42,6 +48,8 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.apache.fineract.infrastructure.core.service.Page;
+import org.apache.fineract.infrastructure.core.service.SearchParameters;
 import org.apache.fineract.infrastructure.dataqueries.data.EntityTables;
 import org.apache.fineract.infrastructure.dataqueries.data.StatusEnum;
 import org.apache.fineract.infrastructure.dataqueries.service.EntityDatatableChecksWritePlatformService;
@@ -51,10 +59,13 @@ import org.apache.fineract.organisation.office.domain.OfficeRepositoryWrapper;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
 import org.apache.fineract.portfolio.address.service.business.AddressBusinessWritePlatformService;
+import org.apache.fineract.portfolio.business.kyc.data.KycConfigData;
+import org.apache.fineract.portfolio.business.kyc.service.KycConfigReadService;
 import org.apache.fineract.portfolio.businessevent.domain.client.ClientActivateBusinessEvent;
 import org.apache.fineract.portfolio.businessevent.domain.client.ClientCreateBusinessEvent;
 import org.apache.fineract.portfolio.businessevent.service.BusinessEventNotifierService;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
+import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessDataValidator;
 import org.apache.fineract.portfolio.client.domain.AccountNumberGenerator;
 import org.apache.fineract.portfolio.client.domain.Client;
@@ -109,6 +120,8 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
     private final ClientFamilyMembersWritePlatformService clientFamilyMembersWritePlatformService;
     private final BusinessEventNotifierService businessEventNotifierService;
     private final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService;
+    private final KycConfigReadService kycConfigReadService;
+    private final ClientBusinessReadPlatformService clientBusinessReadPlatformService;
 
     @Autowired
     public ClientBusinessWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -125,7 +138,9 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
             final AddressBusinessWritePlatformService addressWritePlatformService,
             final ClientFamilyMembersWritePlatformService clientFamilyMembersWritePlatformService,
             final BusinessEventNotifierService businessEventNotifierService,
-            final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService) {
+            final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService,
+            final KycConfigReadService kycConfigReadService,
+            final ClientBusinessReadPlatformService clientBusinessReadPlatformService) {
         this.context = context;
         this.clientRepository = clientRepository;
         this.clientNonPersonRepository = clientNonPersonRepository;
@@ -149,6 +164,8 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
         this.clientFamilyMembersWritePlatformService = clientFamilyMembersWritePlatformService;
         this.businessEventNotifierService = businessEventNotifierService;
         this.entityDatatableChecksWritePlatformService = entityDatatableChecksWritePlatformService;
+        this.kycConfigReadService = kycConfigReadService;
+        this.clientBusinessReadPlatformService = clientBusinessReadPlatformService;
     }
 
     /*
@@ -296,7 +313,7 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
                         EntityTables.CLIENT.getName(), newClient.getId(), null,
                         command.arrayOfParameterNamed(ClientApiConstants.datatables));
             }
-
+            this.updateClientKycLevel( newClient.getId());
             businessEventNotifierService.notifyPostBusinessEvent(new ClientCreateBusinessEvent(newClient));
 
             entityDatatableChecksWritePlatformService.runTheCheck(newClient.getId(), EntityTables.CLIENT.getName(),
@@ -516,6 +533,8 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
                     extractAndCreateClientNonPerson(clientForUpdate, command);
                 }
             }
+            this.updateClientKycLevel(clientId);
+
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withOfficeId(clientForUpdate.officeId()) //
@@ -575,6 +594,50 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
     private void runEntityDatatableCheck(final Long clientId) {
         entityDatatableChecksWritePlatformService.runTheCheck(clientId, EntityTables.CLIENT.getName(),
                 StatusEnum.ACTIVATE.getCode().longValue(), EntityTables.CLIENT.getForeignKeyColumnNameOnDatatable());
+    }
+
+    @Override
+    public CommandProcessingResult updateClientKycLevel(final Long clientId) {
+        this.context.authenticatedUser();
+        final Map<String, Object> changes = new HashMap<>();
+
+        final GlobalConfigurationPropertyData updateClientKycLevel = this.configurationReadPlatformService
+                .retrieveGlobalConfigurationX("client_level_update");
+        if (BooleanUtils.isTrue(updateClientKycLevel.isEnabled())) {
+
+            Client client = this.clientRepository.findOneWithNotFoundDetection(clientId);
+            final SearchParameters searchParameters = SearchParameters.forOffices("order_position", null);
+            final Page<KycConfigData> kycConfigs = this.kycConfigReadService.retrieveAll(searchParameters);
+
+            Long ClientKyCLevel = null;
+            for (KycConfigData kycConfigData : kycConfigs.getPageItems()) {
+                final KycConfigData kycConfigDataWithParams = this.kycConfigReadService.retrieveOne(kycConfigData.getId());
+                Collection<CodeValueData> params = kycConfigDataWithParams.getKycParams();
+
+                final List<String> paramNameList = new ArrayList<>();
+                for (CodeValueData param : params) {
+                    String paramName = param.getName();
+                    String underscoreParamString = paramName.replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
+                    paramNameList.add(underscoreParamString);
+                }
+                ClientData clientData = this.clientBusinessReadPlatformService.retrieveOneBasedOnKYCConfig(clientId, paramNameList);
+
+                if (clientData != null) {
+                    ClientKyCLevel = kycConfigDataWithParams.getKycTier().getId();
+                } else {
+                    break;
+                }
+
+            }
+            if (ClientKyCLevel != null) {
+                CodeValue kycLevelCodeValue = this.codeValueRepository.findOneWithNotFoundDetection(ClientKyCLevel);
+                client.updateClientType(kycLevelCodeValue);
+                this.clientRepository.saveAndFlush(client);
+                changes.put("clientKyc", kycLevelCodeValue.label());
+                changes.put("clientKycCodeValueId", kycLevelCodeValue.getId());
+            }
+        }
+        return new CommandProcessingResultBuilder().with(changes).withClientId(clientId).build();
     }
 
 }

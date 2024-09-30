@@ -231,7 +231,7 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
 
             if (account.isAccountNumberRequiresAutoGeneration()) {
                 final Long productId = account.productId();
-                final Long accountNumberPrefix = getAccountNumberPrefix(productId);
+                final String accountNumberPrefix = getAccountNumberPrefix(productId);
                 AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.CLIENT);
                 if (accountNumberPrefix != null) {
                     accountNumberFormat = AccountNumberFormat.instance(accountNumberPrefix);
@@ -292,7 +292,7 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
 
             if (account.isAccountNumberRequiresAutoGeneration()) {
                 final Long productId = account.productId();
-                final Long accountNumberPrefix = getAccountNumberPrefix(productId);
+                final String accountNumberPrefix = getAccountNumberPrefix(productId);
                 AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.SAVINGS);
                 if (accountNumberPrefix != null) {
                     accountNumberFormat = AccountNumberFormat.instance(accountNumberPrefix);
@@ -812,9 +812,9 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
         }
     }
 
-    protected Long getAccountNumberPrefix(final Long productId) {
+    protected String getAccountNumberPrefix(final Long productId) {
         try {
-            Long accountNumberPrefix = null;
+            String accountNumberPrefix = null;
             final GenericResultsetData results = this.readWriteNonCoreDataService
                     .retrieveDataTableGenericResultSet(DepositsBusinessApiConstants.savingsProductExtensionParam, productId, null, null);
             if (!ObjectUtils.isEmpty(results) && !CollectionUtils.isEmpty(results.getData())) {
@@ -823,12 +823,12 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
                     final Object objectAccountNumberPrefixParam = res.getRow().get(1);
                     if (ObjectUtils.isNotEmpty(objectAccountNumberPrefixParam)) {
                         final String accountNumberPrefixDT = StringUtils.defaultIfBlank(String.valueOf(objectAccountNumberPrefixParam),
-                                "0");
-                        accountNumberPrefix = Long.valueOf(accountNumberPrefixDT);
+                                "00");
+                        accountNumberPrefix = accountNumberPrefixDT;
                     }
                 }
             }
-            return accountNumberPrefix > 0 ? accountNumberPrefix : null;
+            return StringUtils.isNotBlank(accountNumberPrefix) ? accountNumberPrefix : null;
         } catch (Exception e) {
             LOG.warn("error.deposit.accountnumber.prefix.no.config: {}", e.getMessage());
             return null;

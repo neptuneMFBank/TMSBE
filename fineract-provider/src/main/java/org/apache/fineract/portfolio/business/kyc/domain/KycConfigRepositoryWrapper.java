@@ -16,17 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.service.business;
+package org.apache.fineract.portfolio.business.kyc.domain;
 
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.portfolio.business.kyc.exception.KycConfigNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface ClientBusinessWritePlatformService {
+@Service
+public class KycConfigRepositoryWrapper {
 
-    CommandProcessingResult createClient(JsonCommand command);
+    private final KycConfigRepository repository;
 
-    CommandProcessingResult updateClient(Long clientId, JsonCommand command);
+    @Autowired
+    public KycConfigRepositoryWrapper(final KycConfigRepository repository) {
+        this.repository = repository;
+    }
 
-    CommandProcessingResult updateClientKycLevel(final Long clientId);
+    @Transactional()
+    public KycConfig findOneWithNotFoundDetection(final Long id) {
+        return this.repository.findById(id).orElseThrow(() -> new KycConfigNotFoundException(id));
+    }
 
 }

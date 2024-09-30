@@ -42,7 +42,7 @@ public class AccountNumberFormat extends AbstractPersistableCustom {
     private String prefixCharacter;
 
     @Transient
-    private Long dynamicPrefix;
+    private String dynamicPrefix;
 
     protected AccountNumberFormat() {
         //
@@ -92,21 +92,21 @@ public class AccountNumberFormat extends AbstractPersistableCustom {
         this.prefixCharacter = prefixCharacter;
     }
 
-    public static AccountNumberFormat instance(final Long dynamicPrefix) {
+    public static AccountNumberFormat instance(final String dynamicPrefix) {
         final Integer accountTypeEnum = null;
         final Integer prefixType = null;
         final String prefixCharacter = null;
         return new AccountNumberFormat(accountTypeEnum, prefixType, prefixCharacter, dynamicPrefix);
     }
 
-    public AccountNumberFormat(Integer entityAccountType, Integer prefixType, String prefixCharacter, Long dynamicPrefix) {
+    public AccountNumberFormat(Integer entityAccountType, Integer prefixType, String prefixCharacter, String dynamicPrefix) {
         this.accountTypeEnum = entityAccountType;
         this.prefixEnum = prefixType;
         this.prefixCharacter = prefixCharacter;
         this.dynamicPrefix = dynamicPrefix;
     }
 
-    public Long getDynamicPrefix() {
+    public String getDynamicPrefix() {
         return dynamicPrefix;
     }
 

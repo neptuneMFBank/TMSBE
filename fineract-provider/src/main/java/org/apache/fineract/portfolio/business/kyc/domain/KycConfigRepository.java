@@ -16,17 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.service.business;
+package org.apache.fineract.portfolio.business.kyc.domain;
 
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface ClientBusinessWritePlatformService {
-
-    CommandProcessingResult createClient(JsonCommand command);
-
-    CommandProcessingResult updateClient(Long clientId, JsonCommand command);
-
-    CommandProcessingResult updateClientKycLevel(final Long clientId);
+public interface KycConfigRepository extends JpaRepository<KycConfig, Long>, JpaSpecificationExecutor<KycConfig> {
 
 }

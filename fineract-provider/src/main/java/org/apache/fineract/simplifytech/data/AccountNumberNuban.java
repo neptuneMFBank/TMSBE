@@ -36,14 +36,14 @@ public class AccountNumberNuban {
     private final int SEVEN = 7;
     private final int THREE = 3;
     private String sortCode;
-    private final Long bankDigit;
+    private final String bankDigit;
 
     private String serialNumber;
 
     private final Environment environment;
 
     @Autowired
-    public AccountNumberNuban(String accountNumber, Environment environment, String sortCode, Long bankDigit) {
+    public AccountNumberNuban(String accountNumber, Environment environment, String sortCode, String bankDigit) {
         this.serialNumber = accountNumber;
         this.environment = environment;
         this.sortCode = sortCode;
@@ -65,8 +65,8 @@ public class AccountNumberNuban {
             throw new IllegalArgumentException("Error in generating account number format.");
         }
 
-        if (bankDigit != null) {
-            final String bankDigitString = String.valueOf(bankDigit);
+        if (StringUtils.isBlank(bankDigit)) {
+            final String bankDigitString = bankDigit;
             final int numberOfCharactersToRemove = bankDigitString.length();
             this.serialNumber = GeneralConstants.removeFirstCharacters(serialNumber, numberOfCharactersToRemove);
             this.serialNumber = bankDigitString + this.serialNumber;

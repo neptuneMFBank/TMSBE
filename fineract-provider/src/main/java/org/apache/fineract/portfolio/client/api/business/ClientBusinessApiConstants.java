@@ -223,6 +223,7 @@ public class ClientBusinessApiConstants {
     public static final String iAgreeParamName = "iAgree";
     public static final String bvnParamName = "bvn";
     public static final String supervisorStaffDataParamName = "supervisorStaffData";
+    public static final String POLITICALLY_EXPOSED_OPTIONS = "politicallyExposedOptions";
 
     /**
      * These parameters will match the class level parameters of {@link ClientData}. Where possible, we try to get
@@ -236,7 +237,7 @@ public class ClientBusinessApiConstants {
             staffOptionsParamName, dateOfBirthParamName, genderParamName, clientTypeParamName, clientClassificationParamName,
             legalFormParamName, clientNonPersonDetailsParamName, isStaffParamName, lgaValuesParamName, activationChannelOptionsPARAM,
             bankPARAM, bankOptionsPARAM, bankAccountTypePARAM, bankAccountTypeOptionsPARAM, salaryRangeOptionsPARAM,
-            employmentTypeOptionsPARAM, datatables, titleOptionsParam, bvnParamName, iAgreeParamName, supervisorStaffDataParamName
+            employmentTypeOptionsPARAM, datatables, titleOptionsParam, bvnParamName, iAgreeParamName, supervisorStaffDataParamName, POLITICALLY_EXPOSED_OPTIONS
     // , industryOptionsParam
     ));
 

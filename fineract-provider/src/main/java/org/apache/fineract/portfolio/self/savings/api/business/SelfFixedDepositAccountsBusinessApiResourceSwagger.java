@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.self.savings.api;
+package org.apache.fineract.portfolio.self.savings.api.business;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -24,9 +24,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public class SelfFixedDepositAccountsApiResourceSwagger {
+public class SelfFixedDepositAccountsBusinessApiResourceSwagger {
 
-    private SelfFixedDepositAccountsApiResourceSwagger() {}
+    private SelfFixedDepositAccountsBusinessApiResourceSwagger() {}
 
     @Schema(description = "GetFixedDepositAccountsFixedDepositAccountIdTransactionsTemplateResponse")
     public static final class GetFixedDepositAccountsFixedDepositAccountIdTransactionsTemplateResponse {
@@ -89,14 +89,14 @@ public class SelfFixedDepositAccountsApiResourceSwagger {
 
         @Schema(example = "1")
         public Integer id;
-        public SelfFixedDepositAccountsApiResourceSwagger.GetFixedDepositAccountsFixedDepositAccountIdTransactionsTemplateResponse.GetSelfFixedTransactionType transactionType;
+        public SelfFixedDepositAccountsBusinessApiResourceSwagger.GetFixedDepositAccountsFixedDepositAccountIdTransactionsTemplateResponse.GetSelfFixedTransactionType transactionType;
         @Schema(example = "1")
         public Integer accountId;
         @Schema(example = "000000001")
         public String accountNo;
         @Schema(example = "[2014, 6, 25]")
         public LocalDate date;
-        public SelfFixedDepositAccountsApiResourceSwagger.GetFixedDepositAccountsFixedDepositAccountIdTransactionsTemplateResponse.GetSelfFixedCurrency currency;
+        public SelfFixedDepositAccountsBusinessApiResourceSwagger.GetFixedDepositAccountsFixedDepositAccountIdTransactionsTemplateResponse.GetSelfFixedCurrency currency;
         @Schema(example = "100000.000000")
         public BigDecimal amount;
         @Schema(example = "false")
@@ -166,7 +166,7 @@ public class SelfFixedDepositAccountsApiResourceSwagger {
 
             @Schema(example = "62")
             public Integer id;
-            public SelfFixedDepositAccountsApiResourceSwagger.GetSelfFixedDepositAccountsFixedDepositAccountIdTransactionsTransactionIdResponse.GetSelfFixedPaymentDetailData.GetSelfFixedPaymentType paymentType;
+            public SelfFixedDepositAccountsBusinessApiResourceSwagger.GetSelfFixedDepositAccountsFixedDepositAccountIdTransactionsTransactionIdResponse.GetSelfFixedPaymentDetailData.GetSelfFixedPaymentType paymentType;
             @Schema(example = "")
             public Integer accountNumber;
             @Schema(example = "")
@@ -181,15 +181,15 @@ public class SelfFixedDepositAccountsApiResourceSwagger {
 
         @Schema(example = "1")
         public Integer id;
-        public SelfFixedDepositAccountsApiResourceSwagger.GetSelfFixedDepositAccountsFixedDepositAccountIdTransactionsTransactionIdResponse.GetSelfFixedTransactionsTransactionType transactionType;
+        public SelfFixedDepositAccountsBusinessApiResourceSwagger.GetSelfFixedDepositAccountsFixedDepositAccountIdTransactionsTransactionIdResponse.GetSelfFixedTransactionsTransactionType transactionType;
         @Schema(example = "1")
         public Integer accountId;
         @Schema(example = "000000001")
         public String accountNo;
         @Schema(example = "[2013, 8, 7]")
         public LocalDate date;
-        public SelfFixedDepositAccountsApiResourceSwagger.GetSelfFixedDepositAccountsFixedDepositAccountIdTransactionsTransactionIdResponse.GetSelfFixedTransactionsCurrency currency;
-        public SelfFixedDepositAccountsApiResourceSwagger.GetSelfFixedDepositAccountsFixedDepositAccountIdTransactionsTransactionIdResponse.GetSelfFixedPaymentDetailData paymentDetailData;
+        public SelfFixedDepositAccountsBusinessApiResourceSwagger.GetSelfFixedDepositAccountsFixedDepositAccountIdTransactionsTransactionIdResponse.GetSelfFixedTransactionsCurrency currency;
+        public SelfFixedDepositAccountsBusinessApiResourceSwagger.GetSelfFixedDepositAccountsFixedDepositAccountIdTransactionsTransactionIdResponse.GetSelfFixedPaymentDetailData paymentDetailData;
         @Schema(example = "5000")
         public Float amount;
         @Schema(example = "0")

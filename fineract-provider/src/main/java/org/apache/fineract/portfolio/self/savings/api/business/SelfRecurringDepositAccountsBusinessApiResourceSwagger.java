@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.self.savings.api;
+package org.apache.fineract.portfolio.self.savings.api.business;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -24,9 +24,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public class SelfRecurringDepositAccountsApiResourceSwagger {
+public class SelfRecurringDepositAccountsBusinessApiResourceSwagger {
 
-    private SelfRecurringDepositAccountsApiResourceSwagger() {}
+    private SelfRecurringDepositAccountsBusinessApiResourceSwagger() {}
 
     @Schema(description = "GetRecurringDepositAccountsRecurringDepositAccountIdTransactionsTemplateResponse")
     public static final class GetRecurringDepositAccountsRecurringDepositAccountIdTransactionsTemplateResponse {

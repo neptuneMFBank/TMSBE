@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.self.savings.api;
+package org.apache.fineract.portfolio.self.savings.api.business;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,14 +26,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.portfolio.savings.api.RecurringDepositAccountTransactionsApiResource;
+import org.apache.fineract.portfolio.savings.api.FixedDepositAccountTransactionsApiResource;
 import org.apache.fineract.portfolio.savings.exception.SavingsAccountNotFoundException;
 import org.apache.fineract.portfolio.self.client.service.AppuserClientMapperReadService;
-import org.apache.fineract.portfolio.self.savings.data.SelfRecurringDepositDataValidator;
+import org.apache.fineract.portfolio.self.savings.data.SelfSavingsDataValidator;
 import org.apache.fineract.portfolio.self.savings.service.AppuserSavingsMapperReadService;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -43,23 +44,23 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-@Path("/self/recurringdepositaccounts")
+@Path("/self/fixeddepositaccounts/business")
 @Component
 @Scope("singleton")
-@Tag(name = "Self Recurring Deposit Account", description = "")
-public class SelfRecurringDepositAccountsApiResource {
+@Tag(name = "Self Fixed Deposit Account", description = "")
+public class SelfFixedDepositAccountsBusinessApiResource {
 
     private final PlatformSecurityContext context;
-    private final SelfRecurringDepositDataValidator dataValidator;
+    private final SelfSavingsDataValidator dataValidator;
     private final AppuserClientMapperReadService appUserClientMapperReadService;
-    private final RecurringDepositAccountTransactionsApiResource recurringDepositAccountTransactionsApiResource;
+    private final FixedDepositAccountTransactionsApiResource fixedDepositAccountTransactionsApiResource;
     private final AppuserSavingsMapperReadService appuserSavingsMapperReadService;
 
-    public SelfRecurringDepositAccountsApiResource(PlatformSecurityContext context, SelfRecurringDepositDataValidator dataValidator, AppuserClientMapperReadService appUserClientMapperReadService, RecurringDepositAccountTransactionsApiResource recurringDepositAccountTransactionsApiResource, AppuserSavingsMapperReadService appuserSavingsMapperReadService) {
+    public SelfFixedDepositAccountsBusinessApiResource(PlatformSecurityContext context, SelfSavingsDataValidator dataValidator, AppuserClientMapperReadService appUserClientMapperReadService, FixedDepositAccountTransactionsApiResource fixedDepositAccountTransactionsApiResource, AppuserSavingsMapperReadService appuserSavingsMapperReadService) {
         this.context = context;
         this.dataValidator = dataValidator;
         this.appUserClientMapperReadService = appUserClientMapperReadService;
-        this.recurringDepositAccountTransactionsApiResource = recurringDepositAccountTransactionsApiResource;
+        this.fixedDepositAccountTransactionsApiResource = fixedDepositAccountTransactionsApiResource;
         this.appuserSavingsMapperReadService = appuserSavingsMapperReadService;
     }
 
@@ -67,19 +68,19 @@ public class SelfRecurringDepositAccountsApiResource {
     @Path("{accountId}/transactions/{transactionId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Retrieve Recurring Deposit Account Transaction", description = "Retrieves Fixed Deposit Account Transaction\n\n"
-            + "Example Requests:\n" + "\n" + "self/recurringdepositaccounts/1/transactions/1")
+    @Operation(summary = "Retrieve Fixed Deposit Account Transaction", description = "Retrieves Fixed Deposit Account Transaction\n\n"
+            + "Example Requests:\n" + "\n" + "self/fixeddepositaccounts/1/transactions/1")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = SelfSavingsApiResourceSwagger.GetSelfSavingsAccountsAccountIdTransactionsTransactionIdResponse.class))) })
-    public String retrieveRecurringDepositTransaction(@PathParam("accountId") @Parameter(description = "accountId") final Long accountId,
-                                                      @PathParam("transactionId") @Parameter(description = "transactionId") final Long transactionId,
-                                                      @Context final UriInfo uriInfo) {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = SelfFixedDepositAccountsBusinessApiResourceSwagger.GetSelfFixedDepositAccountsFixedDepositAccountIdTransactionsTransactionIdResponse.class))) })
+    public String retrieveFixedDepositTransaction(@PathParam("accountId") @Parameter(description = "accountId") final Long accountId,
+                                                  @PathParam("transactionId") @Parameter(description = "transactionId") final Long transactionId,
+                                                  @Context final UriInfo uriInfo) {
 
-        this.dataValidator.validateRetrieveRecurringDepositTransaction(uriInfo);
+        this.dataValidator.validateRetrieveSavingsTransaction(uriInfo);
 
         validateAppuserSavingsAccountMapping(accountId);
 
-        return this.recurringDepositAccountTransactionsApiResource.retrieveOne(accountId, transactionId, uriInfo);
+        return this.fixedDepositAccountTransactionsApiResource.retrieveOne(accountId, transactionId, uriInfo);
     }
 
     private void validateAppuserSavingsAccountMapping(final Long accountId) {

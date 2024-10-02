@@ -24,6 +24,8 @@ import static org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityTyp
 import com.google.gson.JsonObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -503,5 +505,22 @@ public class ClientsBusinessApiResource {
         final Set<String> CLIENT_TRANSACTION_DATA_PARAMETERS = new HashSet<>(Arrays.asList("loanTransactions", "savingTransactions"));
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.clientAccountBalanceSummary.serialize(settings, clientTransactions, CLIENT_TRANSACTION_DATA_PARAMETERS);
+    }
+    
+    @PUT
+    @Path("{clientId}/kyc")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Update a client KYC Level ", description = "Updates a client KYC Level")
+    @RequestBody(required = true, content = @Content(schema = @Schema()))
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema())) })
+    public String updateKycLevel(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateClientKyc(clientId).build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+
     }
 }

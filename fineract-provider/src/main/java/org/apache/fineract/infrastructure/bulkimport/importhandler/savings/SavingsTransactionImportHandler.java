@@ -38,6 +38,8 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.GoogleGsonSerializerHelper;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionData;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionEnumData;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepository;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
@@ -54,13 +56,17 @@ public class SavingsTransactionImportHandler implements ImportHandler {
     private static final Logger LOG = LoggerFactory.getLogger(SavingsTransactionImportHandler.class);
     private Workbook workbook;
     private List<SavingsAccountTransactionData> savingsTransactions;
-    private String savingsAccountId = "";
+    private Long savingsAccountId ;
+    //private String savingsAccountId = "";
 
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+    private final SavingsAccountRepository savingsAccountRepository;
+
 
     @Autowired
-    public SavingsTransactionImportHandler(final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+    public SavingsTransactionImportHandler(final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService, final SavingsAccountRepository savingsAccountRepository) {
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
+        this.savingsAccountRepository = savingsAccountRepository;
     }
 
     @Override
@@ -89,7 +95,11 @@ public class SavingsTransactionImportHandler implements ImportHandler {
             savingsAccountIdCheck = ImportHandlerUtils.readAsLong(TransactionConstants.SAVINGS_ACCOUNT_NO_COL, row).toString();
         }
         if (savingsAccountIdCheck != null) {
-            savingsAccountId = savingsAccountIdCheck;
+            SavingsAccount savingsAccount = this.savingsAccountRepository.findSavingsAccountByAccountNumber(savingsAccountIdCheck);
+            if (savingsAccount != null){
+                savingsAccountId = savingsAccount.getId();
+        }
+            //savingsAccountId = savingsAccountIdCheck;
         }
         String transactionType = ImportHandlerUtils.readAsString(TransactionConstants.TRANSACTION_TYPE_COL, row);
         SavingsAccountTransactionEnumData savingsAccountTransactionEnumData = new SavingsAccountTransactionEnumData(null, null,
@@ -110,7 +120,10 @@ public class SavingsTransactionImportHandler implements ImportHandler {
         String receiptNumber = ImportHandlerUtils.readAsString(TransactionConstants.RECEIPT_NO_COL, row);
         String bankNumber = ImportHandlerUtils.readAsString(TransactionConstants.BANK_NO_COL, row);
         return SavingsAccountTransactionData.importInstance(amount, transactionDate, paymentTypeId, accountNumber, checkNumber, routingCode,
-                receiptNumber, bankNumber, Long.parseLong(savingsAccountId), savingsAccountTransactionEnumData, row.getRowNum(), locale,
+                receiptNumber, bankNumber,
+                savingsAccountId,
+                //Long.parseLong(savingsAccountId),
+                savingsAccountTransactionEnumData, row.getRowNum(), locale,
                 dateFormat);
 
     }

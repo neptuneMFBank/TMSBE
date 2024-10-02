@@ -144,7 +144,7 @@ public class AccountNumberGenerator {
                 accountMaxLength = customLength.getValue().intValue();
             }
         }
-        final Long dynamicPrefix = accountNumberFormat == null ? null : accountNumberFormat.getDynamicPrefix();
+        final String dynamicPrefix = accountNumberFormat == null ? null : accountNumberFormat.getDynamicPrefix();
         accountNumber = nibssNuban(accountNumber, dynamicPrefix);
 
         final GlobalConfigurationPropertyData randomAccountNumber = this.configurationReadPlatformService
@@ -226,7 +226,7 @@ public class AccountNumberGenerator {
                 accountMaxLength = customLength.getValue().intValue();
             }
         }
-        final Long dynamicPrefix = accountNumberFormat == null ? null : accountNumberFormat.getDynamicPrefix();
+        final String dynamicPrefix = accountNumberFormat == null ? null : accountNumberFormat.getDynamicPrefix();
         accountNumber = nibssNuban(accountNumber, dynamicPrefix);
 
         final GlobalConfigurationPropertyData randomAccountNumber = this.configurationReadPlatformService
@@ -294,16 +294,16 @@ public class AccountNumberGenerator {
         return accountNumber;
     }
 
-    protected String nibssNuban(String accountNumber, Long dynamicPrefix) {
+    protected String nibssNuban(String accountNumber, String dynamicPrefix) {
         // find if the custom NIBSS SORTCODE is defined
         String nibssSortcode = null;
-        Long bankDigit = dynamicPrefix;
-        if (bankDigit == null) {
+        String bankDigit = dynamicPrefix;
+        if (StringUtils.isBlank(bankDigit)) {
             final GlobalConfigurationPropertyData nibssSortcodeConfig = this.configurationReadPlatformService
                     .retrieveGlobalConfigurationX("nibss-sortcode");
             if (nibssSortcodeConfig.isEnabled()) {
                 nibssSortcode = nibssSortcodeConfig.getStringValue();
-                bankDigit = nibssSortcodeConfig.getValue();
+                bankDigit = String.valueOf(nibssSortcodeConfig.getValue());
             }
         }
         log.error("NUBAN accountNumber Check: {}", accountNumber);

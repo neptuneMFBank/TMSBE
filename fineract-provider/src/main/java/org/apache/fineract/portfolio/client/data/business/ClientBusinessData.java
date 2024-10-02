@@ -100,6 +100,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
     // private final Collection<CodeValueBusinessData> stateValues;
     // private final Collection<CodeValueBusinessData> lgaValues; salaryRange, employmentType
     // private final List<CodeValueBusinessData> industryOptions;
+    private final Collection<CodeValueBusinessData> politicallyExposedOptions;
     private final Collection<CodeValueBusinessData> titleOptions;
     private final Collection<CodeValueBusinessData> salaryRangeOptions;
     private final Collection<CodeValueBusinessData> employmentTypeOptions;
@@ -201,7 +202,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 savingProductOptions, savingsProductId, savingsProductName, savingsAccountId, null, clientType, clientClassification,
                 clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions, clientNonPersonMainBusinessLineOptions,
                 clientNonPerson, clientLegalFormOptions, familyMemberOptions, legalForm, null, null, null, isStaff,
-                clientCollateralManagements, null, null, null, null, null, null, null, supervisorStaffData, bvn, iAgree);
+                clientCollateralManagements, null, null, null, null, null, null, null, supervisorStaffData, bvn, iAgree,null);
 
     }
 
@@ -233,7 +234,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 savingProductOptions, savingsProductId, savingsProductName, savingsAccountId, null, clientType, clientClassification,
                 clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions, clientNonPersonMainBusinessLineOptions,
                 clientNonPerson, clientLegalFormOptions, familyMemberOptions, legalForm, null, null, null, isStaff,
-                clientCollateralManagements, null, null, null, null, null, null, null, null, null, null);
+                clientCollateralManagements, null, null, null, null, null, null, null, null, null, null,null);
 
     }
 
@@ -248,7 +249,8 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
             final Collection<CodeValueBusinessData> activationChannelOptions,
             final Collection<CodeValueBusinessData> bankAccountTypeOptions, final Collection<CodeValueBusinessData> bankOptions,
             final Collection<CodeValueBusinessData> salaryRangeOptions, final Collection<CodeValueBusinessData> employmentTypeOptions,
-            final DocumentConfigData documentConfigData, final Collection<CodeValueBusinessData> titleOptions
+            final DocumentConfigData documentConfigData, final Collection<CodeValueBusinessData> titleOptions,
+                                              final Collection<CodeValueBusinessData>        politicallyExposedOptions
     // ,final List<CodeValueBusinessData> industryOptions
     // ,final Collection<CodeValueBusinessData> countryValues,
     // final Collection<CodeValueBusinessData> stateValues,
@@ -296,7 +298,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 // , lgaValues
                 , activationChannelOptions, bankAccountTypeOptions, bankOptions, salaryRangeOptions, employmentTypeOptions,
                 documentConfigData, titleOptions // , industryOptions
-                , null, null, null);
+                , null, null, null, politicallyExposedOptions);
 
     }
 
@@ -314,7 +316,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 clientData.clientClassificationOptions, clientData.clientNonPersonConstitutionOptions,
                 clientData.clientNonPersonMainBusinessLineOptions, clientData.clientNonPersonDetails, clientData.clientLegalFormOptions,
                 clientData.familyMemberOptions, clientData.legalForm, clientData.address, clientData.isAddressEnabled, null,
-                clientData.isStaff, clientCollateralManagements, null, null, null, null, null, null, null, null, null, null);
+                clientData.isStaff, clientCollateralManagements, null, null, null, null, null, null, null, null, null, null,null);
 
     }
 
@@ -331,7 +333,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 clientData.clientNonPersonConstitutionOptions, clientData.clientNonPersonMainBusinessLineOptions,
                 clientData.clientNonPersonDetails, clientData.clientLegalFormOptions, clientData.familyMemberOptions, clientData.legalForm,
                 clientData.address, clientData.isAddressEnabled, null, clientData.isStaff, clientCollateralManagements, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null,null);
 
     }
 
@@ -348,7 +350,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
                 templateData.clientClassificationOptions, templateData.clientNonPersonConstitutionOptions,
                 templateData.clientNonPersonMainBusinessLineOptions, clientData.clientNonPersonDetails, templateData.clientLegalFormOptions,
                 templateData.familyMemberOptions, clientData.legalForm, clientData.address, clientData.isAddressEnabled, null,
-                clientData.isStaff, clientCollateralManagements, null, null, null, null, null, null, null, null, null, null);
+                clientData.isStaff, clientCollateralManagements, null, null, null, null, null, null, null, null, null, null,null);
 
     }
 
@@ -374,6 +376,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
             final Collection<CodeValueBusinessData> salaryRangeOptions, final Collection<CodeValueBusinessData> employmentTypeOptions,
             final DocumentConfigData documentConfigData, final Collection<CodeValueBusinessData> titleOptions,
             final StaffData supervisorStaffData, final String bvn, final Boolean iAgree
+     ,final Collection<CodeValueBusinessData> politicallyExposedOptions
     // ,final List<CodeValueBusinessData> industryOptions
     // , final Collection<CodeValueBusinessData> countryValues,
     // final Collection<CodeValueBusinessData> stateValues,
@@ -455,6 +458,7 @@ public final class ClientBusinessData implements Comparable<ClientBusinessData>,
         this.employmentTypeOptions = employmentTypeOptions;
         this.documentConfigData = documentConfigData;
         this.titleOptions = titleOptions;
+         this.politicallyExposedOptions = politicallyExposedOptions;
         // this.industryOptions = industryOptions;
         this.supervisorStaffData = supervisorStaffData;
         this.bvn = bvn;

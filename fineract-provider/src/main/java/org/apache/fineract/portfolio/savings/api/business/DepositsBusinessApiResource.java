@@ -278,6 +278,15 @@ public class DepositsBusinessApiResource {
         CommandWrapper commandRequest;
         CommandProcessingResult result = null;
         String templateJson;
+        if (is(commandParam, "savings") || is(commandParam, "fixed") || is(commandParam, "recurring")){
+            final JsonElement parsedQuery = this.fromApiJsonHelper.parse(apiRequestBodyAsJson);
+
+            final Long productId = this.fromApiJsonHelper.extractLongNamed("productId", parsedQuery);
+            final Long clientId = this.fromApiJsonHelper.extractLongNamed("clientId", parsedQuery);
+            final Long groupId = this.fromApiJsonHelper.extractLongNamed("groupId", parsedQuery);
+
+            savingsApplicationProcessBusinessWritePlatformService.checkForProductMixRestrictions(clientId, productId, groupId);
+        }
         if (is(commandParam, "savings") || is(commandParam, "updateWithHoldTax")) {
             templateJson = DepositsBusinessApiTemplate.savingsTemplateConfig(this.savingsAccountsApiResource, apiRequestBodyAsJson,
                     this.fromApiJsonHelper, true, uriInfo, null);

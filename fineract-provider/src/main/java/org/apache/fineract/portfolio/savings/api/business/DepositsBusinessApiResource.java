@@ -65,6 +65,7 @@ import org.apache.fineract.portfolio.savings.business.DepositsBusinessApiConstan
 import org.apache.fineract.portfolio.savings.data.business.DepositAccountBusinessData;
 import org.apache.fineract.portfolio.savings.service.business.DepositApplicationBusinessProcessWritePlatformService;
 import org.apache.fineract.portfolio.savings.service.business.DepositsBusinessReadPlatformService;
+import org.apache.fineract.portfolio.savings.service.business.SavingsApplicationProcessBusinessWritePlatformService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -87,6 +88,7 @@ public class DepositsBusinessApiResource {
     private final RecurringDepositAccountsApiResource recurringDepositAccountsApiResource;
     private final FromJsonHelper fromApiJsonHelper;
     private final DepositApplicationBusinessProcessWritePlatformService depositApplicationBusinessProcessWritePlatformService;
+    private final SavingsApplicationProcessBusinessWritePlatformService savingsApplicationProcessBusinessWritePlatformService;
 
     @GET
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -202,6 +204,16 @@ public class DepositsBusinessApiResource {
         CommandWrapper commandRequest;
         CommandProcessingResult result = null;
         String templateJson;
+
+        if (is(commandParam, "savings") || is(commandParam, "fixed") || is(commandParam, "recurring")){
+            final JsonElement parsedQuery = this.fromApiJsonHelper.parse(apiRequestBodyAsJson);
+
+            final Long productId = this.fromApiJsonHelper.extractLongNamed("productId", parsedQuery);
+            final Long clientId = this.fromApiJsonHelper.extractLongNamed("clientId", parsedQuery);
+            final Long groupId = this.fromApiJsonHelper.extractLongNamed("groupId", parsedQuery);
+
+            savingsApplicationProcessBusinessWritePlatformService.checkForProductMixRestrictions(clientId, productId, groupId);
+        }
         if (is(commandParam, "savings")) {
             templateJson = DepositsBusinessApiTemplate.savingsTemplateConfig(this.savingsAccountsApiResource, apiRequestBodyAsJson,
                     this.fromApiJsonHelper, true, uriInfo, null);

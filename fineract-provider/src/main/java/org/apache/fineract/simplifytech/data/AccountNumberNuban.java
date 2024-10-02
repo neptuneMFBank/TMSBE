@@ -65,7 +65,7 @@ public class AccountNumberNuban {
             throw new IllegalArgumentException("Error in generating account number format.");
         }
 
-        if (StringUtils.isBlank(bankDigit)) {
+        if (StringUtils.isNotBlank(bankDigit)) {
             final String bankDigitString = bankDigit;
             final int numberOfCharactersToRemove = bankDigitString.length();
             this.serialNumber = GeneralConstants.removeFirstCharacters(serialNumber, numberOfCharactersToRemove);

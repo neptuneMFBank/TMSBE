@@ -18,6 +18,9 @@
  */
 package org.apache.fineract.portfolio.savings.productmix.api.business;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
@@ -51,7 +54,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-@Path("/savingsproducts/{productId}/productmix/business")
+@Path("/savingsproducts/productmix")
 @Component
 @Scope("singleton")
 @Tag(name = "Savings Product Mix", description = "")
@@ -85,6 +88,7 @@ public class SavingsProductMixApiResource {
     }
 
     @GET
+    @Path("/{productId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveTemplate(@PathParam("productId") final Long productId, @Context final UriInfo uriInfo) {
@@ -94,14 +98,13 @@ public class SavingsProductMixApiResource {
         SavingsProductMixData productMixData = this.savingsProductMixReadPlatformService.retrieveSavingsProductMixDetails(productId);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        if (settings.isTemplate()) {
-            final Collection<SavingsProductData> productOptions = this.savingsProductBusinessReadPlatformService.retrieveAvailableSavingsProductsForMix();
-            productMixData = SavingsProductMixData.withTemplateOptions(productMixData, productOptions);
-        }
+        final Collection<SavingsProductData> productOptions = this.savingsProductBusinessReadPlatformService.retrieveAvailableSavingsProductsForMix();
+        productMixData = SavingsProductMixData.withTemplateOptions(productMixData, productOptions);
         return this.toApiJsonSerializer.serialize(settings, productMixData, this.productMixDataParameters);
     }
 
     @POST
+    @Path("/{productId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public String createProductMix(@PathParam("productId") final Long productId, final String apiRequestBodyAsJson) {
@@ -115,6 +118,7 @@ public class SavingsProductMixApiResource {
     }
 
     @PUT
+    @Path("/{productId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public String updateProductMix(@PathParam("productId") final Long productId, final String apiRequestBodyAsJson) {
@@ -128,6 +132,7 @@ public class SavingsProductMixApiResource {
     }
 
     @DELETE
+    @Path("/{productId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public String deleteProductMix(@PathParam("productId") final Long productId) {
@@ -137,5 +142,38 @@ public class SavingsProductMixApiResource {
         final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
         return this.toApiJsonSerializer.serialize(result);
+    }
+
+    @GET
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "List Savings Products Mixes", description = "Lists Savings Products Mixes\n\n" + "Example Requests:\n" + "\n"
+            + "savingsproducts\n" + "\n" + "savingsproducts?fields=name")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK") })
+    public String retrieveAll(@Context final UriInfo uriInfo) {
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+        final Collection<SavingsProductMixData> productMixes = this.savingsProductMixReadPlatformService.retrieveAllSavingsProductMixes();
+        return this.toApiJsonSerializer.serialize(settings, productMixes, this.productMixDataParameters);
+    }
+
+    @GET
+    @Path("template")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve Savings Product Mix Template", description = "This is a convenience resource. It can be useful when building maintenance user interface screens for client applications. The template data returned consists of any or all of:\n"
+            + "\n" + "Field Defaults\n" + "Allowed description Lists\n" + "Example Request:\n" + "Account Mapping:\n" + "\n"
+            + "savingsproducts/template")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK") })
+    public String retrieveTemplate(@Context final UriInfo uriInfo) {
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
+        final Collection<SavingsProductData> productOptions = this.savingsProductBusinessReadPlatformService.retrieveAvailableSavingsProductsForMix();
+        final SavingsProductMixData productMixData = SavingsProductMixData.template(productOptions);
+        return this.toApiJsonSerializer.serialize(settings, productMixData, this.productMixDataParameters);
     }
 }

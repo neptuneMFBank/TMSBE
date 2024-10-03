@@ -24,6 +24,7 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.portfolio.collateralmanagement.domain.ClientCollateralManagement;
 import org.apache.fineract.portfolio.collateralmanagement.domain.ClientCollateralManagementRepositoryWrapper;
+import org.apache.fineract.portfolio.collateralmanagement.exception.LoanCollateralManagementNotFoundException;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCollateralManagement;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCollateralManagementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class LoanCollateralManagementWritePlatformServiceImpl implements LoanCol
     @Override
     public CommandProcessingResult deleteLoanCollateral(JsonCommand command) {
         final Long id = command.entityId();
-        final LoanCollateralManagement loanCollateralManagement = this.loanCollateralManagementRepository.findById(id).orElseThrow();
+        final LoanCollateralManagement loanCollateralManagement = this.loanCollateralManagementRepository.findById(id).orElseThrow(() -> new LoanCollateralManagementNotFoundException(id));
         ClientCollateralManagement clientCollateralManagement = loanCollateralManagement.getClientCollateralManagement();
         BigDecimal loanQuantity = loanCollateralManagement.getQuantity();
         BigDecimal clientQuantity = clientCollateralManagement.getQuantity();

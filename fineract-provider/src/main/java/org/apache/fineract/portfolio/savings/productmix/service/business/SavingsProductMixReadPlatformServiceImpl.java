@@ -73,7 +73,7 @@ public class SavingsProductMixReadPlatformServiceImpl implements SavingsProductM
     public Collection<SavingsProductMixData> retrieveAllSavingsProductMixes() {
         this.context.authenticatedUser();
 
-        final SavingsProductMixReadPlatformServiceImpl.ProductMixDataExtractor extractor = new SavingsProductMixReadPlatformServiceImpl.ProductMixDataExtractor(this.savingsProductBusinessReadPlatformService, null);
+        final SavingsProductMixReadPlatformServiceImpl.ProductMixListDataExtractor extractor = new SavingsProductMixReadPlatformServiceImpl.ProductMixListDataExtractor(this.savingsProductBusinessReadPlatformService, null);
 
         final String sql = "Select " + extractor.schema() + " group by pm.product_id";
 
@@ -117,6 +117,37 @@ public class SavingsProductMixReadPlatformServiceImpl implements SavingsProductM
                 final Collection<SavingsProductData> allowedProducts = this.savingsProductBusinessReadPlatformService
                         .retrieveAllowedProductsForMix(productId);
                 final SavingsProductMixData savingsProductMixData = SavingsProductMixData.withDetails(productId, name, restrictedProducts, allowedProducts);
+                extractedData.put(productId, savingsProductMixData);
+            } while (rs.next());
+            return extractedData;
+        }
+    }
+
+    private static final class ProductMixListDataExtractor implements ResultSetExtractor<Map<Long, SavingsProductMixData>> {
+
+        private final SavingsProductBusinessReadPlatformService savingsProductBusinessReadPlatformService;
+        private final Long productId;
+
+        public String schema() {
+            return "pm.product_id as productId, sp.name as name from m_savings_product_mix pm join m_savings_product sp on sp.id=pm.product_id";
+        }
+
+        ProductMixListDataExtractor(final SavingsProductBusinessReadPlatformService savingsProductBusinessReadPlatformService, final Long productId) {
+            this.savingsProductBusinessReadPlatformService = savingsProductBusinessReadPlatformService;
+            this.productId = productId;
+        }
+
+        @Override
+        public Map<Long, SavingsProductMixData> extractData(final ResultSet rs) throws SQLException, DataAccessException {
+            final Map<Long, SavingsProductMixData> extractedData = new HashMap<>();
+
+            if (!rs.next()) {
+                return extractedData;
+            }
+            do {
+                final Long productId = rs.getLong("productId");
+                final String name = rs.getString("name");
+                final SavingsProductMixData savingsProductMixData = SavingsProductMixData.withIdAndNameAlone(productId, name);
                 extractedData.put(productId, savingsProductMixData);
             } while (rs.next());
             return extractedData;

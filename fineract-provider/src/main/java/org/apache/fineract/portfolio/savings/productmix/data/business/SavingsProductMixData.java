@@ -58,4 +58,8 @@ public class SavingsProductMixData {
                                                        final Collection<SavingsProductData> allowedProducts) {
         return new SavingsProductMixData(null, null, restrictedProducts, allowedProducts, null);
     }
+
+    public static SavingsProductMixData withIdAndNameAlone(final Long productId, final String productName) {
+        return new SavingsProductMixData(productId, productName, null, null, null);
+    }
 }

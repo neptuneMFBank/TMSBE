@@ -49,10 +49,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 @Path("/savingsproducts/productmix")
 @Component
@@ -61,9 +58,6 @@ import java.util.Set;
 public class SavingsProductMixApiResource {
 
     private final String resourceNameForPermissions = "SAVINGSPRODUCTMIX";
-
-    private final Set<String> productMixDataParameters = new HashSet<>(
-            Arrays.asList("productId", "productName", "restrictedProducts", "allowedProducts", "productOptions"));
 
     private final PlatformSecurityContext context;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
@@ -91,7 +85,7 @@ public class SavingsProductMixApiResource {
     @Path("/{productId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String retrieveTemplate(@PathParam("productId") final Long productId, @Context final UriInfo uriInfo) {
+    public String retrieveOne(@PathParam("productId") final Long productId, @Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
@@ -100,7 +94,7 @@ public class SavingsProductMixApiResource {
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         final Collection<SavingsProductData> productOptions = this.savingsProductBusinessReadPlatformService.retrieveAvailableSavingsProductsForMix();
         productMixData = SavingsProductMixData.withTemplateOptions(productMixData, productOptions);
-        return this.toApiJsonSerializer.serialize(settings, productMixData, this.productMixDataParameters);
+        return this.toApiJsonSerializer.serialize(settings, productMixData, SavingsProductMixApiConstants.PRODUCTMIX_DATA_PARAMETERS);
     }
 
     @POST
@@ -156,7 +150,7 @@ public class SavingsProductMixApiResource {
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
         final Collection<SavingsProductMixData> productMixes = this.savingsProductMixReadPlatformService.retrieveAllSavingsProductMixes();
-        return this.toApiJsonSerializer.serialize(settings, productMixes, this.productMixDataParameters);
+        return this.toApiJsonSerializer.serialize(settings, productMixes, SavingsProductMixApiConstants.PRODUCTMIX_LIST_DATA_PARAMETERS);
     }
 
     @GET
@@ -174,6 +168,6 @@ public class SavingsProductMixApiResource {
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
         final Collection<SavingsProductData> productOptions = this.savingsProductBusinessReadPlatformService.retrieveAvailableSavingsProductsForMix();
         final SavingsProductMixData productMixData = SavingsProductMixData.template(productOptions);
-        return this.toApiJsonSerializer.serialize(settings, productMixData, this.productMixDataParameters);
+        return this.toApiJsonSerializer.serialize(settings, productMixData, SavingsProductMixApiConstants.PRODUCTMIX_DATA_PARAMETERS);
     }
 }

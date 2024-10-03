@@ -18,9 +18,6 @@
  */
 package org.apache.fineract.portfolio.savings.api.business;
 
-import org.apache.fineract.portfolio.savings.SavingsApiConstants;
-import org.apache.fineract.portfolio.savings.data.SavingsProductData;
-
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.accountNoParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.dateParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.idParamName;
@@ -33,7 +30,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SavingsBusinessApiSetConstants extends SavingsApiConstants {
+public class SavingsBusinessApiSetConstants {
 
     public static final String COMMAND_UNDO_BULK_TRANSACTION = "undoBulk";
 
@@ -44,22 +41,4 @@ public class SavingsBusinessApiSetConstants extends SavingsApiConstants {
     protected static final Set<String> SAVINGS_TRANSACTION_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(idParamName, "accountId", accountNoParamName, "currency", "amount", dateParamName, paymentDetailDataParamName,
                     runningBalanceParamName, reversedParamName, noteParamName, "chargeData", "submittedOnDateTime", refNoParamName));
-
-    /**
-     * These parameters will match the class level parameters of {@link SavingsProductData}. Where possible, we try to
-     * get response parameters to match those of request parameters.
-     */
-    protected static final Set<String> SAVINGS_PRODUCT_RESPONSE_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(idParamName, nameParamName, shortNameParamName, descriptionParamName, "currency", digitsAfterDecimalParamName,
-                    inMultiplesOfParamName, nominalAnnualInterestRateParamName, interestCompoundingPeriodTypeParamName,
-                    interestPostingPeriodTypeParamName, interestCalculationTypeParamName, interestCalculationDaysInYearTypeParamName,
-                    minRequiredOpeningBalanceParamName, lockinPeriodFrequencyParamName, lockinPeriodFrequencyTypeParamName,
-                    withdrawalFeeAmountParamName, withdrawalFeeTypeParamName, withdrawalFeeForTransfersParamName, feeAmountParamName,
-                    feeOnMonthDayParamName, "currencyOptions", "interestCompoundingPeriodTypeOptions", "interestPostingPeriodTypeOptions",
-                    "interestCalculationTypeOptions", "interestCalculationDaysInYearTypeOptions", "lockinPeriodFrequencyTypeOptions",
-                    "withdrawalFeeTypeOptions", nominalAnnualInterestRateOverdraftParamName, minOverdraftForInterestCalculationParamName,
-                    withHoldTaxParamName, taxGroupIdParamName, isDormancyTrackingActiveParamName, daysToInactiveParamName,
-                    daysToDormancyParamName, daysToInactiveParamName, accountMappingForPaymentParamName));
-
-
 }

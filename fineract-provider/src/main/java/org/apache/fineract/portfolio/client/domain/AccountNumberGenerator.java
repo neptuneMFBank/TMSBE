@@ -306,11 +306,11 @@ public class AccountNumberGenerator {
                 bankDigit = String.valueOf(nibssSortcodeConfig.getValue());
             }
         }
-        log.error("NUBAN accountNumber Check: {}", accountNumber);
+        log.info("NUBAN accountNumber Check: {}", accountNumber);
         if (accountNumber != null && accountNumber.length() > 9) {
             accountNumber = accountNumber.substring(0, 9);
         }
-        // add CDL NIBSS NUBAN logic
+        // add NIBSS NUBAN logic
         accountNumber = new AccountNumberNuban(accountNumber, this.environment, nibssSortcode, bankDigit).NUBAN();
         return accountNumber;
     }

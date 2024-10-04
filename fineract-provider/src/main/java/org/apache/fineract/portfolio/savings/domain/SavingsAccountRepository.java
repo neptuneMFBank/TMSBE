@@ -66,4 +66,13 @@ public interface SavingsAccountRepository extends JpaRepository<SavingsAccount, 
     Page<SavingsAccount> findByStatus(Integer status, Pageable pageable);
 
     SavingsAccount findByExternalId(String externalId);
+
+    @Query("Select savings.product.id from SavingsAccount savings where "
+            + "savings.client.id = :clientId and savings.status = :savingsStatus group by savings.product.id")
+    List<Long> findActiveSavingsSavingsProductIdsByClient(@Param("clientId") Long clientId, @Param("savingsStatus") Integer savingsStatus);
+
+    @Query("Select savings.product.id from SavingsAccount savings where "
+            + "savings.group.id = :groupId and savings.status = :savingsStatus and savings.client.id is NULL group by savings.product.id")
+    List<Long> findActiveSavingsSavingsProductIdsByGroup(@Param("groupId") Long groupId, @Param("savingsStatus") Integer savingsStatus);
+
 }

@@ -21,7 +21,7 @@ buildscript {
     ext {
         jacocoVersion = '0.8.7'
         retrofitVersion = '2.9.0'
-        okhttpVersion = '4.9.3'
+        okhttpVersion = '4.10.0'
         oltuVersion = '1.0.1'
         fineractJavaProjects = subprojects.findAll{
             [
@@ -44,6 +44,7 @@ buildscript {
         npmRepository = 'https://npm.pkg.github.com'
     }
     repositories {
+        mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
 
@@ -52,6 +53,17 @@ buildscript {
         classpath 'org.eclipse.persistence:eclipselink:2.7.10'
         classpath 'jakarta.ws.rs:jakarta.ws.rs-api:2.1.6'
         classpath 'com.google.cloud.tools:jib-layer-filter-extension-gradle:0.3.0'
+        classpath 'io.github.rburgst:okhttp-digest:3.1.0'
+    }
+    configurations.classpath {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'com.burgstaller' &&
+                    details.requested.name == 'okhttp-digest' &&
+                    details.requested.version == '1.10') {
+                details.useTarget "io.github.rburgst:${details.requested.name}:1.21"
+                details.because 'Dependency has moved'
+            }
+        }
     }
 }
 

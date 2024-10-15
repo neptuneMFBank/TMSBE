@@ -77,11 +77,11 @@
     <include file="parts/0060_m_document_config_product.sql" relativeToChangelogFile="true" />
     <include file="parts/0061_m_create_document_product_config_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0062_m_delete_document_product_config_permission.sql" relativeToChangelogFile="true" />
-    <include file="parts/0063_m_client_kyc_checkers.sql" relativeToChangelogFile="true" />
+<!--    <include file="parts/0063_m_client_kyc_checkers.sql" relativeToChangelogFile="true" />-->
     <include file="parts/0064_m_s3_region_external_properties.sql" relativeToChangelogFile="true" />
     <include file="parts/0065_m_signature_code.sql" relativeToChangelogFile="true" />
     <include file="parts/0066_m_proof_address_code.sql" relativeToChangelogFile="true" />
-    <include file="parts/0067_m_client_pending_activation.sql" relativeToChangelogFile="true" />
+<!--    <include file="parts/0067_m_client_pending_activation.sql" relativeToChangelogFile="true" />-->
     <include file="parts/0068_m_employer.sql" relativeToChangelogFile="true" />
     <include file="parts/0069_m_employer_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0070_m_read_employer_permission.sql" relativeToChangelogFile="true" />
@@ -109,7 +109,7 @@
     <include file="parts/0092_m_read_deposits_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0093_m_metrics.sql" relativeToChangelogFile="true" />
     <include file="parts/0094_m_metrics_history.sql" relativeToChangelogFile="true" />
-    <include file="parts/0095_m_loan_approval_schedule_view.sql" relativeToChangelogFile="true" />
+<!--    <include file="parts/0095_m_loan_approval_schedule_view.sql" relativeToChangelogFile="true" />-->
     <include file="parts/0096_m_metrics_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0097_job_queue_loan_approval.sql" relativeToChangelogFile="true" />
     <include file="parts/0098_m_read_metrics_permission.sql" relativeToChangelogFile="true" />
@@ -131,7 +131,7 @@
     <include file="parts/0114_m_update_document_config_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0115_m_create_product_loan_payment_type_config_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0116_m_product_loan_payment_type_config_code.sql" relativeToChangelogFile="true" />
-    <include file="parts/0117_m_loan_arrears_view.sql" relativeToChangelogFile="true" />
+<!--    <include file="parts/0117_m_loan_arrears_view.sql" relativeToChangelogFile="true" />-->
     <include file="parts/0119_m_read_loan_arrears_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0120_limit_loan_age_config.sql" relativeToChangelogFile="true" />
     <include file="parts/0121_nibss_sortcode_config.sql" relativeToChangelogFile="true" />
@@ -151,12 +151,12 @@
     <include file="parts/0135_m_overdraft.sql" relativeToChangelogFile="true" />
     <include file="parts/0136_app_base_url.sql" relativeToChangelogFile="true" />
     <include file="parts/0137_m_overdraft_permission.xml" relativeToChangelogFile="true" />
-    <include file="parts/0138_client_unique_view.sql" relativeToChangelogFile="true" />
+<!--    <include file="parts/0138_client_unique_view.sql" relativeToChangelogFile="true" />-->
     <include file="parts/0139_m_overdraft_schedule_view.sql" relativeToChangelogFile="true" />
-    <include file="parts/0140_m_metrics_overdraft_update.sql" relativeToChangelogFile="true" />
+<!--    <include file="parts/0140_m_metrics_overdraft_update.sql" relativeToChangelogFile="true" />-->
     <include file="parts/0141_job_reminder_overdraft_approval.sql" relativeToChangelogFile="true" />
     <include file="parts/0142_job_queue_overdraft_approval.sql" relativeToChangelogFile="true" />
-    <include file="parts/0143_m_metrics_update_view.sql" relativeToChangelogFile="true" />
+<!--    <include file="parts/0143_m_metrics_update_view.sql" relativeToChangelogFile="true" />-->
     <include file="parts/0144_m_role_overdraft_approval_config.sql" relativeToChangelogFile="true" />
     <include file="parts/0145_m_overdraft_expired_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0192_alter_portfolio_command_source_with_role_id.sql" relativeToChangelogFile="true" />
@@ -177,16 +177,16 @@
     <include file="parts/0160_loan_product_visibility_config_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0161_m_read_loanproduct_visibility_config_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0162_m_users_details_view.sql" relativeToChangelogFile="true" />
-    <include file="parts/0163_m_savings_amount_on_hold_view.sql" relativeToChangelogFile="true" />
-    <include file="parts/0164_m_self_activate_client_view.sql" relativeToChangelogFile="true" />
+<!--    <include file="parts/0163_m_savings_amount_on_hold_view.sql" relativeToChangelogFile="true" />-->
+<!--    <include file="parts/0164_m_self_activate_client_view.sql" relativeToChangelogFile="true" />-->
     <include file="parts/0165_job_queue_self_client_activation.sql" relativeToChangelogFile="true" />
     <include file="parts/0166_m_codes_question_update.xml" relativeToChangelogFile="true" />
     <include file="parts/0167_m_lock_unlock_permission.xml" relativeToChangelogFile="true" />
     <include file="parts/0168_m_users_lock_view.sql" relativeToChangelogFile="true" />
     <include file="parts/0169_m_password_policy.xml" relativeToChangelogFile="true" />
     <include file="parts/0170_m_audit_approval_view.sql" relativeToChangelogFile="true" />
-    <include file="parts/0172_m_metrics_savings_alter.sql" relativeToChangelogFile="true" />
-    <include file="parts/0173_m_metrics_savings_alter.sql" relativeToChangelogFile="true" />
+<!--    <include file="parts/0172_m_metrics_savings_alter.sql" relativeToChangelogFile="true" />-->
+<!--    <include file="parts/0173_m_metrics_savings_alter.sql" relativeToChangelogFile="true" />-->
     <include file="parts/0400_alter_m_product_visibility_config.sql" relativeToChangelogFile="true" />
     <include file="parts/0401_alter_m_product_visibility_legalenum_mapping.sql" relativeToChangelogFile="true" />
     <include file="parts/0402_alter_m_product_visibility_clientclassification_mapping.sql" relativeToChangelogFile="true" />

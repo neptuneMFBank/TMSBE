@@ -41,7 +41,7 @@
     <include file="parts/0019_refactor_loan_transaction.xml" relativeToChangelogFile="true"/>
     <include file="parts/0020_add_audit_entries.xml" relativeToChangelogFile="true"/>
     <include file="parts/0026_reversals_for_reversed_transactions.xml" relativeToChangelogFile="true"/>
-    <include file="parts/0027_m_table_views.sql" relativeToChangelogFile="true"/>
+<!--    <include file="parts/0027_m_table_views.sql" relativeToChangelogFile="true"/>-->
     <include file="parts/0028_m_loan_view.sql" relativeToChangelogFile="true"/>
     <include file="parts/0029_m_alter_client_email.sql" relativeToChangelogFile="true"/>
     <include file="parts/0030_m_alter_appuser.sql" relativeToChangelogFile="true"/>
@@ -105,7 +105,7 @@
     <include file="parts/0088_m_update_loan_product_approval_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0089_m_create_checker_loan_product_approval_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0090_m_update_checker_loan_product_approval_permission.sql" relativeToChangelogFile="true" />
-    <include file="parts/0091_m_saving_view.sql" relativeToChangelogFile="true" />
+<!--    <include file="parts/0091_m_saving_view.sql" relativeToChangelogFile="true" />-->
     <include file="parts/0092_m_read_deposits_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0093_m_metrics.sql" relativeToChangelogFile="true" />
     <include file="parts/0094_m_metrics_history.sql" relativeToChangelogFile="true" />
@@ -249,5 +249,5 @@
 </databaseChangeLog>
 <!--
     files to exempt when running migration for the first time
-    0063,0138,0067,0095,0117,0163,0140,0143,0164,0172,0173
+    0027,0063,0138,0067,0091,0095,0117,0163,0140,0143,0164,0172,0173
 -->

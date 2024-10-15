@@ -139,8 +139,7 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
             final ClientFamilyMembersWritePlatformService clientFamilyMembersWritePlatformService,
             final BusinessEventNotifierService businessEventNotifierService,
             final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService,
-            final KycConfigReadService kycConfigReadService,
-            final ClientBusinessReadPlatformService clientBusinessReadPlatformService) {
+            final KycConfigReadService kycConfigReadService, final ClientBusinessReadPlatformService clientBusinessReadPlatformService) {
         this.context = context;
         this.clientRepository = clientRepository;
         this.clientNonPersonRepository = clientNonPersonRepository;
@@ -313,7 +312,7 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
                         EntityTables.CLIENT.getName(), newClient.getId(), null,
                         command.arrayOfParameterNamed(ClientApiConstants.datatables));
             }
-            this.updateClientKycLevel( newClient.getId());
+            this.updateClientKycLevel(newClient.getId());
             businessEventNotifierService.notifyPostBusinessEvent(new ClientCreateBusinessEvent(newClient));
 
             entityDatatableChecksWritePlatformService.runTheCheck(newClient.getId(), EntityTables.CLIENT.getName(),

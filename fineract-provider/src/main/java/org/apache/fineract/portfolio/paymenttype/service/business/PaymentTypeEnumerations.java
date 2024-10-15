@@ -34,8 +34,8 @@ public final class PaymentTypeEnumerations {
     public static EnumOptionData paymentCalculationType(final PaymentCalculationType type) {
         EnumOptionData optionData;
         optionData = switch (type) {
-            case FLAT ->
-                new EnumOptionData(PaymentCalculationType.FLAT.getValue().longValue(), PaymentCalculationType.FLAT.getCode(), "Flat");
+            case FLAT -> new EnumOptionData(PaymentCalculationType.FLAT.getValue().longValue(), PaymentCalculationType.FLAT.getCode(),
+                    "Flat");
             case PERCENT -> new EnumOptionData(PaymentCalculationType.PERCENT.getValue().longValue(),
                     PaymentCalculationType.PERCENT.getCode(), "% Amount");
             case CAPPED -> new EnumOptionData(PaymentCalculationType.CAPPED.getValue().longValue(), PaymentCalculationType.CAPPED.getCode(),

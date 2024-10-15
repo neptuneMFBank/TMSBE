@@ -119,6 +119,8 @@ public final class ClientData implements Comparable<ClientData>, Serializable {
     private Long clientClassificationId;
     private Long legalFormId;
     private LocalDate submittedOnDate;
+    private String bvn;
+    private String nin;
 
     public static ClientData importClientEntityInstance(Long legalFormId, Integer rowIndex, String fullname, Long officeId,
             Long clientTypeId, Long clientClassificationId, Long staffId, Boolean active, LocalDate activationDate,
@@ -192,6 +194,70 @@ public final class ClientData implements Comparable<ClientData>, Serializable {
         this.emailAddress = null;
         this.clientCollateralManagements = null;
         this.id = clientId;
+    }
+
+    private ClientData(final Long id, final String displayName, final String firstname, final String middlename, final String lastname,
+            final LocalDate dateOfBirth, final String mobileNo, final String emailAddress, final String bvn, final String nin) {
+        this.rowIndex = null;
+        this.dateFormat = null;
+        this.locale = null;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.middlename = middlename;
+        this.displayName = displayName;
+        this.fullname = null;
+        this.activationDate = null;
+        this.submittedOnDate = null;
+        this.active = null;
+        this.externalId = null;
+        this.officeId = null;
+        this.staffId = null;
+        this.legalFormId = null;
+        this.mobileNo = mobileNo;
+        this.dateOfBirth = dateOfBirth;
+        this.clientTypeId = null;
+        this.genderId = null;
+        this.clientClassificationId = null;
+        this.isStaff = null;
+        this.address = null;
+        this.accountNo = null;
+        this.status = null;
+        this.subStatus = null;
+        this.gender = null;
+        this.clientType = null;
+        this.clientClassification = null;
+        this.officeName = null;
+        this.transferToOfficeId = null;
+        this.transferToOfficeName = null;
+        this.imageId = null;
+        this.imagePresent = null;
+        this.staffName = null;
+        this.timeline = null;
+        this.savingsProductId = null;
+        this.savingsProductName = null;
+        this.savingsAccountId = null;
+        this.legalForm = null;
+        this.groups = null;
+        this.officeOptions = null;
+        this.staffOptions = null;
+        this.narrations = null;
+        this.savingProductOptions = null;
+        this.savingAccountOptions = null;
+        this.genderOptions = null;
+        this.clientTypeOptions = null;
+        this.clientClassificationOptions = null;
+        this.clientNonPersonConstitutionOptions = null;
+        this.clientNonPersonMainBusinessLineOptions = null;
+        this.clientLegalFormOptions = null;
+        this.clientNonPersonDetails = null;
+        this.isAddressEnabled = null;
+        this.datatables = null;
+        this.familyMemberOptions = null;
+        this.emailAddress = emailAddress;
+        this.clientCollateralManagements = null;
+        this.id = id;
+        this.bvn = bvn;
+        this.nin = nin;
     }
 
     public static ClientData importClientPersonInstance(Long legalFormId, Integer rowIndex, String firstname, String lastname,
@@ -575,6 +641,12 @@ public final class ClientData implements Comparable<ClientData>, Serializable {
                 clientTypeOptions, clientClassificationOptions, clientNonPersonConstitutionOptions, clientNonPersonMainBusinessLineOptions,
                 clientNonPerson, clientLegalFormOptions, familyMemberOptions, legalForm, null, null, null, isStaff, null);
 
+    }
+
+    public static ClientData clientBasicInfo(Long id, String displayName, String firstname, String middlename, String lastname,
+            LocalDate dateOfBirth, String mobileNo, String emailAddress, String bvn, String nin) {
+
+        return new ClientData(id, displayName, firstname, middlename, lastname, dateOfBirth, mobileNo, emailAddress, bvn, nin);
     }
 
     private ClientData(final String accountNo, final EnumOptionData status, final CodeValueData subStatus, final Long officeId,

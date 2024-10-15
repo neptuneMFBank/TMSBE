@@ -205,7 +205,7 @@ public class DepositsBusinessApiResource {
         CommandProcessingResult result = null;
         String templateJson;
 
-        if (is(commandParam, "savings") || is(commandParam, "fixed") || is(commandParam, "recurring")){
+        if (is(commandParam, "savings") || is(commandParam, "fixed") || is(commandParam, "recurring")) {
             final JsonElement parsedQuery = this.fromApiJsonHelper.parse(apiRequestBodyAsJson);
 
             final Long productId = this.fromApiJsonHelper.extractLongNamed("productId", parsedQuery);
@@ -278,7 +278,7 @@ public class DepositsBusinessApiResource {
         CommandWrapper commandRequest;
         CommandProcessingResult result = null;
         String templateJson;
-        if (is(commandParam, "savings") || is(commandParam, "fixed") || is(commandParam, "recurring")){
+        if (is(commandParam, "savings") || is(commandParam, "fixed") || is(commandParam, "recurring")) {
             final JsonElement parsedQuery = this.fromApiJsonHelper.parse(apiRequestBodyAsJson);
 
             final Long productId = this.fromApiJsonHelper.extractLongNamed("productId", parsedQuery);

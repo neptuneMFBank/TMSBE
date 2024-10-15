@@ -18,6 +18,11 @@
  */
 package org.apache.fineract.portfolio.savings.productmix.service.business;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 import org.apache.fineract.portfolio.savings.productmix.data.business.SavingsProductMixData;
@@ -30,21 +35,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Service;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
-public class SavingsProductMixReadPlatformServiceImpl implements SavingsProductMixReadPlatformService{
+public class SavingsProductMixReadPlatformServiceImpl implements SavingsProductMixReadPlatformService {
 
     private final PlatformSecurityContext context;
     private final JdbcTemplate jdbcTemplate;
     private final SavingsProductBusinessReadPlatformService savingsProductBusinessReadPlatformService;
 
     @Autowired
-    public SavingsProductMixReadPlatformServiceImpl(PlatformSecurityContext context, JdbcTemplate jdbcTemplate, SavingsProductBusinessReadPlatformService savingsProductBusinessReadPlatformService) {
+    public SavingsProductMixReadPlatformServiceImpl(PlatformSecurityContext context, JdbcTemplate jdbcTemplate,
+            SavingsProductBusinessReadPlatformService savingsProductBusinessReadPlatformService) {
         this.context = context;
         this.jdbcTemplate = jdbcTemplate;
         this.savingsProductBusinessReadPlatformService = savingsProductBusinessReadPlatformService;
@@ -56,7 +56,8 @@ public class SavingsProductMixReadPlatformServiceImpl implements SavingsProductM
 
             this.context.authenticatedUser();
 
-            final SavingsProductMixReadPlatformServiceImpl.ProductMixDataExtractor extractor = new SavingsProductMixReadPlatformServiceImpl.ProductMixDataExtractor(this.savingsProductBusinessReadPlatformService, productId);
+            final SavingsProductMixReadPlatformServiceImpl.ProductMixDataExtractor extractor = new SavingsProductMixReadPlatformServiceImpl.ProductMixDataExtractor(
+                    this.savingsProductBusinessReadPlatformService, productId);
 
             final String sql = "Select " + extractor.schema() + " where pm.product_id=? group by pm.product_id";
 
@@ -73,7 +74,8 @@ public class SavingsProductMixReadPlatformServiceImpl implements SavingsProductM
     public Collection<SavingsProductMixData> retrieveAllSavingsProductMixes() {
         this.context.authenticatedUser();
 
-        final SavingsProductMixReadPlatformServiceImpl.ProductMixListDataExtractor extractor = new SavingsProductMixReadPlatformServiceImpl.ProductMixListDataExtractor(this.savingsProductBusinessReadPlatformService, null);
+        final SavingsProductMixReadPlatformServiceImpl.ProductMixListDataExtractor extractor = new SavingsProductMixReadPlatformServiceImpl.ProductMixListDataExtractor(
+                this.savingsProductBusinessReadPlatformService, null);
 
         final String sql = "Select " + extractor.schema() + " group by pm.product_id";
 
@@ -91,7 +93,8 @@ public class SavingsProductMixReadPlatformServiceImpl implements SavingsProductM
             return "pm.product_id as productId, sp.name as name from m_savings_product_mix pm join m_savings_product sp on sp.id=pm.product_id";
         }
 
-        ProductMixDataExtractor(final SavingsProductBusinessReadPlatformService savingsProductBusinessReadPlatformService, final Long productId) {
+        ProductMixDataExtractor(final SavingsProductBusinessReadPlatformService savingsProductBusinessReadPlatformService,
+                final Long productId) {
             this.savingsProductBusinessReadPlatformService = savingsProductBusinessReadPlatformService;
             this.productId = productId;
         }
@@ -105,7 +108,8 @@ public class SavingsProductMixReadPlatformServiceImpl implements SavingsProductM
                         .retrieveRestrictedProductsForMix(this.productId);
                 final Collection<SavingsProductData> allowedProducts = this.savingsProductBusinessReadPlatformService
                         .retrieveAllowedProductsForMix(this.productId);
-                final SavingsProductMixData savingsProductMixData = SavingsProductMixData.withRestrictedOptions(restrictedProducts, allowedProducts);
+                final SavingsProductMixData savingsProductMixData = SavingsProductMixData.withRestrictedOptions(restrictedProducts,
+                        allowedProducts);
                 extractedData.put(this.productId, savingsProductMixData);
                 return extractedData;
             }
@@ -116,7 +120,8 @@ public class SavingsProductMixReadPlatformServiceImpl implements SavingsProductM
                         .retrieveRestrictedProductsForMix(productId);
                 final Collection<SavingsProductData> allowedProducts = this.savingsProductBusinessReadPlatformService
                         .retrieveAllowedProductsForMix(productId);
-                final SavingsProductMixData savingsProductMixData = SavingsProductMixData.withDetails(productId, name, restrictedProducts, allowedProducts);
+                final SavingsProductMixData savingsProductMixData = SavingsProductMixData.withDetails(productId, name, restrictedProducts,
+                        allowedProducts);
                 extractedData.put(productId, savingsProductMixData);
             } while (rs.next());
             return extractedData;
@@ -132,7 +137,8 @@ public class SavingsProductMixReadPlatformServiceImpl implements SavingsProductM
             return "pm.product_id as productId, sp.name as name from m_savings_product_mix pm join m_savings_product sp on sp.id=pm.product_id";
         }
 
-        ProductMixListDataExtractor(final SavingsProductBusinessReadPlatformService savingsProductBusinessReadPlatformService, final Long productId) {
+        ProductMixListDataExtractor(final SavingsProductBusinessReadPlatformService savingsProductBusinessReadPlatformService,
+                final Long productId) {
             this.savingsProductBusinessReadPlatformService = savingsProductBusinessReadPlatformService;
             this.productId = productId;
         }

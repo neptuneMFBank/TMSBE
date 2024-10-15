@@ -18,12 +18,11 @@
  */
 package org.apache.fineract.portfolio.savings.domain.business;
 
+import java.util.List;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class SavingsAccountRepositoryWrapperBusinsess {
@@ -35,11 +34,13 @@ public class SavingsAccountRepositoryWrapperBusinsess {
         this.repository = repository;
     }
 
-    public List<Long> findActiveSavingsSavingsProductIdsByClient(@Param("clientId") Long clientId, @Param("savingsStatus") Integer savingsStatus) {
+    public List<Long> findActiveSavingsSavingsProductIdsByClient(@Param("clientId") Long clientId,
+            @Param("savingsStatus") Integer savingsStatus) {
         return this.repository.findActiveSavingsSavingsProductIdsByClient(clientId, savingsStatus);
     }
 
-    public List<Long> findActiveSavingsSavingsProductIdsByGroup(@Param("groupId") Long groupId, @Param("savingsStatus") Integer savingsStatus) {
+    public List<Long> findActiveSavingsSavingsProductIdsByGroup(@Param("groupId") Long groupId,
+            @Param("savingsStatus") Integer savingsStatus) {
         return this.repository.findActiveSavingsSavingsProductIdsByGroup(groupId, savingsStatus);
     }
 

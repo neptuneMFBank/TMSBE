@@ -24,7 +24,7 @@ import java.util.Set;
 
 public final class SavingsProductMixApiConstants {
 
-    SavingsProductMixApiConstants(){
+    SavingsProductMixApiConstants() {
 
     }
 
@@ -34,10 +34,9 @@ public final class SavingsProductMixApiConstants {
     public static final String allowedProductsParamName = "allowedProducts";
     public static final String productOptionsParamName = "productOptions";
 
-    static final Set<String> PRODUCTMIX_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(productIdParamName, productNameParamName, restrictedProductsParamName, allowedProductsParamName, productOptionsParamName));
+    static final Set<String> PRODUCTMIX_DATA_PARAMETERS = new HashSet<>(Arrays.asList(productIdParamName, productNameParamName,
+            restrictedProductsParamName, allowedProductsParamName, productOptionsParamName));
 
-    static final Set<String> PRODUCTMIX_LIST_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(productIdParamName, productNameParamName));
+    static final Set<String> PRODUCTMIX_LIST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(productIdParamName, productNameParamName));
 
 }

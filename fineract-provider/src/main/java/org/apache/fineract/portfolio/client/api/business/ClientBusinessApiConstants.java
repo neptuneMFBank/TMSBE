@@ -237,7 +237,8 @@ public class ClientBusinessApiConstants {
             staffOptionsParamName, dateOfBirthParamName, genderParamName, clientTypeParamName, clientClassificationParamName,
             legalFormParamName, clientNonPersonDetailsParamName, isStaffParamName, lgaValuesParamName, activationChannelOptionsPARAM,
             bankPARAM, bankOptionsPARAM, bankAccountTypePARAM, bankAccountTypeOptionsPARAM, salaryRangeOptionsPARAM,
-            employmentTypeOptionsPARAM, datatables, titleOptionsParam, bvnParamName, iAgreeParamName, supervisorStaffDataParamName, POLITICALLY_EXPOSED_OPTIONS
+            employmentTypeOptionsPARAM, datatables, titleOptionsParam, bvnParamName, iAgreeParamName, supervisorStaffDataParamName,
+            POLITICALLY_EXPOSED_OPTIONS
     // , industryOptionsParam
     ));
 

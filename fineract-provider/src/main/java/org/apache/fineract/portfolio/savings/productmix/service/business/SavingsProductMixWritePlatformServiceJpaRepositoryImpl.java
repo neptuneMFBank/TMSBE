@@ -18,6 +18,14 @@
  */
 package org.apache.fineract.portfolio.savings.productmix.service.business;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
@@ -40,17 +48,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.HashMap;
-
 @Service
-public class SavingsProductMixWritePlatformServiceJpaRepositoryImpl implements SavingsProductMixWritePlatformService{
+public class SavingsProductMixWritePlatformServiceJpaRepositoryImpl implements SavingsProductMixWritePlatformService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SavingsProductMixWritePlatformServiceJpaRepositoryImpl.class);
     private final PlatformSecurityContext context;
@@ -58,7 +57,9 @@ public class SavingsProductMixWritePlatformServiceJpaRepositoryImpl implements S
     private final SavingsProductMixRepository savingsProductMixRepository;
     private final SavingsProductRepository savingsProductRepository;
 
-    public SavingsProductMixWritePlatformServiceJpaRepositoryImpl(PlatformSecurityContext context, ProductMixDataValidator fromApiJsonDeserializer, SavingsProductMixRepository savingsProductMixRepository, SavingsProductRepository savingsProductRepository) {
+    public SavingsProductMixWritePlatformServiceJpaRepositoryImpl(PlatformSecurityContext context,
+            ProductMixDataValidator fromApiJsonDeserializer, SavingsProductMixRepository savingsProductMixRepository,
+            SavingsProductRepository savingsProductRepository) {
         this.context = context;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.savingsProductMixRepository = savingsProductMixRepository;
@@ -116,7 +117,7 @@ public class SavingsProductMixWritePlatformServiceJpaRepositoryImpl implements S
     }
 
     private void createNewProductMix(final Map<Long, SavingsProduct> restrictedProductsAsMap, final Long productId,
-                                     final List<SavingsProductMix> productMixes) {
+            final List<SavingsProductMix> productMixes) {
 
         final SavingsProduct productMixInstance = findByProductIdIfProvided(productId);
         for (final SavingsProduct restrictedProduct : restrictedProductsAsMap.values()) {
@@ -132,7 +133,8 @@ public class SavingsProductMixWritePlatformServiceJpaRepositoryImpl implements S
             this.fromApiJsonDeserializer.validateForUpdate(command.json());
             final Map<String, Object> changes = new LinkedHashMap<>();
 
-            final List<SavingsProductMix> existedProductMixes = new ArrayList<>(this.savingsProductMixRepository.findByProductId(productId));
+            final List<SavingsProductMix> existedProductMixes = new ArrayList<>(
+                    this.savingsProductMixRepository.findByProductId(productId));
             if (CollectionUtils.isEmpty(existedProductMixes)) {
                 throw new ProductMixNotFoundException(productId);
             }
@@ -140,7 +142,8 @@ public class SavingsProductMixWritePlatformServiceJpaRepositoryImpl implements S
 
             // updating with empty array means deleting the existed records.
             if (restrictedIds.isEmpty()) {
-                final List<Long> removedRestrictedProductIds = this.savingsProductMixRepository.findRestrictedProductIdsByProductId(productId);
+                final List<Long> removedRestrictedProductIds = this.savingsProductMixRepository
+                        .findRestrictedProductIdsByProductId(productId);
                 this.savingsProductMixRepository.deleteAll(existedProductMixes);
                 changes.put("removedProductsForMix", removedRestrictedProductIds);
                 return new CommandProcessingResultBuilder().with(changes).withProductId(productId).withCommandId(command.commandId())
@@ -192,7 +195,8 @@ public class SavingsProductMixWritePlatformServiceJpaRepositoryImpl implements S
                 "Unknown data integrity issue with resource.");
     }
 
-    private List<SavingsProductMix> updateRestrictedIds(final Set<String> restrictedIds, final List<SavingsProductMix> existedProductMixes) {
+    private List<SavingsProductMix> updateRestrictedIds(final Set<String> restrictedIds,
+            final List<SavingsProductMix> existedProductMixes) {
 
         final List<SavingsProductMix> productMixesToRemove = new ArrayList<>();
         for (final SavingsProductMix productMix : existedProductMixes) {

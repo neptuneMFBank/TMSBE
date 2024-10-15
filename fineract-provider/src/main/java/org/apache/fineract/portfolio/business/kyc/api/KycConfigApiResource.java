@@ -114,7 +114,6 @@ public class KycConfigApiResource {
         this.context.authenticatedUser().validateHasReadPermission(KycConfigApiConstants.KYC_CONFIG_RESOURCE_NAME);
 
         final SearchParameters searchParameters = SearchParameters.forPagination(offset, limit, orderBy, sortOrder);
-          
 
         final Page<KycConfigData> kycConfigs = this.kycConfigReadService.retrieveAll(searchParameters);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());

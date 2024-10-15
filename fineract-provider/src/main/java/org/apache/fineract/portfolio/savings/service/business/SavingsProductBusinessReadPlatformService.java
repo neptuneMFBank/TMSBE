@@ -18,9 +18,8 @@
  */
 package org.apache.fineract.portfolio.savings.service.business;
 
-import org.apache.fineract.portfolio.savings.data.SavingsProductData;
-
 import java.util.Collection;
+import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 
 public interface SavingsProductBusinessReadPlatformService {
 

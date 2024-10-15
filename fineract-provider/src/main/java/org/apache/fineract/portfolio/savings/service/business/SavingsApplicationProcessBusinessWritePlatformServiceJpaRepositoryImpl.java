@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.portfolio.savings.service.business;
 
+import java.util.Collection;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -40,13 +42,11 @@ import org.apache.fineract.portfolio.savings.exception.SavingsProductNotFoundExc
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
-import java.util.List;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class SavingsApplicationProcessBusinessWritePlatformServiceJpaRepositoryImpl implements SavingsApplicationProcessBusinessWritePlatformService{
+public class SavingsApplicationProcessBusinessWritePlatformServiceJpaRepositoryImpl
+        implements SavingsApplicationProcessBusinessWritePlatformService {
 
     private final SavingsProductBusinessReadPlatformService savingsProductBusinessReadPlatformService;
     private final SavingsAccountRepositoryWrapperBusinsess savingsAccountRepositoryWrapperBusinsess;
@@ -93,17 +93,17 @@ public class SavingsApplicationProcessBusinessWritePlatformServiceJpaRepositoryI
         }
 
         if (AccountType.fromInt(accountType.getValue()).isGroupAccount()) {
-            activeSavingsSavingsProductIds = this.savingsAccountRepositoryWrapperBusinsess.findActiveSavingsSavingsProductIdsByGroup(groupId,
-                    SavingsAccountStatusType.ACTIVE.getValue());
+            activeSavingsSavingsProductIds = this.savingsAccountRepositoryWrapperBusinsess
+                    .findActiveSavingsSavingsProductIdsByGroup(groupId, SavingsAccountStatusType.ACTIVE.getValue());
         } else {
-            activeSavingsSavingsProductIds = this.savingsAccountRepositoryWrapperBusinsess.findActiveSavingsSavingsProductIdsByClient(clientId,
-                    SavingsAccountStatusType.ACTIVE.getValue());
+            activeSavingsSavingsProductIds = this.savingsAccountRepositoryWrapperBusinsess
+                    .findActiveSavingsSavingsProductIdsByClient(clientId, SavingsAccountStatusType.ACTIVE.getValue());
         }
         checkForProductMixRestrictions(activeSavingsSavingsProductIds, productId, product.getName());
     }
 
     private void checkForProductMixRestrictions(final List<Long> activeSavingsSavingsProductIds, final Long productId,
-                                                final String productName) {
+            final String productName) {
 
         if (!CollectionUtils.isEmpty(activeSavingsSavingsProductIds)) {
             final Collection<SavingsProductData> restrictedPrdouctsList = this.savingsProductBusinessReadPlatformService

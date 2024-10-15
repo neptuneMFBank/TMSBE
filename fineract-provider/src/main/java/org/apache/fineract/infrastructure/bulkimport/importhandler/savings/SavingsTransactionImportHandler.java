@@ -56,15 +56,15 @@ public class SavingsTransactionImportHandler implements ImportHandler {
     private static final Logger LOG = LoggerFactory.getLogger(SavingsTransactionImportHandler.class);
     private Workbook workbook;
     private List<SavingsAccountTransactionData> savingsTransactions;
-    private Long savingsAccountId ;
-    //private String savingsAccountId = "";
+    private Long savingsAccountId;
+    // private String savingsAccountId = "";
 
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final SavingsAccountRepository savingsAccountRepository;
 
-
     @Autowired
-    public SavingsTransactionImportHandler(final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService, final SavingsAccountRepository savingsAccountRepository) {
+    public SavingsTransactionImportHandler(final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
+            final SavingsAccountRepository savingsAccountRepository) {
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
         this.savingsAccountRepository = savingsAccountRepository;
     }
@@ -96,10 +96,10 @@ public class SavingsTransactionImportHandler implements ImportHandler {
         }
         if (savingsAccountIdCheck != null) {
             SavingsAccount savingsAccount = this.savingsAccountRepository.findSavingsAccountByAccountNumber(savingsAccountIdCheck);
-            if (savingsAccount != null){
+            if (savingsAccount != null) {
                 savingsAccountId = savingsAccount.getId();
-        }
-            //savingsAccountId = savingsAccountIdCheck;
+            }
+            // savingsAccountId = savingsAccountIdCheck;
         }
         String transactionType = ImportHandlerUtils.readAsString(TransactionConstants.TRANSACTION_TYPE_COL, row);
         SavingsAccountTransactionEnumData savingsAccountTransactionEnumData = new SavingsAccountTransactionEnumData(null, null,
@@ -120,11 +120,9 @@ public class SavingsTransactionImportHandler implements ImportHandler {
         String receiptNumber = ImportHandlerUtils.readAsString(TransactionConstants.RECEIPT_NO_COL, row);
         String bankNumber = ImportHandlerUtils.readAsString(TransactionConstants.BANK_NO_COL, row);
         return SavingsAccountTransactionData.importInstance(amount, transactionDate, paymentTypeId, accountNumber, checkNumber, routingCode,
-                receiptNumber, bankNumber,
-                savingsAccountId,
-                //Long.parseLong(savingsAccountId),
-                savingsAccountTransactionEnumData, row.getRowNum(), locale,
-                dateFormat);
+                receiptNumber, bankNumber, savingsAccountId,
+                // Long.parseLong(savingsAccountId),
+                savingsAccountTransactionEnumData, row.getRowNum(), locale, dateFormat);
 
     }
 

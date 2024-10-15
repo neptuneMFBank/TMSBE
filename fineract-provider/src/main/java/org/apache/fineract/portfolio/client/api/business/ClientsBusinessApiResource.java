@@ -506,7 +506,7 @@ public class ClientsBusinessApiResource {
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.clientAccountBalanceSummary.serialize(settings, clientTransactions, CLIENT_TRANSACTION_DATA_PARAMETERS);
     }
-    
+
     @PUT
     @Path("{clientId}/kyc")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -522,5 +522,43 @@ public class ClientsBusinessApiResource {
 
         return this.toApiJsonSerializer.serialize(result);
 
+    }
+
+    @GET
+    @Path("/pending")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve all Clients pending creation on the cba", description = """
+            Example Requests:""")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String retrieveUnregisteredClients(@QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
+            @QueryParam("bvn") @Parameter(description = "bvn") final String bvn,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
+            @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
+            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @DefaultValue("en") @QueryParam("locale") final String locale,
+            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat, @Context final UriInfo uriInfo) {
+        this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+
+        LocalDate fromDate = null;
+        if (startPeriod != null) {
+            fromDate = startPeriod.getDate(LoanBusinessApiConstants.startPeriodParameterName, dateFormat, locale);
+        }
+        LocalDate toDate = null;
+        if (endPeriod != null) {
+            toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
+        }
+
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forClientPendingActivation(fromDate, toDate, null, null,
+                null, bvn, displayName, null, offset, limit, orderBy, sortOrder);
+
+        Page<ClientData> clientData = this.clientBusinessReadPlatformService.retrieveAllUnregistered(searchParameters);
+
+        return this.toApiJsonSerializer.serialize(settings, clientData);
     }
 }

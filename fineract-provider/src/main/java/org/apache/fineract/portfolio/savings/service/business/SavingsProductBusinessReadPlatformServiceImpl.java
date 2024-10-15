@@ -18,6 +18,9 @@
  */
 package org.apache.fineract.portfolio.savings.service.business;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.infrastructure.core.service.database.DatabaseSpecificSQLGenerator;
 import org.apache.fineract.infrastructure.entityaccess.domain.FineractEntityType;
@@ -28,13 +31,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-
 @Service
 @RequiredArgsConstructor
-public class SavingsProductBusinessReadPlatformServiceImpl implements SavingsProductBusinessReadPlatformService{
+public class SavingsProductBusinessReadPlatformServiceImpl implements SavingsProductBusinessReadPlatformService {
 
     private final PlatformSecurityContext context;
     private final JdbcTemplate jdbcTemplate;
@@ -135,9 +134,9 @@ public class SavingsProductBusinessReadPlatformServiceImpl implements SavingsPro
             return "sp.id as id, sp.name as name from m_savings_product sp";
         }
 
-//        public String activeOnlySchema() {
-//            return schema() + " where (close_date is null or close_date >= " + sqlGenerator.currentBusinessDate() + ")";
-//        }
+        // public String activeOnlySchema() {
+        // return schema() + " where (close_date is null or close_date >= " + sqlGenerator.currentBusinessDate() + ")";
+        // }
 
         public String productMixSchema() {
             return "sp.id as id, sp.name as name FROM m_savings_product sp left join m_savings_product_mix pm on pm.product_id=sp.id where sp.id not IN("

@@ -48,7 +48,8 @@ public class LoanCollateralManagementWritePlatformServiceImpl implements LoanCol
     @Override
     public CommandProcessingResult deleteLoanCollateral(JsonCommand command) {
         final Long id = command.entityId();
-        final LoanCollateralManagement loanCollateralManagement = this.loanCollateralManagementRepository.findById(id).orElseThrow(() -> new LoanCollateralManagementNotFoundException(id));
+        final LoanCollateralManagement loanCollateralManagement = this.loanCollateralManagementRepository.findById(id)
+                .orElseThrow(() -> new LoanCollateralManagementNotFoundException(id));
         ClientCollateralManagement clientCollateralManagement = loanCollateralManagement.getClientCollateralManagement();
         BigDecimal loanQuantity = loanCollateralManagement.getQuantity();
         BigDecimal clientQuantity = clientCollateralManagement.getQuantity();

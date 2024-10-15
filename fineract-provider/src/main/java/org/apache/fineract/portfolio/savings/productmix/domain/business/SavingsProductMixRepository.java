@@ -18,14 +18,13 @@
  */
 package org.apache.fineract.portfolio.savings.productmix.domain.business;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-
-public interface SavingsProductMixRepository  extends JpaRepository<SavingsProductMix, Long>, JpaSpecificationExecutor<SavingsProductMix> {
+public interface SavingsProductMixRepository extends JpaRepository<SavingsProductMix, Long>, JpaSpecificationExecutor<SavingsProductMix> {
 
     String GET_PRODUCTMIXES_BY_PRODUCTID_SCHEMA = "select pm from SavingsProductMix pm where pm.product.id = :productId";
     String GET_RESTRICTED_PRODUCTIDS_SCHEMA = "Select pm.restrictedProduct.id from SavingsProductMix pm where pm.product.id = :productId";

@@ -142,8 +142,7 @@ public class TransferApprovalWritePlatformServiceJpaRepositoryImpl implements Tr
             this.repository.saveAndFlush(transferApproval);
             return new CommandProcessingResultBuilder() //
                     .withEntityId(transferApproval.getId()) //
-                    .withSubEntityId(holdTransactionId)
-                    .build();
+                    .withSubEntityId(holdTransactionId).build();
         } catch (final DataAccessException e) {
             handleDataIntegrityIssues(command, e.getMostSpecificCause(), e);
             return CommandProcessingResult.empty();

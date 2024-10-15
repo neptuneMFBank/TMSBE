@@ -42,8 +42,7 @@ public class KycConfigMapping extends AbstractAuditableWithUTCDateTimeCustom {
     @JoinColumn(name = "kyc_tier_param_cv_id")
     private CodeValue KycTierParam;
 
-    public KycConfigMapping() {
-    }
+    public KycConfigMapping() {}
 
     public KycConfigMapping(KycConfig kycConfig, CodeValue KycTierParam) {
         this.kycConfig = kycConfig;

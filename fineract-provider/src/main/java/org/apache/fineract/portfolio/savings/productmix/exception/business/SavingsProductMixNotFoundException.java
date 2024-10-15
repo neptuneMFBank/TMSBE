@@ -27,11 +27,13 @@ import org.springframework.dao.EmptyResultDataAccessException;
 public class SavingsProductMixNotFoundException extends AbstractPlatformResourceNotFoundException {
 
     public SavingsProductMixNotFoundException(final Long productId) {
-        super("error.msg.no.savingsproduct.mixes.exists", "No savings product mixes are defined with the productId `" + productId + "`.", productId);
+        super("error.msg.no.savingsproduct.mixes.exists", "No savings product mixes are defined with the productId `" + productId + "`.",
+                productId);
     }
 
     public SavingsProductMixNotFoundException(Long productId, EmptyResultDataAccessException e) {
-        super("error.msg.no.savingsproduct.mixes.exists", "No savings product mixes are defined with the productId `" + productId + "`.", productId, e);
+        super("error.msg.no.savingsproduct.mixes.exists", "No savings product mixes are defined with the productId `" + productId + "`.",
+                productId, e);
     }
 
 }

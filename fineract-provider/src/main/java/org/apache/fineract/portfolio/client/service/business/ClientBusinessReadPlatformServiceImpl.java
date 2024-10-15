@@ -798,7 +798,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         ClientViewMapper() {
             final StringBuilder builder = new StringBuilder(200);
 
-            builder.append(" acv.id as id, acv.display_name as displayName, acv.firstname, acv.middlename, acv.lastname, acv.account_no as accountNo, acv.mobile_no as mobileNo, ");
+            builder.append(
+                    " acv.id as id, acv.display_name as displayName, acv.firstname, acv.middlename, acv.lastname, acv.account_no as accountNo, acv.mobile_no as mobileNo, ");
             builder.append("acv.email_address as emailAddress, acv.bvn as bvn, acv.nin as nin,  acv.date_of_birth as dateOfBirth ");
             builder.append("from m_all_clients_view acv ");
             this.schema = builder.toString();

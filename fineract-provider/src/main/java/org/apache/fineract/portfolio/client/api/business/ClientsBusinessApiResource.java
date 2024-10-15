@@ -561,4 +561,20 @@ public class ClientsBusinessApiResource {
 
         return this.toApiJsonSerializer.serialize(settings, clientData);
     }
+
+    @PUT
+    @Path("bulk-wallet")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Update a client Savings Account ", description = "Updates a client Savings account after being created on the neptune cba")
+    @RequestBody(required = true, content = @Content(schema = @Schema()))
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema())) })
+    public String updateClientCbaAccount(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateClientCbaAccount().withJson(apiRequestBodyAsJson).build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
 }

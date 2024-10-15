@@ -4072,6 +4072,13 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder updateClientCbaAccount() {
+        this.actionName = "UPDATE_WALLET";
+        this.entityName = "CLIENT";
+        this.href = "/client/bulk-wallet";
+        return this;
+    }
+
     public CommandWrapperBuilder extendRecurringDepositAccount(final Long accountId) {
         this.actionName = "EXTEND";
         this.entityName = "RECURRINGDEPOSITACCOUNT";

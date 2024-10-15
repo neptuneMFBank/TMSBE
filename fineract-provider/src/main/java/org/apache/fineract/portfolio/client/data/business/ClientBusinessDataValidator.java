@@ -893,4 +893,33 @@ public final class ClientBusinessDataValidator {
 
     }
 
+    public void validateForWalletUpdate(final String json) {
+
+        if (StringUtils.isBlank(json)) {
+            throw new InvalidJsonException();
+        }
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
+                List.of(ClientApiConstants.dataParamName, ClientApiConstants.clientIdParamName, ClientApiConstants.cbaWalletId));
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+                .resource(ClientBusinessApiCollectionConstants.CLIENT_RESOURCE_NAME);
+
+        final JsonArray clientWalletList = this.fromApiJsonHelper.extractJsonArrayNamed(ClientApiConstants.dataParamName, element);
+
+        for (JsonElement clientWallet : clientWalletList) {
+            final Long clientId = this.fromApiJsonHelper.extractLongNamed(ClientApiConstants.clientIdParamName, clientWallet);
+            baseDataValidator.reset().parameter(ClientApiConstants.clientIdParamName).value(clientId).notNull().notBlank();
+
+            final String walletId = this.fromApiJsonHelper.extractStringNamed(ClientApiConstants.cbaWalletId, clientWallet);
+            baseDataValidator.reset().parameter(ClientApiConstants.cbaWalletId).value(walletId).notBlank();
+        }
+
+        if (!dataValidationErrors.isEmpty()) {
+            throw new PlatformApiDataValidationException(dataValidationErrors);
+        }
+    }
+
 }

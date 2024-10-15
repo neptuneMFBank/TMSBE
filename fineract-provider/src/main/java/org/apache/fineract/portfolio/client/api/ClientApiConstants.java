@@ -184,6 +184,8 @@ public class ClientApiConstants {
     public static final String obligeeData = "ObligeeDetails";
 
     public static final String clientEntityName = "clients";
+    public static final String cbaWalletId = "walletId";
+    public static final String dataParamName = "data";
 
     /**
      * These parameters will match the class level parameters of {@link ClientData}. Where possible, we try to get

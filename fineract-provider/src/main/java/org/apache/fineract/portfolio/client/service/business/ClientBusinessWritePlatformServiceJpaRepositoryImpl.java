@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.client.service.business;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -46,6 +47,7 @@ import org.apache.fineract.infrastructure.configuration.service.ConfigurationRea
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
+import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.Page;
@@ -82,6 +84,7 @@ import org.apache.fineract.portfolio.group.exception.GroupNotFoundException;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountDataDTO;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.domain.SavingsProductRepository;
 import org.apache.fineract.portfolio.savings.exception.SavingsProductNotFoundException;
@@ -637,6 +640,38 @@ public class ClientBusinessWritePlatformServiceJpaRepositoryImpl implements Clie
             }
         }
         return new CommandProcessingResultBuilder().with(changes).withClientId(clientId).build();
+    }
+
+    @Override
+    public CommandProcessingResult updateClientWallet(JsonCommand command) {
+        this.context.authenticatedUser();
+
+        String json = command.json();
+        this.fromApiJsonDeserializer.validateForWalletUpdate(json);
+
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        final JsonArray clientWalletList = this.fromApiJsonHelper.extractJsonArrayNamed(ClientApiConstants.dataParamName, element);
+
+        List<SavingsAccount> savingsAccountList = new ArrayList<>();
+        for (JsonElement clientWallet : clientWalletList) {
+            Long clientId = this.fromApiJsonHelper.extractLongNamed(ClientApiConstants.clientIdParamName, clientWallet);
+            String walletId = this.fromApiJsonHelper.extractStringNamed(ClientApiConstants.cbaWalletId, clientWallet);
+
+            Client client = clientRepository.findOneWithNotFoundDetection(clientId);
+
+            Long defaultSavingsAccountId = client.savingsAccountId();
+            SavingsAccount savingsAccount = savingsRepositoryWrapper.findSavingsWithNotFoundDetection(defaultSavingsAccountId, false);
+            savingsAccount.setExternalId(walletId);
+            savingsAccountList.add(savingsAccount);
+        }
+        try {
+            savingsRepositoryWrapper.saveAll(savingsAccountList);
+        } catch (Exception ex) {
+            log.error("Request not completed, an error has occurred, ex: {}", ex.getMessage());
+            throw new GeneralPlatformDomainRuleException("403", "Could not complete request", "Failed");
+        }
+        return new CommandProcessingResultBuilder().withRequestResponse("Accounts Update Successful").build();
     }
 
 }

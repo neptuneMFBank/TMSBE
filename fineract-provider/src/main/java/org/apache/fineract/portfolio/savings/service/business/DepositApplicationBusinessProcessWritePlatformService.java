@@ -36,4 +36,5 @@ public interface DepositApplicationBusinessProcessWritePlatformService {
 
     CommandProcessingResult undoBulkSavingsTransaction(Long savingsId, Long transactionId);
 
+    CommandProcessingResult bulkSyncWithExternalWallet(JsonCommand command);
 }

@@ -29,6 +29,4 @@ public interface ClientBusinessWritePlatformService {
 
     CommandProcessingResult updateClientKycLevel(final Long clientId);
 
-    CommandProcessingResult updateClientWallet(JsonCommand command);
-
 }

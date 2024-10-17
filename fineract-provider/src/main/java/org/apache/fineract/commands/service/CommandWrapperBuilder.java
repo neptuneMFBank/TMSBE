@@ -4072,10 +4072,10 @@ public class CommandWrapperBuilder {
         return this;
     }
 
-    public CommandWrapperBuilder updateClientCbaAccount() {
-        this.actionName = "UPDATE_WALLET";
-        this.entityName = "CLIENT";
-        this.href = "/client/bulk-wallet";
+    public CommandWrapperBuilder syncSavingsAccounts() {
+        this.actionName = "BULK_SYNC_WALLETS";
+        this.entityName = "SAVINGSACCOUNT";
+        this.href = "/deposits/bulk-wallet-sync";
         return this;
     }
 

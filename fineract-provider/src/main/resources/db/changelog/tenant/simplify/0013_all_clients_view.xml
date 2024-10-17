@@ -31,6 +31,7 @@
                     viewName="m_all_clients_view">
             SELECT
                 mc.id AS id,
+                msa.id as savings_id,
                 mc.account_no AS account_no,
                 mc.display_name AS display_name,
                 mc.firstname AS firstname,
@@ -38,21 +39,21 @@
                 mc.lastname AS lastname,
                 mc.mobile_no AS mobile_no,
                 mc.email_address AS email_address,
-                slk.bvn AS bvn,
-                slk.nin AS nin,
                 mc.date_of_birth AS date_of_birth,
+                slk.tin,
+                cnp.incorp_no,
                 mc.office_id AS office_id
             FROM
                 m_client mc
                     LEFT JOIN
                 secondLevelKYC slk ON slk.client_id = mc.id
+                    LEFT JOIN
+                m_client_non_person cnp ON cnp.client_id = mc.id
                     JOIN
                 m_savings_account msa ON mc.default_savings_account = msa.id
             WHERE
-                mc.status_enum = 300
-              AND msa.external_id IS NULL
-            ORDER BY
-                mc.id DESC;
+                mc.status_enum = 300 AND msa.status_enum = 300
+              AND (msa.external_id IS NULL OR TRIM(msa.external_id) = '')
         </createView>
     </changeSet>
 </databaseChangeLog>

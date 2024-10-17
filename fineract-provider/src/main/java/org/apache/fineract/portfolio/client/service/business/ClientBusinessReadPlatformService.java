@@ -25,6 +25,7 @@ import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.business.SearchParametersBusiness;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
+import org.apache.fineract.portfolio.client.data.business.ClientWalletSyncBusinessData;
 import org.apache.fineract.portfolio.client.data.business.KycBusinessData;
 
 public interface ClientBusinessReadPlatformService {
@@ -41,7 +42,7 @@ public interface ClientBusinessReadPlatformService {
 
     KycBusinessData retrieveKycLevel(Long clientId);
 
-    Page<ClientData> retrieveAllUnregistered(SearchParametersBusiness searchParameters);
+    Page<ClientWalletSyncBusinessData> getClientsForExternalWalletSync(SearchParametersBusiness searchParameters);
 
     JsonObject retrieveBalance(Long clientId);
 

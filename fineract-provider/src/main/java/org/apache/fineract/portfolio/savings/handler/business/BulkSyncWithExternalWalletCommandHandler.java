@@ -16,29 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.client.handler.business;
+package org.apache.fineract.portfolio.savings.handler.business;
 
 import org.apache.fineract.commands.annotation.CommandType;
 import org.apache.fineract.commands.handler.NewCommandSourceHandler;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.portfolio.client.service.business.ClientBusinessWritePlatformService;
+import org.apache.fineract.portfolio.savings.service.business.DepositApplicationBusinessProcessWritePlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@CommandType(entity = "CLIENT", action = "UPDATE_WALLET")
-public class UpdateClientWalletCommandHandler implements NewCommandSourceHandler {
+@CommandType(entity = "SAVINGSACCOUNT", action = "BULK_SYNC_WALLETS")
+public class BulkSyncWithExternalWalletCommandHandler implements NewCommandSourceHandler {
 
-    private final ClientBusinessWritePlatformService writePlatformService;
+    private final DepositApplicationBusinessProcessWritePlatformService writePlatformService;
 
     @Autowired
-    public UpdateClientWalletCommandHandler(final ClientBusinessWritePlatformService writePlatformService) {
+    public BulkSyncWithExternalWalletCommandHandler(final DepositApplicationBusinessProcessWritePlatformService writePlatformService) {
         this.writePlatformService = writePlatformService;
     }
 
     @Override
     public CommandProcessingResult processCommand(final JsonCommand command) {
-        return this.writePlatformService.updateClientWallet(command);
+        return this.writePlatformService.bulkSyncWithExternalWallet(command);
     }
 }

@@ -66,6 +66,7 @@ import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPl
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
+import org.apache.fineract.portfolio.client.data.business.ClientWalletSyncBusinessData;
 import org.apache.fineract.portfolio.client.data.business.KycBusinessData;
 import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
@@ -88,6 +89,7 @@ public class ClientsBusinessApiResource {
     private final PlatformSecurityContext context;
     private final ClientBusinessReadPlatformService clientBusinessReadPlatformService;
     private final ToApiJsonSerializer<ClientData> toApiJsonSerializer;
+    private final ToApiJsonSerializer<ClientWalletSyncBusinessData> toWalletSyncBusinessApiJsonSerializer;
     private final ToApiJsonSerializer<ClientBusinessData> toBusinessApiJsonSerializer;
     private final ToApiJsonSerializer<KycBusinessData> toKycBusinessApiJsonSerializer;
     private final ToApiJsonSerializer<AccountSummaryCollectionData> clientAccountSummaryToApiJsonSerializer;
@@ -531,12 +533,11 @@ public class ClientsBusinessApiResource {
     @Operation(summary = "Retrieve all Clients pending creation on the cba", description = """
             Example Requests:""")
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
-    public String retrieveUnregisteredClients(@QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
-            @QueryParam("bvn") @Parameter(description = "bvn") final String bvn,
+    public String getClientsForExternalWalletSync(
+            @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
+            @QueryParam("tin") @Parameter(description = "tin") final String tin,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
             @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
-            @QueryParam("orderBy") @Parameter(description = "orderBy") final String orderBy,
-            @QueryParam("sortOrder") @Parameter(description = "sortOrder") final String sortOrder,
             @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
             @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
             @DefaultValue("en") @QueryParam("locale") final String locale,
@@ -555,26 +556,11 @@ public class ClientsBusinessApiResource {
         }
 
         final SearchParametersBusiness searchParameters = SearchParametersBusiness.forClientPendingActivation(fromDate, toDate, null, null,
-                null, bvn, displayName, null, offset, limit, orderBy, sortOrder);
+                null, tin, displayName, null, offset, limit, null, null);
 
-        Page<ClientData> clientData = this.clientBusinessReadPlatformService.retrieveAllUnregistered(searchParameters);
+        Page<ClientWalletSyncBusinessData> clientData = this.clientBusinessReadPlatformService
+                .getClientsForExternalWalletSync(searchParameters);
 
-        return this.toApiJsonSerializer.serialize(settings, clientData);
-    }
-
-    @PUT
-    @Path("bulk-wallet")
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Update a client Savings Account ", description = "Updates a client Savings account after being created on the neptune cba")
-    @RequestBody(required = true, content = @Content(schema = @Schema()))
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema())) })
-    public String updateClientCbaAccount(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
-
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().updateClientCbaAccount().withJson(apiRequestBodyAsJson).build();
-
-        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-
-        return this.toApiJsonSerializer.serialize(result);
+        return this.toWalletSyncBusinessApiJsonSerializer.serialize(settings, clientData);
     }
 }

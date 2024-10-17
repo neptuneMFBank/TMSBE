@@ -34,4 +34,5 @@
     <include file="simplify/0011_loan_product_visibility_allow_permission.xml" relativeToChangelogFile="true"/>
     <include file="simplify/0012_subsidiary_code.xml" relativeToChangelogFile="true"/>
     <include file="simplify/0013_all_clients_view.xml" relativeToChangelogFile="true"/>
+    <include file="simplify/0014_m_permission_sync_wallets.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

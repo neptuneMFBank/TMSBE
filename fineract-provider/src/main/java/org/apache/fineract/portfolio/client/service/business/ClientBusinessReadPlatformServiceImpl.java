@@ -85,6 +85,7 @@ import org.apache.fineract.portfolio.client.data.ClientNonPersonData;
 import org.apache.fineract.portfolio.client.data.ClientTimelineData;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessDataValidator;
+import org.apache.fineract.portfolio.client.data.business.ClientWalletSyncBusinessData;
 import org.apache.fineract.portfolio.client.data.business.KycBusinessData;
 import org.apache.fineract.portfolio.client.domain.ClientEnumerations;
 import org.apache.fineract.portfolio.client.domain.ClientStatus;
@@ -545,7 +546,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     }
 
     @Override
-    public Page<ClientData> retrieveAllUnregistered(SearchParametersBusiness searchParameters) {
+    public Page<ClientWalletSyncBusinessData> getClientsForExternalWalletSync(SearchParametersBusiness searchParameters) {
         this.context.authenticatedUser();
         try {
 
@@ -557,28 +558,10 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
             List<Object> paramList = new ArrayList<>();
 
-            final String extraCriteria = buildSqlStringFromClientPendingActivationCriteria(searchParameters, paramList);
+            final String extraCriteria = buildExtraCriteriaForWalletSync(searchParameters, paramList);
 
             if (StringUtils.isNotBlank(extraCriteria)) {
                 sqlBuilder.append(" where ").append(extraCriteria);
-            }
-
-            if (searchParameters.isOrderByRequested()) {
-                sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
-                this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getOrderBy());
-                if (searchParameters.isSortOrderProvided()) {
-                    sqlBuilder.append(' ').append(searchParameters.getSortOrder());
-                    this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getSortOrder());
-                }
-            }
-
-            if (searchParameters.isLimited()) {
-                sqlBuilder.append(" ");
-                if (searchParameters.isOffset()) {
-                    sqlBuilder.append(sqlGenerator.limit(searchParameters.getLimit(), searchParameters.getOffset()));
-                } else {
-                    sqlBuilder.append(sqlGenerator.limit(searchParameters.getLimit()));
-                }
             }
 
             String sql = sqlBuilder.toString();
@@ -590,6 +573,53 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             log.warn("retrieveAllUnregistered: {}", e);
             throw new ClientNotFoundException();
         }
+    }
+
+    private static String buildExtraCriteriaForWalletSync(SearchParametersBusiness searchParameters, List<Object> paramList) {
+        String extraCriteria = "";
+
+        if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
+            final LocalDate startPeriod = searchParameters.getFromDate();
+            final LocalDate endPeriod = searchParameters.getToDate();
+            final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
+            if (startPeriod != null && endPeriod != null) {
+                extraCriteria += " and CAST(acv.submittedon_date AS DATE) BETWEEN ? AND ? ";
+                paramList.add(df.format(startPeriod));
+                paramList.add(df.format(endPeriod));
+            } else if (startPeriod != null) {
+                extraCriteria += " and CAST(acv.submittedon_date AS DATE) >= ? ";
+                paramList.add(df.format(startPeriod));
+            } else if (endPeriod != null) {
+                extraCriteria += " and CAST(acv.submittedon_date AS DATE) <= ? ";
+                paramList.add(df.format(endPeriod));
+            }
+        }
+        if (searchParameters.getName() != null) {
+            String clientName = searchParameters.getName();
+            paramList.add(clientName);
+            extraCriteria += "and acv.client_name = ? ";
+        }
+        if (searchParameters.getBvn() != null) {
+            String tin = searchParameters.getBvn();
+            paramList.add(tin);
+            extraCriteria += "and acv.tin = ? ";
+        }
+        if (StringUtils.isNotBlank(extraCriteria)) {
+            extraCriteria = extraCriteria.substring(4);
+        }
+        if (searchParameters.isOrderByRequested()) {
+            String orderBy = searchParameters.getOrderBy();
+            extraCriteria += " order by " + orderBy;
+        }
+        if (searchParameters.isLimited()) {
+            Integer limit = searchParameters.getLimit();
+            extraCriteria += " limit " + limit;
+            if (searchParameters.isOffset()) {
+                Integer offset = searchParameters.getOffset();
+                extraCriteria += " offset " + offset;
+            }
+        }
+        return extraCriteria;
     }
 
     @Override
@@ -791,7 +821,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
     }
 
-    private static final class ClientViewMapper implements RowMapper<ClientData> {
+    private static final class ClientViewMapper implements RowMapper<ClientWalletSyncBusinessData> {
 
         private final String schema;
 
@@ -799,8 +829,8 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             final StringBuilder builder = new StringBuilder(200);
 
             builder.append(
-                    " acv.id as id, acv.display_name as displayName, acv.firstname, acv.middlename, acv.lastname, acv.account_no as accountNo, acv.mobile_no as mobileNo, ");
-            builder.append("acv.email_address as emailAddress, acv.bvn as bvn, acv.nin as nin,  acv.date_of_birth as dateOfBirth ");
+                    " acv.id as id, acv.savings_id as savingsId, acv.display_name as displayName, acv.firstname, acv.middlename, acv.lastname, acv.account_no as accountNo, acv.mobile_no as mobileNo, ");
+            builder.append("acv.email_address as emailAddress, acv.tin, acv.incorp_no as incorpNo,  acv.date_of_birth as dateOfBirth ");
             builder.append("from m_all_clients_view acv ");
             this.schema = builder.toString();
         }
@@ -810,9 +840,10 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
 
         @Override
-        public ClientData mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+        public ClientWalletSyncBusinessData mapRow(final ResultSet rs, final int rowNum) throws SQLException {
 
             final Long id = rs.getLong("id");
+            final Long savingsId = rs.getLong("savingsId");
             final String firstname = rs.getString("firstname");
             final String lastname = rs.getString("lastname");
             final String middlename = rs.getString("middlename");
@@ -820,11 +851,16 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             final LocalDate dateOfBirth = JdbcSupport.getLocalDate(rs, "dateOfBirth");
             final String mobileNo = rs.getString("mobileNo");
             final String emailAddress = rs.getString("emailAddress");
-            final String bvn = rs.getString("bvn");
-            final String nin = rs.getString("nin");
+            final String tin = rs.getString("tin");
+            final String incorpNo = rs.getString("incorpNo");
 
-            return ClientData.clientBasicInfo(id, displayName, firstname, middlename, lastname, dateOfBirth, mobileNo, emailAddress, bvn,
-                    nin);
+            String strDateOfBirth = null;
+            if (dateOfBirth != null) {
+                strDateOfBirth = dateOfBirth.toString();
+            }
+
+            return ClientWalletSyncBusinessData.clientBusinessBasicInfo(id, savingsId, displayName, firstname, middlename, lastname,
+                    strDateOfBirth, mobileNo, emailAddress, tin, incorpNo);
         }
     }
 

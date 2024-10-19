@@ -830,7 +830,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
 
             builder.append(
                     " acv.id as id, acv.savings_id as savingsId, acv.display_name as displayName, acv.firstname, acv.middlename, acv.lastname, acv.account_no as accountNo, acv.mobile_no as mobileNo, ");
-            builder.append("acv.email_address as emailAddress, acv.tin, acv.incorp_no as incorpNo,  acv.date_of_birth as dateOfBirth ");
+            builder.append("acv.email_address as emailAddress, acv.tin, acv.incorp_no as incorpNo,  acv.country_of_reg as countryOfRegistration, acv.date_of_birth as dateOfBirth ");
             builder.append("from m_all_clients_view acv ");
             this.schema = builder.toString();
         }
@@ -853,6 +853,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             final String emailAddress = rs.getString("emailAddress");
             final String tin = rs.getString("tin");
             final String incorpNo = rs.getString("incorpNo");
+            final String countryOfRegistration = rs.getString("countryOfRegistration");
 
             String strDateOfBirth = null;
             if (dateOfBirth != null) {
@@ -860,7 +861,7 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             }
 
             return ClientWalletSyncBusinessData.clientBusinessBasicInfo(id, savingsId, displayName, firstname, middlename, lastname,
-                    strDateOfBirth, mobileNo, emailAddress, tin, incorpNo);
+                    strDateOfBirth, mobileNo, emailAddress, tin, incorpNo, countryOfRegistration);
         }
     }
 

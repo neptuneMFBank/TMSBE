@@ -42,7 +42,8 @@
                 mc.date_of_birth AS date_of_birth,
                 slk.tin,
                 cnp.incorp_no,
-                mc.office_id AS office_id
+                mc.office_id AS office_id,
+                "NIGERIA" AS country_of_reg
             FROM
                 m_client mc
                     LEFT JOIN

@@ -42,12 +42,13 @@ public final class ClientWalletSyncBusinessData implements Comparable<ClientWall
     private final String tin;
     private final String incorpNo;
     private final String dateOfBirth;
+    private final String countryOfRegistration;
 
     public static ClientWalletSyncBusinessData clientBusinessBasicInfo(Long clientId, Long savingsId, String displayName, String firstname,
-            String middlename, String lastname, String dateOfBirth, String mobileNo, String emailAddress, String tin, String incorpNo) {
+            String middlename, String lastname, String dateOfBirth, String mobileNo, String emailAddress, String tin, String incorpNo, String countryOfRegistration) {
 
         return new ClientWalletSyncBusinessData(clientId, savingsId, firstname, middlename, lastname, displayName, emailAddress, mobileNo,
-                tin, incorpNo, dateOfBirth);
+                tin, incorpNo, dateOfBirth, countryOfRegistration);
     }
 
     @Override

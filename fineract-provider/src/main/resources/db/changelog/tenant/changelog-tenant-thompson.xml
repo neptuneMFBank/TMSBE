@@ -24,7 +24,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
     <include file="simplify/0001_portfolio_command_source.xml" relativeToChangelogFile="true"/>
     <include file="simplify/0002_poilitical_exposed_code.xml" relativeToChangelogFile="true"/>
-<!--    <include file="simplify/0003_m_client_view_update.xml" relativeToChangelogFile="true"/>-->
+    <include file="simplify/0003_m_client_view_update.xml" relativeToChangelogFile="true"/>
     <include file="simplify/0004_m_kyc_config.xml" relativeToChangelogFile="true"/>
     <include file="simplify/0005_m_kyc_config_mapping.xml" relativeToChangelogFile="true"/>
     <include file="simplify/0006_m_kyc_config_permission.xml" relativeToChangelogFile="true"/>

@@ -527,7 +527,7 @@ public class ClientsBusinessApiResource {
     }
 
     @GET
-    @Path("/pending")
+    @Path("/pending-ex-sync")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve all Clients pending creation on the cba", description = """

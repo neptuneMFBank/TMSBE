@@ -141,8 +141,8 @@ public enum LoanApprovalStatus {
                     LoanApprovalStatus.DRAFT.getCode(), "Draft");
             case QUEUE -> optionData = new EnumOptionData(LoanApprovalStatus.QUEUE.getValue().longValue(),
                     LoanApprovalStatus.QUEUE.getCode(), "Queue");
-            case UNDO ->
-                optionData = new EnumOptionData(LoanApprovalStatus.UNDO.getValue().longValue(), LoanApprovalStatus.UNDO.getCode(), "Undo");
+            case UNDO -> optionData = new EnumOptionData(LoanApprovalStatus.UNDO.getValue().longValue(), LoanApprovalStatus.UNDO.getCode(),
+                    "Undo");
             case REJECTED -> optionData = new EnumOptionData(LoanApprovalStatus.REJECTED.getValue().longValue(),
                     LoanApprovalStatus.REJECTED.getCode(), "Rejected");
             case APPROVED -> optionData = new EnumOptionData(LoanApprovalStatus.APPROVED.getValue().longValue(),

@@ -229,7 +229,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                 builder.withLoanId(fromLoanAccountId);
             }
 
-            if(transferDetailId != null){
+            if (transferDetailId != null) {
                 builder.withSubEntityId(transferDetailId);
             }
 

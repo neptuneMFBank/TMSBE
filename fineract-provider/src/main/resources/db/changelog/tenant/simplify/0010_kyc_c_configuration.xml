@@ -28,6 +28,6 @@
             VALUES
             (NULL, 'client_level_update', NULL, NULL, NULL, 0, 0, NULL);
         </sql>
-        
+
     </changeSet>
 </databaseChangeLog>

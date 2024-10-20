@@ -94,6 +94,7 @@ import org.apache.fineract.portfolio.savings.SavingsInterestCalculationDaysInYea
 import org.apache.fineract.portfolio.savings.SavingsInterestCalculationType;
 import org.apache.fineract.portfolio.savings.SavingsPeriodFrequencyType;
 import org.apache.fineract.portfolio.savings.SavingsPostingInterestPeriodType;
+import org.apache.fineract.portfolio.savings.api.business.SavingsBusinessApiSetConstants;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -821,5 +822,35 @@ public class DepositAccountDataValidator {
         }
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
 
+    }
+
+    public void validateForWalletSync(final String json) {
+
+        if (StringUtils.isBlank(json)) {
+            throw new InvalidJsonException();
+        }
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, List.of(SavingsBusinessApiSetConstants.dataParamName,
+                SavingsBusinessApiSetConstants.savingsIdParamName, SavingsBusinessApiSetConstants.walletIdParamName));
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+                .resource(SavingsBusinessApiSetConstants.RESOURCE_NAME);
+
+        final JsonArray walletDataList = this.fromApiJsonHelper.extractJsonArrayNamed(SavingsBusinessApiSetConstants.dataParamName,
+                element);
+
+        for (JsonElement walletData : walletDataList) {
+            final Long savingsId = this.fromApiJsonHelper.extractLongNamed(SavingsBusinessApiSetConstants.savingsIdParamName, walletData);
+            baseDataValidator.reset().parameter(SavingsBusinessApiSetConstants.savingsIdParamName).value(savingsId).notNull().notBlank();
+
+            final String walletId = this.fromApiJsonHelper.extractStringNamed(SavingsBusinessApiSetConstants.walletIdParamName, walletData);
+            baseDataValidator.reset().parameter(SavingsBusinessApiSetConstants.walletIdParamName).value(walletId).notBlank();
+        }
+
+        if (!dataValidationErrors.isEmpty()) {
+            throw new PlatformApiDataValidationException(dataValidationErrors);
+        }
     }
 }

@@ -22,6 +22,18 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Collection;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
@@ -37,19 +49,6 @@ import org.apache.fineract.portfolio.savings.service.business.SavingsProductBusi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.POST;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
-import java.util.Collection;
 
 @Path("/savingsproducts/productmix")
 @Component
@@ -69,10 +68,11 @@ public class SavingsProductMixApiResource {
 
     @Autowired
     public SavingsProductMixApiResource(final PlatformSecurityContext context,
-                                        final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
-                                        final ApiRequestParameterHelper apiRequestParameterHelper, final DefaultToApiJsonSerializer<SavingsProductMixData> toApiJsonSerializer,
-                                        final SavingsProductMixReadPlatformService savingsProductMixReadPlatformService,
-                                        final SavingsProductBusinessReadPlatformService savingsProductBusinessReadPlatformService) {
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
+            final ApiRequestParameterHelper apiRequestParameterHelper,
+            final DefaultToApiJsonSerializer<SavingsProductMixData> toApiJsonSerializer,
+            final SavingsProductMixReadPlatformService savingsProductMixReadPlatformService,
+            final SavingsProductBusinessReadPlatformService savingsProductBusinessReadPlatformService) {
         this.context = context;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
@@ -92,7 +92,8 @@ public class SavingsProductMixApiResource {
         SavingsProductMixData productMixData = this.savingsProductMixReadPlatformService.retrieveSavingsProductMixDetails(productId);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        final Collection<SavingsProductData> productOptions = this.savingsProductBusinessReadPlatformService.retrieveAvailableSavingsProductsForMix();
+        final Collection<SavingsProductData> productOptions = this.savingsProductBusinessReadPlatformService
+                .retrieveAvailableSavingsProductsForMix();
         productMixData = SavingsProductMixData.withTemplateOptions(productMixData, productOptions);
         return this.toApiJsonSerializer.serialize(settings, productMixData, SavingsProductMixApiConstants.PRODUCTMIX_DATA_PARAMETERS);
     }
@@ -143,8 +144,7 @@ public class SavingsProductMixApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Savings Products Mixes", description = "Lists Savings Products Mixes\n\n" + "Example Requests:\n" + "\n"
             + "savingsproducts\n" + "\n" + "savingsproducts?fields=name")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK") })
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveAll(@Context final UriInfo uriInfo) {
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
@@ -160,13 +160,13 @@ public class SavingsProductMixApiResource {
     @Operation(summary = "Retrieve Savings Product Mix Template", description = "This is a convenience resource. It can be useful when building maintenance user interface screens for client applications. The template data returned consists of any or all of:\n"
             + "\n" + "Field Defaults\n" + "Allowed description Lists\n" + "Example Request:\n" + "Account Mapping:\n" + "\n"
             + "savingsproducts/template")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK") })
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
     public String retrieveTemplate(@Context final UriInfo uriInfo) {
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
-        final Collection<SavingsProductData> productOptions = this.savingsProductBusinessReadPlatformService.retrieveAvailableSavingsProductsForMix();
+        final Collection<SavingsProductData> productOptions = this.savingsProductBusinessReadPlatformService
+                .retrieveAvailableSavingsProductsForMix();
         final SavingsProductMixData productMixData = SavingsProductMixData.template(productOptions);
         return this.toApiJsonSerializer.serialize(settings, productMixData, SavingsProductMixApiConstants.PRODUCTMIX_DATA_PARAMETERS);
     }

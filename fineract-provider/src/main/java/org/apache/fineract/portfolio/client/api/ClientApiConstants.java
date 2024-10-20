@@ -184,7 +184,6 @@ public class ClientApiConstants {
     public static final String obligeeData = "ObligeeDetails";
 
     public static final String clientEntityName = "clients";
-
     /**
      * These parameters will match the class level parameters of {@link ClientData}. Where possible, we try to get
      * response parameters to match those of request parameters.

@@ -25,6 +25,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.portfolio.savings.api.FixedDepositAccountTransactionsApiResource;
 import org.apache.fineract.portfolio.savings.exception.SavingsAccountNotFoundException;
@@ -34,15 +42,6 @@ import org.apache.fineract.portfolio.self.savings.service.AppuserSavingsMapperRe
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 @Path("/self/fixeddepositaccounts/business")
 @Component
@@ -56,7 +55,10 @@ public class SelfFixedDepositAccountsBusinessApiResource {
     private final FixedDepositAccountTransactionsApiResource fixedDepositAccountTransactionsApiResource;
     private final AppuserSavingsMapperReadService appuserSavingsMapperReadService;
 
-    public SelfFixedDepositAccountsBusinessApiResource(PlatformSecurityContext context, SelfSavingsDataValidator dataValidator, AppuserClientMapperReadService appUserClientMapperReadService, FixedDepositAccountTransactionsApiResource fixedDepositAccountTransactionsApiResource, AppuserSavingsMapperReadService appuserSavingsMapperReadService) {
+    public SelfFixedDepositAccountsBusinessApiResource(PlatformSecurityContext context, SelfSavingsDataValidator dataValidator,
+            AppuserClientMapperReadService appUserClientMapperReadService,
+            FixedDepositAccountTransactionsApiResource fixedDepositAccountTransactionsApiResource,
+            AppuserSavingsMapperReadService appuserSavingsMapperReadService) {
         this.context = context;
         this.dataValidator = dataValidator;
         this.appUserClientMapperReadService = appUserClientMapperReadService;
@@ -73,8 +75,8 @@ public class SelfFixedDepositAccountsBusinessApiResource {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = SelfFixedDepositAccountsBusinessApiResourceSwagger.GetSelfFixedDepositAccountsFixedDepositAccountIdTransactionsTransactionIdResponse.class))) })
     public String retrieveFixedDepositTransaction(@PathParam("accountId") @Parameter(description = "accountId") final Long accountId,
-                                                  @PathParam("transactionId") @Parameter(description = "transactionId") final Long transactionId,
-                                                  @Context final UriInfo uriInfo) {
+            @PathParam("transactionId") @Parameter(description = "transactionId") final Long transactionId,
+            @Context final UriInfo uriInfo) {
 
         this.dataValidator.validateRetrieveSavingsTransaction(uriInfo);
 

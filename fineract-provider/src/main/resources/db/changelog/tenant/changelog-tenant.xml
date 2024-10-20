@@ -123,7 +123,7 @@
     <include file="parts/0106_m_agreement_form_code.sql" relativeToChangelogFile="true" />
     <include file="parts/0107_enable_user_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0108_disable_user_permission.sql" relativeToChangelogFile="true" />
-    <!-- <include file="parts/0109_payment_detail_receipt_unique.sql" relativeToChangelogFile="true" /> -->
+     <include file="parts/0109_payment_detail_receipt_unique.sql" relativeToChangelogFile="true" />
     <include file="parts/0110_m_submit_loan_approval_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0111_update_commmand_as_json.sql" relativeToChangelogFile="true" />
     <include file="parts/0112_m_product_loan_payment_type_config.sql" relativeToChangelogFile="true" />
@@ -211,11 +211,11 @@
     <include file="parts/0178_m_alter_role_product_approval_loan.sql" relativeToChangelogFile="true" />
     <include file="parts/0179_m_alter_role_product_approval_savings.sql" relativeToChangelogFile="true" />
     <include file="parts/0180_calculate_commission.sql" relativeToChangelogFile="true" />
-    <!-- <include file="parts/0181_alter_charge_payment_type.sql" relativeToChangelogFile="true" /> -->
+     <include file="parts/0181_alter_charge_payment_type.sql" relativeToChangelogFile="true" />
     <include file="parts/0182_m_permission_checker_update.xml" relativeToChangelogFile="true" />
-    <!-- <include file="parts/0183_m_create_recon_savings_product.sql" relativeToChangelogFile="true" /> -->
+     <include file="parts/0183_m_create_recon_savings_product.sql" relativeToChangelogFile="true" />
     <include file="parts/0184_m_alter_payment_type_grid.sql" relativeToChangelogFile="true" />
-    <!-- <include file="parts/0185_m_alter_charge.sql" relativeToChangelogFile="true" /> -->
+     <include file="parts/0185_m_alter_charge.sql" relativeToChangelogFile="true" />
     <include file="parts/0417_create_m_paymenttype_grid_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0418_update_m_paymenttype_grid_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0419_delete_m_paymenttype_grid_permission.sql" relativeToChangelogFile="true" />
@@ -234,7 +234,7 @@
     <include file="parts/0188_m_commission_vend.sql" relativeToChangelogFile="true" />
     <include file="parts/0189_job_commission_vend.sql" relativeToChangelogFile="true" />
     <include file="parts/0186_m_permission_menu_detail.xml" relativeToChangelogFile="true" />
-    <!-- <include file="parts/0186_m_permission_m.xml" relativeToChangelogFile="true" /> -->
+<!--     <include file="parts/0186_m_permission_m.xml" relativeToChangelogFile="true" />-->
     <include file="parts/0425_create_m_accounttier_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0426_update_m_accounttier_permission.sql" relativeToChangelogFile="true" />
     <include file="parts/0427_delete_m_accounttier_permission.sql" relativeToChangelogFile="true" />

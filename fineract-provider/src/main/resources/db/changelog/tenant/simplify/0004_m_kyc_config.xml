@@ -82,4 +82,3 @@
                                  onUpdate="RESTRICT"/>
     </changeSet>
 </databaseChangeLog>
-

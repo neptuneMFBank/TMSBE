@@ -32,11 +32,16 @@ import java.util.Set;
 
 public class SavingsBusinessApiSetConstants {
 
+    public static final String RESOURCE_NAME = "savingsaccount";
     public static final String COMMAND_UNDO_BULK_TRANSACTION = "undoBulk";
 
     public static final String startPeriodParameterName = "startPeriod";
     public static final String endPeriodParameterName = "endPeriod";
     public static final String refNoParamName = "refNo";
+
+    public static final String dataParamName = "data";
+    public static final String savingsIdParamName = "savingsId";
+    public static final String walletIdParamName = "walletId";
 
     protected static final Set<String> SAVINGS_TRANSACTION_RESPONSE_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(idParamName, "accountId", accountNoParamName, "currency", "amount", dateParamName, paymentDetailDataParamName,

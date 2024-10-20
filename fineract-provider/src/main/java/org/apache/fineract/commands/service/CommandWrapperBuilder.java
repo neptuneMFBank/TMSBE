@@ -4055,6 +4055,7 @@ public class CommandWrapperBuilder {
         this.href = "/kycconfig/" + kycConfigId;
         return this;
     }
+
     public CommandWrapperBuilder deleteKycConfig(final Long kycConfigId) {
         this.actionName = "DELETE";
         this.entityName = "KYCCONFIG";
@@ -4067,7 +4068,14 @@ public class CommandWrapperBuilder {
         this.actionName = "UPDATEKYC";
         this.entityName = "CLIENT";
         this.entityId = clientId;
-        this.href = "/cdl/client/" + clientId+"/kyc";
+        this.href = "/cdl/client/" + clientId + "/kyc";
+        return this;
+    }
+
+    public CommandWrapperBuilder syncSavingsAccounts() {
+        this.actionName = "BULK_SYNC_WALLETS";
+        this.entityName = "SAVINGSACCOUNT";
+        this.href = "/deposits/bulk-wallet-sync";
         return this;
     }
 

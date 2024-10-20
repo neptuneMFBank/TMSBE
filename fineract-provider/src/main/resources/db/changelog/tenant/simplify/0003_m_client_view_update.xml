@@ -23,7 +23,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
     <changeSet author="fineract" id="3">
-        
+
         <createView fullDefinition="false"
                     replaceIfExists="true"
                     viewName="m_client_view">
@@ -39,26 +39,25 @@
             `mc`.`email_address` AS `email_address`,
             `mc`.`legal_form_enum` AS `legal_form_enum`,
             `slk`.`bvn` AS `bvn`,
-            
+
             `slk`.`nin` AS `nin`,
             `mc`.`firstname` AS `firstname`,
-            `mc`.`lastname` AS `lastname`,   
+            `mc`.`lastname` AS `lastname`,
             `mc`.`date_of_birth` AS `date_of_birth`,
             `mckc`.`has_identification` AS `has_identification`,
-            
+
             `mc`.`client_type_cv_id` AS `client_type_cv_id`,
             `mc`.`client_classification_cv_id` AS `client_classification_cv_id`,
             `mc`.`submittedon_date` AS `submittedon_date`,
             `mc`.`created_by` AS `created_by`,
             `mc`.`status_enum` AS `status_enum`,
             `mc`.`office_id` AS `office_id`,
-            `mc`.`transfer_to_office_id` AS `transfer_to_office_id` 
+            `mc`.`transfer_to_office_id` AS `transfer_to_office_id`
             from (`m_client` `mc`
             left join `secondLevelKYC` `slk` on((`slk`.`client_id` = `mc`.`id`))
             left join `m_client_kyc_checkers` `mckc` on((`mckc`.`client_id` = `mc`.`id`))
-            ) 
+            )
             order by `mc`.`id` desc
         </createView>
     </changeSet>
 </databaseChangeLog>
-

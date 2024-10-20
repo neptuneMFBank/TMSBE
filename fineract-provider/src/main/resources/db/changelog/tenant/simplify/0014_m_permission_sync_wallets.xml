@@ -19,19 +19,24 @@
     under the License.
 
 -->
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
-    <changeSet author="fineract" id="11">
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-        <!-- Insert into m_permission table -->
+    <changeSet id="0014" author="fineract">
+        <!-- Modify the can_maker_checker column to TINYINT -->
+        <modifyDataType tableName="m_permission" columnName="can_maker_checker" newDataType="TINYINT"/>
+
+        <!-- Insert a new record into m_permission -->
         <insert tableName="m_permission">
             <column name="grouping" value="portfolio"/>
-            <column name="code" value="ALLOW_READ_LOANPRODUCT_VISIBILITY"/>
-            <column name="entity_name" value="LOANPRODUCT_VISIBILITY"/>
-            <column name="action_name" value="ALLOW_READ"/>
-            <column name="can_maker_checker" valueBoolean="false"/>
+            <column name="code" value="BULK_SYNC_WALLETS_SAVINGSACCOUNT"/>
+            <column name="entity_name" value="SAVINGSACCOUNT"/>
+            <column name="action_name" value="BULK_SYNC_WALLETS"/>
+            <column name="can_maker_checker" value="0"/>
         </insert>
-
     </changeSet>
 </databaseChangeLog>
+

@@ -22,16 +22,19 @@ import static org.apache.fineract.portfolio.savings.DepositsApiConstants.isCalen
 import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyParamName;
 import static org.apache.fineract.portfolio.savings.DepositsApiConstants.recurringFrequencyTypeParamName;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
@@ -59,6 +62,7 @@ import org.apache.fineract.portfolio.group.domain.GroupRepository;
 import org.apache.fineract.portfolio.note.domain.Note;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
+import org.apache.fineract.portfolio.savings.api.business.SavingsBusinessApiSetConstants;
 import org.apache.fineract.portfolio.savings.data.DepositAccountDataValidator;
 import org.apache.fineract.portfolio.savings.domain.DepositAccountAssembler;
 import org.apache.fineract.portfolio.savings.domain.FixedDepositAccount;
@@ -110,6 +114,7 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
     private final DepositApplicationProcessWritePlatformService depositApplicationProcessWritePlatformService;
     private final SavingsAccountWritePlatformService savingsAccountWritePlatformService;
     private final SavingsAccountTransactionRepository savingsAccountTransactionRepository;
+    private final SavingsAccountRepositoryWrapper savingsRepositoryWrapper;
 
     @Autowired
     public DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -127,7 +132,8 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
             final BusinessEventNotifierService businessEventNotifierService,
             final DepositApplicationProcessWritePlatformService depositApplicationProcessWritePlatformService,
             final SavingsAccountWritePlatformService savingsAccountWritePlatformService,
-            final SavingsAccountTransactionRepository savingsAccountTransactionRepository) {
+            final SavingsAccountTransactionRepository savingsAccountTransactionRepository,
+            final SavingsAccountRepositoryWrapper savingsRepositoryWrapper) {
         this.context = context;
         this.savingAccountRepository = savingAccountRepository;
         this.depositAccountAssembler = depositAccountAssembler;
@@ -150,6 +156,7 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
         this.depositApplicationProcessWritePlatformService = depositApplicationProcessWritePlatformService;
         this.savingsAccountWritePlatformService = savingsAccountWritePlatformService;
         this.savingsAccountTransactionRepository = savingsAccountTransactionRepository;
+        this.savingsRepositoryWrapper = savingsRepositoryWrapper;
     }
 
     private CalendarInstance getCalendarInstance(final JsonCommand command, RecurringDepositAccount account) {
@@ -410,4 +417,38 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
                 .build();
     }
 
+    @Override
+    public CommandProcessingResult bulkSyncWithExternalWallet(JsonCommand command) {
+        this.context.authenticatedUser();
+
+        String json = command.json();
+        this.depositAccountDataValidator.validateForWalletSync(json);
+
+        final JsonElement element = this.fromJsonHelper.parse(json);
+
+        final JsonArray walletDataList = this.fromJsonHelper.extractJsonArrayNamed(SavingsBusinessApiSetConstants.dataParamName, element);
+
+        List<SavingsAccount> savingsAccountList = new ArrayList<>();
+        for (JsonElement walletData : walletDataList) {
+            Long savingsId = this.fromJsonHelper.extractLongNamed(SavingsBusinessApiSetConstants.savingsIdParamName, walletData);
+            String walletId = this.fromJsonHelper.extractStringNamed(SavingsBusinessApiSetConstants.walletIdParamName, walletData);
+
+            SavingsAccount savingsAccount = savingsRepositoryWrapper.findSavingsWithNotFoundDetection(savingsId, false);
+
+            if (savingsAccount.getExternalId() == null || StringUtils.isEmpty(savingsAccount.getExternalId())) {
+                savingsAccount.setExternalId(walletId);
+                savingsAccountList.add(savingsAccount);
+            } else {
+                LOG.warn("Savings Account already has a sync walletId: {}, provided sync walletId {}", savingsAccount.getExternalId(),
+                        walletId);
+            }
+        }
+        try {
+            savingsRepositoryWrapper.saveAll(savingsAccountList);
+        } catch (Exception ex) {
+            LOG.error("Request not completed, an error has occurred, ex: {}", ex.getMessage());
+            throw new GeneralPlatformDomainRuleException("403", "Could not complete request", ex.getMessage());
+        }
+        return new CommandProcessingResultBuilder().withRequestResponse("Accounts Sync Successful").build();
+    }
 }

@@ -66,6 +66,7 @@ import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPl
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
+import org.apache.fineract.portfolio.client.data.business.ClientWalletSyncBusinessData;
 import org.apache.fineract.portfolio.client.data.business.KycBusinessData;
 import org.apache.fineract.portfolio.client.service.business.ClientBusinessReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.api.business.LoanBusinessApiConstants;
@@ -88,6 +89,7 @@ public class ClientsBusinessApiResource {
     private final PlatformSecurityContext context;
     private final ClientBusinessReadPlatformService clientBusinessReadPlatformService;
     private final ToApiJsonSerializer<ClientData> toApiJsonSerializer;
+    private final ToApiJsonSerializer<ClientWalletSyncBusinessData> toWalletSyncBusinessApiJsonSerializer;
     private final ToApiJsonSerializer<ClientBusinessData> toBusinessApiJsonSerializer;
     private final ToApiJsonSerializer<KycBusinessData> toKycBusinessApiJsonSerializer;
     private final ToApiJsonSerializer<AccountSummaryCollectionData> clientAccountSummaryToApiJsonSerializer;
@@ -506,7 +508,7 @@ public class ClientsBusinessApiResource {
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.clientAccountBalanceSummary.serialize(settings, clientTransactions, CLIENT_TRANSACTION_DATA_PARAMETERS);
     }
-    
+
     @PUT
     @Path("{clientId}/kyc")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -522,5 +524,43 @@ public class ClientsBusinessApiResource {
 
         return this.toApiJsonSerializer.serialize(result);
 
+    }
+
+    @GET
+    @Path("/pending-ex-sync")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve all Clients pending creation on the cba", description = """
+            Example Requests:""")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK") })
+    public String getClientsForExternalWalletSync(
+            @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
+            @QueryParam("tin") @Parameter(description = "tin") final String tin,
+            @QueryParam("offset") @Parameter(description = "offset") final Integer offset,
+            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @QueryParam("startPeriod") @Parameter(description = "startPeriod") final DateParam startPeriod,
+            @QueryParam("endPeriod") @Parameter(description = "endPeriod") final DateParam endPeriod,
+            @DefaultValue("en") @QueryParam("locale") final String locale,
+            @DefaultValue("yyyy-MM-dd") @QueryParam("dateFormat") final String dateFormat, @Context final UriInfo uriInfo) {
+        this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+
+        LocalDate fromDate = null;
+        if (startPeriod != null) {
+            fromDate = startPeriod.getDate(LoanBusinessApiConstants.startPeriodParameterName, dateFormat, locale);
+        }
+        LocalDate toDate = null;
+        if (endPeriod != null) {
+            toDate = endPeriod.getDate(LoanBusinessApiConstants.endPeriodParameterName, dateFormat, locale);
+        }
+
+        final SearchParametersBusiness searchParameters = SearchParametersBusiness.forClientPendingActivation(fromDate, toDate, null, null,
+                null, tin, displayName, null, offset, limit, null, null);
+
+        Page<ClientWalletSyncBusinessData> clientData = this.clientBusinessReadPlatformService
+                .getClientsForExternalWalletSync(searchParameters);
+
+        return this.toWalletSyncBusinessApiJsonSerializer.serialize(settings, clientData);
     }
 }

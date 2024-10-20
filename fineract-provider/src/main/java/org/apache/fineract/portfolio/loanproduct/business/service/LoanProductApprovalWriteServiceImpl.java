@@ -140,13 +140,14 @@ public class LoanProductApprovalWriteServiceImpl implements LoanProductApprovalW
         final JsonElement element = this.fromApiJsonHelper.parse(command.json());
         final String name = this.fromApiJsonHelper.extractStringNamed(LoanProductApprovalApiResourceConstants.NAME, element);
         boolean noLoansSavingsSelected = true;
-        LoanProduct loanProduct =null;
+        LoanProduct loanProduct = null;
         if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, element)) {
-            final Long loanProductId = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID, element);
-             loanProduct = this.loanProductRepositoryWrapper.findOneWithNotFoundDetection(loanProductId);
+            final Long loanProductId = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.LOANPRODUCTID,
+                    element);
+            loanProduct = this.loanProductRepositoryWrapper.findOneWithNotFoundDetection(loanProductId);
             noLoansSavingsSelected = false;
         }
-        SavingsProduct savingsProduct=null;
+        SavingsProduct savingsProduct = null;
         if (this.fromApiJsonHelper.parameterExists(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID, element)) {
             final Long savingsProductId = this.fromApiJsonHelper.extractLongNamed(LoanProductApprovalApiResourceConstants.SAVINGSPRODUCTID,
                     element);

@@ -18,13 +18,13 @@
  */
 package org.apache.fineract.portfolio.client.service.business;
 
-import com.google.common.base.Splitter;
 import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.amountParameterName;
 import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.countParameterName;
 import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.ledgerAmountParameterName;
 import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.statusParameterName;
 import static org.apache.fineract.portfolio.client.data.business.ClientBusinessApiCollectionConstants.totalOverdueDerivedParameterName;
 
+import com.google.common.base.Splitter;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.math.BigDecimal;
@@ -85,6 +85,7 @@ import org.apache.fineract.portfolio.client.data.ClientNonPersonData;
 import org.apache.fineract.portfolio.client.data.ClientTimelineData;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessData;
 import org.apache.fineract.portfolio.client.data.business.ClientBusinessDataValidator;
+import org.apache.fineract.portfolio.client.data.business.ClientWalletSyncBusinessData;
 import org.apache.fineract.portfolio.client.data.business.KycBusinessData;
 import org.apache.fineract.portfolio.client.domain.ClientEnumerations;
 import org.apache.fineract.portfolio.client.domain.ClientStatus;
@@ -545,6 +546,83 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
     }
 
     @Override
+    public Page<ClientWalletSyncBusinessData> getClientsForExternalWalletSync(SearchParametersBusiness searchParameters) {
+        this.context.authenticatedUser();
+        try {
+
+            ClientViewMapper cvMapper = new ClientViewMapper();
+            final StringBuilder sqlBuilder = new StringBuilder(200);
+            sqlBuilder.append("select ");
+            sqlBuilder.append(sqlGenerator.calcFoundRows());
+            sqlBuilder.append(cvMapper.schema());
+
+            List<Object> paramList = new ArrayList<>();
+
+            final String extraCriteria = buildExtraCriteriaForWalletSync(searchParameters, paramList);
+
+            if (StringUtils.isNotBlank(extraCriteria)) {
+                sqlBuilder.append(" where ").append(extraCriteria);
+            }
+
+            String sql = sqlBuilder.toString();
+            log.info("retrieveAllUnregistered: {}", sql);
+
+            return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), paramList.toArray(), cvMapper);
+
+        } catch (Exception e) {
+            log.warn("retrieveAllUnregistered: {}", e);
+            throw new ClientNotFoundException();
+        }
+    }
+
+    private static String buildExtraCriteriaForWalletSync(SearchParametersBusiness searchParameters, List<Object> paramList) {
+        String extraCriteria = "";
+
+        if (searchParameters.isFromDatePassed() || searchParameters.isToDatePassed()) {
+            final LocalDate startPeriod = searchParameters.getFromDate();
+            final LocalDate endPeriod = searchParameters.getToDate();
+            final DateTimeFormatter df = DateUtils.DEFAULT_DATE_FORMATER;
+            if (startPeriod != null && endPeriod != null) {
+                extraCriteria += " and CAST(acv.submittedon_date AS DATE) BETWEEN ? AND ? ";
+                paramList.add(df.format(startPeriod));
+                paramList.add(df.format(endPeriod));
+            } else if (startPeriod != null) {
+                extraCriteria += " and CAST(acv.submittedon_date AS DATE) >= ? ";
+                paramList.add(df.format(startPeriod));
+            } else if (endPeriod != null) {
+                extraCriteria += " and CAST(acv.submittedon_date AS DATE) <= ? ";
+                paramList.add(df.format(endPeriod));
+            }
+        }
+        if (searchParameters.getName() != null) {
+            String clientName = searchParameters.getName();
+            paramList.add(clientName);
+            extraCriteria += "and acv.client_name = ? ";
+        }
+        if (searchParameters.getBvn() != null) {
+            String tin = searchParameters.getBvn();
+            paramList.add(tin);
+            extraCriteria += "and acv.tin = ? ";
+        }
+        if (StringUtils.isNotBlank(extraCriteria)) {
+            extraCriteria = extraCriteria.substring(4);
+        }
+        if (searchParameters.isOrderByRequested()) {
+            String orderBy = searchParameters.getOrderBy();
+            extraCriteria += " order by " + orderBy;
+        }
+        if (searchParameters.isLimited()) {
+            Integer limit = searchParameters.getLimit();
+            extraCriteria += " limit " + limit;
+            if (searchParameters.isOffset()) {
+                Integer offset = searchParameters.getOffset();
+                extraCriteria += " offset " + offset;
+            }
+        }
+        return extraCriteria;
+    }
+
+    @Override
     public JsonObject retrieveBalance(Long clientId) {
         this.context.authenticatedUser();
         final JsonObject jsonObjectBalance = new JsonObject();
@@ -743,6 +821,50 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         }
     }
 
+    private static final class ClientViewMapper implements RowMapper<ClientWalletSyncBusinessData> {
+
+        private final String schema;
+
+        ClientViewMapper() {
+            final StringBuilder builder = new StringBuilder(200);
+
+            builder.append(
+                    " acv.id as id, acv.savings_id as savingsId, acv.display_name as displayName, acv.firstname, acv.middlename, acv.lastname, acv.account_no as accountNo, acv.mobile_no as mobileNo, ");
+            builder.append("acv.email_address as emailAddress, acv.tin, acv.incorp_no as incorpNo,  acv.country_of_reg as countryOfRegistration, acv.date_of_birth as dateOfBirth ");
+            builder.append("from m_all_clients_view acv ");
+            this.schema = builder.toString();
+        }
+
+        public String schema() {
+            return this.schema;
+        }
+
+        @Override
+        public ClientWalletSyncBusinessData mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final Long savingsId = rs.getLong("savingsId");
+            final String firstname = rs.getString("firstname");
+            final String lastname = rs.getString("lastname");
+            final String middlename = rs.getString("middlename");
+            final String displayName = rs.getString("displayName");
+            final LocalDate dateOfBirth = JdbcSupport.getLocalDate(rs, "dateOfBirth");
+            final String mobileNo = rs.getString("mobileNo");
+            final String emailAddress = rs.getString("emailAddress");
+            final String tin = rs.getString("tin");
+            final String incorpNo = rs.getString("incorpNo");
+            final String countryOfRegistration = rs.getString("countryOfRegistration");
+
+            String strDateOfBirth = null;
+            if (dateOfBirth != null) {
+                strDateOfBirth = dateOfBirth.toString();
+            }
+
+            return ClientWalletSyncBusinessData.clientBusinessBasicInfo(id, savingsId, displayName, firstname, middlename, lastname,
+                    strDateOfBirth, mobileNo, emailAddress, tin, incorpNo, countryOfRegistration);
+        }
+    }
+
     private static final class ClientMapper implements RowMapper<ClientData> {
 
         private final String schema;
@@ -768,7 +890,6 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
             sqlBuilder.append("c.bvn as bvn, ");
             sqlBuilder.append("c.nin as nin, ");
             sqlBuilder.append("c.has_identification as has_identification, ");
-         
 
             sqlBuilder.append("c.submittedon_date as submittedOnDate, ");
             sqlBuilder.append("sbu.username as submittedByUsername ");
@@ -1356,36 +1477,34 @@ public class ClientBusinessReadPlatformServiceImpl implements ClientBusinessRead
         return jsonObjectBalance;
     }
 
-  @Override
+    @Override
     public ClientData retrieveOneBasedOnKYCConfig(final Long clientId, final List<String> paramNameList) {
         String whereClause = "where c.id = ? ";
 
-      try {
-          if (!paramNameList.isEmpty()) {
-              whereClause += "and ";
-              for (String paramName : paramNameList) {
-                  if (paramName.startsWith("is")) {
-                      whereClause += " c." + paramName + " is true and";
-                  }
-                  else if (paramName.startsWith("has")) {
-                      whereClause += " c." + paramName + " = \'1\' and";
-                  }
-                  else if (paramName.contains("/")) {
-                      List<String> parts = Splitter.on('/').splitToList(paramName);
-                      whereClause += !parts.isEmpty() ? "( " : "";
-                      for (String part : parts) {
-                          whereClause += " c." + part + " is not null or";
-                      }
-                      whereClause = !parts.isEmpty() ? whereClause.substring(0, whereClause.length() - 2) : whereClause;
-                      whereClause += !parts.isEmpty() ? " ) and" : " and";
+        try {
+            if (!paramNameList.isEmpty()) {
+                whereClause += "and ";
+                for (String paramName : paramNameList) {
+                    if (paramName.startsWith("is")) {
+                        whereClause += " c." + paramName + " is true and";
+                    } else if (paramName.startsWith("has")) {
+                        whereClause += " c." + paramName + " = \'1\' and";
+                    } else if (paramName.contains("/")) {
+                        List<String> parts = Splitter.on('/').splitToList(paramName);
+                        whereClause += !parts.isEmpty() ? "( " : "";
+                        for (String part : parts) {
+                            whereClause += " c." + part + " is not null or";
+                        }
+                        whereClause = !parts.isEmpty() ? whereClause.substring(0, whereClause.length() - 2) : whereClause;
+                        whereClause += !parts.isEmpty() ? " ) and" : " and";
 
-                  } else {
-                      whereClause += " c." + paramName + " is not null and";
-                  }
-              }
-              whereClause = whereClause.substring(0, whereClause.length() - 3);
-          }
-          this.context.authenticatedUser();
+                    } else {
+                        whereClause += " c." + paramName + " is not null and";
+                    }
+                }
+                whereClause = whereClause.substring(0, whereClause.length() - 3);
+            }
+            this.context.authenticatedUser();
             final String sql = "select " + this.clientMapper.schema() + whereClause;
 
             return this.jdbcTemplate.queryForObject(sql, this.clientMapper, clientId);

@@ -28,11 +28,11 @@
             ("politicallyExposedOptions", true);
         </sql>
         <sql>
-            INSERT INTO `m_code_value` (`code_id`, `code_value`, `code_description`, `order_position`, `code_score`, `is_active`, `is_mandatory`) 
+            INSERT INTO `m_code_value` (`code_id`, `code_value`, `code_description`, `order_position`, `code_score`, `is_active`, `is_mandatory`)
             VALUES ((SELECT `id` FROM `m_code` mc WHERE mc.code_name = "politicallyExposedOptions" AND is_system_defined), 'I am politically Exposed', 'I am politically Exposed', 0, NULL, 1, 0);
         </sql>
         <sql>
-            INSERT INTO `m_code_value` (`code_id`, `code_value`, `code_description`, `order_position`, `code_score`, `is_active`, `is_mandatory`) 
+            INSERT INTO `m_code_value` (`code_id`, `code_value`, `code_description`, `order_position`, `code_score`, `is_active`, `is_mandatory`)
             VALUES ((SELECT `id` FROM `m_code` mc WHERE mc.code_name = "politicallyExposedOptions" AND is_system_defined), 'I am related to a politically Exposed person', 'I am related to a politically Exposed person', 1, NULL, 1, 0);
         </sql>
     </changeSet>

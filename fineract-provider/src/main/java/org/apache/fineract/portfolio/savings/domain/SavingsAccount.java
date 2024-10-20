@@ -3957,6 +3957,10 @@ public class SavingsAccount extends AbstractPersistableCustom {
         return this.minBalanceForInterestCalculation;
     }
 
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
     public int getVersion() {
         return this.version;
     }

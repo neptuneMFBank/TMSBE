@@ -73,8 +73,7 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
             String sql;
             final PortfolioAccountType accountType = PortfolioAccountType.fromInt(accountTypeId);
             switch (accountType) {
-                case INVALID -> {
-                }
+                case INVALID -> {}
                 case LOAN -> {
                     sql = "select " + this.loanAccountMapper.schema() + " where la.account_no = ? ";
                     if (!CollectionUtils.isEmpty(statuses)) {

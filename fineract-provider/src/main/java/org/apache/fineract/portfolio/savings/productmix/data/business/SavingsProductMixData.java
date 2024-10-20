@@ -18,9 +18,8 @@
  */
 package org.apache.fineract.portfolio.savings.productmix.data.business;
 
-import org.apache.fineract.portfolio.savings.data.SavingsProductData;
-
 import java.util.Collection;
+import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 
 public class SavingsProductMixData {
 
@@ -31,7 +30,8 @@ public class SavingsProductMixData {
     @SuppressWarnings("unused")
     private final Collection<SavingsProductData> productOptions;
 
-    public SavingsProductMixData(Long productId, String productName, Collection<SavingsProductData> restrictedProducts, Collection<SavingsProductData> allowedProducts, Collection<SavingsProductData> productOptions) {
+    public SavingsProductMixData(Long productId, String productName, Collection<SavingsProductData> restrictedProducts,
+            Collection<SavingsProductData> allowedProducts, Collection<SavingsProductData> productOptions) {
         this.productId = productId;
         this.productName = productName;
         this.restrictedProducts = restrictedProducts;
@@ -44,18 +44,18 @@ public class SavingsProductMixData {
     }
 
     public static SavingsProductMixData withTemplateOptions(final SavingsProductMixData productMixData,
-                                                     final Collection<SavingsProductData> productOptions) {
+            final Collection<SavingsProductData> productOptions) {
         return new SavingsProductMixData(productMixData.productId, productMixData.productName, productMixData.restrictedProducts,
                 productMixData.allowedProducts, productOptions);
     }
 
     public static SavingsProductMixData withDetails(final Long productId, final String productName,
-                                             final Collection<SavingsProductData> restrictedProducts, final Collection<SavingsProductData> allowedProducts) {
+            final Collection<SavingsProductData> restrictedProducts, final Collection<SavingsProductData> allowedProducts) {
         return new SavingsProductMixData(productId, productName, restrictedProducts, allowedProducts, null);
     }
 
     public static SavingsProductMixData withRestrictedOptions(final Collection<SavingsProductData> restrictedProducts,
-                                                       final Collection<SavingsProductData> allowedProducts) {
+            final Collection<SavingsProductData> allowedProducts) {
         return new SavingsProductMixData(null, null, restrictedProducts, allowedProducts, null);
     }
 

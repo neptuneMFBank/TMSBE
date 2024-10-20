@@ -153,6 +153,10 @@ public class SavingsAccountRepositoryWrapper {
         return this.repository.save(account);
     }
 
+    public List<SavingsAccount> saveAll(final List<SavingsAccount> savingAccountList) {
+        return this.repository.saveAll(savingAccountList);
+    }
+
     public void delete(final SavingsAccount account) {
         this.repository.delete(account);
     }

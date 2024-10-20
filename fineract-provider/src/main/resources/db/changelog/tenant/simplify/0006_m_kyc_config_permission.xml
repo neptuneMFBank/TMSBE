@@ -24,7 +24,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
     <changeSet author="fineract" id="6">
         <!-- Insert into m_code table -->
-        
+
         <insert tableName="m_code">
             <column name="code_name" value="kycParam"/>
             <column name="is_system_defined" valueBoolean="true" />
@@ -69,4 +69,3 @@
 
     </changeSet>
 </databaseChangeLog>
-

@@ -24,6 +24,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -205,7 +207,7 @@ public class DepositsBusinessApiResource {
         CommandProcessingResult result = null;
         String templateJson;
 
-        if (is(commandParam, "savings") || is(commandParam, "fixed") || is(commandParam, "recurring")){
+        if (is(commandParam, "savings") || is(commandParam, "fixed") || is(commandParam, "recurring")) {
             final JsonElement parsedQuery = this.fromApiJsonHelper.parse(apiRequestBodyAsJson);
 
             final Long productId = this.fromApiJsonHelper.extractLongNamed("productId", parsedQuery);
@@ -278,7 +280,7 @@ public class DepositsBusinessApiResource {
         CommandWrapper commandRequest;
         CommandProcessingResult result = null;
         String templateJson;
-        if (is(commandParam, "savings") || is(commandParam, "fixed") || is(commandParam, "recurring")){
+        if (is(commandParam, "savings") || is(commandParam, "fixed") || is(commandParam, "recurring")) {
             final JsonElement parsedQuery = this.fromApiJsonHelper.parse(apiRequestBodyAsJson);
 
             final Long productId = this.fromApiJsonHelper.extractLongNamed("productId", parsedQuery);
@@ -464,4 +466,19 @@ public class DepositsBusinessApiResource {
         return this.toApiJsonSerializer.serialize(result);
     }
 
+    @PUT
+    @Path("bulk-wallet-sync")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Update a client Savings Account ", description = "Updates a client Savings account after being created on the neptune cba")
+    @RequestBody(required = true, content = @Content(schema = @Schema()))
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema())) })
+    public String syncSavingsAccounts(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().syncSavingsAccounts().withJson(apiRequestBodyAsJson).build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
 }

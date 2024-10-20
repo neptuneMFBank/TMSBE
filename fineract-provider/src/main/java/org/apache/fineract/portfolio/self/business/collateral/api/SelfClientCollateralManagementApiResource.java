@@ -57,21 +57,18 @@ public class SelfClientCollateralManagementApiResource {
     private final AppuserClientMapperReadService appUserClientMapperReadService;
     private final ClientCollateralManagementApiResource clientCollateralManagementApiResource;
 
-    public SelfClientCollateralManagementApiResource(
-            final AppuserClientMapperReadService appUserClientMapperReadService,
-            final ClientCollateralManagementApiResource clientCollateralManagementApiResource,
-            final PlatformSecurityContext context) {
+    public SelfClientCollateralManagementApiResource(final AppuserClientMapperReadService appUserClientMapperReadService,
+            final ClientCollateralManagementApiResource clientCollateralManagementApiResource, final PlatformSecurityContext context) {
         this.context = context;
         this.appUserClientMapperReadService = appUserClientMapperReadService;
         this.clientCollateralManagementApiResource = clientCollateralManagementApiResource;
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get Clients Collateral Products", description = "Get Collateral Product of a Client")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema())))})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema()))) })
     public String getClientCollateral(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Context final UriInfo uriInfo, @QueryParam("prodId") @Parameter(description = "prodId") final Long prodId) {
         validateAppuserClientsMapping(clientId);
@@ -81,11 +78,10 @@ public class SelfClientCollateralManagementApiResource {
 
     @GET
     @Path("{clientCollateralId}")
-    @Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get Client Collateral Data", description = "Get Client Collateral Data")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema())))})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema()))) })
     public String getClientCollateralData(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @PathParam("clientCollateralId") @Parameter(description = "clientCollateralId") final Long collateralId) {
 
@@ -95,11 +91,10 @@ public class SelfClientCollateralManagementApiResource {
 
     @GET
     @Path("template")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get Client Collateral Template", description = "Get Client Collateral Template")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema())))})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema()))) })
     public String getClientCollateralTemplate(@Context final UriInfo uriInfo,
             @PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
         validateAppuserClientsMapping(clientId);
@@ -107,12 +102,11 @@ public class SelfClientCollateralManagementApiResource {
     }
 
     @POST
-    @Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Add New Collateral For a Client", description = "Add New Collateral For a Client")
     @RequestBody(required = true, content = @Content(schema = @Schema()))
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema())))})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema()))) })
     public String addCollateral(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @Parameter(hidden = true) String apiJsonRequestBody) {
         validateAppuserClientsMapping(clientId);
@@ -122,12 +116,11 @@ public class SelfClientCollateralManagementApiResource {
 
     @PUT
     @Path("{collateralId}")
-    @Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Update New Collateral of a Client", description = "Update New Collateral of a Client")
     @RequestBody(required = true, content = @Content(schema = @Schema()))
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema())))})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema()))) })
     public String updateCollateral(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @PathParam("collateralId") @Parameter(description = "collateralId") final Long collateralId,
             @Parameter(hidden = true) String apiJsonRequestBody) {
@@ -138,11 +131,10 @@ public class SelfClientCollateralManagementApiResource {
 
     @DELETE
     @Path("{collateralId}")
-    @Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Delete Client Collateral", description = "Delete Client Collateral")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema())))})
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema()))) })
     public String deleteCollateral(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @PathParam("collateralId") @Parameter(description = "collateralId") final Long collateralId) {
         validateAppuserClientsMapping(clientId);

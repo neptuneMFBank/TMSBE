@@ -435,7 +435,7 @@ public class DepositApplicationBusinessProcessWritePlatformServiceJpaRepositoryI
 
             SavingsAccount savingsAccount = savingsRepositoryWrapper.findSavingsWithNotFoundDetection(savingsId, false);
 
-            if (savingsAccount.getExternalId() == null || ObjectUtils.isEmpty(savingsAccount.getExternalId())) {
+            if (savingsAccount.getExternalId() == null || StringUtils.isEmpty(savingsAccount.getExternalId())) {
                 savingsAccount.setExternalId(walletId);
                 savingsAccountList.add(savingsAccount);
             } else {
